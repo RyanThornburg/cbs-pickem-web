@@ -34,7 +34,7 @@ jobs:
     if: ${{ needs.retrieve-project.outputs.deployment-enabled == 'true' }}
     uses: ./.github/workflows/morlocked-web-build.yaml
     with:
-      site-url: https://IONOS_DEPLOY_NOW_SITE_URL
+      site-url: https://home-5016450593.app-ionos.space/
       branch-id: ${{ needs.retrieve-project.outputs.branch-id }}
     secrets: inherit
 
