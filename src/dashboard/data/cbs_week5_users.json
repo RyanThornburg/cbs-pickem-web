@@ -1,0 +1,2260 @@
+[
+    {
+        "id": "ivxhi4tzhiytoobqgy3doojz",
+        "name": "Antonio Torres",
+        "cbs_stats": {
+            "rank": 1,
+            "period_score": 5,
+            "score": 14,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44tsorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44tsorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44tsorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44tsorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 416,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytm===",
+                    "cbs_team_id": 416,
+                    "short_name": "JAC"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44tsorrgazdcnzwgq3tumrzgm3tomjthe======",
+                "cbs_item_id": 404,
+                "cbs_slot_id": 29377139,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydi===",
+                    "cbs_team_id": 404,
+                    "short_name": "ARI"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqnjq",
+        "name": "Brian Tuchalski",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 17,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha2taorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha2taorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha2taorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha2taorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha2taorrgazdcnzwgq3tumrzgm3tomjuge======",
+                "cbs_item_id": 414,
+                "cbs_slot_id": 29377141,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyti===",
+                    "cbs_team_id": 414,
+                    "short_name": "GB"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsnzx",
+        "name": "George Matz",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 14,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3toorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3toorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3toorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3toorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3toorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tambu",
+        "name": "Jim Manning",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaydiorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 405,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydk===",
+                    "cbs_team_id": 405,
+                    "short_name": "ATL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaydiorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaydiorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaydiorrgazdcnzwgq3tumrzgm3tomjthe======",
+                "cbs_item_id": 404,
+                "cbs_slot_id": 29377139,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydi===",
+                    "cbs_team_id": 404,
+                    "short_name": "ARI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaydiorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3taoby",
+        "name": "Matthew Parisi",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxga4dqorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxga4dqorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxga4dqorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxga4dqorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxga4dqorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcmzu",
+        "name": "Patrick McCarthy",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeztiorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeztiorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeztiorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeztiorrgazdcnzwgq3tumrzgm3tomjuge======",
+                "cbs_item_id": 414,
+                "cbs_slot_id": 29377141,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyti===",
+                    "cbs_team_id": 414,
+                    "short_name": "GB"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeztiorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsobx",
+        "name": "Jesse Majcher",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 11,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4doorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4doorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4doorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4doorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4doorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcmbr",
+        "name": "Michael Colvin",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 10,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeydcorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 431,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqztc===",
+                    "cbs_team_id": 431,
+                    "short_name": "TB"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeydcorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeydcorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeydcorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeydcorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcnbt",
+        "name": "Paul Flanigan",
+        "cbs_stats": {
+            "rank": 2,
+            "period_score": 4,
+            "score": 10,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge2dgorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge2dgorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge2dgorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge2dgorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge2dgorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcmru",
+        "name": "Patrick Madden",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 15,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgezdiorrgazdcnzwgq3tumrzgm3tomjthe======",
+                "cbs_item_id": 404,
+                "cbs_slot_id": 29377139,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydi===",
+                    "cbs_team_id": 404,
+                    "short_name": "ARI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgezdiorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 416,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytm===",
+                    "cbs_team_id": 416,
+                    "short_name": "JAC"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgezdiorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 423,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdg===",
+                    "cbs_team_id": 423,
+                    "short_name": "NYJ"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgezdiorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 410,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqyta===",
+                    "cbs_team_id": 410,
+                    "short_name": "CIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgezdiorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoojygi3tqojy",
+        "name": "Scott Miller",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 15,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44tqmrxha4tqorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 405,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydk===",
+                    "cbs_team_id": 405,
+                    "short_name": "ATL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44tqmrxha4tqorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44tqmrxha4tqorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44tqmrxha4tqorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 420,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzda===",
+                    "cbs_team_id": 420,
+                    "short_name": "NE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44tqmrxha4tqorrgazdcnzwgq3tumrzgm3tomjthe======",
+                "cbs_item_id": 404,
+                "cbs_slot_id": 29377139,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydi===",
+                    "cbs_team_id": 404,
+                    "short_name": "ARI"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqobv",
+        "name": "Chad Bauer",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4dkorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4dkorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4dkorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4dkorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4dkorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsnrt",
+        "name": "Drew Miller",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3dgorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 408,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydq===",
+                    "cbs_team_id": 408,
+                    "short_name": "CAR"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3dgorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3dgorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3dgorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 418,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytq===",
+                    "cbs_team_id": 418,
+                    "short_name": "MIA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe3dgorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsmzx",
+        "name": "Dan Hogan",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheztoorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 405,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydk===",
+                    "cbs_team_id": 405,
+                    "short_name": "ATL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheztoorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheztoorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 423,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdg===",
+                    "cbs_team_id": 423,
+                    "short_name": "NYJ"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheztoorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheztoorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 422,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqzde===",
+                    "cbs_team_id": 422,
+                    "short_name": "NYG"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tamrz",
+        "name": "Justin Billingham",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgazdsorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgazdsorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgazdsorrgazdcnzwgq3tumrzgm3tomjuge======",
+                "cbs_item_id": 414,
+                "cbs_slot_id": 29377141,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyti===",
+                    "cbs_team_id": 414,
+                    "short_name": "GB"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgazdsorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgazdsorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcnrq",
+        "name": "Peter Steinrock",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge3daorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 405,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydk===",
+                    "cbs_team_id": 405,
+                    "short_name": "ATL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge3daorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge3daorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 416,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytm===",
+                    "cbs_team_id": 416,
+                    "short_name": "JAC"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge3daorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 420,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzda===",
+                    "cbs_team_id": 420,
+                    "short_name": "NE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge3daorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 434,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzti===",
+                    "cbs_team_id": 434,
+                    "short_name": "CLE"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqnru",
+        "name": "Bryan Favilla",
+        "cbs_stats": {
+            "rank": 10,
+            "period_score": 3,
+            "score": 11,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha3diorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 405,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydk===",
+                    "cbs_team_id": 405,
+                    "short_name": "ATL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha3diorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha3diorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 418,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytq===",
+                    "cbs_team_id": 418,
+                    "short_name": "MIA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha3diorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha3diorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 415,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqytk===",
+                    "cbs_team_id": 415,
+                    "short_name": "IND"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcmjt",
+        "name": "Patrick Duncan",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 15,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeytgorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 431,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqztc===",
+                    "cbs_team_id": 431,
+                    "short_name": "TB"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeytgorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeytgorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 424,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdi===",
+                    "cbs_team_id": 424,
+                    "short_name": "LV"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeytgorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgeytgorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsoju",
+        "name": "Jesse Stoop",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 14,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4tiorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 418,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytq===",
+                    "cbs_team_id": 418,
+                    "short_name": "MIA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4tiorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 434,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzti===",
+                    "cbs_team_id": 434,
+                    "short_name": "CLE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4tiorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4tiorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe4tiorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcobz",
+        "name": "Sean Wright",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dsorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 431,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqztc===",
+                    "cbs_team_id": 431,
+                    "short_name": "TB"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dsorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dsorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dsorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dsorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcojt",
+        "name": "Vince Frolich",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tgorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tgorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tgorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tgorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 416,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytm===",
+                    "cbs_team_id": 416,
+                    "short_name": "JAC"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tgorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqmjx",
+        "name": "Bill Morlok",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhaytoorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhaytoorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhaytoorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 409,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyds===",
+                    "cbs_team_id": 409,
+                    "short_name": "CHI"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhaytoorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 416,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytm===",
+                    "cbs_team_id": 416,
+                    "short_name": "JAC"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhaytoorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tamjw",
+        "name": "Jon Acklen",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaytmorrgazdcnzwgq3tumrzgm3tomjsg4======",
+                "cbs_item_id": 406,
+                "cbs_slot_id": 29377127,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqydm===",
+                    "cbs_team_id": 406,
+                    "short_name": "BAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaytmorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaytmorrgazdcnzwgq3tumrzgm3tomjthe======",
+                "cbs_item_id": 429,
+                "cbs_slot_id": 29377139,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzds===",
+                    "cbs_team_id": 429,
+                    "short_name": "SF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaytmorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxgaytmorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcojy",
+        "name": "walker allen",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tqorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 423,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdg===",
+                    "cbs_team_id": 423,
+                    "short_name": "NYJ"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tqorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tqorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 424,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdi===",
+                    "cbs_team_id": 424,
+                    "short_name": "LV"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tqorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4tqorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3doobv",
+        "name": "Andrea Morlok",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 11,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44dkorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 423,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdg===",
+                    "cbs_team_id": 423,
+                    "short_name": "NYJ"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44dkorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 247415,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gi2donbrgu======",
+                    "cbs_team_id": 247415,
+                    "short_name": "HOU"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44dkorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 412,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyte===",
+                    "cbs_team_id": 412,
+                    "short_name": "DEN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44dkorrgazdcnzwgq3tumrzgm3tomjuge======",
+                "cbs_item_id": 427,
+                "cbs_slot_id": 29377141,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdo===",
+                    "cbs_team_id": 427,
+                    "short_name": "LAR"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwg44dkorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 420,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzda===",
+                    "cbs_team_id": 420,
+                    "short_name": "NE"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsnjt",
+        "name": "Doug Miller",
+        "cbs_stats": {
+            "rank": 18,
+            "period_score": 2,
+            "score": 10,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe2tgorrgazdcnzwgq3tumrzgm3tomjshe======",
+                "cbs_item_id": 407,
+                "cbs_slot_id": 29377129,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydo===",
+                    "cbs_team_id": 407,
+                    "short_name": "BUF"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe2tgorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 420,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzda===",
+                    "cbs_team_id": 420,
+                    "short_name": "NE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe2tgorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe2tgorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwhe2tgorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tcobr",
+        "name": "Ryan Thornburg",
+        "cbs_stats": {
+            "rank": 27,
+            "period_score": 1,
+            "score": 13,
+            "trending_score": 0
+        },
+        "is_mine": true,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dcorrgazdcnzwgq3tumrzgm3tmnzqgu======",
+                "cbs_item_id": 419,
+                "cbs_slot_id": 29376705,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqyts===",
+                    "cbs_team_id": 419,
+                    "short_name": "MIN"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dcorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 415,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqytk===",
+                    "cbs_team_id": 415,
+                    "short_name": "IND"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dcorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 434,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzti===",
+                    "cbs_team_id": 434,
+                    "short_name": "CLE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dcorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 426,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdm===",
+                    "cbs_team_id": 426,
+                    "short_name": "PIT"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrxge4dcorrgazdcnzwgq3tumrzgm3tomjtg4======",
+                "cbs_item_id": 424,
+                "cbs_slot_id": 29377137,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdi===",
+                    "cbs_team_id": 424,
+                    "short_name": "LV"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dsmjs",
+        "name": "Conor Shields",
+        "cbs_stats": {
+            "rank": 27,
+            "period_score": 1,
+            "score": 12,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheyteorrgazdcnzwgq3tumrzgm3tomjug4======",
+                "cbs_item_id": null,
+                "cbs_slot_id": 29377147,
+                "display_status": "LOCKED",
+                "pick_status": null,
+                "team": null,
+                "visible": false
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheyteorrgazdcnzwgq3tumrzgm3tomjugm======",
+                "cbs_item_id": 430,
+                "cbs_slot_id": 29377143,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzta===",
+                    "cbs_team_id": 430,
+                    "short_name": "SEA"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheyteorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 433,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqztg===",
+                    "cbs_team_id": 433,
+                    "short_name": "WAS"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheyteorrgazdcnzwgq3tumrzgm3tomjsgu======",
+                "cbs_item_id": 408,
+                "cbs_slot_id": 29377125,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqydq===",
+                    "cbs_team_id": 408,
+                    "short_name": "CAR"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwheyteorrgazdcnzwgq3tumrzgm3tomjsgm======",
+                "cbs_item_id": 431,
+                "cbs_slot_id": 29377123,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqztc===",
+                    "cbs_team_id": 431,
+                    "short_name": "TB"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqojz",
+        "name": "Chris Lance",
+        "cbs_stats": {
+            "rank": 27,
+            "period_score": 1,
+            "score": 11,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": [
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4tsorrgazdcnzwgq3tumrzgm3tomjtge======",
+                "cbs_item_id": 415,
+                "cbs_slot_id": 29377131,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqytk===",
+                    "cbs_team_id": 415,
+                    "short_name": "IND"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4tsorrgazdcnzwgq3tumrzgm3tomjtgm======",
+                "cbs_item_id": 420,
+                "cbs_slot_id": 29377133,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzda===",
+                    "cbs_team_id": 420,
+                    "short_name": "NE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4tsorrgazdcnzwgq3tumrzgm3tomjtgu======",
+                "cbs_item_id": 434,
+                "cbs_slot_id": 29377135,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzti===",
+                    "cbs_team_id": 434,
+                    "short_name": "CLE"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4tsorrgazdcnzwgq3tumrzgm3tomjugu======",
+                "cbs_item_id": 411,
+                "cbs_slot_id": 29377145,
+                "display_status": "VISIBLE",
+                "pick_status": "CORRECT",
+                "team": {
+                    "id": "krswc3j2gqytc===",
+                    "cbs_team_id": 411,
+                    "short_name": "DAL"
+                },
+                "visible": true
+            },
+            {
+                "id": "izxw65dcmfwgyudjmnvwk3kxmvsww3dzkn2gc3tenfxgo42qnfrwworrg44danrwha4tsorrgazdcnzwgq3tumrzgm3tomjuge======",
+                "cbs_item_id": 427,
+                "cbs_slot_id": 29377141,
+                "display_status": "VISIBLE",
+                "pick_status": "INCORRECT",
+                "team": {
+                    "id": "krswc3j2gqzdo===",
+                    "cbs_team_id": 427,
+                    "short_name": "LAR"
+                },
+                "visible": true
+            }
+        ]
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3dqmzv",
+        "name": "brent beddis",
+        "cbs_stats": {
+            "rank": 30,
+            "period_score": 0,
+            "score": 0,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": []
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tamzx",
+        "name": "Kevin Duncan",
+        "cbs_stats": {
+            "rank": 30,
+            "period_score": 0,
+            "score": 0,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": []
+    },
+    {
+        "id": "ivxhi4tzhiytoobqgy3tanzt",
+        "name": "Marcel Winokur",
+        "cbs_stats": {
+            "rank": 30,
+            "period_score": 0,
+            "score": 0,
+            "trending_score": 0
+        },
+        "is_mine": false,
+        "picks": []
+    }
+]
