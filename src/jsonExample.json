@@ -1,0 +1,164 @@
+[
+  {
+    "count": 17,
+    "cover": true,
+    "is_game": true,
+    "team": "HOU"
+  },
+  {
+    "count": 14,
+    "cover": true,
+    "is_game": true,
+    "team": "TB"
+  },
+  {
+    "count": 11,
+    "cover": false,
+    "is_game": true,
+    "team": "WAS"
+  },
+  {
+    "count": 10,
+    "cover": true,
+    "is_game": true,
+    "team": "CHI"
+  },
+  {
+    "count": 9,
+    "cover": true,
+    "is_game": true,
+    "team": "PIT"
+  },
+  {
+    "count": 7,
+    "cover": false,
+    "is_game": false,
+    "team": "BUFatNYJ"
+  },
+  {
+    "count": 7,
+    "cover": false,
+    "is_game": true,
+    "team": "DEN"
+  },
+  {
+    "count": 7,
+    "cover": false,
+    "is_game": true,
+    "team": "TEN"
+  },
+  {
+    "count": 6,
+    "cover": true,
+    "is_game": true,
+    "team": "IND"
+  },
+  {
+    "count": 6,
+    "cover": true,
+    "is_game": true,
+    "team": "CIN"
+  },
+  {
+    "count": 6,
+    "cover": true,
+    "is_game": true,
+    "team": "ATL"
+  },
+  {
+    "count": 6,
+    "cover": true,
+    "is_game": true,
+    "team": "DET"
+  },
+  {
+    "count": 6,
+    "cover": true,
+    "is_game": true,
+    "team": "GB"
+  },
+  {
+    "count": 6,
+    "cover": false,
+    "is_game": true,
+    "team": "NYG"
+  },
+  {
+    "count": 4,
+    "cover": true,
+    "is_game": true,
+    "team": "SF"
+  },
+  {
+    "count": 4,
+    "cover": false,
+    "is_game": true,
+    "team": "DAL"
+  },
+  {
+    "count": 4,
+    "cover": false,
+    "is_game": true,
+    "team": "JAC"
+  },
+  {
+    "count": 3,
+    "cover": false,
+    "is_game": true,
+    "team": "PHI"
+  },
+  {
+    "count": 2,
+    "cover": false,
+    "is_game": true,
+    "team": "SEA"
+  },
+  {
+    "count": 2,
+    "cover": true,
+    "is_game": true,
+    "team": "LAC"
+  },
+  {
+    "count": 2,
+    "cover": false,
+    "is_game": true,
+    "team": "NO"
+  },
+  {
+    "count": 1,
+    "cover": true,
+    "is_game": true,
+    "team": "BAL"
+  },
+  {
+    "count": 1,
+    "cover": true,
+    "is_game": true,
+    "team": "CLE"
+  },
+  {
+    "count": 1,
+    "cover": false,
+    "is_game": true,
+    "team": "NE"
+  },
+  {
+    "count": 1,
+    "cover": false,
+    "is_game": true,
+    "team": "CAR"
+  },
+  {
+    "count": 1,
+    "cover": false,
+    "is_game": true,
+    "team": "ARI"
+  },
+  {
+    "count": 1,
+    "cover": false,
+    "is_game": true,
+    "team": "LV"
+  }
+]
