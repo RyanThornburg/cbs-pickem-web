@@ -1,29 +1,29 @@
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid2';
-import {db} from "../../components/firebase"
-import {ref, get, onValue} from "firebase/database"
-import {Pick, PickStatus, GameStatus} from "../../types"
-import {useEffect, useState} from 'react'
-import {red, green, blue, amber} from "@mui/material/colors"
-import Container from '@mui/material/Container';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
+import { amber, blue, green, red } from "@mui/material/colors";
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
-import { BorderColor } from '@mui/icons-material';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { onValue, ref } from "firebase/database";
+import { useEffect, useState } from 'react';
+import { db } from "../../components/firebase";
+import { GameStatus, Pick, PickStatus } from "../../types";
+
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import BlindSharpIcon from '@mui/icons-material/BlindSharp';
+import CheckIcon from '@mui/icons-material/Check';
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
-import CheckIcon from '@mui/icons-material/Check'
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney' ;
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 
+const defaultHeight = '1126px'
 
+const FormatOnePick = (pick: Pick, index: number) => {
 
-const FormatOnePick = (pick: Pick) => {
-    const colorBad = red[50]
-    
+    if (index > 4){
+        // why cbs allows this?
+        return
+    }
     const team = pick.visible ? pick.team : (
         pick.pick_status === PickStatus.Missing ? PickStatus.Missing :
         pick.game_status === GameStatus.Scheduled ? "TBD" : "???") 
@@ -77,19 +77,16 @@ const FormatOnePick = (pick: Pick) => {
     )
 }
 function RenderPicks(props: GridRenderCellParams<any>) {
-    console.log('props', props)
     const picks: Array<Pick> = props.value;
     return (
         
-            <Stack sx={{
-                justifyContent: "center",
-                alignItems: "center",
-                mt:0,
-                mb:0,
-                display:'inline-flex'
-              }} direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
-            {picks.map(FormatOnePick)}
-            </Stack>
+        <Stack sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            display:'inline-flex'
+            }} direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
+        {picks.map(FormatOnePick)}
+        </Stack>
      
     )
 }
@@ -117,7 +114,6 @@ function RenderScore(props: GridRenderCellParams<any>) {
         icons = new Array(score).fill(<AttachMoneyIcon></AttachMoneyIcon>)
     }
 
-    console.log('render', icons)
     return (<Box>
         {score}
         <Stack direction="row" spacing={0.5}>
@@ -128,9 +124,9 @@ function RenderScore(props: GridRenderCellParams<any>) {
     </Box>)
 }
 const columns: GridColDef[] = [
-    {field: 'user', headerName: 'Name', flex:1 },
-    {field: 'score', align: 'center', headerAlign: 'center', headerName: 'Score', minWidth: 75, flex: 0.5, valueGetter: (value, row) => {return row.score + row.trending_score}},
-    {field: 'period_score', align: 'center', headerAlign: 'center', headerName: 'Week', minWidth: 75, flex: 0.5, valueGetter: (value, row) => {return row.period_score + row.trending_score}},
+    {field: 'name', headerName: 'Name', flex:1 },
+    {field: 'score', align: 'center', headerAlign: 'center', headerName: 'Score', minWidth: 100, flex: 0.5, valueGetter: (value, row) => {return row.score + row.trending_score}},
+    {field: 'period_score', align: 'center', headerAlign: 'center', headerName: 'Week', minWidth: 100, flex: 0.5, valueGetter: (value, row) => {return row.period_score + row.trending_score}},
     {field: 'picks', headerName: 'Picks',flex:2, renderCell: RenderPicks }
 ]
 
@@ -146,14 +142,22 @@ export default function UserDataGrid() {
             }
         })
     }, [])
-
     console.log(users)
-
     return (
-      <DataGrid
-      density='compact'
-        rows={users}
-        columns={columns}
-      />
+        <DataGrid
+            density='compact'
+            loading={users.length === 0}
+            getRowId={(row)=>row.id}
+            rows={users}
+            columns={columns}
+            hideFooter={true}
+            slotProps={{
+                loadingOverlay: {
+                variant: 'linear-progress',
+                noRowsVariant: 'skeleton',
+                },
+            }}
+            sx={{ '--DataGrid-overlayHeight': {defaultHeight} }}
+        />
     );
   }

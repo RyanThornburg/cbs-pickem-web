@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material/styles';
-import { axisClasses, legendClasses, chartsGridClasses } from '@mui/x-charts';
+import { axisClasses, chartsGridClasses, legendClasses } from '@mui/x-charts';
 import type { ChartsComponents } from '@mui/x-charts/themeAugmentation';
 import { gray } from './../../shared-theme/themePrimitives';
 

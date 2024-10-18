@@ -1,19 +1,18 @@
-import * as React from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
-import { useDrawingArea } from '@mui/x-charts/hooks';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
+import { blue, green, red } from "@mui/material/colors";
+import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import {useEffect, useState} from 'react'
-import {db} from "../../components/firebase"
-import {ref, onValue} from "firebase/database"
-import { TeamPicked } from '../../types';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { onValue, ref } from "firebase/database";
+import { useEffect, useState } from 'react';
+import { db } from "../../components/firebase";
+import { TeamPicked } from '../../types';
+import SmallHeader from './SmallHeader';
 
 interface StyledTextProps {
   variant: 'primary' | 'secondary';
@@ -115,31 +114,54 @@ export default function StatTopUserPicks() {
         )
     }
     
-  return (
-    <Card
-      variant="outlined"
-      sx={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}
-    >
-      <CardContent>
-        <Typography component="h2" variant="subtitle2">
-          Most popular picks
-        </Typography>
-        
-        <BarChart
-            yAxis={[
-                {
-                id: 'barCategories',
-                data: teamPicks.map((team: TeamPicked) => {return team.team}),
-                scaleType: 'band',
-                },
-            ]}
-            series={[{data: teamPicks.map((team: TeamPicked) => {return team.count}),},]}
-            layout="horizontal"
-            height={900}
-            width={300}
-        />
-            
-      </CardContent>
-    </Card>
-  );
+    function barColors() {
+      return teamPicks.map((team: TeamPicked) => {
+        const pickColor = team.is_game ? blue[50] : team.cover ? green[50] : red[50];
+
+        return pickColor
+      })
+    }
+
+    function barLabels() {
+      return teamPicks.map((team: TeamPicked) => {
+        const pickColor = team.is_game ? 1 : 0;
+        return pickColor.toString()
+      })
+    } 
+
+    return (
+      <Card
+        variant="outlined"
+        sx={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}
+      >
+        <CardContent>
+          <SmallHeader title={'Most Popular Picks'} />
+          
+          <BarChart
+              yAxis={[
+                  {
+                  id: 'barCategories',
+                  data: teamPicks.map((team: TeamPicked) => {return team.team}),
+                  scaleType: 'band',
+                  colorMap: {
+                    type: "ordinal",
+                    colors: barColors()
+                  }
+                  },
+              ]}
+              barLabel={(item, context) => {
+                const teamPicked: TeamPicked = teamPicks[item.dataIndex]
+                return teamPicked.is_game ? `Picks Pending for ${teamPicked.team.replace('at', ' @ ')}` : item.value?.toString()
+              }}
+              series={[{
+                data: teamPicks.map((team: TeamPicked) => {return team.count}),
+              }]}
+              layout="horizontal"
+              height={1191}
+              grid={{ vertical: true }}
+          />
+              
+        </CardContent>
+      </Card>
+    );
 }

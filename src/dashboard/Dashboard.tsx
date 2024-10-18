@@ -1,16 +1,15 @@
-import * as React from 'react';
-import type {} from '@mui/x-date-pickers/themeAugmentation';
-import type {} from '@mui/x-charts/themeAugmentation';
-import type {} from '@mui/x-data-grid/themeAugmentation';
-import type {} from '@mui/x-tree-view/themeAugmentation';
-import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
-import AppNavbar from './components/AppNavbar';
-import Header from './components/Header';
+import { alpha } from '@mui/material/styles';
+import type { } from '@mui/x-charts/themeAugmentation';
+import type { } from '@mui/x-data-grid/themeAugmentation';
+import type { } from '@mui/x-date-pickers/themeAugmentation';
+import type { } from '@mui/x-tree-view/themeAugmentation';
+import { onValue, ref } from 'firebase/database';
+import { useEffect, useState } from 'react';
+import { db } from '../components/firebase';
 import MainGrid from './components/MainGrid';
-import SideMenu from './components/SideMenu';
 import AppTheme from './shared-theme/AppTheme';
 import {
   chartsCustomizations,
@@ -27,6 +26,17 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
+  const [weekNum, setWeekNum] = useState(1)
+
+  useEffect(()=>{
+    const userRef = ref(db, 'currentWeek')
+    return onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            setWeekNum(snapshot.val())
+        }
+    })
+  }, [])
+
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
