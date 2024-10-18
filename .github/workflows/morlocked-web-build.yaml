@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Node assets
         env:
-          CI: true
+          CI: false
           SITE_URL: ${{ inputs.site-url }}
         run: |
           npm ci
