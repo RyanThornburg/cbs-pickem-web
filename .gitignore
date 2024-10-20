@@ -4,9 +4,10 @@
 /node_modules
 /.pnp
 .pnp.js
-
+.notes
 # testing
 /coverage
+.vscode/
 
 # production
 /build

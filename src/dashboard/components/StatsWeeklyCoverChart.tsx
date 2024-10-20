@@ -1,55 +1,67 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import { LineChart } from '@mui/x-charts/LineChart';
-import { onValue, ref } from 'firebase/database';
-import { useEffect, useState } from 'react';
-import { db } from '../../components/firebase';
-import { WeekCover } from '../../types';
-
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import { LineChart } from "@mui/x-charts/LineChart";
+import { onValue, ref } from "firebase/database";
+import { useEffect, useState } from "react";
+import { db } from "../../components/firebase";
+import { WeekCover } from "../../types";
 
 export default function StatsWeeklyCoverChart() {
-    const [coverResults, setCoverResults] = useState<any>([]);
+  const [coverResults, setCoverResults] = useState<any>([]);
 
-    useEffect(()=>{
-        const userRef = ref(db, 'stats/coverResults/')
-        return onValue(userRef, (snapshot) => {
-            if (snapshot.exists()) {
-                
-              const coverData: WeekCover[] = []  
-              var weekly: WeekCover[]  = Object.values(snapshot.val())
-              weekly.forEach((week) => {
-                if (week.total > 0) {
-                  coverData.push(week)
-                }
-              })
+  useEffect(() => {
+    const userRef = ref(db, "stats/coverResults/");
+    return onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const coverData: WeekCover[] = [];
+        var weekly: WeekCover[] = Object.values(snapshot.val());
+        weekly.forEach((week) => {
+          if (week.total > 0) {
+            coverData.push(week);
+          }
+        });
 
-              setCoverResults(coverData)
-            }
-        })
-    }, [])
+        setCoverResults(coverData);
+      }
+    });
+  }, []);
 
   return (
-
-    <Card variant="outlined" sx={{ height: '100%', flexGrow: 1 }}>
+    <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
       <CardContent>
-      <Typography  component="h2" variant="h6"  >
-          Weekly Results
-        </Typography>
-        
+        <Typography sx={{ color: "text.secondary" }}>Weekly Results</Typography>
+
         <LineChart
- 
-          yAxis={[{ valueFormatter: (v) => {return `${v ?? 0}%`}, tickNumber: 5,  }]}
-          xAxis={[{ dataKey: 'week', tickMinStep:1, valueFormatter: (v) => {return `Week ${v ?? 0}`}, }]}
-          series={[{
-            dataKey: 'result',
-            valueFormatter: (v) => {return `${Math.round(v ?? 0)}%`;},
-            area: true
-            }]}
+          yAxis={[
+            {
+              valueFormatter: (v) => {
+                return `${v ?? 0}%`;
+              },
+              tickNumber: 3,
+            },
+          ]}
+          xAxis={[
+            {
+              dataKey: "week",
+              tickMinStep: 1,
+              valueFormatter: (v) => {
+                return `Week ${v ?? 0}`;
+              },
+            },
+          ]}
+          series={[
+            {
+              dataKey: "result",
+              valueFormatter: (v) => {
+                return `${Math.round(v ?? 0)}%`;
+              },
+              area: true,
+            },
+          ]}
           dataset={coverResults}
-          height={200}
-        >
-        </LineChart>
+          height={165}
+        ></LineChart>
       </CardContent>
     </Card>
   );
