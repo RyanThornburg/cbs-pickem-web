@@ -8,9 +8,11 @@ import {
   Box,
   Chip,
   Icon as MuiIcon,
+  Popover,
   Stack,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import { useState } from "react";
 import { Game, GameStatus, Possession, Team, UserId } from "../../../types";
 import TeamData from "../../data/team_data.json";
 import { gameTime, IsGameToday, stringAvatar } from "../../helper";
@@ -196,6 +198,24 @@ const pickStatus = ({ cover, picks }: GridStat) => {
 
 export default function TeamScore({ game, isHome }: Props) {
   const team: GridStat = isHome ? homeTeamStats(game) : awayTeamStats(game);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const sortUsers: UserId[] =
+    team.picks ??
+    [].sort((a: UserId, b: UserId) =>
+      a.name.toUpperCase() > b.name.toUpperCase() ? -1 : 1
+    );
   return (
     <Grid container size={{ xs: 12 }}>
       <Grid size={{ xs: 7, lg: 3 }}>
@@ -233,7 +253,11 @@ export default function TeamScore({ game, isHome }: Props) {
       <Grid size={{ xs: 1 }}>{team.score}</Grid>
       <Grid size={{ xs: 4, lg: 3 }}>{team.timeOrDown}</Grid>
       <Grid size={{ xs: 0, lg: 5 }} display={{ xs: "none", lg: "block" }}>
-        <Grid container sx={{ minWidth: "125px", textAlign: "end" }}>
+        <Grid
+          onClick={handleClick}
+          container
+          sx={{ minWidth: "125px", textAlign: "end" }}
+        >
           {team.picks && team.picks.length > 0 && (
             <AvatarGroup
               sx={{
@@ -259,6 +283,58 @@ export default function TeamScore({ game, isHome }: Props) {
           {team.picks && team?.picks.length > 0 && pickStatus(team)}
           {team.picks && team?.picks.length === 0 && zeroPickChip(team)}
         </Grid>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "center",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+        >
+          <Stack
+            sx={{
+              ml: "2px",
+              p: "1px",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+            }}
+            direction="column"
+            spacing={0.5}
+          >
+            {team.picks &&
+              team.picks
+                .sort((a, b) =>
+                  a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+                )
+                .map((user: UserId) => {
+                  return (
+                    <Stack
+                      sx={{
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                      }}
+                      direction="row"
+                      spacing={2}
+                    >
+                      <Avatar
+                        {...stringAvatar(user.name, {
+                          width: 20,
+                          height: 20,
+                          fontSize: 10,
+                        })}
+                      />
+                      <Box sx={{ fontSize: "1rem" }}>{user.name}</Box>
+                    </Stack>
+                  );
+                })}
+          </Stack>
+        </Popover>
       </Grid>
     </Grid>
   );
