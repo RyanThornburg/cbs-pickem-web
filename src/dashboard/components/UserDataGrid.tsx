@@ -131,7 +131,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-    minWidth: 100,
+    minWidth: 90,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -141,14 +141,14 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-    minWidth: 100,
+    minWidth: 90,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
   },
   {
     field: "picks",
-    minWidth: 500,
+    minWidth: 490,
     align: "left",
     headerName: "Picks",
     renderCell: RenderPicks,
