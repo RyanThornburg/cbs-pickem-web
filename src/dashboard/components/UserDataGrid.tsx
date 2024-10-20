@@ -78,7 +78,9 @@ const FormatOnePick = (pick: Pick, index: number) => {
       color: theme.palette.text.primary,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
-      ...theme.applyStyles("dark", { backgroundColor: "#1A2027" }),
+    },
+    pick.pick_status == "CORRECT" && {
+      backgroundColor: theme.palette.primary[50],
     },
     isGameOver && {
       border: `thin solid ${statusColor.borderColor}`,

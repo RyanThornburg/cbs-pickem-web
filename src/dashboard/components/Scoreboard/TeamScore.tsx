@@ -52,7 +52,7 @@ const quarterLookUp: { [int: number]: string } = {
 } as const;
 
 const timeOrStatus = (game: Game): string => {
-  if (game.status == GameStatus.Final) {
+  if (game.status === GameStatus.Final) {
     return "Final";
   }
 
@@ -83,7 +83,7 @@ const ballIcon = () => {
   );
 };
 function getBallIcon(game: Game, isHome: boolean) {
-  if (game.status != GameStatus.Inprogress) {
+  if (game.status !== GameStatus.Inprogress) {
     return undefined;
   }
   if (isHome && game?.possession === Possession.Home) {
@@ -131,7 +131,7 @@ const awayTeamStats = (game: Game): GridStat => {
   return {
     team: game.away_team,
     ball:
-      game.status == GameStatus.Inprogress
+      game.status === GameStatus.Inprogress
         ? game?.possession === Possession.Away ?? false
         : false,
     cover: score > homeScore(game) + spread,
@@ -195,7 +195,6 @@ const pickStatus = ({ cover, picks }: GridStat) => {
 
 export default function TeamScore({ game, isHome }: Props) {
   const team: GridStat = isHome ? homeTeamStats(game) : awayTeamStats(game);
-  console.log(team.team.short_name, team?.picks?.length ?? "na", team.picks);
   return (
     <Grid container size={{ xs: 12 }}>
       <Grid size={{ xs: 7, lg: 3 }}>

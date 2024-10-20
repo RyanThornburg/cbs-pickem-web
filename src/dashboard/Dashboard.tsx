@@ -37,6 +37,7 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
     });
   }, []);
 
+  console.log("Week", weekNum);
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />

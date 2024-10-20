@@ -41,10 +41,10 @@ export default function MainGrid() {
       >
         <Stack />
         <Stack sx={{ alignItems: "center" }} spacing={2} direction="row">
-          <Typography align="left" component="h2" variant="h4" sx={{ mb: 2 }}>
+          <Typography align="left" variant="h5" sx={{ mb: 2 }}>
             Morlocked Pick'em Results:
           </Typography>
-          <Typography align="left" component="h2" variant="h4" sx={{ mb: 2 }}>
+          <Typography align="left" variant="h5" sx={{ mb: 2 }}>
             Week {currentWeek}
           </Typography>
         </Stack>

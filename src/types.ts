@@ -2,7 +2,10 @@ export interface TeamPicked {
   count: number;
   cover: boolean;
   is_game: boolean;
+  game_id: number;
+  game_status: GameStatus;
   team: string;
+  team_id?: number;
 }
 
 export interface User {
