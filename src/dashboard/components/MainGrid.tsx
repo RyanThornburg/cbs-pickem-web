@@ -81,11 +81,11 @@ export default function MainGrid() {
         User Picks
       </Typography>
 
-      <Grid container spacing={6} columns={12}>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
+      <Grid container spacing={20} columns={12}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6.5 }}>
           <UserDataGrid />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 5 }}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 5.5 }}>
           <StatsTopUserPicks />
         </Grid>
       </Grid>
