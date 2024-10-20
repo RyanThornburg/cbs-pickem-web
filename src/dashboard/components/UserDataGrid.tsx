@@ -148,7 +148,7 @@ const columns: GridColDef[] = [
   },
   {
     field: "picks",
-    flex: 1,
+    minWidth: 500,
     align: "left",
     headerName: "Picks",
     renderCell: RenderPicks,
