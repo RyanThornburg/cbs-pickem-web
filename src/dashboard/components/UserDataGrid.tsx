@@ -39,6 +39,11 @@ const pickColor = {
     borderColor: blue[400],
     borderInProgressColor: blue["A400"],
   },
+  NONE: {
+    bgColor: blue[50],
+    borderColor: blue[400],
+    borderInProgressColor: blue["A400"],
+  },
 };
 
 const FormatOnePick = (pick: Pick, index: number) => {
@@ -59,6 +64,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
 
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
+  console.log(pick.pick_status);
   const statusColor =
     pickColor[(pick.pick_status as keyof typeof pickColor) ?? "TBD"];
   console.log(pick);

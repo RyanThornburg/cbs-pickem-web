@@ -177,7 +177,7 @@ const pickStatusIcon = (cover: boolean) => {
   return <CloseIcon color={"error"} />;
 };
 
-const pickStatus = ({ cover }: GridStat) => {
+const pickStatus = ({ cover, picks }: GridStat) => {
   return (
     <Stack
       direction="row"
@@ -188,7 +188,9 @@ const pickStatus = ({ cover }: GridStat) => {
       }}
     >
       {pickStatusIcon(cover)}
-      <Box sx={{ fontSize: "16px", color: "success" }}>10</Box>
+      <Box sx={{ fontSize: "16px", color: "success" }}>
+        {picks?.length ?? 0}
+      </Box>
     </Stack>
   );
 };
@@ -235,7 +237,7 @@ export default function TeamScore({ game, isHome }: Props) {
       <Grid size={{ xs: 0, lg: 5 }} display={{ xs: "none", lg: "block" }}>
         <Grid container sx={{ minWidth: "125px", textAlign: "end" }}>
           {team.picks && (
-            <AvatarGroup max={4}>
+            <AvatarGroup sx={{ width: 24, height: 24, fontSize: 10 }} max={4}>
               {team.picks &&
                 team.picks.map((user: UserId) => {
                   return (
