@@ -131,7 +131,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-    minWidth: 85,
+    minWidth: 100,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -141,7 +141,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-    minWidth: 75,
+    minWidth: 100,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
