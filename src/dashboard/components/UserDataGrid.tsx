@@ -21,26 +21,31 @@ const defaultHeight = "1126px";
 const pickColor = {
   CORRECT: {
     bgColor: green[50],
+    bgBack: green[800],
     borderColor: green[400],
     borderInProgressColor: green["A400"],
   },
   INCORRECT: {
     bgColor: red[100],
+    bgBack: red[800],
     borderColor: red[400],
     borderInProgressColor: red["A400"],
   },
   MISSING: {
     bgColor: orange[100],
+    bgBack: orange[800],
     borderColor: orange[400],
     borderInProgressColor: orange["A400"],
   },
   TBD: {
     bgColor: blue[50],
+    bgBack: blue[800],
     borderColor: blue[400],
     borderInProgressColor: blue["A400"],
   },
   NONE: {
     bgColor: blue[50],
+    bgBack: blue[800],
     borderColor: blue[400],
     borderInProgressColor: blue["A400"],
   },
@@ -78,6 +83,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
       color: theme.palette.text.primary,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
+      ...theme.applyStyles("dark", { backgroundColor: statusColor.bgColor }),
     },
     pick.pick_status == "CORRECT" && {
       backgroundColor: theme.palette.primary[50],
