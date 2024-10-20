@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import { blue, green, orange, red } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -15,41 +14,9 @@ import BlindSharpIcon from "@mui/icons-material/BlindSharp";
 import CheckIcon from "@mui/icons-material/Check";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
+import { StatusColor } from "../helper";
 
 const defaultHeight = "1126px";
-
-const pickColor = {
-  CORRECT: {
-    bgColor: green[50],
-    bgBack: green[800],
-    borderColor: green[400],
-    borderInProgressColor: green["A400"],
-  },
-  INCORRECT: {
-    bgColor: red[100],
-    bgBack: red[800],
-    borderColor: red[400],
-    borderInProgressColor: red["A400"],
-  },
-  MISSING: {
-    bgColor: orange[100],
-    bgBack: orange[800],
-    borderColor: orange[400],
-    borderInProgressColor: orange["A400"],
-  },
-  TBD: {
-    bgColor: blue[50],
-    bgBack: blue[800],
-    borderColor: blue[400],
-    borderInProgressColor: blue["A400"],
-  },
-  NONE: {
-    bgColor: blue[50],
-    bgBack: blue[800],
-    borderColor: blue[400],
-    borderInProgressColor: blue["A400"],
-  },
-};
 
 const FormatOnePick = (pick: Pick, index: number) => {
   if (index > 4) {
@@ -71,7 +38,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
 
   const statusColor =
-    pickColor[(pick.pick_status as keyof typeof pickColor) ?? "TBD"];
+    StatusColor[(pick.pick_status as keyof typeof StatusColor) ?? "TBD"];
 
   const Item = styled(Paper)(({ theme }) => [
     {
@@ -83,7 +50,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
       color: theme.palette.text.primary,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
-      ...theme.applyStyles("dark", { backgroundColor: statusColor.bgColor }),
+      ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
     },
     pick.pick_status == "CORRECT" && {
       backgroundColor: theme.palette.primary[50],
@@ -181,7 +148,7 @@ const columns: GridColDef[] = [
   },
   {
     field: "picks",
-    minWidth: 490,
+    flex: 1,
     align: "left",
     headerName: "Picks",
     renderCell: RenderPicks,

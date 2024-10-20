@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../../components/firebase";
+import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
 import GamesMain from "./GamesMain";
 import StatsLeaderboard from "./StatsLeaderboard";
 import StatsTopUserPicks from "./StatsTopUserPicks";
@@ -39,7 +40,7 @@ export default function MainGrid() {
           alignItems: "center",
         }}
       >
-        <Stack />
+        <Stack></Stack>
         <Stack sx={{ alignItems: "center" }} spacing={2} direction="row">
           <Typography align="left" variant="h5" sx={{ mb: 2 }}>
             Morlocked Pick'em Results:
@@ -48,7 +49,9 @@ export default function MainGrid() {
             Week {currentWeek}
           </Typography>
         </Stack>
-        <Stack></Stack>
+        <Stack>
+          <ColorModeIconDropdown />
+        </Stack>
       </Stack>
 
       <Grid
@@ -79,10 +82,10 @@ export default function MainGrid() {
       </Typography>
 
       <Grid container spacing={2} columns={12}>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 7 }}>
           <UserDataGrid />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6 }}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 5 }}>
           <StatsTopUserPicks />
         </Grid>
       </Grid>

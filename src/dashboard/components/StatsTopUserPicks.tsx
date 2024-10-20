@@ -24,10 +24,10 @@ export default function StatsTopUserPicks() {
     return teamPicks.map((team: TeamPicked) => {
       const pickColor =
         team.is_game || team.game_status === GameStatus.Scheduled
-          ? blue[50]
+          ? blue[300]
           : team.cover
-          ? green[50]
-          : red[50];
+          ? green[300]
+          : red[300];
 
       return pickColor;
     });

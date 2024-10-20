@@ -153,10 +153,11 @@ const teamNameAndSpread = (team: GridStat): string => {
   return team.team.short_name;
 };
 
-const zeroPickChip = ({ cover, status, isToday }: GridStat) => {
+const zeroPickChip = ({ team, cover, status, isToday }: GridStat) => {
   if (status === GameStatus.Scheduled && !isToday) {
     return "";
   }
+  console.log(team.short_name, cover, status);
   return (
     <Chip
       color={cover ? "warning" : "success"}
