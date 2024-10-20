@@ -11,6 +11,12 @@ export const gameTime = (gameStart: number) => {
   return game.format("hh:mm A");
 };
 
+export const IsGameToday = (gameStart: number): boolean => {
+  var now = dayjs().format("ddd, MMM DD");
+  var gameTime = gameDate(gameStart);
+  return now === gameTime;
+};
+
 export function stringToColor(string: string) {
   let hash = 0;
   let i;

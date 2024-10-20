@@ -41,7 +41,6 @@ export default function StatsWeeklyResult({ week }: Props) {
     : defaultResult;
 
   const isActive = currentWeek?.total > 0;
-  console.log("currentResults1", currentResults);
   const results = () => {
     return isActive ? weekResult(currentWeek?.result) : "TBD";
   };
@@ -89,7 +88,6 @@ export default function StatsWeeklyResult({ week }: Props) {
     );
   }
 
-  console.log("curentresult2", currentResults);
   return (
     <Box
       sx={{

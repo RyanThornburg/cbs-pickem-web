@@ -13,7 +13,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import { Game, GameStatus, Possession, Team, UserId } from "../../../types";
 import TeamData from "../../data/team_data.json";
-import { gameTime, stringAvatar } from "../../helper";
+import { gameTime, IsGameToday, stringAvatar } from "../../helper";
 
 export type TeamDataJson = typeof TeamData;
 
@@ -39,6 +39,7 @@ interface GridStat {
   teamIcon: string;
   winning: boolean;
   status: GameStatus;
+  isToday: boolean;
 }
 
 const quarterLookUp: { [int: number]: string } = {
@@ -89,6 +90,7 @@ function getBallIcon(game: Game, isHome: boolean) {
     return ballIcon();
   }
 }
+
 const homeTeamStats = (game: Game): GridStat => {
   const score = homeScore(game);
   const spread = homeSpread(game);
@@ -108,6 +110,7 @@ const homeTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > awayScore(game),
     status: game.status,
+    isToday: IsGameToday(game.starts_at),
   };
 };
 
@@ -140,6 +143,7 @@ const awayTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > homeScore(game),
     status: game.status,
+    isToday: IsGameToday(game.starts_at),
   };
 };
 const teamNameAndSpread = (team: GridStat): string => {
@@ -148,15 +152,9 @@ const teamNameAndSpread = (team: GridStat): string => {
   }
   return team.team.short_name;
 };
-const avatarPicks = (picks: UserId[]) => {
-  if (!picks) {
-    return "";
-  }
-  return;
-};
 
-const zeroPickChip = ({ cover, status }: GridStat) => {
-  if (status === GameStatus.Scheduled) {
+const zeroPickChip = ({ cover, status, isToday }: GridStat) => {
+  if (status === GameStatus.Scheduled && !isToday) {
     return "";
   }
   return (
@@ -197,7 +195,7 @@ const pickStatus = ({ cover, picks }: GridStat) => {
 
 export default function TeamScore({ game, isHome }: Props) {
   const team: GridStat = isHome ? homeTeamStats(game) : awayTeamStats(game);
-
+  console.log(team.team.short_name, team?.picks?.length ?? "na", team.picks);
   return (
     <Grid container size={{ xs: 12 }}>
       <Grid size={{ xs: 7, lg: 3 }}>
@@ -236,8 +234,13 @@ export default function TeamScore({ game, isHome }: Props) {
       <Grid size={{ xs: 4, lg: 3 }}>{team.timeOrDown}</Grid>
       <Grid size={{ xs: 0, lg: 5 }} display={{ xs: "none", lg: "block" }}>
         <Grid container sx={{ minWidth: "125px", textAlign: "end" }}>
-          {team.picks && (
-            <AvatarGroup sx={{ width: 24, height: 24, fontSize: 10 }} max={4}>
+          {team.picks && team.picks.length > 0 && (
+            <AvatarGroup
+              sx={{
+                "& .MuiAvatar-root": { width: 24, height: 24, fontSize: 10 },
+              }}
+              max={4}
+            >
               {team.picks &&
                 team.picks.map((user: UserId) => {
                   return (

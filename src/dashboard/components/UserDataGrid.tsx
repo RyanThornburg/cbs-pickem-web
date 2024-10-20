@@ -64,10 +64,10 @@ const FormatOnePick = (pick: Pick, index: number) => {
 
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
-  console.log(pick.pick_status);
+
   const statusColor =
     pickColor[(pick.pick_status as keyof typeof pickColor) ?? "TBD"];
-  console.log(pick);
+
   const Item = styled(Paper)(({ theme }) => [
     {
       backgroundColor: statusColor.bgColor,
@@ -192,7 +192,7 @@ export default function UserDataGrid() {
       }
     });
   }, []);
-  console.log(users);
+
   return (
     <DataGrid
       density="compact"

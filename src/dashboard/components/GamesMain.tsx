@@ -32,16 +32,10 @@ export default function GamesMain({ week }: Props) {
   // has to be a better way than this
   const gameArrays: Game[][] = [];
   gameStarts.forEach((startTime: string) => {
-    console.log(startTime);
     const gameBlock = currentGames.filter(
       (game: Game) => gameDate(game.starts_at) === startTime
     );
     gameArrays.push(gameBlock);
-  });
-
-  gameArrays.forEach((games: Game[], index) => {
-    console.log("!!!!!!!!", gameStarts[index]);
-    games.map((game: Game) => console.log(game));
   });
 
   return (

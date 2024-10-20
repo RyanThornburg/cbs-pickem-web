@@ -27,8 +27,6 @@ export default function MainGrid() {
     });
   }, []);
 
-  console.log("Current Week", currentWeek, "week", week);
-
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* cards */}
