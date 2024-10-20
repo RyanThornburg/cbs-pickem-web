@@ -144,14 +144,14 @@ function RenderScore(props: GridRenderCellParams<any>) {
   );
 }
 const columns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 1 },
+  { field: "name", headerName: "Name", flex: 2 },
   {
     field: "score",
     align: "center",
     headerAlign: "center",
     headerName: "Score",
     minWidth: 100,
-    flex: 0.5,
+    flex: 1,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -162,12 +162,12 @@ const columns: GridColDef[] = [
     headerAlign: "center",
     headerName: "Week",
     minWidth: 100,
-    flex: 0.5,
+    flex: 1,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
   },
-  { field: "picks", headerName: "Picks", flex: 2, renderCell: RenderPicks },
+  { field: "picks", headerName: "Picks", flex: 10, renderCell: RenderPicks },
 ];
 
 export default function UserDataGrid() {
@@ -201,7 +201,10 @@ export default function UserDataGrid() {
           sortModel: [{ field: "score", sort: "desc" }],
         },
       }}
-      sx={{ "--DataGrid-overlayHeight": { defaultHeight } }}
+      sx={{
+        "--DataGrid-overlayHeight": { defaultHeight },
+        overflowX: "scroll",
+      }}
     />
   );
 }
