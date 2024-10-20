@@ -169,7 +169,7 @@ const zeroPickChip = ({ cover, status }: GridStat) => {
   );
 };
 
-const pickStatus = ({ cover }: GridStat) => {
+const pickStatusIcon = (cover: boolean) => {
   if (cover) {
     return <CheckCircleOutlineIcon color={"success"} />;
   }
@@ -177,12 +177,28 @@ const pickStatus = ({ cover }: GridStat) => {
   return <CloseIcon color={"error"} />;
 };
 
+const pickStatus = ({ cover }: GridStat) => {
+  return (
+    <Stack
+      direction="row"
+      spacing={0}
+      sx={{
+        justifyContent: "flex-start",
+        alignItems: "center",
+      }}
+    >
+      {pickStatusIcon(cover)}
+      <Box sx={{ fontSize: "16px", color: "success" }}>10</Box>
+    </Stack>
+  );
+};
+
 export default function TeamScore({ game, isHome }: Props) {
   const team: GridStat = isHome ? homeTeamStats(game) : awayTeamStats(game);
 
   return (
     <Grid container size={{ xs: 12 }}>
-      <Grid size={4}>
+      <Grid size={{ xs: 7, lg: 3 }}>
         <Stack
           direction="row"
           sx={{
@@ -214,10 +230,10 @@ export default function TeamScore({ game, isHome }: Props) {
           <Box id="ball">{getBallIcon(game, isHome)}</Box>
         </Stack>
       </Grid>
-      <Grid size={1}>{team.score}</Grid>
-      <Grid size={2}>{team.timeOrDown}</Grid>
-      <Grid>
-        <Grid container>
+      <Grid size={{ xs: 1 }}>{team.score}</Grid>
+      <Grid size={{ xs: 4, lg: 3 }}>{team.timeOrDown}</Grid>
+      <Grid size={{ xs: 0, lg: 5 }} display={{ xs: "none", lg: "block" }}>
+        <Grid container sx={{ minWidth: "125px", textAlign: "end" }}>
           {team.picks && (
             <AvatarGroup max={4}>
               {team.picks &&

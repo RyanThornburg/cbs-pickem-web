@@ -67,7 +67,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
       backgroundColor: statusColor.bgColor,
       ...theme.typography.body2,
       padding: 1,
-      width: 75,
+      width: 70,
       textAlign: "center",
       color: theme.palette.text.primary,
       fontWeight: fontWeight,
@@ -84,7 +84,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
   ]);
 
   return (
-    <Box sx={{ mb: 0 }}>
+    <Box>
       <Item>{team}</Item>
     </Box>
   );
@@ -94,9 +94,8 @@ function RenderPicks(props: GridRenderCellParams<any>) {
   return (
     <Stack
       sx={{
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
-        display: "inline-flex",
       }}
       direction="row"
       spacing={1}
@@ -106,6 +105,7 @@ function RenderPicks(props: GridRenderCellParams<any>) {
     </Stack>
   );
 }
+
 function RenderScore(props: GridRenderCellParams<any>) {
   const { period_score, trending_score } = props.row;
   const score = period_score + trending_score;
@@ -144,14 +144,13 @@ function RenderScore(props: GridRenderCellParams<any>) {
   );
 }
 const columns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 2 },
+  { field: "name", headerName: "Name", minWidth: 145 },
   {
     field: "score",
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-    minWidth: 100,
-    flex: 1,
+    minWidth: 75,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -161,13 +160,19 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-    minWidth: 100,
-    flex: 1,
+    minWidth: 60,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
   },
-  { field: "picks", headerName: "Picks", flex: 10, renderCell: RenderPicks },
+  {
+    field: "picks",
+    minWidth: 490,
+    align: "left",
+    headerName: "Picks",
+    renderCell: RenderPicks,
+    display: "flex",
+  },
 ];
 
 export default function UserDataGrid() {
@@ -203,7 +208,6 @@ export default function UserDataGrid() {
       }}
       sx={{
         "--DataGrid-overlayHeight": { defaultHeight },
-        overflowX: "scroll",
       }}
     />
   );
