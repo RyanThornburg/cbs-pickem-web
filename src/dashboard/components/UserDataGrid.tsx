@@ -125,12 +125,13 @@ function RenderScore(props: GridRenderCellParams<any>) {
   );
 }
 const columns: GridColDef[] = [
-  { field: "name", headerName: "Name", minWidth: 145 },
+  { field: "name", headerName: "Name", minWidth: 145, flex: 3 },
   {
     field: "score",
     align: "center",
     headerAlign: "center",
     headerName: "Score",
+
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -140,7 +141,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-    minWidth: 90,
+
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
@@ -148,6 +149,7 @@ const columns: GridColDef[] = [
   {
     field: "picks",
     minWidth: 490,
+    flex: 10,
     align: "left",
     headerName: "Picks",
     renderCell: RenderPicks,

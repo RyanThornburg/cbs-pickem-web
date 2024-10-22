@@ -90,11 +90,11 @@ export default function MainGrid() {
         <Grid
           id="grid"
           width={"fit-content"}
-          size={{ xs: 12, sm: 12, md: 10, lg: 8, xl: 6.5 }}
+          size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 6.5 }}
         >
           <UserDataGrid week={week} />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 10, lg: 4, xl: 5.5 }}>
+        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 4, xl: 5.5 }}>
           <StatsTopUserPicks week={week} />
         </Grid>
       </Grid>
