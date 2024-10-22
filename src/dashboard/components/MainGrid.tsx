@@ -13,9 +13,11 @@ import StatsTopUserPicks from "./StatsTopUserPicks";
 import StatsWeeklyCoverChart from "./StatsWeeklyCoverChart";
 import StatsWeeklyResult from "./StatsWeeklyResult";
 import UserDataGrid from "./UserDataGrid";
+import UserSelected from "./UserSelected";
 
 export default function MainGrid() {
-  const [week, setWeek] = useState(0);
+  const [week, setWeek] = useState(1);
+  const [weekString, setWeekString] = useState("0");
   const [currentWeek, setCurrentWeek] = useState(0);
 
   useEffect(() => {
@@ -42,14 +44,18 @@ export default function MainGrid() {
       >
         <Stack></Stack>
         <Stack sx={{ alignItems: "center" }} spacing={2} direction="row">
-          <Typography align="left" variant="h5" sx={{ mb: 2 }}>
+          <Typography align="left" variant="h5" sx={{ size: 3, mb: 2 }}>
             Morlocked Pick'em Results:
           </Typography>
           <Typography align="left" variant="h5" sx={{ mb: 2 }}>
             Week {currentWeek}
           </Typography>
         </Stack>
-        <Stack>
+        <Stack
+          sx={{ alignItems: "flex-end", justifyContent: "flex-end" }}
+          spacing={2}
+          direction="row"
+        >
           <ColorModeIconDropdown />
         </Stack>
       </Stack>
@@ -60,7 +66,7 @@ export default function MainGrid() {
         columns={12}
         sx={{ mb: (theme) => theme.spacing(2) }}
       >
-        <Grid size={{ xs: 12, sm: 12, lg: 12 }}></Grid>
+        <UserSelected user={undefined} />
         <Grid size={{ xs: 12, sm: 12, lg: 4 }}>
           <StatsLeaderboard />
         </Grid>
@@ -81,14 +87,19 @@ export default function MainGrid() {
         User Picks
       </Typography>
 
-      <Grid container spacing={20} columns={12}>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 6.5 }}>
-          <UserDataGrid />
+      <Grid container spacing={{ xs: 2, md: 1, lg: 2, xl: 20 }}>
+        <Grid
+          id="grid"
+          width={"fit-content"}
+          size={{ xs: 12, sm: 12, md: 11, lg: 8, xl: 6.5 }}
+        >
+          <UserDataGrid week={week} />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 12, lg: 5.5 }}>
-          <StatsTopUserPicks />
+        <Grid size={{ xs: 12, sm: 12, md: 10, lg: 4, xl: 5.5 }}>
+          <StatsTopUserPicks week={week} />
         </Grid>
       </Grid>
+
       <Grid container spacing={2} columns={12}>
         <Grid size={{ xs: 12, lg: 12 }}>
           <Typography

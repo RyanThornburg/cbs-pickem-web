@@ -48,6 +48,7 @@ export default function StatsWeeklyCoverChart() {
               valueFormatter: (v) => {
                 return `Week ${v ?? 0}`;
               },
+              tickMaxStep: 1,
             },
           ]}
           series={[

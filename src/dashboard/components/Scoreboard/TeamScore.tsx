@@ -88,6 +88,12 @@ function getBallIcon(game: Game, isHome: boolean) {
   if (game.status !== GameStatus.Inprogress) {
     return undefined;
   }
+
+  return isHome && game?.possession === Possession.Home
+    ? ballIcon()
+    : !isHome && game?.possession === Possession.Away
+    ? ballIcon()
+    : undefined;
   if (isHome && game?.possession === Possession.Home) {
     return ballIcon();
   }
@@ -159,13 +165,14 @@ const zeroPickChip = ({ team, cover, status, isToday }: GridStat) => {
   if (status === GameStatus.Scheduled && !isToday) {
     return "";
   }
-  console.log(team.short_name, cover, status);
+
   return (
     <Chip
+      id="chipper"
       color={cover ? "warning" : "success"}
       variant="outlined"
       label="Zero Picks"
-      sx={{ fontSize: "10rem" }}
+      sx={{ fontSize: "10rem", alignContent: "center" }}
     />
   );
 };
@@ -209,6 +216,7 @@ export default function TeamScore({ game, isHome }: Props) {
   };
 
   const open = Boolean(anchorEl);
+
   const id = open ? "simple-popover" : undefined;
 
   const sortUsers: UserId[] =
@@ -218,7 +226,7 @@ export default function TeamScore({ game, isHome }: Props) {
     );
   return (
     <Grid container size={{ xs: 12 }}>
-      <Grid size={{ xs: 7, lg: 3 }}>
+      <Grid size={{ xs: 6, sm: 5, lg: 3 }}>
         <Stack
           direction="row"
           sx={{
@@ -251,19 +259,23 @@ export default function TeamScore({ game, isHome }: Props) {
         </Stack>
       </Grid>
       <Grid size={{ xs: 1 }}>{team.score}</Grid>
-      <Grid size={{ xs: 4, lg: 3 }}>{team.timeOrDown}</Grid>
-      <Grid size={{ xs: 0, lg: 5 }} display={{ xs: "none", lg: "block" }}>
+      <Grid size={{ xs: "grow", lg: 3 }}>{team.timeOrDown}</Grid>
+      <Grid size={{ xs: "grow", lg: 5 }} display={{ xs: "block", lg: "block" }}>
         <Grid
-          onClick={handleClick}
+          onClick={
+            team.picks && team.picks.length > 0 ? handleClick : undefined
+          }
           container
           sx={{ minWidth: "125px", textAlign: "end" }}
         >
+          {team.picks && team?.picks.length > 0 && pickStatus(team)}
           {team.picks && team.picks.length > 0 && (
             <AvatarGroup
               sx={{
+                pl: "2px",
                 "& .MuiAvatar-root": { width: 24, height: 24, fontSize: 10 },
               }}
-              max={4}
+              max={3}
             >
               {team.picks &&
                 team.picks.map((user: UserId) => {
@@ -280,7 +292,7 @@ export default function TeamScore({ game, isHome }: Props) {
                 })}
             </AvatarGroup>
           )}
-          {team.picks && team?.picks.length > 0 && pickStatus(team)}
+
           {team.picks && team?.picks.length === 0 && zeroPickChip(team)}
         </Grid>
         <Popover
@@ -308,6 +320,7 @@ export default function TeamScore({ game, isHome }: Props) {
             spacing={0.5}
           >
             {team.picks &&
+              team?.picks.length > 0 &&
               team.picks
                 .sort((a, b) =>
                   a.name < b.name ? -1 : a.name > b.name ? 1 : 0

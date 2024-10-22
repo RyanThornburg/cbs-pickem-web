@@ -82,6 +82,7 @@ export default function StatsLeaderboard() {
   };
 
   const avatarUsers = createUserList();
+
   function UserRow(name: string) {
     return (
       <Stack sx={{ alignItems: "center" }} direction="row" spacing={2}>

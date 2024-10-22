@@ -155,12 +155,20 @@ const columns: GridColDef[] = [
     display: "flex",
   },
 ];
-
-export default function UserDataGrid() {
+export type Props = {
+  week: number;
+};
+export default function UserDataGrid({ week }: Props) {
   const [users, setUsers] = useState([]);
 
+  const weekFormat = week.toString().padStart(2, "0") ?? "01";
+  const weekPath = `weeks/week${weekFormat}/users/`;
+
   useEffect(() => {
-    const userRef = ref(db, "users/");
+    if (week === 0) {
+      return;
+    }
+    const userRef = ref(db, weekPath);
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
         setUsers(snapshot.val());

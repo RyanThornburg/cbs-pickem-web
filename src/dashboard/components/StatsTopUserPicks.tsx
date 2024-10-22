@@ -8,8 +8,14 @@ import { db } from "../../components/firebase";
 import { GameStatus, TeamPicked } from "../../types";
 import SmallHeader from "./SmallHeader";
 
-export default function StatsTopUserPicks() {
+export type Props = {
+  week: number;
+};
+
+export default function StatsTopUserPicks({ week }: Props) {
   const [teamPicks, setTeamPicks] = useState([]);
+  const weekFormat = week.toString().padStart(2, "0") ?? "01";
+  const weekPath = `weeks/week${weekFormat}/tats/teamsPicked/`;
 
   useEffect(() => {
     const userRef = ref(db, "stats/teamsPicked/");
@@ -64,7 +70,6 @@ export default function StatsTopUserPicks() {
           ]}
           barLabel={(item, context) => {
             const teamPicked: TeamPicked = teamPicks[item.dataIndex];
-            console.log("teamPicked", teamPicked);
             return teamPicked.is_game
               ? `Picks Pending for ${teamPicked.team.replace("at", " @ ")}`
               : item.value?.toString();
