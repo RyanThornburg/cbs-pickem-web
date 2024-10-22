@@ -131,7 +131,6 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-    minWidth: 90,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },

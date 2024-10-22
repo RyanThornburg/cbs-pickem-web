@@ -13,7 +13,7 @@ import StatsTopUserPicks from "./StatsTopUserPicks";
 import StatsWeeklyCoverChart from "./StatsWeeklyCoverChart";
 import StatsWeeklyResult from "./StatsWeeklyResult";
 import UserDataGrid from "./UserDataGrid";
-import UserSelected from "./UserSelected";
+//import UserSelected from "./UserSelected";
 
 export default function MainGrid() {
   const [week, setWeek] = useState(1);
@@ -66,7 +66,6 @@ export default function MainGrid() {
         columns={12}
         sx={{ mb: (theme) => theme.spacing(2) }}
       >
-        <UserSelected user={undefined} />
         <Grid size={{ xs: 12, sm: 12, lg: 4 }}>
           <StatsLeaderboard />
         </Grid>
@@ -91,7 +90,7 @@ export default function MainGrid() {
         <Grid
           id="grid"
           width={"fit-content"}
-          size={{ xs: 12, sm: 12, md: 11, lg: 8, xl: 6.5 }}
+          size={{ xs: 12, sm: 12, md: 10, lg: 8, xl: 6.5 }}
         >
           <UserDataGrid week={week} />
         </Grid>
