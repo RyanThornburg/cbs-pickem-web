@@ -1,3 +1,4 @@
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -14,7 +15,7 @@ import BlindSharpIcon from "@mui/icons-material/BlindSharp";
 import CheckIcon from "@mui/icons-material/Check";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
-import { StatusColor } from "../helper";
+import { StatusColor, stringAvatar } from "../helper";
 
 const defaultHeight = "1126px";
 
@@ -23,6 +24,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
     // why cbs allows this?
     return;
   }
+  console.log(pick, index);
   const team = pick.visible
     ? pick.team
     : pick.pick_status === PickStatus.Missing
@@ -72,6 +74,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
 };
 function RenderPicks(props: GridRenderCellParams<any>) {
   const picks: Array<Pick> = props.value;
+
   return (
     <Stack
       sx={{
@@ -125,7 +128,31 @@ function RenderScore(props: GridRenderCellParams<any>) {
   );
 }
 const columns: GridColDef[] = [
-  { field: "name", headerName: "Name", minWidth: 145, flex: 3 },
+  {
+    field: "name",
+    headerName: "Name",
+    minWidth: 145,
+    flex: 4,
+    renderCell: (params: GridRenderCellParams<any, string>) => (
+      <Stack
+        sx={{
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+        direction="row"
+        spacing={2}
+      >
+        <Avatar
+          {...stringAvatar(params.value ?? "", {
+            width: 20,
+            height: 20,
+            fontSize: 10,
+          })}
+        />
+        <Box sx={{ fontSize: "1rem" }}>{params.value}</Box>
+      </Stack>
+    ),
+  },
   {
     field: "score",
     align: "center",
