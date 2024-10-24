@@ -24,7 +24,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
     // why cbs allows this?
     return;
   }
-  console.log(pick, index);
+
   const team = pick.visible
     ? pick.team
     : pick.pick_status === PickStatus.Missing
@@ -189,7 +189,7 @@ export type Props = {
 export default function UserDataGrid({ week }: Props) {
   const [users, setUsers] = useState([]);
 
-  const weekFormat = week.toString().padStart(2, "0") ?? "01";
+  const weekFormat = week.toString().padStart(2, "0") ?? "08";
   const weekPath = `weeks/week${weekFormat}/users/`;
 
   useEffect(() => {
