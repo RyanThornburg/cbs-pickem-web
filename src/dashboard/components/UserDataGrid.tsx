@@ -175,7 +175,7 @@ const columns: GridColDef[] = [
   },
   {
     field: "picks",
-    minWidth: 490,
+    width: 490,
     flex: 10,
     align: "left",
     headerName: "Picks",

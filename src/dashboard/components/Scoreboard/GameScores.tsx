@@ -10,7 +10,7 @@ export type Props = {
 
 export default function GameScores({ header, games }: Props) {
   return (
-    <Box sx={{ width: "95%", mb: "16px" }}>
+    <Box sx={{ display: "inline-block", width: "95%", mb: "16px" }}>
       <Box
         sx={{
           textAlign: "left",
