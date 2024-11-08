@@ -17,7 +17,7 @@ import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { StatusColor, stringAvatar } from "../helper";
 
-const defaultHeight = "1126px";
+const defaultHeight = "1044px";
 
 const FormatOnePick = (pick: Pick, index: number) => {
   if (index > 4) {
@@ -171,7 +171,7 @@ const columns: GridColDef[] = [
     headerName: "2nd Half",
     minWidth: 35,
     valueGetter: (value, row) => {
-      return row.second_half + row.trending_score;
+      return row.second_half + row.trending_score + row.period_score;
     },
   },
   {

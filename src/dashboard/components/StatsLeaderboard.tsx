@@ -67,6 +67,11 @@ export default function StatsLeaderboard({
     });
   }, []);
 
+  const userScore = (user: User): number => {
+    const currentScore = user.trending_score + user.period_score;
+    return (isSecondHalf ? user.second_half ?? 0 : user.score) + currentScore;
+  };
+
   const createUserList = () => {
     console.log(isSecondHalf, "Create user list");
     console.log(isSecondHalf, users);
@@ -74,10 +79,7 @@ export default function StatsLeaderboard({
     let place = 1;
     const avatarUsers: UserLeader[] = [];
     const sortUsers: User[] = users.sort((a: User, b: User) =>
-      (isSecondHalf ? a.second_half ?? 0 : a.score) + a.trending_score >
-      (isSecondHalf ? b.second_half ?? 0 : b.score) + b.trending_score
-        ? -1
-        : 1
+      userScore(a) > userScore(b) ? -1 : 1
     );
     console.log(isSecondHalf, sortUsers);
     sortUsers.forEach((user: User, index) => {
@@ -96,12 +98,8 @@ export default function StatsLeaderboard({
         nextUser.trending_score,
         nextUser.second_half
       );
-      const nextScore =
-        (isSecondHalf ? nextUser.second_half ?? 0 : nextUser.score) +
-        nextUser.trending_score;
-      const currentScore =
-        (isSecondHalf ? user.second_half ?? 0 : user.score) +
-        user.trending_score;
+      const nextScore = userScore(nextUser);
+      const currentScore = userScore(user);
       if (index === 0 || top5 > 0) {
         avatarUsers.push({ place: place, ...user });
         if (nextScore < currentScore) {
@@ -155,7 +153,8 @@ export default function StatsLeaderboard({
                   <TableCell>{UserRow(row.name)}</TableCell>
                   <TableCell align="center">
                     {(isSecondHalf ? row.second_half ?? 0 : row.score) +
-                      row.trending_score}
+                      row.trending_score +
+                      row.period_score}
                   </TableCell>
                 </TableRow>
               ))}

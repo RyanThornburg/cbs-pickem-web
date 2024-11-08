@@ -45,7 +45,11 @@ export default function MainGrid() {
             }}
           >
             <Stack></Stack>
-            <Stack sx={{ alignItems: "center" }} spacing={2} direction="row">
+            <Stack
+              sx={{ alignItems: "center", pb: 2 }}
+              spacing={2}
+              direction="row"
+            >
               <Typography align="left" variant="h5" sx={{ size: 3, mb: 2 }}>
                 Morlocked Pick'em Results:
               </Typography>
@@ -54,7 +58,7 @@ export default function MainGrid() {
               </Typography>
             </Stack>
             <Stack
-              sx={{ alignItems: "flex-end", justifyContent: "flex-end" }}
+              sx={{ alignItems: "flex-end", justifyContent: "flex-end", pb: 2 }}
               spacing={2}
               direction="row"
             >

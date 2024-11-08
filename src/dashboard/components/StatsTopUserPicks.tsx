@@ -82,7 +82,7 @@ export default function StatsTopUserPicks({ week }: Props) {
             },
           ]}
           layout="horizontal"
-          height={1191}
+          height={1044}
           grid={{ vertical: true }}
         />
       </CardContent>
