@@ -68,13 +68,16 @@ export default function MainGrid() {
             columns={12}
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
-            <Grid size={{ xs: 12, sm: 12, md: 4 }}>
-              <StatsLeaderboard />
+            <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+              <StatsLeaderboard week={week} isSecondHalf={false} />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+              <StatsLeaderboard week={week} isSecondHalf={true} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 12, md: 2 }}>
               <StatsWeeklyResult week={week} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 5 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 4 }}>
               <StatsWeeklyCoverChart />
             </Grid>
           </Grid>

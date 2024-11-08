@@ -1,1100 +1,528 @@
-[
-  {
-    "away_team": {
-      "cbs_team_id": 429,
-      "id": "krswc3j2gqzds===",
-      "short_name": "SF"
-    },
-    "away_team_picks": [
+{
+  "week01": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 4,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobz",
-        "name": "Sean Wright"
+        "game_id": 29375848,
+        "game_status": "FINAL",
+        "game_time": 1725583200000,
+        "pick_status": "INCORRECT",
+        "team": "BAL",
+        "team_id": 406,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dqobv",
-        "name": "Chad Bauer"
+        "game_id": 29376339,
+        "game_status": "FINAL",
+        "game_time": 1725668100000,
+        "pick_status": "CORRECT",
+        "team": "PHI",
+        "team_id": 425,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dqmjx",
-        "name": "Bill Morlok"
+        "game_id": 29377009,
+        "game_status": "FINAL",
+        "game_time": 1725814800000,
+        "pick_status": "CORRECT",
+        "team": "ARI",
+        "team_id": 404,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcojy",
-        "name": "walker allen"
+        "game_id": 29377019,
+        "game_status": "FINAL",
+        "game_time": 1725814800000,
+        "pick_status": "CORRECT",
+        "team": "NO",
+        "team_id": 421,
+        "visible": true
+      },
+      {
+        "game_id": 29377025,
+        "game_status": "FINAL",
+        "game_time": 1725825900000,
+        "pick_status": "CORRECT",
+        "team": "SEA",
+        "team_id": 430,
+        "visible": true
       }
     ],
-    "away_team_score": 36,
-    "cbs_event_id": 29377149,
-    "cover_team": {
-      "cbs_team_id": 429,
-      "id": "krswc3j2gqzds===",
-      "short_name": "SF"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241010_SF@SEA/",
-    "game_period": 4,
-    "game_str": "SFatSEA",
-    "home_team": {
-      "cbs_team_id": 430,
-      "id": "krswc3j2gqzta===",
-      "short_name": "SEA"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3doojz",
-        "name": "Antonio Torres"
-      },
-      {
-        "id": "ivxhi4tzhiytoojygi3tqojy",
-        "name": "Scott Miller"
-      }
-    ],
-    "home_team_score": 24,
-    "home_team_spread": 3.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2ds===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728605700000_29377149",
-    "starts_at": 1728605700000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "AMZN"
+    "rank": 1,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 416,
-      "id": "krswc3j2gqytm===",
-      "short_name": "JAC"
-    },
-    "away_team_picks": [
+  "week02": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 2,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcnrq",
-        "name": "Peter Steinrock"
+        "game_id": 29377039,
+        "game_status": "FINAL",
+        "game_time": 1726419600000,
+        "pick_status": "INCORRECT",
+        "team": "IND",
+        "team_id": 415,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcojy",
-        "name": "walker allen"
+        "game_id": 29377031,
+        "game_status": "FINAL",
+        "game_time": 1726419600000,
+        "pick_status": "CORRECT",
+        "team": "LV",
+        "team_id": 424,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsoju",
-        "name": "Jesse Stoop"
+        "game_id": 29377049,
+        "game_status": "FINAL",
+        "game_time": 1726419600000,
+        "pick_status": "CORRECT",
+        "team": "WAS",
+        "team_id": 433,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmru",
-        "name": "Patrick Madden"
+        "game_id": 29377055,
+        "game_status": "FINAL",
+        "game_time": 1726446000000,
+        "pick_status": "INCORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
+      },
+      {
+        "game_id": 29377057,
+        "game_status": "FINAL",
+        "game_time": 1726532100000,
+        "pick_status": "INCORRECT",
+        "team": "PHI",
+        "team_id": 425,
+        "visible": true
       }
     ],
-    "away_team_score": 16,
-    "cbs_event_id": 29376707,
-    "cover_team": {
-      "cbs_team_id": 409,
-      "id": "krswc3j2gqyds===",
-      "short_name": "CHI"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_JAC@CHI/",
-    "game_period": 4,
-    "game_str": "JACatCHI",
-    "home_team": {
-      "cbs_team_id": 409,
-      "id": "krswc3j2gqyds===",
-      "short_name": "CHI"
-    },
-    "home_team_cover": true,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmjt",
-        "name": "Patrick Duncan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqobv",
-        "name": "Chad Bauer"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnjt",
-        "name": "Doug Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmbr",
-        "name": "Michael Colvin"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doojz",
-        "name": "Antonio Torres"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsobx",
-        "name": "Jesse Majcher"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojt",
-        "name": "Vince Frolich"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmzu",
-        "name": "Patrick McCarthy"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnbt",
-        "name": "Paul Flanigan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqojz",
-        "name": "Chris Lance"
-      }
-    ],
-    "home_team_score": 35,
-    "home_team_spread": -2.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzwg4ydo===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728826200000_29376707",
-    "starts_at": 1728826200000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "NFLN"
+    "rank": 10,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 433,
-      "id": "krswc3j2gqztg===",
-      "short_name": "WAS"
-    },
-    "away_team_picks": [
+  "week03": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 2,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3dsobx",
-        "name": "Jesse Majcher"
+        "game_id": 29377069,
+        "game_status": "FINAL",
+        "game_time": 1727024400000,
+        "pick_status": "CORRECT",
+        "team": "PIT",
+        "team_id": 426,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dqnjq",
-        "name": "Brian Tuchalski"
+        "game_id": 29377071,
+        "game_status": "FINAL",
+        "game_time": 1727024400000,
+        "pick_status": "INCORRECT",
+        "team": "TB",
+        "team_id": 431,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnzx",
-        "name": "George Matz"
+        "game_id": 29377073,
+        "game_status": "FINAL",
+        "game_time": 1727024400000,
+        "pick_status": "INCORRECT",
+        "team": "TEN",
+        "team_id": 432,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcojt",
-        "name": "Vince Frolich"
+        "game_id": 29377075,
+        "game_status": "FINAL",
+        "game_time": 1727035500000,
+        "pick_status": "INCORRECT",
+        "team": "LV",
+        "team_id": 424,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmzu",
-        "name": "Patrick McCarthy"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnru",
-        "name": "Bryan Favilla"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnbt",
-        "name": "Paul Flanigan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tambu",
-        "name": "Jim Manning"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojy",
-        "name": "walker allen"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doobv",
-        "name": "Andrea Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmru",
-        "name": "Patrick Madden"
+        "game_id": 29377077,
+        "game_status": "FINAL",
+        "game_time": 1727035500000,
+        "pick_status": "CORRECT",
+        "team": "SEA",
+        "team_id": 430,
+        "visible": true
       }
     ],
-    "away_team_score": 23,
-    "cbs_event_id": 29377151,
-    "cover_team": {
-      "cbs_team_id": 406,
-      "id": "krswc3j2gqydm===",
-      "short_name": "BAL"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_WAS@BAL/",
-    "game_period": 4,
-    "game_str": "WASatBAL",
-    "home_team": {
-      "cbs_team_id": 406,
-      "id": "krswc3j2gqydm===",
-      "short_name": "BAL"
-    },
-    "home_team_cover": true,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnrq",
-        "name": "Peter Steinrock"
-      }
-    ],
-    "home_team_score": 30,
-    "home_team_spread": -6.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2tc===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377151",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "CBS"
+    "rank": 18,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 404,
-      "id": "krswc3j2gqydi===",
-      "short_name": "ARI"
-    },
-    "away_team_picks": [
+  "week04": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 1,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3dqojz",
-        "name": "Chris Lance"
+        "game_id": 29377091,
+        "game_status": "FINAL",
+        "game_time": 1727396100000,
+        "pick_status": "INCORRECT",
+        "team": "NYG",
+        "team_id": 422,
+        "visible": true
+      },
+      {
+        "game_id": 29377101,
+        "game_status": "FINAL",
+        "game_time": 1727629200000,
+        "pick_status": "INCORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
+      },
+      {
+        "game_id": 29377103,
+        "game_status": "FINAL",
+        "game_time": 1727629200000,
+        "pick_status": "INCORRECT",
+        "team": "PIT",
+        "team_id": 426,
+        "visible": true
+      },
+      {
+        "game_id": 29377109,
+        "game_status": "FINAL",
+        "game_time": 1727640300000,
+        "pick_status": "INCORRECT",
+        "team": "ARI",
+        "team_id": 404,
+        "visible": true
+      },
+      {
+        "game_id": 29377113,
+        "game_status": "FINAL",
+        "game_time": 1727641500000,
+        "pick_status": "CORRECT",
+        "team": "LV",
+        "team_id": 424,
+        "visible": true
       }
     ],
-    "away_team_score": 13,
-    "cbs_event_id": 29377153,
-    "cover_team": {
-      "cbs_team_id": 414,
-      "id": "krswc3j2gqyti===",
-      "short_name": "GB"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_ARI@GB/",
-    "game_period": 4,
-    "game_str": "ARIatGB",
-    "home_team": {
-      "cbs_team_id": 414,
-      "id": "krswc3j2gqyti===",
-      "short_name": "GB"
-    },
-    "home_team_cover": true,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnjt",
-        "name": "Doug Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamrz",
-        "name": "Justin Billingham"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnrq",
-        "name": "Peter Steinrock"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnru",
-        "name": "Bryan Favilla"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tambu",
-        "name": "Jim Manning"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doobv",
-        "name": "Andrea Morlok"
-      }
-    ],
-    "home_team_score": 34,
-    "home_team_spread": -4.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2tg===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377153",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "FOX"
+    "rank": 21,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 247415,
-      "id": "krswc3j2gi2donbrgu======",
-      "short_name": "HOU"
-    },
-    "away_team_picks": [
+  "week05": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 5,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmjt",
-        "name": "Patrick Duncan"
+        "game_id": 29376705,
+        "game_status": "FINAL",
+        "game_time": 1728221400000,
+        "pick_status": "CORRECT",
+        "team": "MIN",
+        "team_id": 419,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobz",
-        "name": "Sean Wright"
+        "game_id": 29377125,
+        "game_status": "FINAL",
+        "game_time": 1728234000000,
+        "pick_status": "CORRECT",
+        "team": "CHI",
+        "team_id": 409,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dqobv",
-        "name": "Chad Bauer"
+        "game_id": 29377129,
+        "game_status": "FINAL",
+        "game_time": 1728234000000,
+        "pick_status": "CORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tamjw",
-        "name": "Jon Acklen"
+        "game_id": 29377131,
+        "game_status": "FINAL",
+        "game_time": 1728234000000,
+        "pick_status": "CORRECT",
+        "team": "JAC",
+        "team_id": 416,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnjt",
-        "name": "Doug Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmbr",
-        "name": "Michael Colvin"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doojz",
-        "name": "Antonio Torres"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnrt",
-        "name": "Drew Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamrz",
-        "name": "Justin Billingham"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmzx",
-        "name": "Dan Hogan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3taoby",
-        "name": "Matthew Parisi"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsobx",
-        "name": "Jesse Majcher"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnzx",
-        "name": "George Matz"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmjs",
-        "name": "Conor Shields"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmzu",
-        "name": "Patrick McCarthy"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnru",
-        "name": "Bryan Favilla"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqojz",
-        "name": "Chris Lance"
+        "game_id": 29377139,
+        "game_status": "FINAL",
+        "game_time": 1728245100000,
+        "pick_status": "CORRECT",
+        "team": "ARI",
+        "team_id": 404,
+        "visible": true
       }
     ],
-    "away_team_score": 41,
-    "cbs_event_id": 29377155,
-    "cover_team": {
-      "cbs_team_id": 247415,
-      "id": "krswc3j2gi2donbrgu======",
-      "short_name": "HOU"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_HOU@NE/",
-    "game_period": 4,
-    "game_str": "HOUatNE",
-    "home_team": {
-      "cbs_team_id": 420,
-      "id": "krswc3j2gqzda===",
-      "short_name": "NE"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsoju",
-        "name": "Jesse Stoop"
-      }
-    ],
-    "home_team_score": 21,
-    "home_team_spread": 6.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2tk===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377155",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "CBS"
+    "rank": 1,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 431,
-      "id": "krswc3j2gqztc===",
-      "short_name": "TB"
-    },
-    "away_team_picks": [
+  "week06": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 4,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmjt",
-        "name": "Patrick Duncan"
+        "game_id": 29377149,
+        "game_status": "FINAL",
+        "game_time": 1728605700000,
+        "pick_status": "INCORRECT",
+        "team": "SEA",
+        "team_id": 430,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tamjw",
-        "name": "Jon Acklen"
+        "game_id": 29376707,
+        "game_status": "FINAL",
+        "game_time": 1728826200000,
+        "pick_status": "CORRECT",
+        "team": "CHI",
+        "team_id": 409,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnjt",
-        "name": "Doug Miller"
+        "game_id": 29377155,
+        "game_status": "FINAL",
+        "game_time": 1728838800000,
+        "pick_status": "CORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnrt",
-        "name": "Drew Miller"
+        "game_id": 29377165,
+        "game_status": "FINAL",
+        "game_time": 1728849900000,
+        "pick_status": "CORRECT",
+        "team": "PIT",
+        "team_id": 426,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobr",
-        "name": "Ryan Thornburg"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3taoby",
-        "name": "Matthew Parisi"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnjq",
-        "name": "Brian Tuchalski"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmjs",
-        "name": "Conor Shields"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnbt",
-        "name": "Paul Flanigan"
-      },
-      {
-        "id": "ivxhi4tzhiytoojygi3tqojy",
-        "name": "Scott Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tambu",
-        "name": "Jim Manning"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqmjx",
-        "name": "Bill Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojy",
-        "name": "walker allen"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsoju",
-        "name": "Jesse Stoop"
+        "game_id": 29377169,
+        "game_status": "FINAL",
+        "game_time": 1728851100000,
+        "pick_status": "CORRECT",
+        "team": "DET",
+        "team_id": 413,
+        "visible": true
       }
     ],
-    "away_team_score": 51,
-    "cbs_event_id": 29377157,
-    "cover_team": {
-      "cbs_team_id": 431,
-      "id": "krswc3j2gqztc===",
-      "short_name": "TB"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_TB@NO/",
-    "game_period": 4,
-    "game_str": "TBatNO",
-    "home_team": {
-      "cbs_team_id": 421,
-      "id": "krswc3j2gqzdc===",
-      "short_name": "NO"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojt",
-        "name": "Vince Frolich"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmzu",
-        "name": "Patrick McCarthy"
-      }
-    ],
-    "home_team_score": 27,
-    "home_team_spread": 2.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2to===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377157",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "FOX"
+    "rank": 7,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 434,
-      "id": "krswc3j2gqzti===",
-      "short_name": "CLE"
-    },
-    "away_team_picks": [
+  "week07": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 1,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobr",
-        "name": "Ryan Thornburg"
-      }
-    ],
-    "away_team_score": 16,
-    "cbs_event_id": 29377159,
-    "cover_team": {
-      "cbs_team_id": 434,
-      "id": "krswc3j2gqzti===",
-      "short_name": "CLE"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_CLE@PHI/",
-    "game_period": 4,
-    "game_str": "CLEatPHI",
-    "home_team": {
-      "cbs_team_id": 425,
-      "id": "krswc3j2gqzdk===",
-      "short_name": "PHI"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamrz",
-        "name": "Justin Billingham"
+        "game_id": 29377175,
+        "game_status": "FINAL",
+        "game_time": 1729210500000,
+        "pick_status": "INCORRECT",
+        "team": "NO",
+        "team_id": 421,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3taoby",
-        "name": "Matthew Parisi"
+        "game_id": 29376709,
+        "game_status": "FINAL",
+        "game_time": 1729431000000,
+        "pick_status": "INCORRECT",
+        "team": "NE",
+        "team_id": 420,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsmjs",
-        "name": "Conor Shields"
+        "game_id": 29377189,
+        "game_status": "FINAL",
+        "game_time": 1729443600000,
+        "pick_status": "CORRECT",
+        "team": "PHI",
+        "team_id": 425,
+        "visible": true
+      },
+      {
+        "game_id": 29377191,
+        "game_status": "FINAL",
+        "game_time": 1729454700000,
+        "pick_status": "INCORRECT",
+        "team": "LAR",
+        "team_id": 427,
+        "visible": true
+      },
+      {
+        "game_id": 29377197,
+        "game_status": "FINAL",
+        "game_time": 1729470000000,
+        "pick_status": "INCORRECT",
+        "team": "NYJ",
+        "team_id": 423,
+        "visible": true
       }
     ],
-    "home_team_score": 20,
-    "home_team_spread": -8.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2ts===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377159",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "FOX"
+    "rank": 25,
+    "score": 20,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 415,
-      "id": "krswc3j2gqytk===",
-      "short_name": "IND"
-    },
-    "away_team_picks": [
+  "week08": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 3,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmjt",
-        "name": "Patrick Duncan"
+        "game_id": 29377203,
+        "game_status": "FINAL",
+        "game_time": 1729815300000,
+        "pick_status": "CORRECT",
+        "team": "LAR",
+        "team_id": 427,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobz",
-        "name": "Sean Wright"
+        "game_id": 29377207,
+        "game_status": "FINAL",
+        "game_time": 1730048400000,
+        "pick_status": "CORRECT",
+        "team": "DET",
+        "team_id": 413,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmbr",
-        "name": "Michael Colvin"
+        "game_id": 29377211,
+        "game_status": "FINAL",
+        "game_time": 1730048400000,
+        "pick_status": "INCORRECT",
+        "team": "GB",
+        "team_id": 414,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnrt",
-        "name": "Drew Miller"
+        "game_id": 29377209,
+        "game_status": "FINAL",
+        "game_time": 1730048400000,
+        "pick_status": "INCORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3taoby",
-        "name": "Matthew Parisi"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnjq",
-        "name": "Brian Tuchalski"
+        "game_id": 29377223,
+        "game_status": "FINAL",
+        "game_time": 1730059500000,
+        "pick_status": "CORRECT",
+        "team": "BUF",
+        "team_id": 407,
+        "visible": true
       }
     ],
-    "away_team_score": 20,
-    "cbs_event_id": 29377161,
-    "cover_team": {
-      "cbs_team_id": 415,
-      "id": "krswc3j2gqytk===",
-      "short_name": "IND"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_IND@TEN/",
-    "game_period": 4,
-    "game_str": "INDatTEN",
-    "home_team": {
-      "cbs_team_id": 432,
-      "id": "krswc3j2gqzte===",
-      "short_name": "TEN"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcobr",
-        "name": "Ryan Thornburg"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmjs",
-        "name": "Conor Shields"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnru",
-        "name": "Bryan Favilla"
-      },
-      {
-        "id": "ivxhi4tzhiytoojygi3tqojy",
-        "name": "Scott Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqmjx",
-        "name": "Bill Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsoju",
-        "name": "Jesse Stoop"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmru",
-        "name": "Patrick Madden"
-      }
-    ],
-    "home_team_score": 17,
-    "home_team_spread": 1.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3dc===",
-    "is_locked": true,
-    "possession": "HOME",
-    "sort_str": "2_1728838800000_29377161",
-    "starts_at": 1728838800000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "CBS"
+    "rank": 10,
+    "score": 22,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 428,
-      "id": "krswc3j2gqzdq===",
-      "short_name": "LAC"
-    },
-    "away_team_picks": [
+  "week09": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 3,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3dsobx",
-        "name": "Jesse Majcher"
+        "game_id": 29377235,
+        "game_status": "FINAL",
+        "game_time": 1730420100000,
+        "pick_status": "INCORRECT",
+        "team": "HOU",
+        "team_id": 247415,
+        "visible": true
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcojt",
-        "name": "Vince Frolich"
+        "game_id": 29377241,
+        "game_status": "FINAL",
+        "game_time": 1730656800000,
+        "pick_status": "CORRECT",
+        "team": "MIA",
+        "team_id": 418,
+        "visible": true
+      },
+      {
+        "game_id": 29377251,
+        "game_status": "FINAL",
+        "game_time": 1730656800000,
+        "pick_status": "CORRECT",
+        "team": "WAS",
+        "team_id": 433,
+        "visible": true
+      },
+      {
+        "game_id": 29377261,
+        "game_status": "FINAL",
+        "game_time": 1730667900000,
+        "pick_status": "INCORRECT",
+        "team": "PHI",
+        "team_id": 425,
+        "visible": true
+      },
+      {
+        "game_id": 29377259,
+        "game_status": "FINAL",
+        "game_time": 1730669100000,
+        "pick_status": "CORRECT",
+        "team": "LAR",
+        "team_id": 427,
+        "visible": true
       }
     ],
-    "away_team_score": 23,
-    "cbs_event_id": 29377163,
-    "cover_team": {
-      "cbs_team_id": 428,
-      "id": "krswc3j2gqzdq===",
-      "short_name": "LAC"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_LAC@DEN/",
-    "game_period": 4,
-    "game_str": "LACatDEN",
-    "home_team": {
-      "cbs_team_id": 412,
-      "id": "krswc3j2gqyte===",
-      "short_name": "DEN"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnjq",
-        "name": "Brian Tuchalski"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnbt",
-        "name": "Paul Flanigan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tambu",
-        "name": "Jim Manning"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqmjx",
-        "name": "Bill Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojy",
-        "name": "walker allen"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqojz",
-        "name": "Chris Lance"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doobv",
-        "name": "Andrea Morlok"
-      }
-    ],
-    "home_team_score": 16,
-    "home_team_spread": 3.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3dg===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728849900000_29377163",
-    "starts_at": 1728849900000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "CBS"
+    "rank": 7,
+    "score": 25,
+    "trending_score": 0
   },
-  {
-    "away_team": {
-      "cbs_team_id": 426,
-      "id": "krswc3j2gqzdm===",
-      "short_name": "PIT"
-    },
-    "away_team_picks": [
+  "week10": {
+    "id": "ivxhi4tzhiytoobqgy3doojz",
+    "name": "Antonio Torres",
+    "period_score": 0,
+    "picks": [
       {
-        "id": "ivxhi4tzhiytoobqgy3tamjw",
-        "name": "Jon Acklen"
+        "pick_status": "MISSING",
+        "visible": false
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcmbr",
-        "name": "Michael Colvin"
+        "pick_status": "MISSING",
+        "visible": false
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3doojz",
-        "name": "Antonio Torres"
+        "pick_status": "MISSING",
+        "visible": false
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3dsnrt",
-        "name": "Drew Miller"
+        "pick_status": "MISSING",
+        "visible": false
       },
       {
-        "id": "ivxhi4tzhiytoobqgy3tcobr",
-        "name": "Ryan Thornburg"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmzx",
-        "name": "Dan Hogan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsobx",
-        "name": "Jesse Majcher"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnru",
-        "name": "Bryan Favilla"
-      },
-      {
-        "id": "ivxhi4tzhiytoojygi3tqojy",
-        "name": "Scott Miller"
+        "pick_status": "MISSING",
+        "visible": false
       }
     ],
-    "away_team_score": 32,
-    "cbs_event_id": 29377165,
-    "cover_team": {
-      "cbs_team_id": 426,
-      "id": "krswc3j2gqzdm===",
-      "short_name": "PIT"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_PIT@LV/",
-    "game_period": 4,
-    "game_str": "PITatLV",
-    "home_team": {
-      "cbs_team_id": 424,
-      "id": "krswc3j2gqzdi===",
-      "short_name": "LV"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqojz",
-        "name": "Chris Lance"
-      }
-    ],
-    "home_team_score": 13,
-    "home_team_spread": 2.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3dk===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728849900000_29377165",
-    "starts_at": 1728849900000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "CBS"
-  },
-  {
-    "away_team": {
-      "cbs_team_id": 405,
-      "id": "krswc3j2gqydk===",
-      "short_name": "ATL"
-    },
-    "away_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcobz",
-        "name": "Sean Wright"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamrz",
-        "name": "Justin Billingham"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3taoby",
-        "name": "Matthew Parisi"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqnjq",
-        "name": "Brian Tuchalski"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnzx",
-        "name": "George Matz"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmzu",
-        "name": "Patrick McCarthy"
-      }
-    ],
-    "away_team_score": 38,
-    "cbs_event_id": 29377167,
-    "cover_team": {
-      "cbs_team_id": 405,
-      "id": "krswc3j2gqydk===",
-      "short_name": "ATL"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_ATL@CAR/",
-    "game_period": 4,
-    "game_str": "ATLatCAR",
-    "home_team": {
-      "cbs_team_id": 408,
-      "id": "krswc3j2gqydq===",
-      "short_name": "CAR"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tambu",
-        "name": "Jim Manning"
-      }
-    ],
-    "home_team_score": 20,
-    "home_team_spread": 6.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3do===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728851100000_29377167",
-    "starts_at": 1728851100000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "FOX"
-  },
-  {
-    "away_team": {
-      "cbs_team_id": 413,
-      "id": "krswc3j2gqytg===",
-      "short_name": "DET"
-    },
-    "away_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnjt",
-        "name": "Doug Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doojz",
-        "name": "Antonio Torres"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamrz",
-        "name": "Justin Billingham"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnzx",
-        "name": "George Matz"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcojt",
-        "name": "Vince Frolich"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnbt",
-        "name": "Paul Flanigan"
-      }
-    ],
-    "away_team_score": 47,
-    "cbs_event_id": 29377169,
-    "cover_team": {
-      "cbs_team_id": 413,
-      "id": "krswc3j2gqytg===",
-      "short_name": "DET"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_DET@DAL/",
-    "game_period": 4,
-    "game_str": "DETatDAL",
-    "home_team": {
-      "cbs_team_id": 411,
-      "id": "krswc3j2gqytc===",
-      "short_name": "DAL"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnrt",
-        "name": "Drew Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmzx",
-        "name": "Dan Hogan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnrq",
-        "name": "Peter Steinrock"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doobv",
-        "name": "Andrea Morlok"
-      }
-    ],
-    "home_team_score": 9,
-    "home_team_spread": 3.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3ds===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728851100000_29377169",
-    "starts_at": 1728851100000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "FOX"
-  },
-  {
-    "away_team": {
-      "cbs_team_id": 410,
-      "id": "krswc3j2gqyta===",
-      "short_name": "CIN"
-    },
-    "away_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmjt",
-        "name": "Patrick Duncan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcobz",
-        "name": "Sean Wright"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqobv",
-        "name": "Chad Bauer"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamjw",
-        "name": "Jon Acklen"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmzx",
-        "name": "Dan Hogan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcnrq",
-        "name": "Peter Steinrock"
-      }
-    ],
-    "away_team_score": 17,
-    "cbs_event_id": 29377171,
-    "cover_team": {
-      "cbs_team_id": 410,
-      "id": "krswc3j2gqyta===",
-      "short_name": "CIN"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241013_CIN@NYG/",
-    "game_period": 4,
-    "game_str": "CINatNYG",
-    "home_team": {
-      "cbs_team_id": 422,
-      "id": "krswc3j2gqzde===",
-      "short_name": "NYG"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsnzx",
-        "name": "George Matz"
-      },
-      {
-        "id": "ivxhi4tzhiytoojygi3tqojy",
-        "name": "Scott Miller"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqmjx",
-        "name": "Bill Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsoju",
-        "name": "Jesse Stoop"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3doobv",
-        "name": "Andrea Morlok"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmru",
-        "name": "Patrick Madden"
-      }
-    ],
-    "home_team_score": 7,
-    "home_team_spread": 3.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3tc===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728865200000_29377171",
-    "starts_at": 1728865200000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "NBC"
-  },
-  {
-    "away_team": {
-      "cbs_team_id": 407,
-      "id": "krswc3j2gqydo===",
-      "short_name": "BUF"
-    },
-    "away_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3dqobv",
-        "name": "Chad Bauer"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tamjw",
-        "name": "Jon Acklen"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmbr",
-        "name": "Michael Colvin"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcobr",
-        "name": "Ryan Thornburg"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmzx",
-        "name": "Dan Hogan"
-      },
-      {
-        "id": "ivxhi4tzhiytoobqgy3dsmjs",
-        "name": "Conor Shields"
-      }
-    ],
-    "away_team_score": 23,
-    "cbs_event_id": 29377173,
-    "cover_team": {
-      "cbs_team_id": 407,
-      "id": "krswc3j2gqydo===",
-      "short_name": "BUF"
-    },
-    "game_link": "https://www.cbssports.com/nfl/gametracker/preview/NFL_20241014_BUF@NYJ/",
-    "game_period": 4,
-    "game_str": "BUFatNYJ",
-    "home_team": {
-      "cbs_team_id": 423,
-      "id": "krswc3j2gqzdg===",
-      "short_name": "NYJ"
-    },
-    "home_team_cover": false,
-    "home_team_picks": [
-      {
-        "id": "ivxhi4tzhiytoobqgy3tcmru",
-        "name": "Patrick Madden"
-      }
-    ],
-    "home_team_score": 20,
-    "home_team_spread": 2.5,
-    "id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge3tg===",
-    "is_locked": true,
-    "possession": "AWAY",
-    "sort_str": "2_1728951300000_29377173",
-    "starts_at": 1728951300000,
-    "status": "FINAL",
-    "time_remaining": "0:00",
-    "tv_info": "ABC"
+    "score": 25,
+    "second_half": 0,
+    "trending_score": 0,
+    "week": 10
   }
-]
+}

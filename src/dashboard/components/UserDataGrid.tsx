@@ -8,7 +8,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../../components/firebase";
-import { GameStatus, Pick, PickStatus } from "../../types";
+import { GameStatus, Pick, PickStatus, User } from "../../types";
 
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import BlindSharpIcon from "@mui/icons-material/BlindSharp";
@@ -131,6 +131,7 @@ const columns: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
+    description: "Name",
     minWidth: 145,
     flex: 4,
     renderCell: (params: GridRenderCellParams<any, string>) => (
@@ -158,9 +159,19 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-
+    minWidth: 35,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
+    },
+  },
+  {
+    field: "second_half",
+    align: "center",
+    headerAlign: "center",
+    headerName: "2nd Half",
+    minWidth: 35,
+    valueGetter: (value, row) => {
+      return row.second_half + row.trending_score;
     },
   },
   {
@@ -168,14 +179,14 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-
+    minWidth: 35,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
   },
   {
     field: "picks",
-    width: 490,
+    minWidth: 490,
     flex: 10,
     align: "left",
     headerName: "Picks",
@@ -187,10 +198,9 @@ export type Props = {
   week: number;
 };
 export default function UserDataGrid({ week }: Props) {
-  const [users, setUsers] = useState([]);
-
+  const [users, setUsers] = useState<User[]>([]);
   const weekFormat = week.toString().padStart(2, "0") ?? "08";
-  const weekPath = `weeks/week${weekFormat}/users/`;
+  const weekPath = "userPicks/";
 
   useEffect(() => {
     if (week === 0) {
@@ -199,7 +209,10 @@ export default function UserDataGrid({ week }: Props) {
     const userRef = ref(db, weekPath);
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
-        setUsers(snapshot.val());
+        const filteredUsers: User[] = Object.entries(snapshot.val()).map(
+          ([key, weeks]: [string, any]) => weeks[`week${weekFormat}`]
+        );
+        setUsers(filteredUsers);
       }
     });
   }, []);
@@ -211,6 +224,10 @@ export default function UserDataGrid({ week }: Props) {
       getRowId={(row) => row.id}
       rows={users}
       columns={columns}
+      disableColumnSelector
+      columnVisibilityModel={{
+        second_half: week >= 10,
+      }}
       hideFooter={true}
       slotProps={{
         loadingOverlay: {
