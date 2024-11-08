@@ -73,31 +73,15 @@ export default function StatsLeaderboard({
   };
 
   const createUserList = () => {
-    console.log(isSecondHalf, "Create user list");
-    console.log(isSecondHalf, users);
     let top5 = 5;
     let place = 1;
     const avatarUsers: UserLeader[] = [];
     const sortUsers: User[] = users.sort((a: User, b: User) =>
       userScore(a) > userScore(b) ? -1 : 1
     );
-    console.log(isSecondHalf, sortUsers);
+
     sortUsers.forEach((user: User, index) => {
       const nextUser = index + 1 < users.length ? users[index + 1] : user;
-      console.log(
-        isSecondHalf,
-        "C",
-        user.name,
-        user.trending_score,
-        user.second_half
-      );
-      console.log(
-        isSecondHalf,
-        "N",
-        nextUser.name,
-        nextUser.trending_score,
-        nextUser.second_half
-      );
       const nextScore = userScore(nextUser);
       const currentScore = userScore(user);
       if (index === 0 || top5 > 0) {

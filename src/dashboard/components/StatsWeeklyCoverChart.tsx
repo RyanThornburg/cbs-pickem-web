@@ -21,11 +21,12 @@ export default function StatsWeeklyCoverChart() {
             coverData.push(week);
           }
         });
-
-        setCoverResults(coverData);
+        const sortCover = coverData.sort((a, b) => (a.week < b.week ? -1 : 1));
+        setCoverResults(sortCover);
       }
     });
   }, []);
+  console.log(coverResults);
 
   return (
     <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
