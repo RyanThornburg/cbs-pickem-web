@@ -68,7 +68,8 @@ export default function StatsLeaderboard({
   }, []);
 
   const userScore = (user: User): number => {
-    const currentScore = user.trending_score + user.period_score;
+    const currentScore =
+      (isSecondHalf ? user.period_score : 0) + user.trending_score;
     return (isSecondHalf ? user.second_half ?? 0 : user.score) + currentScore;
   };
 
