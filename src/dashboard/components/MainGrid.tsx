@@ -68,13 +68,16 @@ export default function MainGrid() {
             columns={12}
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
-            <Grid size={{ xs: 12, sm: 12, lg: 4 }}>
-              <StatsLeaderboard />
+            <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+              <StatsLeaderboard week={week} isSecondHalf={false} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, lg: 3 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+              <StatsLeaderboard week={week} isSecondHalf={true} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 12, md: 2 }}>
               <StatsWeeklyResult week={week} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, lg: 5 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 4 }}>
               <StatsWeeklyCoverChart />
             </Grid>
           </Grid>
@@ -88,21 +91,28 @@ export default function MainGrid() {
             User Picks
           </Typography>
 
-          <Grid container spacing={{ xs: 2, md: 1, lg: 2, xl: 20 }}>
+          <Grid container spacing={{ xs: 2, md: 1, lg: 2, xl: 1 }}>
             <Grid
-              id="grid"
+              id="gridUser"
               width={"fit-content"}
-              size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 7 }}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              size={{ xs: 12, sm: 12, md: 9, lg: 8, xl: 7 }}
             >
               <UserDataGrid week={week} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 12, lg: 4, xl: 5 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4, xl: 5 }}>
               <StatsTopUserPicks week={week} />
             </Grid>
           </Grid>
 
           <Grid container spacing={2} columns={12}>
-            <Grid size={{ xs: 12, lg: 12 }}>
+            <Grid
+              id="games"
+              size={{ xs: 12, lg: 12 }}
+              sx={{ display: "inline-block", width: "95%" }}
+            >
               <Typography
                 align="left"
                 component="h2"

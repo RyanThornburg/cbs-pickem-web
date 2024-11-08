@@ -14,6 +14,8 @@ export interface User {
   picks: Pick[];
   rank: number;
   score: number;
+  second_half?: number;
+  week?: number;
   trending_score: number;
   name: string;
 }
