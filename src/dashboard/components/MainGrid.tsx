@@ -13,6 +13,7 @@ import StatsTopUserPicks from "./StatsTopUserPicks";
 import StatsWeeklyCoverChart from "./StatsWeeklyCoverChart";
 import StatsWeeklyResult from "./StatsWeeklyResult";
 import UserDataGrid from "./UserDataGrid";
+import UserDataMobile from "./UserDataMobile";
 //import UserSelected from "./UserSelected";
 
 export default function MainGrid() {
@@ -50,10 +51,10 @@ export default function MainGrid() {
               spacing={2}
               direction="row"
             >
-              <Typography align="left" variant="h5" sx={{ size: 3, mb: 2 }}>
-                Morlocked Pick'em Results:
+              <Typography align="center" variant="h5" sx={{ size: 3, mb: 2 }}>
+                Morlocked Pick'em Results
               </Typography>
-              <Typography align="left" variant="h5" sx={{ mb: 2 }}>
+              <Typography align="center" variant="h5" sx={{ mb: 2 }}>
                 Week {currentWeek}
               </Typography>
             </Stack>
@@ -72,16 +73,16 @@ export default function MainGrid() {
             columns={12}
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
-            <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
               <StatsLeaderboard week={week} isSecondHalf={false} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 3 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
               <StatsLeaderboard week={week} isSecondHalf={true} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 2 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 3, lg: 2 }}>
               <StatsWeeklyResult week={week} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 4 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4 }}>
               <StatsWeeklyCoverChart />
             </Grid>
           </Grid>
@@ -102,11 +103,18 @@ export default function MainGrid() {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              size={{ xs: 12, sm: 12, md: 9, lg: 8, xl: 7 }}
+              sx={{ display: { xs: "none", sm: "block" } }}
+              size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 7 }}
             >
               <UserDataGrid week={week} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4, xl: 5 }}>
+            <Grid
+              sx={{ display: { xs: "block", sm: "none" } }}
+              size={{ xs: 12 }}
+            >
+              <UserDataMobile week={week} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 12, md: 12, lg: 4, xl: 5 }}>
               <StatsTopUserPicks week={week} />
             </Grid>
           </Grid>
