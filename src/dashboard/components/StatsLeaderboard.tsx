@@ -68,6 +68,8 @@ export default function StatsLeaderboard({
   }, []);
 
   const createUserList = () => {
+    console.log(isSecondHalf, "Create user list");
+    console.log(isSecondHalf, users);
     let top5 = 5;
     let place = 1;
     const avatarUsers: UserLeader[] = [];
@@ -77,9 +79,23 @@ export default function StatsLeaderboard({
         ? -1
         : 1
     );
+    console.log(isSecondHalf, sortUsers);
     sortUsers.forEach((user: User, index) => {
       const nextUser = index + 1 < users.length ? users[index + 1] : user;
-
+      console.log(
+        isSecondHalf,
+        "C",
+        user.name,
+        user.trending_score,
+        user.second_half
+      );
+      console.log(
+        isSecondHalf,
+        "N",
+        nextUser.name,
+        nextUser.trending_score,
+        nextUser.second_half
+      );
       const nextScore =
         (isSecondHalf ? nextUser.second_half ?? 0 : nextUser.score) +
         nextUser.trending_score;
@@ -138,9 +154,8 @@ export default function StatsLeaderboard({
                   </TableCell>
                   <TableCell>{UserRow(row.name)}</TableCell>
                   <TableCell align="center">
-                    {isSecondHalf
-                      ? row.second_half ?? 0
-                      : row.score + row.trending_score}
+                    {(isSecondHalf ? row.second_half ?? 0 : row.score) +
+                      row.trending_score}
                   </TableCell>
                 </TableRow>
               ))}
