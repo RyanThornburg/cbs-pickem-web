@@ -103,7 +103,7 @@ function createUserData(user: User): UserRow {
     user;
   const userScore = score + trending_score;
   const weekScore = trending_score + period_score;
-  const secondHalf = second_half ?? 0 + weekScore;
+  const secondHalf = (second_half ?? 0) + weekScore;
   const userPicks = RenderPicks(picks);
   return { name, userScore, weekScore, secondHalf, userPicks };
 }

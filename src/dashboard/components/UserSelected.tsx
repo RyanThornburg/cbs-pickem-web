@@ -1,13 +1,23 @@
 import Grid from "@mui/material/Grid2";
 import { User } from "../../types";
-
 import { stringAvatar } from "../helper";
-
 import { Avatar, Box, Card, CardContent, Stack } from "@mui/material";
 export interface Props {
   user: User | undefined;
 }
-export default function UserSelected({ user }: Props) {
+
+export default function UserSelected() {
+  const user: User = {
+    id: "test",
+    name: "Test user",
+    score: 25,
+    second_half: 12,
+    period_score: 1,
+    trending_score: 0,
+    picks: [],
+    rank: 1,
+  };
+
   if (!user) {
     return <Grid size={{ xs: 12, sm: 12, lg: 12 }}></Grid>;
   }
