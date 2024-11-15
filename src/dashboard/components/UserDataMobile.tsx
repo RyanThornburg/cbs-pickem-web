@@ -74,9 +74,10 @@ const FormatOnePick = (pick: Pick, index: number) => {
   );
 };
 
-function RenderPicks(picks: Array<Pick>) {
+function RenderPicks(picks: Array<Pick>, id: string) {
   return (
     <Stack
+      key={`userPickMobile-${id}`}
       sx={{
         justifyContent: "flex-start",
         alignItems: "center",
@@ -103,8 +104,8 @@ function createUserData(user: User): UserRow {
     user;
   const userScore = score + trending_score;
   const weekScore = trending_score + period_score;
-  const secondHalf = (second_half ?? 0) + weekScore;
-  const userPicks = RenderPicks(picks);
+  const secondHalf = (second_half ?? 0) + trending_score;
+  const userPicks = RenderPicks(picks, user.id);
   return { name, userScore, weekScore, secondHalf, userPicks };
 }
 
@@ -138,7 +139,10 @@ function Row(props: { row: UserRow }) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ borderTop: `2px solid ${grey[300]}` }}>
+      <TableRow
+        id={`userRow ${row.name.replace(" ", "")}`}
+        sx={{ borderTop: `2px solid ${grey[300]}` }}
+      >
         <TableCell component="th" scope="row">
           {userAvatar(row.name)}
         </TableCell>
@@ -146,7 +150,7 @@ function Row(props: { row: UserRow }) {
         <TableCell align="center">{row.secondHalf}</TableCell>
         <TableCell align="center">{row.weekScore}</TableCell>
       </TableRow>
-      <TableRow sx={{ mb: 2 }}>
+      <TableRow id={`userScore-${row.name.replace(" ", "")}`} sx={{ mb: 2 }}>
         <TableCell style={{ paddingBottom: "4px", paddingTop: 0 }} colSpan={4}>
           {row.userPicks}
         </TableCell>
@@ -194,7 +198,7 @@ export default function UserDataMobile({ week }: Props) {
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <Row key={row.name} row={row} />
+            <Row key={`mobile-${row.name}`} row={row} />
           ))}
         </TableBody>
       </Table>

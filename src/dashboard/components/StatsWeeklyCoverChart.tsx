@@ -26,7 +26,6 @@ export default function StatsWeeklyCoverChart() {
       }
     });
   }, []);
-  console.log(coverResults);
 
   return (
     <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>

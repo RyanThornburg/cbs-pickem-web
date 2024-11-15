@@ -77,6 +77,7 @@ function RenderPicks(props: GridRenderCellParams<any>) {
 
   return (
     <Stack
+      key={`stack-${props.id}`}
       sx={{
         justifyContent: "flex-start",
         alignItems: "center",
@@ -171,7 +172,7 @@ const columns: GridColDef[] = [
     headerName: "2nd Half",
     minWidth: 35,
     valueGetter: (value, row) => {
-      return row.second_half + row.trending_score + row.period_score;
+      return row.second_half + row.trending_score;
     },
   },
   {
