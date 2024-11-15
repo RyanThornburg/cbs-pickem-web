@@ -255,7 +255,7 @@ export default function TeamScore({ game, isHome }: Props) {
             <Box sx={{ pl: "12px" }}>{teamNameAndSpread(team)}</Box>
           </Stack>
 
-          <Box id="ball">{getBallIcon(game, isHome)}</Box>
+          <Box>{getBallIcon(game, isHome)}</Box>
         </Stack>
       </Grid>
       <Grid size={{ xs: 1 }}>{team.score}</Grid>
@@ -281,6 +281,7 @@ export default function TeamScore({ game, isHome }: Props) {
                 team.picks.map((user: UserId) => {
                   return (
                     <Avatar
+                      key={`teamScore-Avatar-${team.team.cbs_team_id}-${user.id}`}
                       alt={user.name}
                       {...stringAvatar(user.name, {
                         width: 24,
@@ -328,6 +329,7 @@ export default function TeamScore({ game, isHome }: Props) {
                 .map((user: UserId) => {
                   return (
                     <Stack
+                      key={`teamScore-popoverStack-${team.team.cbs_team_id}-${user.id}`}
                       sx={{
                         alignItems: "center",
                         justifyContent: "flex-start",

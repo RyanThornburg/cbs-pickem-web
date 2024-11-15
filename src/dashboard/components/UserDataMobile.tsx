@@ -68,7 +68,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
   ]);
 
   return (
-    <Box>
+    <Box key={index}>
       <Item>{team}</Item>
     </Box>
   );
@@ -140,7 +140,8 @@ function Row(props: { row: UserRow }) {
   return (
     <React.Fragment>
       <TableRow
-        id={`userRow ${row.name.replace(" ", "")}`}
+        key={`userRow-${row.name.replace(" ", "")}`}
+        id={`userRow-${row.name.replace(" ", "")}`}
         sx={{ borderTop: `2px solid ${grey[300]}` }}
       >
         <TableCell component="th" scope="row">

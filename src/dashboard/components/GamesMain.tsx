@@ -39,9 +39,13 @@ export default function GamesMain({ week }: Props) {
   });
 
   return (
-    <Box sx={{ width: "100%", flexGrow: 1 }}>
+    <Box id={`gameWeek-${week}`} sx={{ width: "100%", flexGrow: 1 }}>
       {gameArrays.map((games: Game[], index) => (
-        <GameScores header={gameStarts[index]} games={games} />
+        <GameScores
+          key={`gameWeek-${week}-${index}`}
+          header={gameStarts[index]}
+          games={games}
+        />
       ))}
     </Box>
   );

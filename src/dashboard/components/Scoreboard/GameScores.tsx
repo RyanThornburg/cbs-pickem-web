@@ -22,7 +22,7 @@ export default function GameScores({ header, games }: Props) {
       </Box>
       <Grid container spacing={2} size={{ xs: 12, sm: 12, md: 12 }}>
         {games.map((game) => (
-          <GameResult game={game} />
+          <GameResult key={game.game_str} game={game} />
         ))}
       </Grid>
     </Box>

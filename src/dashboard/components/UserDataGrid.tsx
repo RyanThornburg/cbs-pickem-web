@@ -67,7 +67,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
   ]);
 
   return (
-    <Box>
+    <Box key={index}>
       <Item>{team}</Item>
     </Box>
   );
@@ -133,7 +133,6 @@ const columns: GridColDef[] = [
     field: "name",
     headerName: "Name",
     description: "Name",
-    minWidth: 145,
     flex: 4,
     renderCell: (params: GridRenderCellParams<any, string>) => (
       <Stack
@@ -160,7 +159,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Score",
-    minWidth: 35,
+    flex: 2,
     valueGetter: (value, row) => {
       return row.score + row.trending_score;
     },
@@ -170,7 +169,7 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "2nd Half",
-    minWidth: 35,
+    flex: 2,
     valueGetter: (value, row) => {
       return row.second_half + row.trending_score;
     },
@@ -180,14 +179,13 @@ const columns: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     headerName: "Week",
-    minWidth: 35,
+    flex: 1.5,
     valueGetter: (value, row) => {
       return row.period_score + row.trending_score;
     },
   },
   {
     field: "picks",
-    minWidth: 490,
     flex: 10,
     align: "left",
     headerName: "Picks",
