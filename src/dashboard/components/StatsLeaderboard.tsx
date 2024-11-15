@@ -68,9 +68,9 @@ export default function StatsLeaderboard({
   }, []);
 
   const userScore = (user: User): number => {
-    const currentScore =
-      (isSecondHalf ? user.period_score : 0) + user.trending_score;
-    return (isSecondHalf ? user.second_half ?? 0 : user.score) + currentScore;
+    return (
+      (isSecondHalf ? user.second_half ?? 0 : user.score) + user.trending_score
+    );
   };
 
   const createUserList = () => {
@@ -138,8 +138,7 @@ export default function StatsLeaderboard({
                   <TableCell>{UserRow(row.name)}</TableCell>
                   <TableCell align="center">
                     {(isSecondHalf ? row.second_half ?? 0 : row.score) +
-                      row.trending_score +
-                      row.period_score}
+                      row.trending_score}
                   </TableCell>
                 </TableRow>
               ))}
