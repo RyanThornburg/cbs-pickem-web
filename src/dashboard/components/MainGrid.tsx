@@ -22,6 +22,18 @@ export default function MainGrid() {
   const [week, setWeek] = useState(0);
   const [weekString, setWeekString] = useState("0");
   const [currentWeek, setCurrentWeek] = useState(0);
+  const [user, setUser] = useState<string | undefined>(
+    (): string | undefined => {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? storedUser : undefined;
+    }
+  );
+
+  const onUserChange = (userId: string) => {
+    console.log("user changed", userId);
+    localStorage.setItem("user", userId);
+    setUser(userId);
+  };
 
   useEffect(() => {
     const userRef = ref(db, "current_week");
@@ -65,6 +77,11 @@ export default function MainGrid() {
               spacing={2}
               direction="row"
             >
+              <UserSelectDropdown
+                week={week}
+                user={user}
+                onUserChange={onUserChange}
+              />
               <ColorModeIconDropdown />
             </Stack>
           </Stack>

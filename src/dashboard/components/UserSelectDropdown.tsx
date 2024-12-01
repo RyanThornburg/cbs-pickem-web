@@ -9,29 +9,36 @@ import { db } from "../../components/firebase";
 import { User } from "../../types";
 
 export type Props = {
-  users: User[];
+  week: number;
+  user: string | undefined;
+  onUserChange: any;
 };
 
-export default function UserSelectDropdown() {
-  const [users, setUsers] = useState([]);
-  const [userSelect, setUserSelect] = useState("");
+export default function UserSelectDropdown({
+  week,
+  user,
+  onUserChange,
+}: Props) {
+  const [users, setUsers] = useState<User[]>([]);
+  const weekFormat = week.toString().padStart(2, "0") ?? "01";
 
   useEffect(() => {
-    const userRef = ref(db, "users/");
+    const userRef = ref(db, "userPicks/");
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
-        const listUsers = snapshot
-          .val()
+        const filteredUsers: User[] = Object.entries(snapshot.val())
+          .map(([key, weeks]: [string, any]) => weeks[`week${weekFormat}`])
           .sort((a: User, b: User) =>
             a?.name < b?.name ? -1 : a?.name > b.name ? 1 : 0
           );
-        setUsers(listUsers);
+        setUsers(filteredUsers);
       }
     });
   }, []);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setUserSelect(event.target.value);
+    console.log("handleChange", event.target.value);
+    onUserChange(event.target.value);
   };
 
   return (
@@ -42,15 +49,19 @@ export default function UserSelectDropdown() {
           sx={{ pl: "12px" }}
           labelId="userList"
           id="user-drop-down"
-          value={userSelect}
+          value={user}
           onChange={handleChange}
           label="User Details"
         >
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          {users.map((user: User) => {
-            return <MenuItem value={user.id}>{user.name}</MenuItem>;
+          {users.map((userItem: User) => {
+            return (
+              <MenuItem value={userItem.id} selected={user == userItem.id}>
+                {userItem.name}
+              </MenuItem>
+            );
           })}
         </Select>
       </FormControl>
