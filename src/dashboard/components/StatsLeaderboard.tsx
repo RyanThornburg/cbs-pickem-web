@@ -36,9 +36,6 @@ const iconLookup = {
   5: <Looks5 color="error"></Looks5>,
 };
 
-const totalScore = (score: number, trend: number): number => {
-  return score + trend;
-};
 export type StatsLeaderboardProps = {
   week: number;
   isSecondHalf: boolean;
@@ -67,7 +64,7 @@ export default function StatsLeaderboard({
         setUsers(filteredUsers);
       }
     });
-  }, [week]);
+  }, [week, weekFormat]);
 
   const userScore = (user: User): number => {
     return (
@@ -137,7 +134,7 @@ export default function StatsLeaderboard({
             <TableBody>
               {avatarUsers.map((row) => (
                 <TableRow
-                  className={row.id == userId ? "highlight" : ""}
+                  className={row.id === userId ? "highlight" : ""}
                   key={row.id}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },

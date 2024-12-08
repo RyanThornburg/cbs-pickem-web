@@ -14,7 +14,6 @@ export default function GamesMain({ week }: Props) {
   const [currentGames, setCurrentGames] = useState<Game[]>([]);
   const weekFormat = week.toString().padStart(2, "0");
   const weekPath = `weeks/week${weekFormat}/games_sorted/`;
-  let currentGameTime = "";
 
   useEffect(() => {
     const userRef = ref(db, weekPath);

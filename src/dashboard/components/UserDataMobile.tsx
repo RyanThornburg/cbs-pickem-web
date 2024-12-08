@@ -1,7 +1,6 @@
 import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -18,6 +17,7 @@ import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import { grey } from "@mui/material/colors";
 import { Typography } from "@mui/material";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 
 const FormatOnePick = (pick: Pick, index: number) => {
   if (index > 4) {
@@ -55,7 +55,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
       fontStyle: fontStyle,
       ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
     },
-    pick.pick_status == "CORRECT" && {
+    pick.pick_status === "CORRECT" && {
       backgroundColor: theme.palette.primary[50],
     },
     isGameOver && {
@@ -140,7 +140,6 @@ function userAvatar(userName: string) {
 }
 
 function Row({ row, isSelected }: UserRowProps) {
-  const [open, setOpen] = React.useState(true);
   return (
     <React.Fragment>
       <TableRow
@@ -173,7 +172,10 @@ function Row({ row, isSelected }: UserRowProps) {
           },
         }}
       >
-        <TableCell style={{ paddingBottom: "4px", paddingTop: 0 }} colSpan={4}>
+        <TableCell
+          style={{ paddingBottom: "4px", paddingTop: "4px" }}
+          colSpan={4}
+        >
           {row.userPicks}
         </TableCell>
       </TableRow>
@@ -191,8 +193,6 @@ export default function UserDataMobile({ week, userId }: Props) {
   const weekFormat = week.toString().padStart(2, "0") ?? "08";
   const weekPath = "userPicks/";
 
-  const getData = () => {};
-
   useEffect(() => {
     if (week === 0) {
       return;
@@ -206,7 +206,7 @@ export default function UserDataMobile({ week, userId }: Props) {
         setUsers(filteredUsers);
       }
     });
-  }, [week]);
+  }, [week, weekFormat]);
 
   const rows = users.map(createUserData);
 
@@ -221,11 +221,19 @@ export default function UserDataMobile({ week, userId }: Props) {
             <TableCell align="center">Week</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody
+          sx={{
+            mb: 2,
+            ".highlight": {
+              bgcolor: (theme) =>
+                theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
+            },
+          }}
+        >
           {rows.map((row) => (
             <Row
               key={`mobile-${row.name}`}
-              isSelected={row.id == userId}
+              isSelected={row.id === userId}
               row={row}
             />
           ))}

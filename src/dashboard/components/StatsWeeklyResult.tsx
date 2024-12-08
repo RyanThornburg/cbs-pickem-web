@@ -29,7 +29,7 @@ export default function StatsWeeklyResult({ week, isCurrent }: Props) {
         setCurrentResults(snapshot.val());
       }
     });
-  }, [week]);
+  }, [week, weekPath]);
 
   const lastWeekNum = week > 1 ? week - 1 : 1;
 

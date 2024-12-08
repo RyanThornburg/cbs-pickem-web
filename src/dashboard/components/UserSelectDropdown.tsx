@@ -36,7 +36,7 @@ export default function UserSelectDropdown({
         setUsers(filteredUsers);
       }
     });
-  }, []);
+  }, [weekFormat]);
 
   const handleChange = (event: SelectChangeEvent) => {
     onUserChange(event.target.value);
@@ -62,7 +62,7 @@ export default function UserSelectDropdown({
               <MenuItem
                 key={userItem.id}
                 value={userItem.id}
-                selected={user == userItem.id}
+                selected={user === userItem.id}
               >
                 {userItem.name}
               </MenuItem>

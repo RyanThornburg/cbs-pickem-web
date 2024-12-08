@@ -54,7 +54,7 @@ const FormatOnePick = (pick: Pick, index: number) => {
       fontStyle: fontStyle,
       ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
     },
-    pick.pick_status == "CORRECT" && {
+    pick.pick_status === "CORRECT" && {
       backgroundColor: theme.palette.primary[50],
     },
     isGameOver && {
@@ -95,7 +95,6 @@ function RenderScore(props: GridRenderCellParams<any>) {
   const { period_score, trending_score } = props.row;
   const score = period_score + trending_score;
   let icons;
-  let color;
   if (score === 0) {
     icons = [<BlindSharpIcon></BlindSharpIcon>];
   }
@@ -215,7 +214,7 @@ export default function UserDataGrid({ week, userId }: Props) {
         setUsers(filteredUsers);
       }
     });
-  }, [week]);
+  }, [week, weekFormat]);
 
   return (
     <DataGrid

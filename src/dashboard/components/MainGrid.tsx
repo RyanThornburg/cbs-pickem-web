@@ -108,7 +108,7 @@ export default function MainGrid({ currentWeek }: Props) {
             <Grid size={{ xs: 12, sm: 12, md: 3, lg: 2 }}>
               <StatsWeeklyResult
                 week={selectedWeek}
-                isCurrent={currentWeek == selectedWeek}
+                isCurrent={currentWeek === selectedWeek}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4 }}>
