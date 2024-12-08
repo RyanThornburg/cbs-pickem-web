@@ -91,22 +91,28 @@ function RenderPicks(picks: Array<Pick>, id: string) {
   );
 }
 
+interface UserRowProps {
+  row: UserRow;
+  isSelected: boolean;
+}
+
 interface UserRow {
   name: string;
   userScore: number;
   weekScore: number;
   secondHalf: number;
   userPicks: JSX.Element;
+  id: string;
 }
 
 function createUserData(user: User): UserRow {
-  const { name, score, period_score, trending_score, second_half, picks } =
+  const { name, score, period_score, trending_score, second_half, picks, id } =
     user;
   const userScore = score + trending_score;
   const weekScore = trending_score + period_score;
   const secondHalf = (second_half ?? 0) + trending_score;
   const userPicks = RenderPicks(picks, user.id);
-  return { name, userScore, weekScore, secondHalf, userPicks };
+  return { name, userScore, weekScore, secondHalf, userPicks, id };
 }
 
 function userAvatar(userName: string) {
@@ -133,16 +139,21 @@ function userAvatar(userName: string) {
   );
 }
 
-function Row(props: { row: UserRow }) {
-  const { row } = props;
+function Row({ row, isSelected }: UserRowProps) {
   const [open, setOpen] = React.useState(true);
-
   return (
     <React.Fragment>
       <TableRow
         key={`userRow-${row.name.replace(" ", "")}`}
-        id={`userRow-${row.name.replace(" ", "")}`}
-        sx={{ borderTop: `2px solid ${grey[300]}` }}
+        id={`userRow-${row.name.replace(" ", "")}-${isSelected}`}
+        className={isSelected ? "highlight" : ""}
+        sx={{
+          borderTop: `2px solid ${grey[300]}`,
+          ".highlight": {
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
+          },
+        }}
       >
         <TableCell component="th" scope="row">
           {userAvatar(row.name)}
@@ -151,7 +162,17 @@ function Row(props: { row: UserRow }) {
         <TableCell align="center">{row.secondHalf}</TableCell>
         <TableCell align="center">{row.weekScore}</TableCell>
       </TableRow>
-      <TableRow id={`userScore-${row.name.replace(" ", "")}`} sx={{ mb: 2 }}>
+      <TableRow
+        className={isSelected ? "highlight" : ""}
+        id={`userScore-${row.name.replace(" ", "")}`}
+        sx={{
+          mb: 2,
+          ".highlight": {
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
+          },
+        }}
+      >
         <TableCell style={{ paddingBottom: "4px", paddingTop: 0 }} colSpan={4}>
           {row.userPicks}
         </TableCell>
@@ -162,12 +183,15 @@ function Row(props: { row: UserRow }) {
 
 export type Props = {
   week: number;
+  userId: string;
 };
 
-export default function UserDataMobile({ week }: Props) {
+export default function UserDataMobile({ week, userId }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const weekFormat = week.toString().padStart(2, "0") ?? "08";
   const weekPath = "userPicks/";
+
+  const getData = () => {};
 
   useEffect(() => {
     if (week === 0) {
@@ -182,7 +206,7 @@ export default function UserDataMobile({ week }: Props) {
         setUsers(filteredUsers);
       }
     });
-  }, []);
+  }, [week]);
 
   const rows = users.map(createUserData);
 
@@ -199,7 +223,11 @@ export default function UserDataMobile({ week }: Props) {
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <Row key={`mobile-${row.name}`} row={row} />
+            <Row
+              key={`mobile-${row.name}`}
+              isSelected={row.id == userId}
+              row={row}
+            />
           ))}
         </TableBody>
       </Table>

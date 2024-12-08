@@ -42,11 +42,13 @@ const totalScore = (score: number, trend: number): number => {
 export type StatsLeaderboardProps = {
   week: number;
   isSecondHalf: boolean;
+  userId: string;
 };
 
 export default function StatsLeaderboard({
   week,
   isSecondHalf,
+  userId,
 }: StatsLeaderboardProps) {
   const [users, setUsers] = useState<User[]>([]);
   const weekFormat = week.toString().padStart(2, "0") ?? "08";
@@ -65,7 +67,7 @@ export default function StatsLeaderboard({
         setUsers(filteredUsers);
       }
     });
-  }, []);
+  }, [week]);
 
   const userScore = (user: User): number => {
     return (
@@ -103,7 +105,13 @@ export default function StatsLeaderboard({
 
   function UserRow(name: string) {
     return (
-      <Stack sx={{ alignItems: "center" }} direction="row" spacing={2}>
+      <Stack
+        sx={{
+          alignItems: "center",
+        }}
+        direction="row"
+        spacing={2}
+      >
         <Avatar
           {...stringAvatar(name, { width: 24, height: 24, fontSize: 12 })}
         />
@@ -129,8 +137,15 @@ export default function StatsLeaderboard({
             <TableBody>
               {avatarUsers.map((row) => (
                 <TableRow
+                  className={row.id == userId ? "highlight" : ""}
                   key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    ".highlight": {
+                      bgcolor: (theme) =>
+                        theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
+                    },
+                  }}
                 >
                   <TableCell align="center" component="th" scope="row">
                     {iconLookup[row.place as keyof typeof iconLookup]}

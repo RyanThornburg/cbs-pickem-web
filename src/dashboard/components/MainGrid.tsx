@@ -2,10 +2,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-
-import { onValue, ref } from "firebase/database";
-import { useEffect, useState } from "react";
-import { db } from "../../components/firebase";
+import { useState } from "react";
 import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
 import GamesMain from "./GamesMain";
 import StatsLeaderboard from "./StatsLeaderboard";
@@ -14,77 +11,79 @@ import StatsWeeklyCoverChart from "./StatsWeeklyCoverChart";
 import StatsWeeklyResult from "./StatsWeeklyResult";
 import UserDataGrid from "./UserDataGrid";
 import UserDataMobile from "./UserDataMobile";
-import UserSelected from "./UserSelected";
 import UserSelectDropdown from "./UserSelectDropdown";
-//import UserSelected from "./UserSelected";
+import WeekDropdown from "./WeekDropdown";
 
-export default function MainGrid() {
-  const [week, setWeek] = useState(0);
-  const [weekString, setWeekString] = useState("0");
-  const [currentWeek, setCurrentWeek] = useState(0);
-  const [user, setUser] = useState<string | undefined>(
-    (): string | undefined => {
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? storedUser : undefined;
-    }
-  );
+export type Props = {
+  currentWeek: number;
+};
+
+export default function MainGrid({ currentWeek }: Props) {
+  const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
+  const [user, setUser] = useState<string>((): string => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? storedUser : "";
+  });
+
+  if (selectedWeek === 0 && currentWeek > 0) {
+    setSelectedWeek(currentWeek);
+  }
+  const onWeekChange = (week: number): void => {
+    setSelectedWeek(week);
+  };
 
   const onUserChange = (userId: string) => {
-    console.log("user changed", userId);
     localStorage.setItem("user", userId);
     setUser(userId);
   };
 
-  useEffect(() => {
-    const userRef = ref(db, "current_week");
-    return onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setCurrentWeek(snapshot.val());
-        setWeek(snapshot.val());
-      }
-    });
-  }, []);
-
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* cards */}
-      {week !== 0 && (
+      {currentWeek !== 0 && (
         <>
-          <Stack
-            direction="row"
+          <Grid
+            container
             spacing={4}
+            rowSpacing={0.5}
             sx={{
               mt: 2,
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <Stack></Stack>
-            <Stack
-              sx={{ alignItems: "center", pb: 2 }}
-              spacing={2}
-              direction="row"
-            >
-              <Typography align="center" variant="h5" sx={{ size: 3, mb: 2 }}>
+            <Grid size={{ xs: 12, sm: "grow" }}>
+              <Typography align="left" variant="h5" sx={{ size: 3, mb: 2 }}>
                 Morlocked Pick'em Results
               </Typography>
-              <Typography align="center" variant="h5" sx={{ mb: 2 }}>
-                Week {currentWeek}
-              </Typography>
-            </Stack>
-            <Stack
-              sx={{ alignItems: "flex-end", justifyContent: "flex-end", pb: 2 }}
-              spacing={2}
-              direction="row"
+            </Grid>
+            <Grid
+              size={{ xs: 12, sm: "auto" }}
+              alignItems={{ xs: "center", sm: "flex-end" }}
             >
-              <UserSelectDropdown
-                week={week}
-                user={user}
-                onUserChange={onUserChange}
-              />
-              <ColorModeIconDropdown />
-            </Stack>
-          </Stack>
+              <Stack
+                sx={{
+                  alignItems: "flex-end",
+                  justifyContent: "space-between",
+                  pb: 2,
+                }}
+                spacing={2}
+                direction="row"
+              >
+                <WeekDropdown
+                  currentWeek={currentWeek}
+                  selectedWeek={selectedWeek}
+                  onUserChange={onWeekChange}
+                />
+                <UserSelectDropdown
+                  week={selectedWeek}
+                  user={user}
+                  onUserChange={onUserChange}
+                />
+                <ColorModeIconDropdown />
+              </Stack>
+            </Grid>
+          </Grid>
 
           <Grid
             container
@@ -93,13 +92,24 @@ export default function MainGrid() {
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
             <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
-              <StatsLeaderboard week={week} isSecondHalf={false} />
+              <StatsLeaderboard
+                week={currentWeek}
+                isSecondHalf={false}
+                userId={user}
+              />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
-              <StatsLeaderboard week={week} isSecondHalf={true} />
+              <StatsLeaderboard
+                week={currentWeek}
+                isSecondHalf={true}
+                userId={user}
+              />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 3, lg: 2 }}>
-              <StatsWeeklyResult week={week} />
+              <StatsWeeklyResult
+                week={selectedWeek}
+                isCurrent={currentWeek == selectedWeek}
+              />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4 }}>
               <StatsWeeklyCoverChart />
@@ -125,16 +135,16 @@ export default function MainGrid() {
               sx={{ display: { xs: "none", sm: "block" } }}
               size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 7 }}
             >
-              <UserDataGrid week={week} />
+              <UserDataGrid week={selectedWeek} userId={user} />
             </Grid>
             <Grid
               sx={{ display: { xs: "block", sm: "none" } }}
               size={{ xs: 12 }}
             >
-              <UserDataMobile week={week} />
+              <UserDataMobile userId={user} week={selectedWeek} />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 12, lg: 4, xl: 5 }}>
-              <StatsTopUserPicks week={week} />
+              <StatsTopUserPicks week={selectedWeek} />
             </Grid>
           </Grid>
 
@@ -154,7 +164,7 @@ export default function MainGrid() {
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, lg: 12 }}>
-              <GamesMain week={week} />
+              <GamesMain week={selectedWeek} />
             </Grid>
           </Grid>
         </>

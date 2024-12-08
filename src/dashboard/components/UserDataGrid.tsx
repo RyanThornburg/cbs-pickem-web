@@ -195,8 +195,9 @@ const columns: GridColDef[] = [
 ];
 export type Props = {
   week: number;
+  userId: string;
 };
-export default function UserDataGrid({ week }: Props) {
+export default function UserDataGrid({ week, userId }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const weekFormat = week.toString().padStart(2, "0") ?? "08";
   const weekPath = "userPicks/";
@@ -214,7 +215,7 @@ export default function UserDataGrid({ week }: Props) {
         setUsers(filteredUsers);
       }
     });
-  }, []);
+  }, [week]);
 
   return (
     <DataGrid
@@ -239,8 +240,15 @@ export default function UserDataGrid({ week }: Props) {
           sortModel: [{ field: "score", sort: "desc" }],
         },
       }}
+      getRowClassName={(params) => {
+        return params.row.id === userId ? "highlight" : "";
+      }}
       sx={{
         "--DataGrid-overlayHeight": { defaultHeight },
+        ".highlight": {
+          bgcolor: (theme) =>
+            theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
+        },
       }}
     />
   );

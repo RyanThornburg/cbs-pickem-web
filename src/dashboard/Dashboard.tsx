@@ -26,18 +26,17 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
-  const [weekNum, setWeekNum] = useState(1);
+  const [currentWeek, setCurrentWeek] = useState(0);
 
   useEffect(() => {
-    const userRef = ref(db, "currentWeek");
+    const userRef = ref(db, "current_week/");
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
-        setWeekNum(snapshot.val());
+        setCurrentWeek(snapshot.val());
       }
     });
   }, []);
 
-  console.log("Week", weekNum);
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
@@ -60,7 +59,7 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
               mt: { xs: 8, md: 0 },
             }}
           >
-            <MainGrid />
+            <MainGrid currentWeek={currentWeek} />
           </Stack>
         </Box>
       </Box>

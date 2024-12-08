@@ -15,16 +15,16 @@ export type Props = {
 export default function StatsTopUserPicks({ week }: Props) {
   const [teamPicks, setTeamPicks] = useState([]);
   const weekFormat = week.toString().padStart(2, "0") ?? "01";
-  const weekPath = `weeks/week${weekFormat}/tats/teamsPicked/`;
+  const weekPath = `weeks/week${weekFormat}/stats/teamsPicked/`;
 
   useEffect(() => {
-    const userRef = ref(db, "stats/teamsPicked/");
+    const userRef = ref(db, weekPath);
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
         setTeamPicks(snapshot.val());
       }
     });
-  }, []);
+  }, [weekPath]);
 
   function barColors() {
     return teamPicks.map((team: TeamPicked) => {

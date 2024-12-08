@@ -23,6 +23,8 @@ export default function UserSelectDropdown({
   const weekFormat = week.toString().padStart(2, "0") ?? "01";
 
   useEffect(() => {
+    console.log("week", weekFormat);
+
     const userRef = ref(db, "userPicks/");
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -37,7 +39,6 @@ export default function UserSelectDropdown({
   }, []);
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log("handleChange", event.target.value);
     onUserChange(event.target.value);
   };
 
@@ -49,7 +50,7 @@ export default function UserSelectDropdown({
           sx={{ pl: "12px" }}
           labelId="userList"
           id="user-drop-down"
-          value={user}
+          value={users ? user : ""}
           onChange={handleChange}
           label="User Details"
         >
@@ -58,7 +59,11 @@ export default function UserSelectDropdown({
           </MenuItem>
           {users.map((userItem: User) => {
             return (
-              <MenuItem value={userItem.id} selected={user == userItem.id}>
+              <MenuItem
+                key={userItem.id}
+                value={userItem.id}
+                selected={user == userItem.id}
+              >
                 {userItem.name}
               </MenuItem>
             );

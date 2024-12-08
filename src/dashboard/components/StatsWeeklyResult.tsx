@@ -10,6 +10,7 @@ import { WeekCover } from "../../types";
 
 export type Props = {
   week: number;
+  isCurrent: boolean;
 };
 
 const defaultResult: WeekCover = { correct: 0, total: 0, result: 0, week: "0" };
@@ -17,7 +18,7 @@ const weekResult = (weekResult: number) => {
   return weekResult ? `${Math.round(weekResult)}%` : "";
 };
 
-export default function StatsWeeklyResult({ week }: Props) {
+export default function StatsWeeklyResult({ week, isCurrent }: Props) {
   const [currentResults, setCurrentResults] = useState({});
   const weekPath = `/stats/coverResults/`;
 
@@ -28,7 +29,7 @@ export default function StatsWeeklyResult({ week }: Props) {
         setCurrentResults(snapshot.val());
       }
     });
-  }, [weekPath]);
+  }, [week]);
 
   const lastWeekNum = week > 1 ? week - 1 : 1;
 
@@ -100,7 +101,8 @@ export default function StatsWeeklyResult({ week }: Props) {
         flexGrow: 1,
       }}
     >
-      <Box sx={{ color: "text.secondary" }}>Current Week</Box>
+      {isCurrent && <Box sx={{ color: "text.secondary" }}>Current Week</Box>}
+      {!isCurrent && <Box sx={{ color: "text.secondary" }}>Week {week}</Box>}
       <Box
         sx={{
           color: "text.primary",
