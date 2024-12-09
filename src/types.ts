@@ -20,6 +20,11 @@ export interface User {
   name: string;
 }
 
+export interface UserLeader extends User {
+  place: number;
+  second_half_place?: number;
+}
+
 export interface Pick {
   game_id?: number;
   game_status?: GameStatus;

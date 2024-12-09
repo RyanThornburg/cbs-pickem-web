@@ -13,6 +13,7 @@ import UserDataGrid from "./UserDataGrid";
 import UserDataMobile from "./UserDataMobile";
 import UserSelectDropdown from "./UserSelectDropdown";
 import WeekDropdown from "./WeekDropdown";
+import UserSelected from "./UserSelected";
 
 export type Props = {
   currentWeek: number;
@@ -58,6 +59,13 @@ export default function MainGrid({ currentWeek }: Props) {
               </Typography>
             </Grid>
             <Grid
+              sx={{ display: { xs: "none", lg: "block" } }}
+              size={{ lg: 7 }}
+            >
+              <UserSelected userId={user} week={selectedWeek} />
+            </Grid>
+
+            <Grid
               size={{ xs: 12, sm: "auto" }}
               alignItems={{ xs: "center", sm: "flex-end" }}
             >
@@ -82,6 +90,12 @@ export default function MainGrid({ currentWeek }: Props) {
                 />
                 <ColorModeIconDropdown />
               </Stack>
+            </Grid>
+            <Grid
+              sx={{ display: { xs: "none", md: "none" } }}
+              size={{ xs: 12 }}
+            >
+              <UserSelected userId={user} week={selectedWeek} />
             </Grid>
           </Grid>
 

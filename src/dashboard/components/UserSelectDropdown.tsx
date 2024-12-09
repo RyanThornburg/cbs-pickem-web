@@ -23,8 +23,6 @@ export default function UserSelectDropdown({
   const weekFormat = week.toString().padStart(2, "0") ?? "01";
 
   useEffect(() => {
-    console.log("week", weekFormat);
-
     const userRef = ref(db, "userPicks/");
     return onValue(userRef, (snapshot) => {
       if (snapshot.exists()) {

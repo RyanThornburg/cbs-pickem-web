@@ -21,12 +21,8 @@ import Stack from "@mui/material/Stack";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../../components/firebase";
-import { User } from "../../types";
+import { User, UserLeader } from "../../types";
 import { stringAvatar } from "../helper";
-
-interface UserLeader extends User {
-  place: number;
-}
 
 const iconLookup = {
   1: <LooksOneIcon color="success"></LooksOneIcon>,
