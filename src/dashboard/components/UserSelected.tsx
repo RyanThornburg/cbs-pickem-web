@@ -1,7 +1,7 @@
 import Grid from "@mui/material/Grid2";
 import { User, UserLeader, Pick, PickStatus, GameStatus } from "../../types";
 import { StatusColor, stringAvatar } from "../helper";
-import { Avatar, Box, Card, CardContent, Divider, Stack } from "@mui/material";
+import { Avatar, Box, Divider, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../components/firebase";
