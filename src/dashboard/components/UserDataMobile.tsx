@@ -17,7 +17,7 @@ import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import { grey } from "@mui/material/colors";
 import { Typography } from "@mui/material";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableCell from "@mui/material/TableCell";
 
 const FormatOnePick = (pick: Pick, index: number) => {
   if (index > 4) {

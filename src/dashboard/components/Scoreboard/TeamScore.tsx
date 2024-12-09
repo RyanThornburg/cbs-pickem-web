@@ -94,9 +94,6 @@ function getBallIcon(game: Game, isHome: boolean) {
     : !isHome && game?.possession === Possession.Away
     ? ballIcon()
     : undefined;
-  if (isHome && game?.possession === Possession.Home) {
-    return ballIcon();
-  }
 }
 
 const homeTeamStats = (game: Game): GridStat => {
@@ -219,11 +216,6 @@ export default function TeamScore({ game, isHome }: Props) {
 
   const id = open ? "simple-popover" : undefined;
 
-  const sortUsers: UserId[] =
-    team.picks ??
-    [].sort((a: UserId, b: UserId) =>
-      a.name.toUpperCase() > b.name.toUpperCase() ? -1 : 1
-    );
   return (
     <Grid container size={{ xs: 12 }}>
       <Grid size={{ xs: 6, sm: 5, lg: 3 }}>

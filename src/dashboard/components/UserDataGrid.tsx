@@ -10,11 +10,11 @@ import { useEffect, useState } from "react";
 import { db } from "../../components/firebase";
 import { GameStatus, Pick, PickStatus, User } from "../../types";
 
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import BlindSharpIcon from "@mui/icons-material/BlindSharp";
-import CheckIcon from "@mui/icons-material/Check";
-import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
+//import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+//import BlindSharpIcon from "@mui/icons-material/BlindSharp";
+//import CheckIcon from "@mui/icons-material/Check";
+//import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
+//import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { StatusColor, stringAvatar } from "../helper";
 
 const defaultHeight = "1044px";
@@ -91,42 +91,6 @@ function RenderPicks(props: GridRenderCellParams<any>) {
   );
 }
 
-function RenderScore(props: GridRenderCellParams<any>) {
-  const { period_score, trending_score } = props.row;
-  const score = period_score + trending_score;
-  let icons;
-  if (score === 0) {
-    icons = [<BlindSharpIcon></BlindSharpIcon>];
-  }
-  if (score === 1) {
-    icons = [<CheckIcon></CheckIcon>];
-  }
-  if (score === 2) {
-    icons = new Array(score).fill(<CheckIcon></CheckIcon>);
-  }
-  if (score === 3) {
-    icons = new Array(score).fill(
-      <StarBorderOutlinedIcon></StarBorderOutlinedIcon>
-    );
-  }
-  if (score === 4) {
-    icons = new Array(score).fill(<WhatshotIcon></WhatshotIcon>);
-  }
-  if (score === 5) {
-    icons = new Array(score).fill(<AttachMoneyIcon></AttachMoneyIcon>);
-  }
-
-  return (
-    <Box>
-      {score}
-      <Stack direction="row" spacing={0.5}>
-        {icons?.map((value) => (
-          <Box>value</Box>
-        ))}
-      </Stack>
-    </Box>
-  );
-}
 const columns: GridColDef[] = [
   {
     field: "name",

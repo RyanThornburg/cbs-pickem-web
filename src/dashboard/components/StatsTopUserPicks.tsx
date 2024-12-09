@@ -39,13 +39,6 @@ export default function StatsTopUserPicks({ week }: Props) {
     });
   }
 
-  function barLabels() {
-    return teamPicks.map((team: TeamPicked) => {
-      const pickColor = team.is_game ? 1 : 0;
-      return pickColor.toString();
-    });
-  }
-
   return (
     <Card
       variant="outlined"
