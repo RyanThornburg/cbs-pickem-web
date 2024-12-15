@@ -6,10 +6,10 @@ import { styled } from "@mui/material/styles";
 import { Divider, Stack } from "@mui/material";
 
 const GamePickFormatted = (pick: Pick, index: number) => {
-  if (index > 4) {
-    // why cbs allows this?
-    return;
-  }
+  // if (index > 4) {
+  //   // why cbs allows this?
+  //   return;
+  // }
 
   const team = pick.visible
     ? pick.team
@@ -73,6 +73,14 @@ export const UserGamePicksStack = (
   header: boolean = false
 ) => {
   const spacingSize = header ? 0.5 : 1;
+  const visiblePicks = picks.filter((pick) => pick.visible);
+  const nonVisiblePicks = picks.filter((pick) => !pick.visible);
+  // Combine them, taking all visible picks and enough non-visible picks to reach 5 total
+  const combinedPicks = [
+    ...visiblePicks,
+    ...nonVisiblePicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
+  ].slice(0, 5);
+
   return (
     <Stack
       sx={{
@@ -83,7 +91,7 @@ export const UserGamePicksStack = (
       spacing={{ xs: 0.35, md: spacingSize }}
       divider={<Divider orientation="vertical" flexItem />}
     >
-      {picks && picks.map(GamePickFormatted)}
+      {combinedPicks && combinedPicks.map(GamePickFormatted)}
     </Stack>
   );
 };

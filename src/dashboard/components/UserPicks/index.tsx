@@ -13,8 +13,6 @@ import {
   Paper,
   Typography,
   alpha,
-  Stack,
-  Grid2 as Grid,
 } from "@mui/material";
 
 interface Pick {
@@ -228,17 +226,17 @@ export default function UserPicks({ userId }: { userId: string }) {
       .sort((a, b) => b.percentage - a.percentage);
   }, [userResults]);
 
-  const bestTeams = useMemo(() => {
-    return teamStats
-      .filter((team) => team.percentage > 50)
-      .sort((a, b) => b.percentage - a.percentage);
-  }, [teamStats]);
+  // const bestTeams = useMemo(() => {
+  //   return teamStats
+  //     .filter((team) => team.percentage > 50)
+  //     .sort((a, b) => b.percentage - a.percentage);
+  // }, [teamStats]);
 
-  const worstTeams = useMemo(() => {
-    return teamStats
-      .filter((team) => team.percentage < 50)
-      .sort((a, b) => a.percentage - b.percentage);
-  }, [teamStats]);
+  // const worstTeams = useMemo(() => {
+  //   return teamStats
+  //     .filter((team) => team.percentage < 50)
+  //     .sort((a, b) => a.percentage - b.percentage);
+  // }, [teamStats]);
 
   // const renderTrendIndicator = (trend?: "up" | "down" | "neutral") => {
   //   switch (trend) {
