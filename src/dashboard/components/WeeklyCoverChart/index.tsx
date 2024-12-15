@@ -4,10 +4,10 @@ import Typography from "@mui/material/Typography";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { db } from "../../components/firebase";
+import { db } from "../../../api/firebase";
 import { WeekCover } from "../../types";
 
-export default function StatsWeeklyCoverChart() {
+export default function WeeklyCoverChart() {
   const [coverResults, setCoverResults] = useState<any>([]);
 
   useEffect(() => {

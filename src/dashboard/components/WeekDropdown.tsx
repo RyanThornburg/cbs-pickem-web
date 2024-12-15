@@ -27,7 +27,7 @@ export default function WeekDropdown({
           sx={{ pl: "12px" }}
           labelId="weekList"
           id="week-drop-down"
-          value={selectedWeek.toString()}
+          value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
           onChange={handleChange}
           label="Week"
         >

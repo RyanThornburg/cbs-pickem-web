@@ -5,8 +5,9 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { db } from "../../components/firebase";
+import { db } from "../../../api/firebase";
 import { WeekCover } from "../../types";
+import { Card, CardContent } from "@mui/material";
 
 export type Props = {
   week: number;
@@ -18,7 +19,7 @@ const weekResult = (weekResult: number) => {
   return weekResult ? `${Math.round(weekResult)}%` : "";
 };
 
-export default function StatsWeeklyResult({ week, isCurrent }: Props) {
+export default function CoverResultCard({ week, isCurrent }: Props) {
   const [currentResults, setCurrentResults] = useState({});
   const weekPath = `/stats/coverResults/`;
 
@@ -90,38 +91,30 @@ export default function StatsWeeklyResult({ week, isCurrent }: Props) {
   }
 
   return (
-    <Box
-      sx={{
-        p: 2,
-        border: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.default",
-        borderRadius: 2,
-        height: "100%",
-        flexGrow: 1,
-      }}
-    >
-      {isCurrent && <Box sx={{ color: "text.secondary" }}>Current Week</Box>}
-      {!isCurrent && <Box sx={{ color: "text.secondary" }}>Week {week}</Box>}
-      <Box
-        sx={{
-          color: "text.primary",
-          fontSize: "4.125rem",
-          fontWeight: "medium",
-        }}
-      >
-        {results()}
-      </Box>
-      {currentResults && lastWeekBox()}
-      <Box
-        sx={{
-          color: "text.secondary",
-          display: "inline",
-          fontSize: "0.875rem",
-        }}
-      >
-        vs. last week
-      </Box>
-    </Box>
+    <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
+      <CardContent>
+        {isCurrent && <Box sx={{ color: "text.secondary" }}>Current Week</Box>}
+        {!isCurrent && <Box sx={{ color: "text.secondary" }}>Week {week}</Box>}
+        <Box
+          sx={{
+            color: "text.primary",
+            fontSize: "4.125rem",
+            fontWeight: "medium",
+          }}
+        >
+          {results()}
+        </Box>
+        {currentResults && lastWeekBox()}
+        <Box
+          sx={{
+            color: "text.secondary",
+            display: "inline",
+            fontSize: "0.875rem",
+          }}
+        >
+          vs. last week
+        </Box>
+      </CardContent>
+    </Card>
   );
 }

@@ -8,7 +8,7 @@ import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-tree-view/themeAugmentation";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { db } from "../components/firebase";
+import { db } from "../api/firebase";
 import MainGrid from "./components/MainGrid";
 import AppTheme from "./shared-theme/AppTheme";
 import {

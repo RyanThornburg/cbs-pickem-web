@@ -1,528 +1,162 @@
 {
-  "week01": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 4,
-    "picks": [
-      {
-        "game_id": 29375848,
-        "game_status": "FINAL",
-        "game_time": 1725583200000,
-        "pick_status": "INCORRECT",
-        "team": "BAL",
-        "team_id": 406,
-        "visible": true
-      },
-      {
-        "game_id": 29376339,
-        "game_status": "FINAL",
-        "game_time": 1725668100000,
-        "pick_status": "CORRECT",
-        "team": "PHI",
-        "team_id": 425,
-        "visible": true
-      },
-      {
-        "game_id": 29377009,
-        "game_status": "FINAL",
-        "game_time": 1725814800000,
-        "pick_status": "CORRECT",
-        "team": "ARI",
-        "team_id": 404,
-        "visible": true
-      },
-      {
-        "game_id": 29377019,
-        "game_status": "FINAL",
-        "game_time": 1725814800000,
-        "pick_status": "CORRECT",
-        "team": "NO",
-        "team_id": 421,
-        "visible": true
-      },
-      {
-        "game_id": 29377025,
-        "game_status": "FINAL",
-        "game_time": 1725825900000,
-        "pick_status": "CORRECT",
-        "team": "SEA",
-        "team_id": 430,
-        "visible": true
+  "favorite_covers": 3,
+  "home_covers": 4,
+  "losses": [
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxga3ts===",
+      "is_favorite": true,
+      "is_home": true,
+      "spread": 2.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 1,
-    "score": 20,
-    "trending_score": 0
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgeyds===",
+      "is_favorite": false,
+      "is_home": true,
+      "spread": -3.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
+      }
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxge2tg===",
+      "is_favorite": true,
+      "is_home": false,
+      "spread": 4.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
+      }
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgmzdo===",
+      "is_favorite": false,
+      "is_home": false,
+      "spread": -0.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
+      }
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgm4dc===",
+      "is_favorite": false,
+      "is_home": true,
+      "spread": -3.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
+      }
+    }
+  ],
+  "team": {
+    "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgayds===",
+    "is_favorite": false,
+    "is_home": false,
+    "spread": 6.5,
+    "team": {
+      "cbs_team_id": 404,
+      "id": "krswc3j2gqydi===",
+      "short_name": "ARI"
+    }
   },
-  "week02": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 2,
-    "picks": [
-      {
-        "game_id": 29377039,
-        "game_status": "FINAL",
-        "game_time": 1726419600000,
-        "pick_status": "INCORRECT",
-        "team": "IND",
-        "team_id": 415,
-        "visible": true
-      },
-      {
-        "game_id": 29377031,
-        "game_status": "FINAL",
-        "game_time": 1726419600000,
-        "pick_status": "CORRECT",
-        "team": "LV",
-        "team_id": 424,
-        "visible": true
-      },
-      {
-        "game_id": 29377049,
-        "game_status": "FINAL",
-        "game_time": 1726419600000,
-        "pick_status": "CORRECT",
-        "team": "WAS",
-        "team_id": 433,
-        "visible": true
-      },
-      {
-        "game_id": 29377055,
-        "game_status": "FINAL",
-        "game_time": 1726446000000,
-        "pick_status": "INCORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377057,
-        "game_status": "FINAL",
-        "game_time": 1726532100000,
-        "pick_status": "INCORRECT",
-        "team": "PHI",
-        "team_id": 425,
-        "visible": true
+  "wins": [
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgayds===",
+      "is_favorite": false,
+      "is_home": false,
+      "spread": 6.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 10,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week03": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 2,
-    "picks": [
-      {
-        "game_id": 29377069,
-        "game_status": "FINAL",
-        "game_time": 1727024400000,
-        "pick_status": "CORRECT",
-        "team": "PIT",
-        "team_id": 426,
-        "visible": true
-      },
-      {
-        "game_id": 29377071,
-        "game_status": "FINAL",
-        "game_time": 1727024400000,
-        "pick_status": "INCORRECT",
-        "team": "TB",
-        "team_id": 431,
-        "visible": true
-      },
-      {
-        "game_id": 29377073,
-        "game_status": "FINAL",
-        "game_time": 1727024400000,
-        "pick_status": "INCORRECT",
-        "team": "TEN",
-        "team_id": 432,
-        "visible": true
-      },
-      {
-        "game_id": 29377075,
-        "game_status": "FINAL",
-        "game_time": 1727035500000,
-        "pick_status": "INCORRECT",
-        "team": "LV",
-        "team_id": 424,
-        "visible": true
-      },
-      {
-        "game_id": 29377077,
-        "game_status": "FINAL",
-        "game_time": 1727035500000,
-        "pick_status": "CORRECT",
-        "team": "SEA",
-        "team_id": 430,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxga2tc===",
+      "is_favorite": true,
+      "is_home": true,
+      "spread": -1.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 18,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week04": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 1,
-    "picks": [
-      {
-        "game_id": 29377091,
-        "game_status": "FINAL",
-        "game_time": 1727396100000,
-        "pick_status": "INCORRECT",
-        "team": "NYG",
-        "team_id": 422,
-        "visible": true
-      },
-      {
-        "game_id": 29377101,
-        "game_status": "FINAL",
-        "game_time": 1727629200000,
-        "pick_status": "INCORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377103,
-        "game_status": "FINAL",
-        "game_time": 1727629200000,
-        "pick_status": "INCORRECT",
-        "team": "PIT",
-        "team_id": 426,
-        "visible": true
-      },
-      {
-        "game_id": 29377109,
-        "game_status": "FINAL",
-        "game_time": 1727640300000,
-        "pick_status": "INCORRECT",
-        "team": "ARI",
-        "team_id": 404,
-        "visible": true
-      },
-      {
-        "game_id": 29377113,
-        "game_status": "FINAL",
-        "game_time": 1727641500000,
-        "pick_status": "CORRECT",
-        "team": "LV",
-        "team_id": 424,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgezts===",
+      "is_favorite": false,
+      "is_home": false,
+      "spread": 7.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 21,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week05": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 5,
-    "picks": [
-      {
-        "game_id": 29376705,
-        "game_status": "FINAL",
-        "game_time": 1728221400000,
-        "pick_status": "CORRECT",
-        "team": "MIN",
-        "team_id": 419,
-        "visible": true
-      },
-      {
-        "game_id": 29377125,
-        "game_status": "FINAL",
-        "game_time": 1728234000000,
-        "pick_status": "CORRECT",
-        "team": "CHI",
-        "team_id": 409,
-        "visible": true
-      },
-      {
-        "game_id": 29377129,
-        "game_status": "FINAL",
-        "game_time": 1728234000000,
-        "pick_status": "CORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377131,
-        "game_status": "FINAL",
-        "game_time": 1728234000000,
-        "pick_status": "CORRECT",
-        "team": "JAC",
-        "team_id": 416,
-        "visible": true
-      },
-      {
-        "game_id": 29377139,
-        "game_status": "FINAL",
-        "game_time": 1728245100000,
-        "pick_status": "CORRECT",
-        "team": "ARI",
-        "team_id": 404,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgiydc===",
+      "is_favorite": false,
+      "is_home": true,
+      "spread": 2.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 1,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week06": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 4,
-    "picks": [
-      {
-        "game_id": 29377149,
-        "game_status": "FINAL",
-        "game_time": 1728605700000,
-        "pick_status": "INCORRECT",
-        "team": "SEA",
-        "team_id": 430,
-        "visible": true
-      },
-      {
-        "game_id": 29376707,
-        "game_status": "FINAL",
-        "game_time": 1728826200000,
-        "pick_status": "CORRECT",
-        "team": "CHI",
-        "team_id": 409,
-        "visible": true
-      },
-      {
-        "game_id": 29377155,
-        "game_status": "FINAL",
-        "game_time": 1728838800000,
-        "pick_status": "CORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377165,
-        "game_status": "FINAL",
-        "game_time": 1728849900000,
-        "pick_status": "CORRECT",
-        "team": "PIT",
-        "team_id": 426,
-        "visible": true
-      },
-      {
-        "game_id": 29377169,
-        "game_status": "FINAL",
-        "game_time": 1728851100000,
-        "pick_status": "CORRECT",
-        "team": "DET",
-        "team_id": 413,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgiytg===",
+      "is_favorite": false,
+      "is_home": false,
+      "spread": 2.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 7,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week07": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 1,
-    "picks": [
-      {
-        "game_id": 29377175,
-        "game_status": "FINAL",
-        "game_time": 1729210500000,
-        "pick_status": "INCORRECT",
-        "team": "NO",
-        "team_id": 421,
-        "visible": true
-      },
-      {
-        "game_id": 29376709,
-        "game_status": "FINAL",
-        "game_time": 1729431000000,
-        "pick_status": "INCORRECT",
-        "team": "NE",
-        "team_id": 420,
-        "visible": true
-      },
-      {
-        "game_id": 29377189,
-        "game_status": "FINAL",
-        "game_time": 1729443600000,
-        "pick_status": "CORRECT",
-        "team": "PHI",
-        "team_id": 425,
-        "visible": true
-      },
-      {
-        "game_id": 29377191,
-        "game_status": "FINAL",
-        "game_time": 1729454700000,
-        "pick_status": "INCORRECT",
-        "team": "LAR",
-        "team_id": 427,
-        "visible": true
-      },
-      {
-        "game_id": 29377197,
-        "game_status": "FINAL",
-        "game_time": 1729470000000,
-        "pick_status": "INCORRECT",
-        "team": "NYJ",
-        "team_id": 423,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgi2tk===",
+      "is_favorite": true,
+      "is_home": true,
+      "spread": -0.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 25,
-    "score": 20,
-    "trending_score": 0
-  },
-  "week08": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 3,
-    "picks": [
-      {
-        "game_id": 29377203,
-        "game_status": "FINAL",
-        "game_time": 1729815300000,
-        "pick_status": "CORRECT",
-        "team": "LAR",
-        "team_id": 427,
-        "visible": true
-      },
-      {
-        "game_id": 29377207,
-        "game_status": "FINAL",
-        "game_time": 1730048400000,
-        "pick_status": "CORRECT",
-        "team": "DET",
-        "team_id": 413,
-        "visible": true
-      },
-      {
-        "game_id": 29377211,
-        "game_status": "FINAL",
-        "game_time": 1730048400000,
-        "pick_status": "INCORRECT",
-        "team": "GB",
-        "team_id": 414,
-        "visible": true
-      },
-      {
-        "game_id": 29377209,
-        "game_status": "FINAL",
-        "game_time": 1730048400000,
-        "pick_status": "INCORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377223,
-        "game_status": "FINAL",
-        "game_time": 1730059500000,
-        "pick_status": "CORRECT",
-        "team": "BUF",
-        "team_id": 407,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgi4dc===",
+      "is_favorite": true,
+      "is_home": true,
+      "spread": -0.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 10,
-    "score": 22,
-    "trending_score": 0
-  },
-  "week09": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 3,
-    "picks": [
-      {
-        "game_id": 29377235,
-        "game_status": "FINAL",
-        "game_time": 1730420100000,
-        "pick_status": "INCORRECT",
-        "team": "HOU",
-        "team_id": 247415,
-        "visible": true
-      },
-      {
-        "game_id": 29377241,
-        "game_status": "FINAL",
-        "game_time": 1730656800000,
-        "pick_status": "CORRECT",
-        "team": "MIA",
-        "team_id": 418,
-        "visible": true
-      },
-      {
-        "game_id": 29377251,
-        "game_status": "FINAL",
-        "game_time": 1730656800000,
-        "pick_status": "CORRECT",
-        "team": "WAS",
-        "team_id": 433,
-        "visible": true
-      },
-      {
-        "game_id": 29377261,
-        "game_status": "FINAL",
-        "game_time": 1730667900000,
-        "pick_status": "INCORRECT",
-        "team": "PHI",
-        "team_id": 425,
-        "visible": true
-      },
-      {
-        "game_id": 29377259,
-        "game_status": "FINAL",
-        "game_time": 1730669100000,
-        "pick_status": "CORRECT",
-        "team": "LAR",
-        "team_id": 427,
-        "visible": true
+    },
+    {
+      "game_id": "PoolEvent:kbxw63cfozsw45b2gi4tgnzxgm2do===",
+      "is_favorite": false,
+      "is_home": false,
+      "spread": 3.5,
+      "team": {
+        "cbs_team_id": 404,
+        "id": "krswc3j2gqydi===",
+        "short_name": "ARI"
       }
-    ],
-    "rank": 7,
-    "score": 25,
-    "trending_score": 0
-  },
-  "week10": {
-    "id": "ivxhi4tzhiytoobqgy3doojz",
-    "name": "Antonio Torres",
-    "period_score": 0,
-    "picks": [
-      {
-        "pick_status": "MISSING",
-        "visible": false
-      },
-      {
-        "pick_status": "MISSING",
-        "visible": false
-      },
-      {
-        "pick_status": "MISSING",
-        "visible": false
-      },
-      {
-        "pick_status": "MISSING",
-        "visible": false
-      },
-      {
-        "pick_status": "MISSING",
-        "visible": false
-      }
-    ],
-    "score": 25,
-    "second_half": 0,
-    "trending_score": 0,
-    "week": 10
-  }
+    }
+  ]
 }

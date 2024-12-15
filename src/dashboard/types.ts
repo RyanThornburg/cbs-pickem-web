@@ -20,9 +20,9 @@ export interface User {
   name: string;
 }
 
-export interface UserLeader extends User {
+export interface RankedUser extends User {
   place: number;
-  second_half_place?: number;
+  second_half_place?: number | undefined;
 }
 
 export interface Pick {
@@ -38,6 +38,7 @@ export enum GameStatus {
   Final = "FINAL",
   Inprogress = "INPROGRESS",
   Scheduled = "SCHEDULED",
+  Halftime = "HALFTIME",
 }
 
 export enum PickStatus {
@@ -45,6 +46,22 @@ export enum PickStatus {
   Incorrect = "INCORRECT",
   Missing = "MISSING",
   None = "NONE",
+}
+
+export interface TeamCovers {
+  team: Team;
+  wins: TeamCoverResult[];
+  losses: TeamCoverResult[];
+  win_count: number;
+  loss_count: number;
+}
+
+export interface TeamCoverResult {
+  game_id: string;
+  is_favorite: boolean;
+  is_home: boolean;
+  spread: number;
+  team: Team;
 }
 
 export interface WeekCover {

@@ -1,54 +1,21 @@
-import { SxProps } from "@mui/material";
 import { blue, green, orange, red } from "@mui/material/colors";
-import dayjs from "dayjs";
 
-export const gameDate = (gameStart: number) => {
-  const game = dayjs(gameStart);
-  return game.format("ddd, MMM DD");
-};
-
-export const gameTime = (gameStart: number) => {
-  const game = dayjs(gameStart);
-  return game.format("hh:mm A");
-};
-
-export const IsGameToday = (gameStart: number): boolean => {
-  var now = dayjs().format("ddd, MMM DD");
-  var gameTime = gameDate(gameStart);
-  return now === gameTime;
-};
-
-export function stringToColor(string: string) {
-  let hash = 0;
-  let i;
-
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = "#";
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
+interface StatusColorType {
+  bgColor: string;
+  bgBack: string;
+  borderColor: string;
+  borderInProgressColor: string;
 }
 
-export function stringAvatar(name: string, props: SxProps) {
-  return {
-    sx: {
-      ...props,
-      bgcolor: stringToColor(name),
-    },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`.toUpperCase(),
-  };
+interface StatusColorMap {
+  CORRECT: StatusColorType;
+  INCORRECT: StatusColorType;
+  MISSING: StatusColorType;
+  TBD: StatusColorType;
+  NONE: StatusColorType;
 }
 
-export const StatusColor = {
+export const StatusColor: StatusColorMap = {
   CORRECT: {
     bgColor: green[50],
     bgBack: green[800],
@@ -79,7 +46,7 @@ export const StatusColor = {
     borderColor: blue[400],
     borderInProgressColor: blue["A400"],
   },
-};
+} as const;
 
 export function getOrdinal(n: number) {
   let ord = "th";
@@ -93,4 +60,8 @@ export function getOrdinal(n: number) {
   }
 
   return ord;
+}
+
+export function stringOrdinalPlace(place: number): string {
+  return `${place}${getOrdinal(place)}`;
 }

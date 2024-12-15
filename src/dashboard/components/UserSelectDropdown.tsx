@@ -5,8 +5,8 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { db } from "../../components/firebase";
-import { User } from "../../types";
+import { db } from "../../api/firebase";
+import { User } from "../types";
 
 export type Props = {
   week: number;

@@ -2,18 +2,21 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
-import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
-import GamesMain from "./GamesMain";
-import StatsLeaderboard from "./StatsLeaderboard";
-import StatsTopUserPicks from "./StatsTopUserPicks";
-import StatsWeeklyCoverChart from "./StatsWeeklyCoverChart";
-import StatsWeeklyResult from "./StatsWeeklyResult";
-import UserDataGrid from "./UserDataGrid";
-import UserDataMobile from "./UserDataMobile";
+import { useEffect, useState } from "react";
+
+import Scoreboard from "./Scoreboard";
+import StatsLeaderboard from "./LeaderboardCard";
+import TopTeamsPicked from "./TopTeamsPicked";
+import WeeklyCoverChart from "./WeeklyCoverChart";
+import CoverResultCard from "./CoverResultCard";
 import UserSelectDropdown from "./UserSelectDropdown";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
+import { GetUserByWeek } from "../data/GetUserByWeek";
+import { RankedUser } from "../types";
+import UsersTable from "./UsersTable";
+import UserSelectedMain from "./UserSelected/UserSelectedMain";
+//import TeamCoverCard from "./TeamCoversCard";
 
 export type Props = {
   currentWeek: number;
@@ -21,14 +24,18 @@ export type Props = {
 
 export default function MainGrid({ currentWeek }: Props) {
   const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
-  const [user, setUser] = useState<string>((): string => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? storedUser : "";
-  });
+  const [user, setUser] = useState<string>("");
+  const [userList, setUserList] = useState<RankedUser[]>([]);
 
-  if (selectedWeek === 0 && currentWeek > 0) {
-    setSelectedWeek(currentWeek);
-  }
+  // If loading from localStorage, make sure the value exists in options first
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && userList.some((user) => user.id === storedUser)) {
+      setUser(storedUser);
+    } else {
+      setUser(""); // Reset to empty if stored value is invalid
+    }
+  }, [userList]); // Add userList as dependency
   const onWeekChange = (week: number): void => {
     setSelectedWeek(week);
   };
@@ -37,6 +44,28 @@ export default function MainGrid({ currentWeek }: Props) {
     localStorage.setItem("user", userId);
     setUser(userId);
   };
+
+  // Handle selectedWeek initialization
+  useEffect(() => {
+    if (selectedWeek === 0 && currentWeek > 0) {
+      setSelectedWeek(currentWeek);
+    }
+  }, [selectedWeek, currentWeek]);
+
+  useEffect(() => {
+    if (currentWeek > 0 && selectedWeek > 0) {
+      const unsubscribe = GetUserByWeek(selectedWeek, (users) => {
+        setUserList(users as RankedUser[]);
+      });
+
+      // Cleanup subscription when component unmounts
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    }
+  }, [currentWeek, selectedWeek]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
@@ -54,15 +83,15 @@ export default function MainGrid({ currentWeek }: Props) {
             }}
           >
             <Grid size={{ xs: 12, sm: "grow" }}>
-              <Typography align="left" variant="h5" sx={{ size: 3, mb: 2 }}>
+              <Typography align="left" variant="h5" sx={{ size: 3 }}>
                 Morlocked Pick'em Results
               </Typography>
             </Grid>
             <Grid
               sx={{ display: { xs: "none", lg: "block" } }}
-              size={{ lg: 7 }}
+              size={{ xs: 0, lg: 7 }}
             >
-              <UserSelected userId={user} week={selectedWeek} />
+              <UserSelectedMain userId={user} userList={userList} />
             </Grid>
 
             <Grid
@@ -88,15 +117,10 @@ export default function MainGrid({ currentWeek }: Props) {
                   user={user}
                   onUserChange={onUserChange}
                 />
-                <ColorModeIconDropdown />
               </Stack>
             </Grid>
-            <Grid
-              sx={{ display: { xs: "none", md: "none" } }}
-              size={{ xs: 12 }}
-            >
-              <UserSelected userId={user} week={selectedWeek} />
-            </Grid>
+
+            <UserSelected userId={user} userList={userList} />
           </Grid>
 
           <Grid
@@ -105,28 +129,28 @@ export default function MainGrid({ currentWeek }: Props) {
             columns={12}
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
-            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
               <StatsLeaderboard
-                week={currentWeek}
+                userList={userList}
                 isSecondHalf={false}
                 userId={user}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
               <StatsLeaderboard
-                week={currentWeek}
+                userList={userList}
                 isSecondHalf={true}
                 userId={user}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 3, lg: 2 }}>
-              <StatsWeeklyResult
+            <Grid size={{ xs: 12, sm: 3, md: 3, xl: 2 }}>
+              <CoverResultCard
                 week={selectedWeek}
                 isCurrent={currentWeek === selectedWeek}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 9, lg: 4 }}>
-              <StatsWeeklyCoverChart />
+            <Grid size={{ xs: 12, sm: 9, md: 9, xl: 4 }}>
+              <WeeklyCoverChart />
             </Grid>
           </Grid>
 
@@ -140,25 +164,14 @@ export default function MainGrid({ currentWeek }: Props) {
           </Typography>
 
           <Grid container spacing={{ xs: 2, md: 1, lg: 2, xl: 1 }}>
-            <Grid
-              id="gridUser"
-              width={"fit-content"}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              sx={{ display: { xs: "none", sm: "block" } }}
-              size={{ xs: 12, sm: 12, md: 12, lg: 8, xl: 7 }}
-            >
-              <UserDataGrid week={selectedWeek} userId={user} />
-            </Grid>
-            <Grid
-              sx={{ display: { xs: "block", sm: "none" } }}
-              size={{ xs: 12 }}
-            >
-              <UserDataMobile userId={user} week={selectedWeek} />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 12, md: 12, lg: 4, xl: 5 }}>
-              <StatsTopUserPicks week={selectedWeek} />
+            <UsersTable
+              userList={userList}
+              userId={user}
+              showSecondHalf={selectedWeek >= 10}
+              week={selectedWeek}
+            />
+            <Grid size={{ xs: 12, xl: 5 }}>
+              <TopTeamsPicked week={selectedWeek} />
             </Grid>
           </Grid>
 
@@ -178,7 +191,7 @@ export default function MainGrid({ currentWeek }: Props) {
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, lg: 12 }}>
-              <GamesMain week={selectedWeek} />
+              <Scoreboard week={selectedWeek} />
             </Grid>
           </Grid>
         </>

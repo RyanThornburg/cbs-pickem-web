@@ -1,9 +1,6 @@
-import styled from "@emotion/styled";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CloseIcon from "@mui/icons-material/Close";
-import SportsFootballOutlinedIcon from "@mui/icons-material/SportsFootballOutlined";
 import {
-  Avatar,
   AvatarGroup,
   Box,
   Chip,
@@ -13,9 +10,26 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useState } from "react";
-import { Game, GameStatus, Possession, Team, UserId } from "../../../types";
-import TeamData from "../../data/team_data.json";
-import { gameTime, IsGameToday, stringAvatar } from "../../helper";
+import { Game, GameStatus, Possession, Team, UserId } from "../../../../types";
+import TeamData from "../../utils/team_data.json";
+import styled from "@emotion/styled";
+import SportsFootballOutlinedIcon from "@mui/icons-material/SportsFootballOutlined";
+import { isGameToday, formatGameTime } from "../../utils/dateFormatters";
+import UserAvatar from "../../../UserAvatar";
+
+export const BallIcon = () => {
+  const Icon = styled(MuiIcon)({
+    "& > svg": {
+      transform: "rotate(45deg)",
+    },
+  });
+
+  return (
+    <Icon>
+      <SportsFootballOutlinedIcon sx={{ fontSize: "1rem" }} />
+    </Icon>
+  );
+};
 
 export type TeamDataJson = typeof TeamData;
 
@@ -23,11 +37,6 @@ export type Props = {
   game: Game;
   isHome: boolean;
 };
-const Icon = styled(MuiIcon)({
-  "& > svg": {
-    transform: "rotate(45deg)",
-  },
-});
 
 interface GridStat {
   team: Team;
@@ -59,7 +68,7 @@ const timeOrStatus = (game: Game): string => {
   }
 
   if (game.status === GameStatus.Scheduled) {
-    return gameTime(game.starts_at);
+    return formatGameTime(game.starts_at);
   }
 
   return `${game.time_remaining} ${quarterLookUp[game?.game_period ?? 0]}`;
@@ -77,23 +86,16 @@ const homeSpread = (game: Game): number => {
   return game?.home_team_spread ?? 0;
 };
 
-const ballIcon = () => {
-  return (
-    <Icon>
-      <SportsFootballOutlinedIcon sx={{ fontSize: "1rem" }} />
-    </Icon>
-  );
-};
 function getBallIcon(game: Game, isHome: boolean) {
   if (game.status !== GameStatus.Inprogress) {
     return undefined;
   }
 
-  return isHome && game?.possession === Possession.Home
-    ? ballIcon()
-    : !isHome && game?.possession === Possession.Away
-    ? ballIcon()
-    : undefined;
+  return isHome && game?.possession === Possession.Home ? (
+    <BallIcon />
+  ) : !isHome && game?.possession === Possession.Away ? (
+    <BallIcon />
+  ) : undefined;
 }
 
 const homeTeamStats = (game: Game): GridStat => {
@@ -115,7 +117,7 @@ const homeTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > awayScore(game),
     status: game.status,
-    isToday: IsGameToday(game.starts_at),
+    isToday: isGameToday(game.starts_at),
   };
 };
 
@@ -148,7 +150,7 @@ const awayTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > homeScore(game),
     status: game.status,
-    isToday: IsGameToday(game.starts_at),
+    isToday: isGameToday(game.starts_at),
   };
 };
 const teamNameAndSpread = (team: GridStat): string => {
@@ -218,7 +220,7 @@ export default function TeamScore({ game, isHome }: Props) {
 
   return (
     <Grid container size={{ xs: 12 }}>
-      <Grid size={{ xs: 6, sm: 5, lg: 3 }}>
+      <Grid size={{ xs: 6, sm: 5 }}>
         <Stack
           direction="row"
           sx={{
@@ -241,24 +243,28 @@ export default function TeamScore({ game, isHome }: Props) {
                 width="24"
                 height="24"
                 alt={team.team.short_name}
-                src={require(`../../icons/${team.teamIcon}`)}
+                src={require(`../../../../icons/${team.teamIcon}`)}
               />
             }
             <Box sx={{ pl: "12px" }}>{teamNameAndSpread(team)}</Box>
           </Stack>
 
-          <Box>{getBallIcon(game, isHome)}</Box>
+          <Box sx={{ paddingRight: "8px" }}>{getBallIcon(game, isHome)}</Box>
         </Stack>
       </Grid>
-      <Grid size={{ xs: 1 }}>{team.score}</Grid>
-      <Grid size={{ xs: "grow", lg: 3 }}>{team.timeOrDown}</Grid>
-      <Grid size={{ xs: "grow", lg: 5 }} display={{ xs: "block", lg: "block" }}>
+      <Grid size={{ xs: 2 }}>
+        <Grid container justifyContent={"flex-start"}>
+          {team.score}
+        </Grid>
+      </Grid>
+
+      <Grid size={{ xs: 3, sm: 4 }}>
         <Grid
           onClick={
             team.picks && team.picks.length > 0 ? handleClick : undefined
           }
           container
-          sx={{ minWidth: "125px", textAlign: "end" }}
+          sx={{ minWidth: "125px", textAlign: "end", paddingLeft: "14px" }}
         >
           {team.picks && team?.picks.length > 0 && pickStatus(team)}
           {team.picks && team.picks.length > 0 && (
@@ -272,14 +278,12 @@ export default function TeamScore({ game, isHome }: Props) {
               {team.picks &&
                 team.picks.map((user: UserId) => {
                   return (
-                    <Avatar
+                    <UserAvatar
+                      size={24}
+                      userName={user.name}
+                      userId={user.id}
+                      includeName={false}
                       key={`teamScore-Avatar-${team.team.cbs_team_id}-${user.id}`}
-                      alt={user.name}
-                      {...stringAvatar(user.name, {
-                        width: 24,
-                        height: 24,
-                        fontSize: 10,
-                      })}
                     />
                   );
                 })}
@@ -329,14 +333,11 @@ export default function TeamScore({ game, isHome }: Props) {
                       direction="row"
                       spacing={2}
                     >
-                      <Avatar
-                        {...stringAvatar(user.name, {
-                          width: 20,
-                          height: 20,
-                          fontSize: 10,
-                        })}
+                      <UserAvatar
+                        userName={user.name}
+                        fontSize={"1rem"}
+                        userId={user.id}
                       />
-                      <Box sx={{ fontSize: "1rem" }}>{user.name}</Box>
                     </Stack>
                   );
                 })}
