@@ -16,13 +16,11 @@ import { GetUserByWeek } from "../data/GetUserByWeek";
 import { RankedUser } from "../types";
 import UsersTable from "./UsersTable";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
+import { useCurrentWeek } from "./CurrentWeekContext";
 //import TeamCoverCard from "./TeamCoversCard";
 
-export type Props = {
-  currentWeek: number;
-};
-
-export default function MainGrid({ currentWeek }: Props) {
+export default function MainGrid() {
+  const { currentWeek } = useCurrentWeek();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
   const [user, setUser] = useState<string>("");
   const [userList, setUserList] = useState<RankedUser[]>([]);

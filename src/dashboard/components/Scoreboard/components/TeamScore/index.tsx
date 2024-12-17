@@ -216,7 +216,7 @@ export default function TeamScore({ game, isHome }: Props) {
 
   const open = Boolean(anchorEl);
 
-  const id = open ? "simple-popover" : undefined;
+  const id = open ? "userGroups" : undefined;
 
   return (
     <Grid container size={{ xs: 12 }}>
@@ -309,7 +309,7 @@ export default function TeamScore({ game, isHome }: Props) {
           <Stack
             sx={{
               ml: "2px",
-              p: "1px",
+              p: "8px",
               alignItems: "flex-start",
               justifyContent: "flex-start",
             }}
@@ -335,7 +335,8 @@ export default function TeamScore({ game, isHome }: Props) {
                     >
                       <UserAvatar
                         userName={user.name}
-                        fontSize={"1rem"}
+                        fontSize={"0.75rem"}
+                        size={20}
                         userId={user.id}
                       />
                     </Stack>

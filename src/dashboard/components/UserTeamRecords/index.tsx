@@ -13,7 +13,11 @@ import {
   Paper,
   Typography,
   alpha,
+  Box,
 } from "@mui/material";
+import { useCurrentWeek } from "../CurrentWeekContext";
+import { RankedUser } from "../../types";
+import { stringOrdinalPlace } from "../../helper";
 
 interface Pick {
   game_id: string;
@@ -49,9 +53,14 @@ interface TeamStats extends TeamRecord {
   lastFiveResults?: ("W" | "L")[];
 }
 
-export default function UserPicks({ userId }: { userId: string }) {
+export default function UserTeamRecords({ userId }: { userId: string }) {
+  const { rankedUsers, isSecondHalf } = useCurrentWeek();
   const [userResults, setUserResults] = useState<{ [key: string]: WeekData }>(
     {}
+  );
+
+  const currentUser = rankedUsers.find(
+    (user: RankedUser) => user.id === userId
   );
 
   useEffect(() => {
@@ -76,13 +85,13 @@ export default function UserPicks({ userId }: { userId: string }) {
         boxShadow: (theme) => theme.shadows[2],
         bgcolor: "background.paper",
         mb: 2,
-        maxHeight: "400px", // Set max height if more than 5 rows
+        p: 2,
       }}
     >
       <Typography
         variant="h6"
         sx={{
-          p: 2,
+          pb: 1,
           fontWeight: 600,
           color: "primary.main",
           fontSize: { xs: "1rem" },
@@ -94,7 +103,7 @@ export default function UserPicks({ userId }: { userId: string }) {
       >
         {title}
       </Typography>
-      <Table size="small" stickyHeader>
+      <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell
@@ -252,9 +261,51 @@ export default function UserPicks({ userId }: { userId: string }) {
   if (!teamStats.length) return null;
 
   return (
-    <Card variant="outlined" sx={{ height: "100%", flexGrow: 1 }}>
+    <Card
+      variant="outlined"
+      sx={{
+        height: "100%",
+        flexGrow: 1,
+        "& .MuiCardContent-root": {
+          padding: (theme) => theme.spacing(3),
+        },
+      }}
+    >
       <CardContent>
-        <TeamTable data={teamStats} title="All Team Records" />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          {/* Box 1: Name */}
+          <Typography variant="h5" component="div">
+            {currentUser?.name || "Unknown User"}
+          </Typography>
+
+          {/* Box 2: Season Score and Rank */}
+          <Typography variant="body1">
+            Season: {stringOrdinalPlace(currentUser?.place ?? 99)} Place{" "}
+            <Box component="span" sx={{ fontWeight: "bold" }}>
+              ({(currentUser?.score ?? 0) + (currentUser?.trending_score ?? 0)})
+            </Box>
+          </Typography>
+
+          {/* Box 3: Second Half Score and Rank (Conditional) */}
+          {isSecondHalf && (
+            <Typography variant="body1">
+              2nd Half:{" "}
+              {stringOrdinalPlace(currentUser?.second_half_place ?? 99)} Place{" "}
+              <Box component="span" sx={{ fontWeight: "bold" }}>
+                ({currentUser?.second_half ?? 0})
+              </Box>
+            </Typography>
+          )}
+        </Box>
+
+        <TeamTable data={teamStats} title="Pick Records" />
       </CardContent>
     </Card>
   );

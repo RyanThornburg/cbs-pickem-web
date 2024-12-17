@@ -6,11 +6,6 @@ import { styled } from "@mui/material/styles";
 import { Divider, Stack } from "@mui/material";
 
 const GamePickFormatted = (pick: Pick, index: number) => {
-  // if (index > 4) {
-  //   // why cbs allows this?
-  //   return;
-  // }
-
   const team = pick.visible
     ? pick.team
     : pick.pick_status === PickStatus.Missing
@@ -74,12 +69,40 @@ export const UserGamePicksStack = (
 ) => {
   const spacingSize = header ? 0.5 : 1;
   const visiblePicks = picks.filter((pick) => pick.visible);
-  const nonVisiblePicks = picks.filter((pick) => !pick.visible);
+  const hiddenPicks = picks.filter((pick) => !pick.visible);
   // Combine them, taking all visible picks and enough non-visible picks to reach 5 total
-  const combinedPicks = [
+  // const combinedPicks = [
+  //   ...visiblePicks,
+  //   ...hiddenPicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
+  // ].slice(0, 5);
+
+  const allFinal = visiblePicks.every((pick) => pick.game_status === "FINAL");
+
+  // Combine the picks
+  let combinedPicks = [
     ...visiblePicks,
-    ...nonVisiblePicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
-  ].slice(0, 5);
+    ...hiddenPicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
+  ];
+
+  // If all visible picks are FINAL, sort TBD before FINAL
+  if (allFinal) {
+    combinedPicks = combinedPicks.sort((a, b) => {
+      // Put TBD games first
+      if (
+        a.game_status === GameStatus.Scheduled &&
+        b.game_status === GameStatus.Final
+      )
+        return -1;
+      if (
+        a.game_status === GameStatus.Final &&
+        b.game_status === GameStatus.Scheduled
+      )
+        return 1;
+
+      // For games with same status, maintain original order
+      return 0;
+    });
+  }
 
   return (
     <Stack

@@ -1,6 +1,7 @@
 import ReactGA from "react-ga4";
 import "./App.css";
 import Dashboard from "./dashboard/Dashboard";
+import { CurrentWeekProvider } from "./dashboard/components/CurrentWeekContext";
 
 function App() {
   ReactGA.initialize("G-2BW7X4NL74");
@@ -11,7 +12,9 @@ function App() {
   });
   return (
     <div className="App">
-      <Dashboard></Dashboard>
+      <CurrentWeekProvider>
+        <Dashboard />
+      </CurrentWeekProvider>
     </div>
   );
 }

@@ -28,6 +28,7 @@ export interface RankedUser extends User {
 export interface Pick {
   game_id?: number;
   game_status?: GameStatus;
+  game_time?: number;
   pick_status?: PickStatus;
   team?: string;
   team_id?: number;

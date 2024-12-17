@@ -2,7 +2,7 @@ import { Avatar, Box, Link, Popover, Typography } from "@mui/material";
 import { UserAvatarProps } from "./UserAvatar.types";
 import { createAvatarProps } from "./UserAvatar.util";
 import { stringOrdinalPlace } from "../../helper";
-import UserPicks from "../UserPicks";
+import UserTeamRecords from "../UserTeamRecords";
 import { useState } from "react";
 
 export const UserAvatar = ({
@@ -14,18 +14,18 @@ export const UserAvatar = ({
   includeName = true,
   ...props
 }: UserAvatarProps) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [popOpen, setPopOpen] = useState<boolean>(false);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation(); // Stop event from bubbling up
-    setAnchorEl(event.currentTarget);
+    setPopOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setPopOpen(false);
   };
-  const open = Boolean(anchorEl);
-  const popid = open ? "pop" : undefined;
+
+  const popid = popOpen ? "pop" : undefined;
 
   return (
     <>
@@ -68,20 +68,17 @@ export const UserAvatar = ({
 
           <Popover
             id={popid}
-            open={open}
-            anchorEl={anchorEl}
+            open={popOpen}
+            anchorReference={"none"}
             onClose={handleClose}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "left",
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
             onClick={(e) => e.stopPropagation()} // Stop clicks inside popover from bubbling
           >
-            <UserPicks userId={userId} />
+            <UserTeamRecords userId={userId} />
           </Popover>
         </Box>
       )}

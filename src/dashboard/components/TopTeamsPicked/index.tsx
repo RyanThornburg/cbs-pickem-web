@@ -55,7 +55,9 @@ export default function TopTeamsPicked({ week }: Props) {
           yAxis={[
             {
               id: "barCategories",
-              data: teamPicks.map((team) => team.team),
+              data: teamPicks.map((team, index) => {
+                return team.is_game ? formatTeamLabel(team.team) : team.team;
+              }),
               scaleType: "band",
               colorMap: {
                 type: "ordinal",
@@ -71,7 +73,7 @@ export default function TopTeamsPicked({ week }: Props) {
           }}
           series={[
             {
-              data: teamPicks.map((team) => team.count),
+              data: teamPicks.map((team) => (team.is_game ? 6 : team.count)),
               highlightScope: {
                 highlighted: "item",
                 faded: "global",
