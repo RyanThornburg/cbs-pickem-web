@@ -232,7 +232,14 @@ export default function UserTeamRecords({ userId }: { userId: string }) {
         };
       })
 
-      .sort((a, b) => b.percentage - a.percentage);
+      .sort(
+        (a, b) =>
+          b.percentage === a.percentage
+            ? b.wins === a.wins
+              ? a.losses - b.losses // Sort by lowest losses when wins are tied
+              : b.wins - a.wins // Sort by highest wins when percentages are tied
+            : b.percentage - a.percentage // Sort by highest percentage first
+      );
   }, [userResults]);
   //.filter((record) => record.wins + record.losses >= 2) // Minimum 2 picks
   // const bestTeams = useMemo(() => {
