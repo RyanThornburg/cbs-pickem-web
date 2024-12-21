@@ -231,10 +231,10 @@ export default function UserTeamRecords({ userId }: { userId: string }) {
           recentTrend: trend,
         };
       })
-      .filter((record) => record.wins + record.losses >= 2) // Minimum 2 picks
+
       .sort((a, b) => b.percentage - a.percentage);
   }, [userResults]);
-
+  //.filter((record) => record.wins + record.losses >= 2) // Minimum 2 picks
   // const bestTeams = useMemo(() => {
   //   return teamStats
   //     .filter((team) => team.percentage > 50)
