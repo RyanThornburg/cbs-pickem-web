@@ -40,7 +40,7 @@ export default function UserSelectedMain({ userList, userId }: Props) {
         />
       </Stack>
 
-      <Box>Season: {(user.score ?? 0) + (user.trending_score ?? 0)}</Box>
+      <Box>Score: {(user.score ?? 0) + (user.trending_score ?? 0)}</Box>
       <Box>
         {user.place}
         {getOrdinal(user.place)}

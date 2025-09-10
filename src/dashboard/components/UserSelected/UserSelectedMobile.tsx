@@ -61,7 +61,7 @@ export default function UserSelected({ userList, userId }: Props) {
           </Stack>
 
           <Box sx={commonBoxStyles}>
-            Season: {(user.score ?? 0) + (user.trending_score ?? 0)} (
+            Score: {(user.score ?? 0) + (user.trending_score ?? 0)} (
             {stringOrdinalPlace(user.place)})
           </Box>
 

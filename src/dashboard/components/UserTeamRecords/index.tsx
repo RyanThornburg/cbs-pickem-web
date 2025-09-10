@@ -294,7 +294,7 @@ export default function UserTeamRecords({ userId }: { userId: string }) {
 
           {/* Box 2: Season Score and Rank */}
           <Typography variant="body1">
-            Season: {stringOrdinalPlace(currentUser?.place ?? 99)} Place{" "}
+            Score: {stringOrdinalPlace(currentUser?.place ?? 99)} Place{" "}
             <Box component="span" sx={{ fontWeight: "bold" }}>
               ({(currentUser?.score ?? 0) + (currentUser?.trending_score ?? 0)})
             </Box>
