@@ -127,21 +127,21 @@ export default function MainGrid() {
             columns={12}
             sx={{ mb: (theme) => theme.spacing(2) }}
           >
-            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 4 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
               <StatsLeaderboard
                 userList={userList}
                 isSecondHalf={false}
                 userId={user}
               />
             </Grid>
-            {/* <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
               <StatsLeaderboard
                 userList={userList}
                 isSecondHalf={true}
                 userId={user}
               />
-            </Grid> */}
-            <Grid size={{ xs: 12, sm: 3, md: 3, xl: 4 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3, md: 3, xl: 2 }}>
               <CoverResultCard
                 week={selectedWeek}
                 isCurrent={currentWeek === selectedWeek}
