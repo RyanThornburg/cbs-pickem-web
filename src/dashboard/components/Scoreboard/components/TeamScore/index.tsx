@@ -47,11 +47,29 @@ interface GridStat {
   ball?: any;
   spread: number | undefined | string;
   teamColor: string;
-  teamIcon: string;
+  teamIcon: string | undefined;
   winning: boolean;
   status: GameStatus;
   isToday: boolean;
 }
+
+// Team abbreviations are normalized to team_data.json's keys upstream (see
+// src/dashboard/data/weekGames.ts's toTeam) -- this is just the last-resort fallback
+// for a team that's still missing from team_data.json entirely.
+const FALLBACK_TEAM_DATA = {
+  icon: undefined as string | undefined,
+  color: "666666",
+  alternateColor: "999999",
+};
+
+const getTeamData = (abbr: string) => {
+  const teamData = TeamData[abbr as keyof typeof TeamData];
+  if (!teamData) {
+    console.warn(`No team_data.json entry for team abbreviation "${abbr}"`);
+    return FALLBACK_TEAM_DATA;
+  }
+  return teamData;
+};
 
 const quarterLookUp: { [int: number]: string } = {
   0: "",
@@ -68,22 +86,24 @@ const timeOrStatus = (game: Game): string => {
   }
 
   if (game.status === GameStatus.Scheduled) {
-    return formatGameTime(game.starts_at);
+    return formatGameTime(game.game_time);
   }
 
-  return `${game.time_remaining} ${quarterLookUp[game?.game_period ?? 0]}`;
+  return `${game.live?.time_remaining ?? ""} ${
+    quarterLookUp[game.live?.quarter ?? 0]
+  }`;
 };
 
 const homeScore = (game: Game): number => {
-  return game?.home_team_score ?? 0;
+  return game?.home_score ?? 0;
 };
 
 const awayScore = (game: Game): number => {
-  return game?.away_team_score ?? 0;
+  return game?.away_score ?? 0;
 };
 
 const homeSpread = (game: Game): number => {
-  return game?.home_team_spread ?? 0;
+  return game?.cbs_spread ?? 0;
 };
 
 function getBallIcon(game: Game, isHome: boolean) {
@@ -91,9 +111,9 @@ function getBallIcon(game: Game, isHome: boolean) {
     return undefined;
   }
 
-  return isHome && game?.possession === Possession.Home ? (
+  return isHome && game.live?.possession === Possession.Home ? (
     <BallIcon />
-  ) : !isHome && game?.possession === Possession.Away ? (
+  ) : !isHome && game.live?.possession === Possession.Away ? (
     <BallIcon />
   ) : undefined;
 }
@@ -101,15 +121,13 @@ function getBallIcon(game: Game, isHome: boolean) {
 const homeTeamStats = (game: Game): GridStat => {
   const score = homeScore(game);
   const spread = homeSpread(game);
-  const teamName = game.home_team.short_name;
-  const teamData = TeamData[teamName as keyof typeof TeamData];
-  const { icon, color } = teamData;
+  const { icon, color } = getTeamData(game.home_team.abbr);
 
   return {
     team: game.home_team,
     ball: getBallIcon(game, true),
     cover: score + spread > awayScore(game),
-    picks: game?.home_team_picks ?? [],
+    picks: game?.picks.home ?? [],
     score: score,
     timeOrDown: "",
     spread: spread < 0 ? spread : "",
@@ -117,16 +135,15 @@ const homeTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > awayScore(game),
     status: game.status,
-    isToday: isGameToday(game.starts_at),
+    isToday: isGameToday(game.game_time),
   };
 };
 
 const awayTeamStats = (game: Game): GridStat => {
   const score = awayScore(game);
   const spread = homeSpread(game);
-  const teamName = game.away_team.short_name;
-  const teamData = TeamData[teamName as keyof typeof TeamData];
-  const teamHome = TeamData[game.home_team.short_name as keyof typeof TeamData];
+  const teamData = getTeamData(game.away_team.abbr);
+  const teamHome = getTeamData(game.home_team.abbr);
 
   let { icon, color } = teamData;
 
@@ -139,10 +156,10 @@ const awayTeamStats = (game: Game): GridStat => {
     team: game.away_team,
     ball:
       game.status === GameStatus.Inprogress
-        ? game?.possession === Possession.Away ?? false
+        ? game.live?.possession === Possession.Away
         : false,
     cover: score > homeScore(game) + spread,
-    picks: game?.away_team_picks ?? [],
+    picks: game?.picks.away ?? [],
     score: score,
     timeOrDown: timeOrStatus(game),
     spread: spread > 0 ? spread * -1 : "",
@@ -150,14 +167,14 @@ const awayTeamStats = (game: Game): GridStat => {
     teamColor: color,
     winning: score > homeScore(game),
     status: game.status,
-    isToday: isGameToday(game.starts_at),
+    isToday: isGameToday(game.game_time),
   };
 };
 const teamNameAndSpread = (team: GridStat): string => {
   if (team.spread) {
-    return `${team.team.short_name} (${team.spread})`;
+    return `${team.team.abbr} (${team.spread})`;
   }
-  return team.team.short_name;
+  return team.team.abbr;
 };
 
 const zeroPickChip = ({ team, cover, status, isToday }: GridStat) => {
@@ -238,14 +255,14 @@ export default function TeamScore({ game, isHome }: Props) {
               alignItems: "left",
             }}
           >
-            {
+            {team.teamIcon && (
               <img
                 width="24"
                 height="24"
-                alt={team.team.short_name}
+                alt={team.team.abbr}
                 src={require(`../../../../icons/${team.teamIcon}`)}
               />
-            }
+            )}
             <Box sx={{ pl: "12px" }}>{teamNameAndSpread(team)}</Box>
           </Stack>
 
@@ -283,7 +300,7 @@ export default function TeamScore({ game, isHome }: Props) {
                       userName={user.name}
                       userId={user.id}
                       includeName={false}
-                      key={`teamScore-Avatar-${team.team.cbs_team_id}-${user.id}`}
+                      key={`teamScore-Avatar-${team.team.id}-${user.id}`}
                     />
                   );
                 })}
@@ -325,7 +342,7 @@ export default function TeamScore({ game, isHome }: Props) {
                 .map((user: UserId) => {
                   return (
                     <Stack
-                      key={`teamScore-popoverStack-${team.team.cbs_team_id}-${user.id}`}
+                      key={`teamScore-popoverStack-${team.team.id}-${user.id}`}
                       sx={{
                         alignItems: "center",
                         justifyContent: "flex-start",

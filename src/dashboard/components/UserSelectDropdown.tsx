@@ -3,38 +3,22 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { onValue, ref } from "firebase/database";
-import { useEffect, useState } from "react";
-import { db } from "../../api/firebase";
-import { User } from "../types";
+import { RankedUser } from "../types";
 
 export type Props = {
-  week: number;
+  userList: RankedUser[];
   user: string | undefined;
   onUserChange: any;
 };
 
 export default function UserSelectDropdown({
-  week,
+  userList,
   user,
   onUserChange,
 }: Props) {
-  const [users, setUsers] = useState<User[]>([]);
-  const weekFormat = week.toString().padStart(2, "0") ?? "01";
-
-  useEffect(() => {
-    const userRef = ref(db, "userPicks/");
-    return onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const filteredUsers: User[] = Object.entries(snapshot.val())
-          .map(([key, weeks]: [string, any]) => weeks[`week${weekFormat}`])
-          .sort((a: User, b: User) =>
-            a?.name < b?.name ? -1 : a?.name > b.name ? 1 : 0
-          );
-        setUsers(filteredUsers);
-      }
-    });
-  }, [weekFormat]);
+  const users = [...userList].sort((a, b) =>
+    a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+  );
 
   const handleChange = (event: SelectChangeEvent) => {
     onUserChange(event.target.value);
@@ -55,7 +39,7 @@ export default function UserSelectDropdown({
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          {users.map((userItem: User) => {
+          {users.map((userItem: RankedUser) => {
             return (
               <MenuItem
                 key={userItem.id}

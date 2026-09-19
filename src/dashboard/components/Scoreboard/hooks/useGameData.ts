@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import { Game } from "../../../types";
 import { GetGameDataByWeek } from "../../../data/GetGameDataByWeek";
+import { useCurrentWeek } from "../../CurrentWeekContext";
 
 export const useGameData = (week: number) => {
+  const { season } = useCurrentWeek();
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (week <= 0) {
+    if (week <= 0 || season <= 0) {
       setLoading(false);
       return;
     }
 
     try {
-      const unsubscribe = GetGameDataByWeek(week, (newGames) => {
+      const unsubscribe = GetGameDataByWeek(season, week, (newGames) => {
         setGames(newGames);
         setLoading(false);
       });
@@ -30,7 +32,7 @@ export const useGameData = (week: number) => {
       );
       setLoading(false);
     }
-  }, [week]);
+  }, [week, season]);
 
   return { games, loading, error };
 };

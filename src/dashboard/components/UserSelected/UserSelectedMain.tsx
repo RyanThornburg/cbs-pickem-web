@@ -40,16 +40,19 @@ export default function UserSelectedMain({ userList, userId }: Props) {
         />
       </Stack>
 
-      <Box>Score: {(user.score ?? 0) + (user.trending_score ?? 0)}</Box>
+      <Box>
+        Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
+      </Box>
       <Box>
         {user.place}
         {getOrdinal(user.place)}
         {" Place"}
       </Box>
-      {user.second_half && (
+      {user.second_half_score !== null && (
         <>
           <Box>
-            2nd Half: {(user.second_half ?? 0) + (user.trending_score ?? 0)}
+            2nd Half:{" "}
+            {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
           </Box>
           <Box>
             {user?.second_half_place}

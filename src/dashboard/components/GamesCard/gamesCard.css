@@ -1,0 +1,269 @@
+/* Ported from the Kickoff Board design mockup (https://claude.ai/artifact/9RUv8sNPhsKgaRaW8r92sg).
+   Scoped under .games-card so it can't leak into or collide with the rest
+   of the MUI-themed app. Light palette only -- the app's own dark-mode
+   toggle isn't wired up anywhere else, so a dark variant here would just
+   be inconsistent with everything around it. */
+.games-card {
+  --gc-bg: #f4f5f8;
+  --gc-surface: #ffffff;
+  --gc-surface-2: #eef0f5;
+  --gc-surface-3: #e5e8f0;
+  --gc-border: #dde1e9;
+  --gc-text: #171b26;
+  --gc-text-muted: #626c82;
+  --gc-accent: #a5680f;
+  --gc-accent-soft: #f4e6cc;
+  --gc-weather: #1f7a8c;
+  --gc-weather-soft: #dcf0f3;
+  --gc-danger: #b5342a;
+  --gc-danger-soft: #f7dedb;
+  --gc-good: #2f7a3d;
+
+  font-family: "Public Sans", system-ui, -apple-system, sans-serif;
+  color: var(--gc-text);
+  font-variant-numeric: tabular-nums;
+  /* App.css's leftover CRA boilerplate sets .App{text-align:center} on the
+     whole app -- text-align inherits, so it was silently centering this
+     component's unstyled inline elements (e.g. the Books button). Reset it
+     here rather than touching the global .App class. */
+  text-align: left;
+}
+
+.games-card th,
+.games-card .gc-label {
+  font-family: "Oswald", "Public Sans", system-ui, sans-serif;
+}
+
+.games-card .gc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--gc-border);
+  border-radius: 10px;
+  background: var(--gc-surface);
+  font-size: 0.76rem;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-legend-item { display: flex; align-items: center; gap: 6px; }
+.games-card .gc-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.games-card .gc-swatch.danger { background: var(--gc-danger); }
+.games-card .gc-swatch.move { background: var(--gc-weather); }
+
+.games-card .gc-tablewrap {
+  border: 1px solid var(--gc-border);
+  border-radius: 12px;
+  overflow-x: auto;
+  background: var(--gc-surface);
+}
+.games-card table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  min-width: 820px;
+}
+.games-card thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gc-text-muted);
+  background: var(--gc-surface-2);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gc-border);
+  white-space: nowrap;
+}
+.games-card tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gc-border);
+  vertical-align: middle;
+  font-size: 0.88rem;
+}
+.games-card tbody tr:last-child td { border-bottom: none; }
+.games-card tbody tr.gc-row:hover { background: var(--gc-surface-2); }
+
+.games-card .gc-matchup { display: flex; flex-direction: column; gap: 5px; }
+.games-card .gc-mrow { display: flex; align-items: center; gap: 8px; }
+.games-card .gc-mrow .gc-rec { color: var(--gc-text-muted); font-size: 0.78rem; }
+
+.games-card .gc-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  border-left: 3px solid var(--gc-chip-color, var(--gc-accent));
+  background: color-mix(in srgb, var(--gc-chip-color, var(--gc-accent)) 14%, var(--gc-surface));
+}
+
+.games-card .gc-kickoff { display: flex; flex-direction: column; gap: 2px; }
+.games-card .gc-kickoff .gc-time { font-weight: 500; white-space: nowrap; }
+.games-card .gc-kickoff .gc-tv {
+  color: var(--gc-text-muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.games-card .gc-line .gc-num { font-weight: 600; }
+
+.games-card .gc-movebadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--gc-weather-soft);
+  color: var(--gc-weather);
+  white-space: nowrap;
+}
+
+.games-card .gc-valuearrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.games-card .gc-valuearrow.good { color: var(--gc-good); }
+.games-card .gc-valuearrow.bad { color: var(--gc-accent); }
+
+.games-card .gc-wx { display: flex; align-items: flex-start; gap: 8px; }
+.games-card .gc-wx svg { flex: none; color: var(--gc-weather); margin-top: 1px; }
+.games-card .gc-wx .gc-wxtext { display: flex; flex-direction: column; gap: 3px; }
+.games-card .gc-wx .gc-temp { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.games-card .gc-wx .gc-cond { color: var(--gc-text-muted); font-size: 0.76rem; }
+.games-card .gc-wx .gc-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.games-card .gc-dome { display: inline-flex; align-items: center; gap: 6px; color: var(--gc-text-muted); font-size: 0.8rem; }
+.games-card .gc-dome svg { color: var(--gc-text-muted); }
+
+a.gc-wx-link,
+a.gc-wx-link:visited {
+  color: inherit;
+  text-decoration: none;
+}
+.games-card svg.gc-linkicon { color: var(--gc-text-muted); }
+a.gc-wx-link:hover .gc-temp,
+a.gc-wx-link:hover.gc-dome {
+  text-decoration: underline;
+}
+.games-card a.gc-wx-link:hover svg.gc-linkicon {
+  color: var(--gc-accent);
+}
+.games-card .gc-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.games-card .gc-flag.danger { background: var(--gc-danger-soft); color: var(--gc-danger); }
+.games-card .gc-flag.warn { background: var(--gc-accent-soft); color: var(--gc-accent); }
+
+.games-card .gc-expandbtn {
+  appearance: none;
+  border: 1px solid var(--gc-border);
+  background: var(--gc-surface-2);
+  color: var(--gc-text);
+  font-family: "Public Sans", sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.games-card .gc-expandbtn:hover { background: var(--gc-surface-3); }
+.games-card .gc-expandbtn .gc-arrow { transition: transform 0.15s ease; display: inline-flex; }
+.games-card .gc-expandbtn[aria-expanded="true"] .gc-arrow { transform: rotate(180deg); }
+
+.games-card tr.gc-bookdetail td { padding: 0 12px 14px; background: var(--gc-surface-2); }
+
+.games-card .gc-booktable { width: 100%; border-collapse: collapse; margin-top: 8px; min-width: 0; }
+.games-card .gc-booktable th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gc-text-muted);
+  font-weight: 500;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--gc-border);
+}
+.games-card .gc-booktable td { padding: 5px 8px; font-size: 0.82rem; border-bottom: 1px solid var(--gc-border); }
+.games-card .gc-booktable tr:last-child td { border-bottom: none; }
+.games-card .gc-booktable td.gc-bestval { font-weight: 700; color: var(--gc-accent); }
+.games-card .gc-booktable td.gc-bestval::after { content: " \2713"; font-size: 0.7em; }
+.games-card .gc-totalarrow { margin-left: 5px; font-size: 0.72rem; font-weight: 700; }
+.games-card .gc-totalarrow.high { color: var(--gc-weather); }
+.games-card .gc-totalarrow.low { color: var(--gc-accent); }
+.games-card .gc-pricesub { display: block; font-size: 0.7rem; color: var(--gc-text-muted); margin-top: 1px; }
+.games-card .gc-pricesub.cheapest { color: var(--gc-good); font-weight: 700; }
+
+/* ---- responsive: table on desktop, cards on narrow viewports ---- */
+.games-card .gc-mobile-view { display: none; }
+@media (max-width: 780px) {
+  .games-card .gc-desktop-view { display: none; }
+  .games-card .gc-mobile-view { display: block; }
+}
+
+.games-card .gc-cardlist { display: flex; flex-direction: column; gap: 12px; }
+.games-card .gc-gamecard {
+  border: 1px solid var(--gc-border);
+  border-radius: 12px;
+  background: var(--gc-surface);
+  padding: 14px 14px 12px;
+}
+.games-card .gc-gamecard-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  row-gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gc-border);
+}
+.games-card .gc-oddsgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+}
+.games-card .gc-oddsgrid .gc-cell { display: flex; flex-direction: column; gap: 3px; }
+.games-card .gc-oddsgrid .gc-lbl {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-oddsgrid .gc-val {
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.games-card .gc-gamecard .gc-expandbtn { width: 100%; }
+.games-card .gc-bookdetail-mobile { margin-top: 12px; overflow-x: auto; }
+.games-card .gc-bookdetail-mobile .gc-booktable { min-width: 480px; }

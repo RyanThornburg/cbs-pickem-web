@@ -1,29 +1,59 @@
+import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
+import GamesCard from "./GamesCard";
 import Scoreboard from "./Scoreboard";
-import StatsLeaderboard from "./LeaderboardCard";
-import TopTeamsPicked from "./TopTeamsPicked";
-import WeeklyCoverChart from "./WeeklyCoverChart";
-import CoverResultCard from "./CoverResultCard";
+import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
+import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
-import { RankedUser } from "../types";
+import { GameStatus, RankedUser } from "../types";
+import {
+  getInitialTab,
+  isPrimaryTab,
+  PrimaryTab,
+  setStoredTab,
+} from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
-//import TeamCoverCard from "./TeamCoversCard";
+// WeeklyCoverChart, CoverResultCard, and TeamCoversCard were removed along with their
+// Firebase reads — rebuild against the phase-2 covers KV key when it exists.
 
 export default function MainGrid() {
-  const { currentWeek } = useCurrentWeek();
+  const { currentWeek, season, secondHalfStartWeek } = useCurrentWeek();
+  const { tab } = useParams<{ tab: string }>();
+  const navigate = useNavigate();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
   const [user, setUser] = useState<string>("");
   const [userList, setUserList] = useState<RankedUser[]>([]);
+  const [hasLiveGame, setHasLiveGame] = useState(false);
+
+  const activeTab = isPrimaryTab(tab) ? tab : null;
+
+  // /:tab only matches known routes explicitly (see the "*" catch-all in
+  // App.tsx), but the param itself could still be anything -- redirect an
+  // unrecognized value back through "/" so it re-resolves to the stored/
+  // day-time default instead of rendering a blank tab.
+  useEffect(() => {
+    if (activeTab === null) {
+      navigate(`/${getInitialTab()}`, { replace: true });
+    }
+  }, [activeTab, navigate]);
+
+  const handleTabChange = (_: React.SyntheticEvent, value: PrimaryTab) => {
+    setStoredTab(value);
+    navigate(`/${value}`);
+  };
 
   // If loading from localStorage, make sure the value exists in options first
   useEffect(() => {
@@ -51,8 +81,8 @@ export default function MainGrid() {
   }, [selectedWeek, currentWeek]);
 
   useEffect(() => {
-    if (currentWeek > 0 && selectedWeek > 0) {
-      const unsubscribe = GetUserByWeek(selectedWeek, (users) => {
+    if (season > 0 && selectedWeek > 0) {
+      const unsubscribe = GetUserByWeek(season, selectedWeek, (users) => {
         setUserList(users as RankedUser[]);
       });
 
@@ -63,12 +93,35 @@ export default function MainGrid() {
         }
       };
     }
-  }, [currentWeek, selectedWeek]);
+  }, [season, selectedWeek]);
+
+  // Drives the Scoreboard tab's live-dot badge -- independent of the
+  // day/time default-tab rule, since a Thursday/Saturday game running long
+  // (or short) should still get flagged correctly.
+  useEffect(() => {
+    if (season > 0 && selectedWeek > 0) {
+      const unsubscribe = GetGameDataByWeek(season, selectedWeek, (games) => {
+        setHasLiveGame(
+          games.some(
+            (game) =>
+              game.status === GameStatus.Inprogress ||
+              game.status === GameStatus.Halftime
+          )
+        );
+      });
+
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    }
+  }, [season, selectedWeek]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* cards */}
-      {currentWeek !== 0 && (
+      {currentWeek !== 0 && activeTab !== null && (
         <>
           <Grid
             container
@@ -111,7 +164,7 @@ export default function MainGrid() {
                   onUserChange={onWeekChange}
                 />
                 <UserSelectDropdown
-                  week={selectedWeek}
+                  userList={userList}
                   user={user}
                   onUserChange={onUserChange}
                 />
@@ -121,75 +174,59 @@ export default function MainGrid() {
             <UserSelected userId={user} userList={userList} />
           </Grid>
 
-          <Grid
-            container
-            spacing={2}
-            columns={12}
-            sx={{ mb: (theme) => theme.spacing(2) }}
-          >
-            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
-              <StatsLeaderboard
-                userList={userList}
-                isSecondHalf={false}
-                userId={user}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 6, xl: 3 }}>
-              <StatsLeaderboard
-                userList={userList}
-                isSecondHalf={true}
-                userId={user}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 3, md: 3, xl: 2 }}>
-              <CoverResultCard
-                week={selectedWeek}
-                isCurrent={currentWeek === selectedWeek}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 9, md: 3, xl: 4 }}>
-              <WeeklyCoverChart />
-            </Grid>
-          </Grid>
+          {/* Overall/second-half leaderboard cards are hidden for now -- User
+              Picks shows the same place/score data and is slated for a
+              rework, so this duplicate top-of-page summary was redundant. */}
 
-          <Typography
-            align="left"
-            component="h2"
-            variant="h4"
-            sx={{ mb: 2, borderBottom: "1px solid grey" }}
-          >
-            User Picks
-          </Typography>
+          <Box sx={{ mt: 2, borderBottom: 1, borderColor: "divider" }}>
+            <Tabs value={activeTab} onChange={handleTabChange}>
+              <Tab label="User Picks" value="picks" />
+              <Tab label="Games" value="games" />
+              <Tab
+                label={
+                  <Badge
+                    color="error"
+                    variant="dot"
+                    invisible={!hasLiveGame || activeTab === "scoreboard"}
+                  >
+                    Scoreboard
+                  </Badge>
+                }
+                value="scoreboard"
+              />
+              <Tab label="Trends" value="trends" />
+            </Tabs>
+          </Box>
 
-          <Grid container spacing={{ xs: 2, md: 1, lg: 2, xl: 1 }}>
-            <UsersTable
-              userList={userList}
-              userId={user}
-              showSecondHalf={selectedWeek >= 10}
-              week={selectedWeek}
-            />
-            <Grid size={{ xs: 12, xl: 5 }}>
-              <TopTeamsPicked week={selectedWeek} />
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} columns={12}>
+          <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
             <Grid
-              id="games"
               size={{ xs: 12, lg: 12 }}
-              sx={{ display: "inline-block", width: "95%" }}
+              sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
-              <Typography
-                align="left"
-                component="h2"
-                variant="h4"
-                sx={{ mt: 2, borderBottom: "1px solid grey" }}
-              >
-                Games
-              </Typography>
+              <UsersTable
+                userList={userList}
+                userId={user}
+                showSecondHalf={selectedWeek >= secondHalfStartWeek}
+                week={selectedWeek}
+              />
             </Grid>
-            <Grid size={{ xs: 12, lg: 12 }}>
+            <Grid
+              size={{ xs: 12, lg: 12 }}
+              sx={{ display: activeTab === "games" ? "block" : "none" }}
+            >
+              <GamesCard week={selectedWeek} />
+            </Grid>
+            <Grid
+              size={{ xs: 12, lg: 12 }}
+              sx={{ display: activeTab === "scoreboard" ? "block" : "none" }}
+            >
               <Scoreboard week={selectedWeek} />
+            </Grid>
+            <Grid
+              size={{ xs: 12, lg: 12 }}
+              sx={{ display: activeTab === "trends" ? "block" : "none" }}
+            >
+              <TrendsSection season={season} week={selectedWeek} />
             </Grid>
           </Grid>
         </>

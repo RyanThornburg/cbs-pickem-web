@@ -61,13 +61,14 @@ export default function UserSelected({ userList, userId }: Props) {
           </Stack>
 
           <Box sx={commonBoxStyles}>
-            Score: {(user.score ?? 0) + (user.trending_score ?? 0)} (
+            Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)} (
             {stringOrdinalPlace(user.place)})
           </Box>
 
-          {user.second_half && (
+          {user.second_half_score !== null && (
             <Box sx={commonBoxStyles}>
-              2nd Half: {(user.second_half ?? 0) + (user.trending_score ?? 0)} (
+              2nd Half:{" "}
+              {(user.second_half_score ?? 0) + (user.trending_score ?? 0)} (
               {stringOrdinalPlace(user.second_half_place ?? 99)})
             </Box>
           )}

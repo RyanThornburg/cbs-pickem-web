@@ -19,12 +19,12 @@ export interface GameCardProps {
 }
 export const GameCard = memo(({ game }: GameCardProps) => {
   const gameTime = useMemo(
-    () => formatGameTime(game.starts_at),
-    [game.starts_at]
+    () => formatGameTime(game.game_time),
+    [game.game_time]
   );
   const gameDate = useMemo(
-    () => formatGameDate(game.starts_at),
-    [game.starts_at]
+    () => formatGameDate(game.game_time),
+    [game.game_time]
   );
 
   const gameTV = (tv: string | undefined) => {
@@ -55,7 +55,7 @@ export const GameCard = memo(({ game }: GameCardProps) => {
   const getTimeLeft = () => {
     return (
       <Typography sx={{ paddingX: "4px" }} variant="body2" align="center">
-        {game.time_remaining} {game.game_period}Q
+        {game.live?.time_remaining} {game.live?.quarter}Q
       </Typography>
     );
   };
@@ -76,7 +76,7 @@ export const GameCard = memo(({ game }: GameCardProps) => {
               }}
             >
               <Typography variant="subtitle2" color="text.secondary">
-                {gameDate} • {gameTime} • {gameTV(game.tv_info)}
+                {gameDate} • {gameTime} • {gameTV(game.tv_network)}
               </Typography>
 
               <Chip

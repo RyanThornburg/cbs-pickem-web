@@ -34,11 +34,16 @@ export const createAvatarProps = (
   name: string,
   props: SxProps
 ): UserStringProps => {
+  const initials = getInitials(name);
   return {
     sx: {
       ...props,
       bgcolor: stringToColor(name),
+      lineHeight: 1,
+      // Two-letter initials sit closer to the edge of the circle than one
+      // letter does, so tighten letter-spacing to keep them off the border.
+      letterSpacing: initials.length > 1 ? "-0.05em" : "normal",
     },
-    children: getInitials(name),
+    children: initials,
   };
 };

@@ -97,7 +97,7 @@ const StatsLeaderboard = ({
   const getScore = useCallback(
     (user: RankedUser) => {
       return (
-        (isSecondHalf ? user.second_half ?? 0 : user.score) +
+        (isSecondHalf ? user.second_half_score ?? 0 : user.cumulative_score) +
         user.trending_score
       );
     },

@@ -2,6 +2,7 @@
   "name": "morlocked-web",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8787",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -21,24 +22,29 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "dayjs": "^1.11.13",
-    "firebase": "^10.14.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-ga4": "^2.1.0",
+    "react-router-dom": "^6.30.6",
     "react-scripts": "^5.0.1",
-    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@babel/plugin-transform-private-property-in-object": "^7.25.8",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.0",
-    "file-loader": "^6.2.0"
+    "@babel/plugin-transform-private-property-in-object": "^7.25.8",
+    "file-loader": "^6.2.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.131.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "wrangler dev --remote",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "tail": "wrangler tail"
   },
   "eslintConfig": {
     "extends": [

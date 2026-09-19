@@ -14,6 +14,7 @@ import { UserGridProps } from "./types";
 import UserAvatar from "../UserAvatar";
 import { styled } from "@mui/material/styles";
 import { Box } from "@mui/material";
+import { PlaceCell } from "./PlaceCell";
 
 const StyledTableCellHeader = styled(TableCell)(({ theme }) => ({
   "&.MuiTableCell-head": {
@@ -40,29 +41,28 @@ interface UserRow {
   userScore: number;
   weekScore: number;
   secondHalf: number;
-  place: number;
-  placeSecondHalf: number;
   userPicks: JSX.Element;
   id: string;
+  place: number | null;
+  secondHalfPlace: number | null;
 }
 
 function createUserData(user: RankedUser): UserRow {
   const {
     name,
-    score,
-    period_score,
+    cumulative_score,
+    weekly_score,
     trending_score,
-    second_half,
+    second_half_score,
     picks,
     id,
     place,
     second_half_place,
   } = user;
-  const userScore = score + trending_score;
-  const weekScore = trending_score + period_score;
-  const secondHalf = (second_half ?? 0) + trending_score;
+  const userScore = cumulative_score + trending_score;
+  const weekScore = trending_score + weekly_score;
+  const secondHalf = (second_half_score ?? 0) + trending_score;
   const userPicks = UserGamePicksStack(picks);
-  const placeSecondHalf = second_half_place ?? 0;
   return {
     name,
     userScore,
@@ -71,11 +71,11 @@ function createUserData(user: RankedUser): UserRow {
     userPicks,
     id,
     place,
-    placeSecondHalf,
+    secondHalfPlace: second_half_place,
   };
 }
 
-function UserPlace({ place, name, id }: UserRow) {
+function UserPlace({ name, id }: UserRow) {
   return (
     <Stack
       sx={{
@@ -88,8 +88,8 @@ function UserPlace({ place, name, id }: UserRow) {
       <UserAvatar
         userName={name ?? ""}
         fontSize={"0.75rem"}
+        size={24}
         userId={id}
-        place={place}
       />
     </Stack>
   );
@@ -109,6 +109,14 @@ function Row({ row, isSelected, showSecondHalf }: UserRowProps) {
           },
         }}
       >
+        <StyledTableCell align="center">
+          <PlaceCell place={row.place} />
+        </StyledTableCell>
+        {showSecondHalf && (
+          <StyledTableCell align="center">
+            <PlaceCell place={row.secondHalfPlace} />
+          </StyledTableCell>
+        )}
         <StyledTableCell
           component="th"
           scope="row"
@@ -129,7 +137,6 @@ function Row({ row, isSelected, showSecondHalf }: UserRowProps) {
         className={isSelected ? "highlight" : ""}
         id={`userScore-${row.name.replace(" ", "")}`}
         sx={{
-          mb: 2,
           ".highlight": {
             bgcolor: (theme) =>
               theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
@@ -137,8 +144,8 @@ function Row({ row, isSelected, showSecondHalf }: UserRowProps) {
         }}
       >
         <StyledTableCell
-          style={{ paddingBottom: "4px", paddingTop: "4px" }}
-          colSpan={4}
+          style={{ paddingBottom: "10px", paddingTop: "4px" }}
+          colSpan={showSecondHalf ? 6 : 4}
         >
           {row.userPicks}
         </StyledTableCell>
@@ -155,12 +162,11 @@ export default function UserDataMobile({
   const [rows, setRows] = useState<UserRow[] | undefined>(undefined);
 
   useEffect(() => {
-    // Only update if userList has items and userId exists
-    if (userList.length > 0 && userId) {
+    if (userList.length > 0) {
       const mappedUsers = userList.map(createUserData);
       setRows(mappedUsers);
     }
-  }, [userList, userId]);
+  }, [userList]);
 
   if (!rows) {
     return null;
@@ -171,6 +177,15 @@ export default function UserDataMobile({
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
+            <StyledTableCellHeader align="center">Place</StyledTableCellHeader>
+            {showSecondHalf && (
+              <StyledTableCellHeader align="center">
+                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                  2nd Half Place
+                </Box>
+                <Box sx={{ display: { xs: "block", sm: "none" } }}>2H Plc</Box>
+              </StyledTableCellHeader>
+            )}
             <StyledTableCellHeader
               sx={{
                 width: { xs: "35%", sm: "40%" }, // smaller on mobile, slightly larger on tablet+

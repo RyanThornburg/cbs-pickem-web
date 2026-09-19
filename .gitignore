@@ -12,7 +12,12 @@
 # production
 /build
 
+# cloudflare
+.wrangler/
+worker-configuration.d.ts
+
 # misc
+CLAUDE.local.md
 .DS_Store
 .env.local
 .env.development.local

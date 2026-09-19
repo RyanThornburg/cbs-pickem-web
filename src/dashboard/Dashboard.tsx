@@ -6,11 +6,7 @@ import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-tree-view/themeAugmentation";
-import { onValue, ref } from "firebase/database";
-import { useEffect } from "react";
-import { db } from "../api/firebase";
 import MainGrid from "./components/MainGrid";
-import { useCurrentWeek } from "./components/CurrentWeekContext";
 import AppTheme from "./shared-theme/AppTheme";
 import {
   chartsCustomizations,
@@ -27,17 +23,6 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
-  const { currentWeek, setCurrentWeek } = useCurrentWeek();
-
-  useEffect(() => {
-    const userRef = ref(db, "current_week/");
-    return onValue(userRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setCurrentWeek(snapshot.val());
-      }
-    });
-  }, [setCurrentWeek]);
-  console.log("current week", currentWeek);
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />

@@ -1,18 +1,22 @@
 import Box from "@mui/material/Box";
-import { GameStatus, Pick, PickStatus } from "../../types";
+import { GameStatus, UserPick } from "../../types";
 import { StatusColor } from "../../helper";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { Divider, Stack } from "@mui/material";
 
-const GamePickFormatted = (pick: Pick, index: number) => {
-  const team = pick.visible
-    ? pick.team
-    : pick.pick_status === PickStatus.Missing
-    ? "N/A"
-    : pick.game_status === GameStatus.Scheduled
-    ? "TBD"
-    : "???";
+const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
+  if (!pick.visible) return "TBD";
+  if (pick.is_correct === true) return "CORRECT";
+  if (pick.is_correct === false) return "INCORRECT";
+  if (pick.trending_status && pick.trending_status in StatusColor) {
+    return pick.trending_status as keyof typeof StatusColor;
+  }
+  return "NONE";
+};
+
+const GamePickFormatted = (pick: UserPick, index: number) => {
+  const team = pick.visible ? pick.team : "TBD";
 
   let fontWeight = "regular";
   let fontStyle = "normal";
@@ -20,8 +24,8 @@ const GamePickFormatted = (pick: Pick, index: number) => {
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
 
-  const statusColor =
-    StatusColor[(pick.pick_status as keyof typeof StatusColor) ?? "TBD"];
+  const statusKey = pickStatusKey(pick);
+  const statusColor = StatusColor[statusKey];
 
   const Item = styled(Paper)(({ theme }) => [
     {
@@ -44,7 +48,7 @@ const GamePickFormatted = (pick: Pick, index: number) => {
       fontStyle: fontStyle,
       ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
     },
-    pick.pick_status === "CORRECT" && {
+    statusKey === "CORRECT" && {
       backgroundColor: theme.palette.primary[50],
     },
     isGameOver && {
@@ -63,46 +67,14 @@ const GamePickFormatted = (pick: Pick, index: number) => {
   );
 };
 
+// GetUserByWeek already returns picks in the right order and padded to 5 (real
+// visible picks first, then TBD placeholders, or empty if the user made no picks) --
+// no further filtering/sorting needed here.
 export const UserGamePicksStack = (
-  picks: Array<Pick>,
+  picks: Array<UserPick>,
   header: boolean = false
 ) => {
   const spacingSize = header ? 0.5 : 1;
-  const visiblePicks = picks.filter((pick) => pick.visible);
-  const hiddenPicks = picks.filter((pick) => !pick.visible);
-  // Combine them, taking all visible picks and enough non-visible picks to reach 5 total
-  // const combinedPicks = [
-  //   ...visiblePicks,
-  //   ...hiddenPicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
-  // ].slice(0, 5);
-
-  const allFinal = visiblePicks.every((pick) => pick.game_status === "FINAL");
-
-  // Combine the picks
-  let combinedPicks = [
-    ...visiblePicks,
-    ...hiddenPicks.slice(0, Math.max(0, 5 - visiblePicks.length)),
-  ];
-
-  // If all visible picks are FINAL, sort TBD before FINAL
-  if (allFinal) {
-    combinedPicks = combinedPicks.sort((a, b) => {
-      // Put TBD games first
-      if (
-        a.game_status === GameStatus.Scheduled &&
-        b.game_status === GameStatus.Final
-      )
-        return -1;
-      if (
-        a.game_status === GameStatus.Final &&
-        b.game_status === GameStatus.Scheduled
-      )
-        return 1;
-
-      // For games with same status, maintain original order
-      return 0;
-    });
-  }
 
   return (
     <Stack
@@ -114,7 +86,7 @@ export const UserGamePicksStack = (
       spacing={{ xs: 0.35, md: spacingSize }}
       divider={<Divider orientation="vertical" flexItem />}
     >
-      {combinedPicks && combinedPicks.map(GamePickFormatted)}
+      {picks.map(GamePickFormatted)}
     </Stack>
   );
 };

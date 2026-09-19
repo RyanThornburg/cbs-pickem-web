@@ -1,6 +1,5 @@
-import Stack from "@mui/material/Stack";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { Pick } from "../../types";
+import { UserPick } from "../../types";
 
 //import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 //import BlindSharpIcon from "@mui/icons-material/BlindSharp";
@@ -10,30 +9,22 @@ import { Pick } from "../../types";
 import { UserGamePicksStack } from "./UserPickStack";
 import { UserGridProps } from "./types";
 import UserAvatar from "../UserAvatar";
+import { PlaceCell } from "./PlaceCell";
 
 const defaultHeight = "1044px";
 
 function RenderPicks(props: GridRenderCellParams<any>) {
-  const picks: Array<Pick> = props.value;
+  const picks: Array<UserPick> = props.value;
   return UserGamePicksStack(picks);
 }
 function UserCell(props: GridRenderCellParams<any>) {
   return (
-    <Stack
-      sx={{
-        alignItems: "center",
-        justifyContent: "flex-start",
-      }}
-      direction="row"
-      spacing={2}
-    >
-      <UserAvatar
-        userName={props.value}
-        userId={props.row.id}
-        fontSize={"0.875rem"}
-        size={24}
-      />
-    </Stack>
+    <UserAvatar
+      userName={props.value}
+      userId={props.row.id}
+      fontSize={"0.8125rem"}
+      size={26}
+    />
   );
 }
 
@@ -45,40 +36,61 @@ const UserDataGrid = ({
 }: UserGridProps) => {
   const columns: GridColDef[] = [
     {
+      field: "place",
+      align: "center",
+      headerAlign: "center",
+      headerName: "Place",
+      flex: 1.2,
+      renderCell: (params) => <PlaceCell place={params.row.place} />,
+      display: "flex",
+    },
+    {
+      field: "second_half_place",
+      align: "center",
+      headerAlign: "center",
+      headerName: "2nd Half Place",
+      flex: 1.5,
+      renderCell: (params) => (
+        <PlaceCell place={params.row.second_half_place} />
+      ),
+      display: "flex",
+    },
+    {
       field: "name",
       headerName: "Name",
       description: "Name",
       flex: 4,
       renderCell: UserCell,
+      display: "flex",
     },
     {
-      field: "score",
+      field: "cumulative_score",
       align: "center",
       headerAlign: "center",
       headerName: "Score",
       flex: 2,
       valueGetter: (value, row) => {
-        return row.score + row.trending_score;
+        return row.cumulative_score + row.trending_score;
       },
     },
     {
-      field: "second_half",
+      field: "second_half_score",
       align: "center",
       headerAlign: "center",
       headerName: "2nd Half",
       flex: 2,
       valueGetter: (value, row) => {
-        return row.second_half + row.trending_score;
+        return (row.second_half_score ?? 0) + row.trending_score;
       },
     },
     {
-      field: "period_score",
+      field: "weekly_score",
       align: "center",
       headerAlign: "center",
       headerName: "Week",
       flex: 1.5,
       valueGetter: (value, row) => {
-        return row.period_score + row.trending_score;
+        return row.weekly_score + row.trending_score;
       },
     },
     {
@@ -100,7 +112,8 @@ const UserDataGrid = ({
       columns={columns}
       disableColumnSelector
       columnVisibilityModel={{
-        second_half: showSecondHalf,
+        second_half_score: showSecondHalf,
+        second_half_place: showSecondHalf,
       }}
       hideFooter={true}
       slotProps={{
@@ -111,7 +124,7 @@ const UserDataGrid = ({
       }}
       initialState={{
         sorting: {
-          sortModel: [{ field: "score", sort: "desc" }],
+          sortModel: [{ field: "place", sort: "asc" }],
         },
       }}
       getRowClassName={(params) => {

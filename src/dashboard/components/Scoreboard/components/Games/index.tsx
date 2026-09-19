@@ -19,7 +19,7 @@ export const Games = memo(({ header, games }: GamesProps) => {
       <Stack spacing={1}>
         <Grid container spacing={2} size={{ xs: 12, sm: 12, md: 12 }}>
           {games.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCard key={game.game_id} game={game} />
           ))}
         </Grid>
       </Stack>
