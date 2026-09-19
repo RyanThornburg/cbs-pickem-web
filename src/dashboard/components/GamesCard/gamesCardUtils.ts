@@ -61,6 +61,21 @@ export const getMoveDelta = (game: GameWithOdds): number | null => {
   return Math.abs(delta) >= BIG_MOVE_PTS ? delta : null;
 };
 
+// Whether the combined final score landed over or under the displayed total
+// line -- null on a push or when there's nothing final to compare yet.
+// Callers gate this on game.status === Final themselves (mirrors coveringTeamId).
+export const getTotalResult = (
+  game: GameWithOdds,
+  line: number | null
+): "over" | "under" | null => {
+  if (line == null || game.home_score == null || game.away_score == null) {
+    return null;
+  }
+  const actual = game.home_score + game.away_score;
+  if (actual === line) return null;
+  return actual > line ? "over" : "under";
+};
+
 // Most-agreed-on total among the books, not an average -- an average of
 // half-point lines (e.g. 54.5/54.5/54.5/55/55) can land on an off number
 // like 54.7 that no book actually offers. A total is always a whole or

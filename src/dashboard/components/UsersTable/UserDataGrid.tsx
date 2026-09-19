@@ -39,7 +39,7 @@ const UserDataGrid = ({
       field: "place",
       align: "center",
       headerAlign: "center",
-      headerName: "Place",
+      headerName: "#",
       flex: 1.2,
       renderCell: (params) => <PlaceCell place={params.row.place} />,
       display: "flex",

@@ -1,6 +1,6 @@
 import { fetchJson, poll } from "../../api/pickemApi";
 import { Book, BookMarketSide, Forecast, GameStatus, MarketSpread, Stadium, Team } from "../types";
-import { ApiJoinGame, fetchWeekGames, toTeam } from "./weekGames";
+import { ApiJoinGame, fetchWeekGames, getGameCoverResult, toTeam } from "./weekGames";
 
 const POLL_INTERVAL_MS = 5 * 60_000;
 
@@ -53,8 +53,15 @@ export interface GameWithOdds {
   gametracker_url?: string;
   stadium?: Stadium;
   forecast?: Forecast | null;
+  home_score?: number;
+  away_score?: number;
   cbs_spread?: number;
   market_spread: MarketSpread | null;
+  // Which team covers the pool's cbs_spread, once there's a score -- see
+  // getGameCoverResult for the formula (same one the Trends cards grade
+  // against). Consumers that only care about the locked-in result should
+  // gate on status === GameStatus.Final themselves, same as everywhere else.
+  coveringTeamId: number | null;
   books: Book[];
 }
 
@@ -81,28 +88,39 @@ const toBook = (book: ApiBook): Book => ({
 const joinGameWithOdds = (
   game: ApiJoinGame,
   odds: ApiGameOdds | undefined
-): GameWithOdds => ({
-  game_id: game.game_id,
-  home_team: toTeam(game.home_team),
-  away_team: toTeam(game.away_team),
-  status: game.status as GameStatus,
-  game_time: Date.parse(game.game_time),
-  tv_network: game.tv_network,
-  gametracker_url: game.gametracker_url,
-  stadium: game.stadium,
-  forecast: game.forecast,
-  cbs_spread: odds?.cbs_spread ?? game.cbs_spread ?? undefined,
-  market_spread: odds?.market_spread
-    ? {
-        book_count: odds.market_spread.book_count,
-        open: odds.market_spread.open,
-        open_agreement: odds.market_spread.open_agreement,
-        close: odds.market_spread.close,
-        close_agreement: odds.market_spread.close_agreement,
-      }
-    : null,
-  books: (odds?.books ?? []).map(toBook),
-});
+): GameWithOdds => {
+  // odds.cbs_spread wins over game.cbs_spread below (same as before) -- grade
+  // the cover against that same effective number so the "who covered"
+  // indicator can never disagree with the CBS Line the user is looking at.
+  const effectiveCbsSpread = odds?.cbs_spread ?? game.cbs_spread ?? undefined;
+
+  return {
+    game_id: game.game_id,
+    home_team: toTeam(game.home_team),
+    away_team: toTeam(game.away_team),
+    status: game.status as GameStatus,
+    game_time: Date.parse(game.game_time),
+    tv_network: game.tv_network,
+    gametracker_url: game.gametracker_url,
+    stadium: game.stadium,
+    forecast: game.forecast,
+    home_score: game.home_score,
+    away_score: game.away_score,
+    coveringTeamId: getGameCoverResult({ ...game, cbs_spread: effectiveCbsSpread })
+      .coveringTeamId,
+    cbs_spread: effectiveCbsSpread,
+    market_spread: odds?.market_spread
+      ? {
+          book_count: odds.market_spread.book_count,
+          open: odds.market_spread.open,
+          open_agreement: odds.market_spread.open_agreement,
+          close: odds.market_spread.close,
+          close_agreement: odds.market_spread.close_agreement,
+        }
+      : null,
+    books: (odds?.books ?? []).map(toBook),
+  };
+};
 
 export const GetGamesTabData = (
   season: number,

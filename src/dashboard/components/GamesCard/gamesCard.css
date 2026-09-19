@@ -88,6 +88,38 @@
 .games-card .gc-mrow { display: flex; align-items: center; gap: 8px; }
 .games-card .gc-mrow .gc-rec { color: var(--gc-text-muted); font-size: 0.78rem; }
 
+.games-card .gc-final-score {
+  margin-left: auto;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+}
+.games-card .gc-final-score.covered { color: var(--gc-good); }
+.games-card .gc-final-score .gc-score-num {
+  font-weight: 700;
+  min-width: 2ch;
+  text-align: right;
+}
+/* Reserved even when empty (see TSX) -- keeps gc-score-num's right edge in
+   the same place whether or not this row has a checkmark, instead of the
+   number shifting left only on covering rows. */
+.games-card .gc-final-score .gc-score-check {
+  width: 16px;
+  flex: none;
+  text-align: center;
+}
+
+/* Home-perspective spread/CBS-line numbers, colored once a game is final to
+   show which side of that number the actual result landed on. */
+.games-card .gc-num.good { color: var(--gc-good); }
+.games-card .gc-num.bad { color: var(--gc-danger); }
+
+.games-card .gc-total-hit {
+  color: var(--gc-good);
+  font-weight: 700;
+  margin-left: 4px;
+}
+
 .games-card .gc-chip {
   display: inline-flex;
   align-items: center;
@@ -111,7 +143,7 @@
   letter-spacing: 0.03em;
 }
 
-.games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; max-width: 100%; }
 .games-card .gc-line .gc-num { font-weight: 600; }
 
 .games-card .gc-movebadge {
@@ -124,7 +156,11 @@
   border-radius: 4px;
   background: var(--gc-weather-soft);
   color: var(--gc-weather);
-  white-space: nowrap;
+  /* Wraps instead of nowrap -- a fixed-width column is narrower than this
+     badge's text at some widths, and nowrap let it silently overflow into
+     the next column instead of wrapping inside its own cell. */
+  white-space: normal;
+  max-width: 100%;
 }
 
 .games-card .gc-valuearrow {

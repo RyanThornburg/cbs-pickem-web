@@ -1,5 +1,6 @@
 import { CSSProperties, useState } from "react";
 import { GameWithOdds } from "../../data/GetGamesTabData";
+import { GameStatus } from "../../types";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameDate, formatGameTime } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
@@ -8,6 +9,7 @@ import {
   fmtSpread,
   formatRecord,
   getMoveDelta,
+  getTotalResult,
   getValueSide,
   modeTotal,
 } from "./gamesCardUtils";
@@ -16,7 +18,15 @@ type Props = {
   games: GameWithOdds[];
 };
 
-function TeamRow({ team }: { team: GameWithOdds["home_team"] }) {
+function TeamRow({
+  team,
+  score,
+  covered,
+}: {
+  team: GameWithOdds["home_team"];
+  score?: number;
+  covered?: boolean;
+}) {
   const data = getTeamData(team.abbr);
   const chipStyle = { "--gc-chip-color": `#${data.color}` } as CSSProperties;
   return (
@@ -26,6 +36,14 @@ function TeamRow({ team }: { team: GameWithOdds["home_team"] }) {
       </span>
       <span>{data.name}</span>
       <span className="gc-rec">{formatRecord(team.record)}</span>
+      {score != null && (
+        <span className={`gc-final-score${covered ? " covered" : ""}`}>
+          <span className="gc-score-num">{score}</span>
+          <span className="gc-score-check" aria-hidden={!covered}>
+            {covered ? "✓" : ""}
+          </span>
+        </span>
+      )}
     </div>
   );
 }
@@ -38,19 +56,35 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
   const total = modeTotal(game.books);
   const vSide = getValueSide(game);
   const move = getMoveDelta(game);
+  const isFinal = game.status === GameStatus.Final;
+  const totalResult = isFinal ? getTotalResult(game, total) : null;
+  const coverSide =
+    isFinal && game.market_spread?.close != null && game.coveringTeamId != null
+      ? game.coveringTeamId === game.home_team.id
+        ? "good"
+        : "bad"
+      : "";
 
   return (
     <div className="gc-gamecard">
       <div className="gc-gamecard-top">
-        <TeamRow team={game.away_team} />
+        <TeamRow
+          team={game.away_team}
+          score={isFinal ? game.away_score : undefined}
+          covered={isFinal && game.coveringTeamId === game.away_team.id}
+        />
         <div className="gc-kickoff" style={{ textAlign: "right" }}>
           <span className="gc-time">{formatGameTime(game.game_time)}</span>
           <span className="gc-tv">
             {formatGameDate(game.game_time)}
-            {game.tv_network ? ` · ${game.tv_network}` : ""}
+            {isFinal ? " · Final" : game.tv_network ? ` · ${game.tv_network}` : ""}
           </span>
         </div>
-        <TeamRow team={game.home_team} />
+        <TeamRow
+          team={game.home_team}
+          score={isFinal ? game.home_score : undefined}
+          covered={isFinal && game.coveringTeamId === game.home_team.id}
+        />
         <div style={{ textAlign: "right" }}>
           <WeatherCell forecast={game.forecast} stadium={game.stadium} />
         </div>
@@ -65,11 +99,30 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
         </div>
         <div className="gc-cell">
           <span className="gc-lbl">Spread</span>
-          <span className="gc-val">{fmtSpread(game.market_spread?.close)}</span>
+          <span className="gc-val">
+            <span className={`gc-num ${coverSide}`}>
+              {fmtSpread(game.market_spread?.close)}
+            </span>
+            {move != null && (
+              <span className="gc-movebadge">
+                {move > 0 ? "▲" : "▼"} {Math.abs(move)} pt move
+              </span>
+            )}
+          </span>
         </div>
         <div className="gc-cell">
           <span className="gc-lbl">Total</span>
-          <span className="gc-val">{total ?? "—"}</span>
+          <span className="gc-val">
+            {total ?? "—"}
+            {totalResult && (
+              <span
+                className="gc-total-hit"
+                title={totalResult === "over" ? "Total went over" : "Total went under"}
+              >
+                {totalResult === "over" ? "▲" : "▼"}
+              </span>
+            )}
+          </span>
         </div>
         <div className="gc-cell">
           <span className="gc-lbl">CBS Line</span>
@@ -79,11 +132,6 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
               <span className={`gc-valuearrow ${vSide === "home" ? "good" : "bad"}`}>
                 {vSide === "home" ? "▲" : "▼"}{" "}
                 {vSide === "home" ? game.home_team.abbr : game.away_team.abbr}
-              </span>
-            )}
-            {move != null && (
-              <span className="gc-movebadge">
-                {move > 0 ? "▲" : "▼"} {Math.abs(move)} pt move
               </span>
             )}
           </span>

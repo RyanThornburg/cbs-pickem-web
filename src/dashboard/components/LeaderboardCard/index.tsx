@@ -57,7 +57,7 @@ UserRow.displayName = "UserRow";
 const TableHeader = memo(() => (
   <TableHead>
     <TableRow>
-      <TableCell>Place</TableCell>
+      <TableCell></TableCell>
       <TableCell>Name</TableCell>
       <TableCell>Score</TableCell>
     </TableRow>
