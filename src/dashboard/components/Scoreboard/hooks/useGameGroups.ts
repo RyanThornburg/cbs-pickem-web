@@ -7,6 +7,7 @@ import { formatGameDate } from "../utils/dateFormatters";
 const STATUS_TIER: Record<GameStatus, number> = {
   [GameStatus.Inprogress]: 0,
   [GameStatus.Halftime]: 0,
+  [GameStatus.Delayed]: 0,
   [GameStatus.Scheduled]: 1,
   [GameStatus.Final]: 2,
 };

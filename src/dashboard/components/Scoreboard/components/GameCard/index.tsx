@@ -46,6 +46,7 @@ export const GameCard = memo(({ game }: GameCardProps) => {
       case GameStatus.Scheduled:
         return "primary";
       case GameStatus.Halftime:
+      case GameStatus.Delayed:
         return "warning";
       default:
         return "default";

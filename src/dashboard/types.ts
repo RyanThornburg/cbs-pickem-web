@@ -29,6 +29,7 @@ export enum GameStatus {
   Inprogress = "IN_PROGRESS",
   Scheduled = "SCHEDULED",
   Halftime = "HALFTIME",
+  Delayed = "DELAYED",
 }
 
 export interface GameLive {

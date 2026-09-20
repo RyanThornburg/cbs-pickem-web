@@ -89,6 +89,10 @@ const timeOrStatus = (game: Game): string => {
     return formatGameTime(game.game_time);
   }
 
+  if (game.status === GameStatus.Delayed) {
+    return "Delayed";
+  }
+
   return `${game.live?.time_remaining ?? ""} ${
     quarterLookUp[game.live?.quarter ?? 0]
   }`;

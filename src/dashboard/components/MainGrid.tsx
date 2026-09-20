@@ -105,7 +105,8 @@ export default function MainGrid() {
           games.some(
             (game) =>
               game.status === GameStatus.Inprogress ||
-              game.status === GameStatus.Halftime
+              game.status === GameStatus.Halftime ||
+              game.status === GameStatus.Delayed
           )
         );
       });
