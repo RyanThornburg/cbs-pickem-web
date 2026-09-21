@@ -1,11 +1,5 @@
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { UserPick } from "../../types";
-
-//import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-//import BlindSharpIcon from "@mui/icons-material/BlindSharp";
-//import CheckIcon from "@mui/icons-material/Check";
-//import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
-//import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { UserGamePicksStack } from "./UserPickStack";
 import { UserGridProps } from "./types";
 import UserAvatar from "../UserAvatar";

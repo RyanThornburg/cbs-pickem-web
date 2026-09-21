@@ -1,6 +1,6 @@
 import { fetchJson, poll } from "../../api/pickemApi";
 import { Book, BookMarketSide, Forecast, GameStatus, MarketSpread, Stadium, Team } from "../types";
-import { ApiJoinGame, fetchWeekGames, getGameCoverResult, toTeam } from "./weekGames";
+import { ApiGame, fetchWeekGames, getGameCoverResult, toTeam } from "./weekGames";
 
 const POLL_INTERVAL_MS = 5 * 60_000;
 
@@ -86,7 +86,7 @@ const toBook = (book: ApiBook): Book => ({
 });
 
 const joinGameWithOdds = (
-  game: ApiJoinGame,
+  game: ApiGame,
   odds: ApiGameOdds | undefined
 ): GameWithOdds => {
   // odds.cbs_spread wins over game.cbs_spread below (same as before) -- grade
@@ -100,8 +100,8 @@ const joinGameWithOdds = (
     away_team: toTeam(game.away_team),
     status: game.status as GameStatus,
     game_time: Date.parse(game.game_time),
-    tv_network: game.tv_network,
-    gametracker_url: game.gametracker_url,
+    tv_network: game.tv_network ?? undefined,
+    gametracker_url: game.gametracker_url ?? undefined,
     stadium: game.stadium,
     forecast: game.forecast,
     home_score: game.home_score,

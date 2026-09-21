@@ -1,7 +1,7 @@
 import { fetchJson, poll } from "../../api/pickemApi";
 import { GameStatus, RankedUser, UserPick } from "../types";
 import {
-  ApiJoinGame,
+  ApiGame,
   buildGamesById,
   fetchWeekGames,
   findEarliestGame,
@@ -90,14 +90,14 @@ const compareUsers = (a: RankedUser, b: RankedUser): number => {
 // Picks lock and reveal together for the whole week (at the first kickoff), not
 // game-by-game -- otherwise someone with an early bye-week-ish game still shows TBD
 // for it after everyone's picks are already public.
-const isWeekLocked = (games: ApiJoinGame[]): boolean => {
+const isWeekLocked = (games: ApiGame[]): boolean => {
   const earliest = findEarliestGame(games);
   return earliest !== undefined && earliest.status !== GameStatus.Scheduled;
 };
 
 const joinPick = (
   pick: ApiLeaderboardPick,
-  gamesById: Map<number, ApiJoinGame>,
+  gamesById: Map<number, ApiGame>,
   weekLocked: boolean
 ): UserPick => {
   const game = gamesById.get(pick.game_id);
@@ -160,7 +160,7 @@ const withTbdPlaceholders = (
 
 const toRankedUser = (
   user: ApiLeaderboardUser,
-  gamesById: Map<number, ApiJoinGame>,
+  gamesById: Map<number, ApiGame>,
   weekLocked: boolean,
   overallRanks: Map<number, number | null>,
   secondHalfRanks: Map<number, number | null>

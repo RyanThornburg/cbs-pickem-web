@@ -4,7 +4,6 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { useEffect, useState } from "react";
 import { RankedUser } from "../../types";
 import Stack from "@mui/material/Stack";
 import { grey } from "@mui/material/colors";
@@ -105,7 +104,8 @@ function Row({ row, isSelected, showSecondHalf }: UserRowProps) {
         sx={{
           borderTop: `2px solid ${grey[300]}`,
           ".highlight": {
-            bgcolor: "#f0f4c3",
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
           },
         }}
       >
@@ -159,18 +159,11 @@ export default function UserDataMobile({
   userId,
   showSecondHalf,
 }: UserGridProps) {
-  const [rows, setRows] = useState<UserRow[] | undefined>(undefined);
-
-  useEffect(() => {
-    if (userList.length > 0) {
-      const mappedUsers = userList.map(createUserData);
-      setRows(mappedUsers);
-    }
-  }, [userList]);
-
-  if (!rows) {
+  if (userList.length === 0) {
     return null;
   }
+
+  const rows = userList.map(createUserData);
 
   return (
     <TableContainer>
@@ -209,12 +202,7 @@ export default function UserDataMobile({
             </StyledTableCellHeader>
           </TableRow>
         </TableHead>
-        <TableBody
-          sx={{
-            mb: 2,
-            ".highlight": "#f0f4c3",
-          }}
-        >
+        <TableBody sx={{ mb: 2 }}>
           {rows.map((row) => (
             <Row
               key={`mobile-${row.name}`}
