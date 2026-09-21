@@ -4,52 +4,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A Create React App (react-scripts) + TypeScript dashboard that displays results for the "Morlocked" NFL pick'em league. It's a read-only viewer: all pick/game/user data lives in Firebase Realtime Database and is streamed into the UI via `onValue` listeners — there is no write path or backend in this repo.
+A Create React App (react-scripts) + TypeScript dashboard for the "Morlocked" NFL pick'em league, live at <https://morlocked.rattsnest.com/>. It's a read-only viewer: a separate data-gathering project polls CBS/Sports IO/ESPN/The Odds API/Pirate Weather into Cloudflare D1 and precomputes per-week/season JSON into Cloudflare KV; this repo's Cloudflare Worker (`worker/index.ts`) serves that KV data over a small REST API, and the React app polls it. There is no write path anywhere in this repo.
 
 ## Commands
 
-- `npm start` — run the dev server (localhost:3000)
-- `npm run build` — production build to `build/`
-- `npm test` — run tests via react-scripts (Jest + React Testing Library) in interactive watch mode
-- `npm test -- --watchAll=false` — run tests once (CI mode)
-- `npm test -- -t "test name"` — run a single test by name
-- `npm test -- App.test.tsx` — run a single test file
+- `npm start` — CRA dev server (localhost:3000). `/api/*` is proxied to `http://localhost:8787` (see `proxy` in package.json), so pair this with `npm run dev` in another terminal to get live API data.
+- `npm run dev` — `wrangler dev --remote`: runs the Worker + static assets locally against the real production KV namespace (there's no separate local/preview namespace — the Worker never writes, so this can't corrupt prod).
+- `npm run build` — production build to `build/`.
+- `npm run deploy` — `wrangler deploy`, ships the Worker + `build/` to Cloudflare. Deploys are fully manual — there's no CI workflow that builds or deploys automatically, so run `npm run build` first.
+- `npm run tail` — `wrangler tail`, stream production Worker logs.
+- `npm run types` — `wrangler types`, regenerate the `Env` type from `wrangler.jsonc`.
+- `npm test` — run tests via react-scripts (Jest + React Testing Library) in interactive watch mode.
+- `npm test -- --watchAll=false` — run tests once (CI mode).
+- `npm test -- -t "test name"` — run a single test by name.
+- `npm test -- defaultTab.test.ts` — run a single test file.
 
 There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` in package.json) runs as part of `npm start`/`npm run build`.
 
 ## Architecture
 
-### Data flow: Firebase Realtime Database as the source of truth
+### Data flow: Cloudflare Worker + KV, polled from the client
 
-- `src/api/firebase.ts` initializes the Firebase app and exports `db` (a Realtime Database instance). There's no auth — reads are open.
-- Data access lives in `src/dashboard/data/`: `GetGameDataByWeek.ts` and `GetUserByWeek.ts`. Both follow the same pattern: take a week number and a `callback`, subscribe with `onValue(ref(db, path), ...)`, and return the `unsubscribe` function. Callers (components/context) own the `useEffect` that subscribes on mount/dependency-change and unsubscribes on cleanup.
-- Weeks are zero-padded to two digits when building DB paths (e.g. `weeks/week03/games_sorted/`), but passed around the app as plain numbers.
-- `GetUserByWeek` also does client-side ranking: it computes `place` (overall) and `second_half_place` per user by sorting on `score + trending_score` (or `second_half + trending_score` for the second-half standings) and walking the sorted list to assign tied ranks (`findUserRank`), then sorts the final list by `compareUsers` (place, then second-half place, then name).
+- `worker/index.ts` is a thin, read-only passthrough: it maps request paths to KV keys (`meta:current`, `meta:historical`, `week:{season}:{weekNN}:{games|leaderboard|odds|trends}`, `season:{season}:trends`) and returns the KV value as JSON, or 404. Anything outside `/api/*` falls through to `env.ASSETS` (the built static site). There's no auth (open reads) and no `.put()` anywhere — nothing here can write to KV.
+- `src/api/pickemApi.ts` has the client-side primitives: `fetchJson` (one-shot), `poll`/`pollJson` (run immediately, then on an interval, until the returned cleanup is called). Cloudflare has no Firebase-style push, so every data hook here polls instead of subscribing — poll intervals vary by how time-sensitive the data is (60s for live games, 5min for odds/trends, 30min for season trends).
+- Data access lives in `src/dashboard/data/`, one file per resource, all following poll → parse → callback (returning the stop function): `GetGameDataByWeek.ts` (games; a thin wrapper around `weekGames.ts`, used by Scoreboard and the live-dot tab badge), `GetGamesTabData.ts` (joins games + odds for the Games tab), `GetUserByWeek.ts` (leaderboard + picks), `GetTrendsByWeek.ts` / `GetSeasonTrends.ts` (Trends tab).
+- `weekGames.ts` is the shared core all the games-related fetchers build on: one `ApiGame` interface for the full `/api/weeks/:season/:week/games` payload (every caller hits the same endpoint), `toGame`/`toTeam` mappers, and shared helpers (`buildGamesById`, `findEarliestGame`, `getGameCoverResult`). Extend this rather than adding a second parallel game-parsing interface for a new consumer.
+- `GetUserByWeek.ts` re-ranks client-side: the API's own `place`/`second_half_place` rank on `cumulative_score` alone, but the UI displays `cumulative_score + trending_score`, so ranks are recomputed against the displayed score (standard competition ranking — ties share a rank, the next rank skips accordingly). It also pads TBD pick placeholders, gated on `has_submitted_picks` — which can be *absent entirely* early in a week, not just `false`, so it's treated as unknown rather than "not submitted" whenever real picks already joined.
+- Weeks are zero-padded to two digits in KV keys / Worker routes (`week:2026:03:games`), but passed around the app as plain numbers (`/api/weeks/2026/3/games`).
 
-### State: one global context, everything else is local/prop-drilled
+### State: one context, one orchestrator, everything else prop-drilled
 
-- `CurrentWeekContext` (`src/dashboard/components/CurrentWeekContext.tsx`) is the only app-wide state: it holds `currentWeek` (pushed from Firebase's `current_week/` node, set in `Dashboard.tsx`) and derives `rankedUsers` for that week and `isSecondHalf` (`currentWeek >= 10` — the season's second-half cutoff is hardcoded here).
-- `MainGrid.tsx` is the real orchestrator: it reads `currentWeek` from context but keeps its own `selectedWeek` (the week the user is browsing, which can differ from `currentWeek`), `user` (selected user id, persisted to `localStorage` under key `"user"`), and `userList` (re-fetched per `selectedWeek` via `GetUserByWeek`). It threads `selectedWeek`, `user`, and `userList` down as props to every dashboard card (`StatsLeaderboard`, `CoverResultCard`, `UsersTable`, `Scoreboard`, `TopTeamsPicked`, etc.) rather than via context — check `MainGrid.tsx` first when tracing how a prop reaches a leaf component.
-- Second-half awareness (`isSecondHalf` / `showSecondHalf`) is threaded independently through both the context and `selectedWeek >= 10` checks in `MainGrid`; when changing second-half logic, both places need to agree.
+- `CurrentWeekContext` (`src/dashboard/components/CurrentWeekContext.tsx`) is the only app-wide state: it polls `/api/meta` and holds `season`, `currentWeek`, `secondHalfStartWeek`, and derived `isSecondHalf`. The second-half boundary is a data field (`second_half_start_week` from `meta:current`, set by hand each season on the data side), not a hardcoded week number.
+- `MainGrid.tsx` is the real orchestrator: it reads `currentWeek`/`season`/`secondHalfStartWeek` from context but keeps its own `selectedWeek` (the week the user is browsing, independent of `currentWeek`), `user` (selected user id, persisted to `localStorage` under `"user"`), and `userList` (re-fetched per `selectedWeek` via `GetUserByWeek`). It threads these down as props to each tab's component (`UsersTable`, `GamesCard`, `Scoreboard`, `TrendsSection`) rather than via context — check `MainGrid.tsx` first when tracing how a prop reaches a leaf component.
+- Tabs are real routes, not local state: `/picks`, `/games`, `/scoreboard`, `/trends` (`App.tsx` + `useParams`/`useNavigate` in `MainGrid.tsx`). The last-visited tab persists to `localStorage` (`utils/defaultTab.ts`); a true cold start (nothing stored yet) defaults to `/picks`. An unrecognized `:tab` value redirects through `/` to re-resolve.
 
 ### Types
 
-- `src/dashboard/types.ts` is the single source of truth for the Firebase data shapes (`User`, `RankedUser`, `Pick`, `Game`, `Team`, `TeamCovers`, etc.) and status enums (`GameStatus`, `PickStatus`). These map directly to the JSON structure stored under `weeks/weekNN/` and `userPicks/` in the Realtime Database — there's no schema/codegen, so if the DB shape changes, update this file by hand.
+- `src/dashboard/types.ts` is the single source of truth for the API data shapes (`RankedUser`, `Game`, `Team`, `Book`, `MarketSpread`, `WeekTrends`, `SeasonTrends`, etc.) and status enums (`GameStatus`, `Possession`). These map to the Worker's KV-backed JSON responses — there's no schema/codegen, so if the data repo changes a KV shape, update this file by hand (check `CLAUDE.local.md` for the latest confirmed shape changes before assuming a field's shape).
+- Odds quirk worth knowing: in `BookMarketSide`, `market=total` has no dedicated Over/Under field — `home_point`/`home_price` is the Over line/price, `away_point`/`away_price` is the Under (the data repo reuses the spread/moneyline columns for totals). See the doc comment on `BookMarketSide` in `types.ts`.
 
 ### Component structure
 
-- `src/dashboard/components/` holds one directory per dashboard card/widget (e.g. `Scoreboard`, `UsersTable`, `LeaderboardCard`, `TopTeamsPicked`, `WeeklyCoverChart`, `CoverResultCard`). Larger widgets nest their own `components/`, `hooks/`, and `utils/` (see `Scoreboard/` for the fullest example: `hooks/useGameData.ts` and `hooks/useGameGroups.ts` do the per-widget data fetching/grouping, `utils/team_data.json` is a static NFL team metadata lookup keyed by team abbreviation, used for logos/colors).
-- `src/dashboard/icons/` has one PNG per NFL team, referenced by team abbreviation.
-- `src/dashboard/shared-theme/` and `src/dashboard/theme/` provide the MUI theme setup (this app is built on the MUI "Dashboard" template — `AppTheme`, `ColorModeSelect`/`ColorModeIconDropdown` for light/dark mode, and per-component theme customizations under `theme/customizations/`). Most `.js`/`.tsx` file pairs under `shared-theme/customizations/` are template leftovers — the `.tsx` files are the ones actually imported.
+- `src/dashboard/components/` holds one directory per dashboard tab/widget: `GamesCard` (odds + weather, desktop/mobile split; `gamesCardUtils.ts` holds the "is this notable" thresholds — `WEATHER_THRESHOLDS`/`BIG_MOVE_PTS`/`CBS_DIVERGE_PTS` — as frontend config, deliberately kept out of the data pipeline since these get retuned during the season), `Scoreboard` (live scores; `hooks/useGameData.ts` + `hooks/useGameGroups.ts`), `TrendsSection` (week + season trend cards), `UsersTable` (leaderboard/picks grid; desktop `UserDataGrid` + mobile `UserDataMobile`), `UserSelected`/`UserAvatar` (selected-user header).
+- `LeaderboardCard/` is currently orphaned (not imported anywhere) — the standalone overall/second-half leaderboard cards were hidden in `MainGrid.tsx` since `UsersTable`'s Place columns cover the same data. A redesign is pending; check `CLAUDE.local.md` before deleting it.
+- `src/dashboard/icons/` has one PNG per NFL team, referenced by team abbreviation; `utils/teamAssets.ts` normalizes KV team abbreviations that don't match `Scoreboard/utils/team_data.json`'s ESPN-derived keys (`TEAM_ABBR_ALIASES`) before logo/color lookups.
+- `src/dashboard/shared-theme/` and `src/dashboard/theme/` provide the MUI theme setup (`AppTheme`, `ColorModeSelect`/`ColorModeIconDropdown` for light/dark mode). `theme/customizations/` only has `dataGrid.ts` now — the chart/tree-view/date-picker theme customizations (and the MUI X Pro dependencies they pulled in) were unused leftovers from the original MUI Dashboard template with no matching component anywhere in this app, and have been removed.
+
+### Worker
+
+- `worker/index.ts` + `wrangler.jsonc` are the entire backend: one `fetch` handler, a single KV binding (`PICKEM_KV`, no named environments — `wrangler dev --remote` and `wrangler deploy` both read the same prod namespace), and static-asset serving (`assets.directory: ./build`, SPA fallback via `not_found_handling`).
 
 ### Deployment
 
-- The IONOS Deploy Now workflow (`.github/workflows/deploy-to-ionos.yaml`) has been removed — hosting moved to Cloudflare Workers + Static Assets (see `wrangler.jsonc`) as part of the Firebase/IONOS → Cloudflare migration below.
+- Hosting is Cloudflare Workers + Static Assets, live at <https://morlocked.rattsnest.com/>. There is no CI/CD — deploys are manual (`npm run build && npm run deploy`). The previous IONOS Deploy Now GitHub Actions workflow has been removed along with IONOS hosting.
 
-## Migration in progress: Firebase/IONOS → Cloudflare
+## Migration history
 
-This app is being migrated off Firebase Realtime Database and IONOS hosting onto Cloudflare. **Firebase is no longer the pool's live data source** — a separate data-gathering project now polls CBS/Sports IO/ESPN/The Odds API into a Cloudflare D1 (SQLite) database, and this repo's current Firebase reads are stale/dead going forward, not just legacy. Everything above this section describes the *current* (Firebase-based) implementation, which still needs to be replaced.
-
-Planned shape (not yet built): the data repo will precompute per-week JSON and write it to Cloudflare KV (mirroring today's `weeks/weekNN/...` / `userPicks/` structure); this app reads from KV via a Worker instead of `onValue` Firebase listeners, and polls instead of subscribing (Cloudflare has no Firebase-style push). Hosting moves to Cloudflare (Pages or Workers static assets, undecided) in place of the IONOS workflow.
-
-The live todo list, must-have/would-have feature scope, data-shape decisions, and known gaps in the new D1 schema (e.g. no season-long user stats yet, live game snapshots only exist for windows the poller was running) are tracked in `CLAUDE.local.md` (gitignored, not committed) — check it for current migration status before assuming anything below is still accurate.
+This app was migrated off Firebase Realtime Database + IONOS hosting onto the Cloudflare Worker/KV architecture described above. The migration is complete as of 2026-09-21 (`v2` merged into `main`, IONOS workflow removed, DNS live on Cloudflare). `CLAUDE.local.md` (gitignored, not committed) has the full decision history from the migration and tracks current post-cutover (phase-2) work — check it before assuming a feature is or isn't built yet.
