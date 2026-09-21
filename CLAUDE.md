@@ -44,7 +44,7 @@ There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` 
 
 ### Deployment
 
-- `.github/workflows/deploy-to-ionos.yaml` is an IONOS Deploy Now managed workflow (marked "please do not edit") triggered via `workflow_dispatch`, not on every push to main.
+- The IONOS Deploy Now workflow (`.github/workflows/deploy-to-ionos.yaml`) has been removed — hosting moved to Cloudflare Workers + Static Assets (see `wrangler.jsonc`) as part of the Firebase/IONOS → Cloudflare migration below.
 
 ## Migration in progress: Firebase/IONOS → Cloudflare
 
