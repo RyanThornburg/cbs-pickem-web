@@ -42,7 +42,7 @@ const EMPTY_SEASON_TRENDS: SeasonTrends = {
 };
 
 type Section = {
-  title: string;
+  title?: string;
   content: React.ReactNode;
   // Grid sizing; defaults to three equal columns from md up.
   size?: { xs?: number; md?: number; lg?: number };
@@ -166,7 +166,7 @@ export default function TrendsSection({ season, week }: Props) {
 
   const seasonSections: Section[] = [
     {
-      title: "Teams",
+      
       // Full width until lg, then shares the row with the All Alone Log so
       // the log isn't pushed below a 32-row table.
       size: { xs: 12, lg: 8 },
@@ -222,12 +222,12 @@ export default function TrendsSection({ season, week }: Props) {
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
           {sections.map((section) => (
             <Grid key={section.title} size={section.size ?? DEFAULT_SECTION_SIZE}>
-              <Typography
+              {section.title ? (<Typography
                 variant="subtitle2"
                 sx={{ mb: 1, color: "text.secondary" }}
               >
                 {section.title}
-              </Typography>
+              </Typography>) : ""}
               {section.content}
             </Grid>
           ))}
