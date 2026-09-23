@@ -32,7 +32,7 @@ export default function SeasonAllAloneCard({
   }
 
   return (
-    <Stack spacing={1} sx={{ maxHeight: 260, overflowY: "auto" }}>
+    <Stack spacing={1} sx={{ maxHeight: { xs: 260, lg: 560 }, overflowY: "auto" }}>
       {sorted.map((pick) => {
         const cover = gameResults.get(`${pick.week_number}:${pick.game_id}`);
         const covered = cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;

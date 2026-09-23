@@ -12,10 +12,8 @@ import { SeasonTrends, WeekTrends } from "../../types";
 import ConsensusCard from "./ConsensusCard";
 import AllAloneCard from "./AllAloneCard";
 import LineMoversCard from "./LineMoversCard";
-import SeasonPickTotalsCard from "./SeasonPickTotalsCard";
-import SeasonAtsCard from "./SeasonAtsCard";
 import SeasonAllAloneCard from "./SeasonAllAloneCard";
-import SeasonBelieversFadersCard from "./SeasonBelieversFadersCard";
+import SeasonTeamTable from "./SeasonTeamTable";
 
 export type Props = {
   season: number;
@@ -46,7 +44,11 @@ const EMPTY_SEASON_TRENDS: SeasonTrends = {
 type Section = {
   title: string;
   content: React.ReactNode;
+  // Grid sizing; defaults to three equal columns from md up.
+  size?: { xs?: number; md?: number; lg?: number };
 };
+
+const DEFAULT_SECTION_SIZE = { xs: 12, md: 4 };
 
 const GAME_RESULTS_POLL_INTERVAL_MS = 5 * 60_000;
 
@@ -164,28 +166,22 @@ export default function TrendsSection({ season, week }: Props) {
 
   const seasonSections: Section[] = [
     {
-      title: "Season Pick Totals",
+      title: "Teams",
+      // Full width until lg, then shares the row with the All Alone Log so
+      // the log isn't pushed below a 32-row table.
+      size: { xs: 12, lg: 8 },
       content: (
-        <SeasonPickTotalsCard
+        <SeasonTeamTable
           teamPickTotals={seasonTrends.team_pick_totals}
           coldTeamsSeason={seasonTrends.cold_teams_season}
-        />
-      ),
-    },
-    {
-      title: "Against The Spread",
-      content: <SeasonAtsCard teamAtsRecord={seasonTrends.team_ats_record} />,
-    },
-    {
-      title: "Believers vs Faders",
-      content: (
-        <SeasonBelieversFadersCard
+          teamAtsRecord={seasonTrends.team_ats_record}
           teamBelieversFaders={seasonTrends.team_believers_faders}
         />
       ),
     },
     {
       title: "All Alone Log",
+      size: { xs: 12, lg: 4 },
       content: (
         <SeasonAllAloneCard
           allAlonePicksSeason={seasonTrends.all_alone_picks_season}
@@ -225,7 +221,7 @@ export default function TrendsSection({ season, week }: Props) {
         </Box>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
           {sections.map((section) => (
-            <Grid key={section.title} size={{ xs: 12, md: 4 }}>
+            <Grid key={section.title} size={section.size ?? DEFAULT_SECTION_SIZE}>
               <Typography
                 variant="subtitle2"
                 sx={{ mb: 1, color: "text.secondary" }}
