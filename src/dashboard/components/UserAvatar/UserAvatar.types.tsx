@@ -1,4 +1,4 @@
-import { AvatarProps, SxProps } from "@mui/material";
+import { AvatarProps, SxProps, Theme } from "@mui/material";
 
 export interface UserAvatarProps extends Omit<AvatarProps, "children"> {
   userName: string | undefined;
@@ -11,6 +11,7 @@ export interface UserAvatarProps extends Omit<AvatarProps, "children"> {
 }
 
 export interface UserStringProps {
-  sx: SxProps;
-  children: string;
+  src: string;
+  alt: string;
+  sx: SxProps<Theme>;
 }

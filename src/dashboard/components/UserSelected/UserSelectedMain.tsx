@@ -1,16 +1,18 @@
-import { RankedUser } from "../../types";
+import { RankedUser, UserSeasonTrends } from "../../types";
 import { Box, Divider, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getOrdinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import UserAvatar from "../UserAvatar";
+import { StreakBadge } from "../UsersTable/StreakBadge";
 
 export type Props = {
   userList: RankedUser[];
   userId: string;
+  userTrends: UserSeasonTrends | undefined;
 };
 
-export default function UserSelectedMain({ userList, userId }: Props) {
+export default function UserSelectedMain({ userList, userId, userTrends }: Props) {
   const [user, setUser] = useState<RankedUser | undefined>(undefined);
 
   useEffect(() => {
@@ -31,13 +33,14 @@ export default function UserSelectedMain({ userList, userId }: Props) {
       spacing={{ xs: 1, md: 1, xl: 2 }}
       sx={{ alignItems: "center", mb: { md: "8px", xl: "0px" } }}
     >
-      <Stack sx={{ alignItems: "center" }} direction="row" spacing={2}>
+      <Stack sx={{ alignItems: "center" }} direction="row" spacing={1}>
         <UserAvatar
           userName={user.name ?? ""}
           userId={user.id}
           size={24}
           fontSize={"0.875rem"}
         />
+        <StreakBadge weeks={userTrends?.current_season.hot_streak.current_streak ?? 0} />
       </Stack>
 
       <Box>

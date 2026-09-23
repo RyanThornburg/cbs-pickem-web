@@ -1,9 +1,11 @@
 import { fetchJson, poll } from "../../api/pickemApi";
 import {
   ColdTeamSeason,
+  GroupTrapTeam,
   SeasonAllAlonePick,
   SeasonTrends,
   TeamAtsRecord,
+  TeamBelieversFaders,
   TeamPickTotal,
 } from "../types";
 
@@ -16,6 +18,8 @@ interface ApiSeasonTrends {
   team_pick_totals: TeamPickTotal[];
   cold_teams_season: ColdTeamSeason[];
   team_ats_record: TeamAtsRecord[];
+  trap_team: GroupTrapTeam[];
+  team_believers_faders: TeamBelieversFaders[];
   all_alone_season: SeasonAllAlonePick[];
 }
 
@@ -25,6 +29,12 @@ const toSeasonTrends = (data: ApiSeasonTrends): SeasonTrends => ({
   team_pick_totals: data.team_pick_totals,
   cold_teams_season: data.cold_teams_season,
   team_ats_record: data.team_ats_record,
+  // Renamed from public_enemy 2026-09-23; defensive fallback since the
+  // season:*:trends writer hadn't picked up the rename yet as of that same
+  // day (confirmed live: user:*:season:* had trap_team, season:*:trends
+  // still had the old public_enemy key) -- drop this once confirmed caught up.
+  trap_team: data.trap_team ?? [],
+  team_believers_faders: data.team_believers_faders,
   all_alone_picks_season: data.all_alone_season,
 });
 
@@ -34,6 +44,8 @@ const EMPTY_TRENDS: SeasonTrends = {
   team_pick_totals: [],
   cold_teams_season: [],
   team_ats_record: [],
+  trap_team: [],
+  team_believers_faders: [],
   all_alone_picks_season: [],
 };
 

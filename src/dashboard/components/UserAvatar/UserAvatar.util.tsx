@@ -1,49 +1,27 @@
-import { SxProps } from "@mui/material";
+import { SxProps, Theme } from "@mui/material";
+import { minidenticon } from "minidenticons";
 import { UserStringProps } from "./UserAvatar.types";
 
-export const stringToColor = (str: string): string => {
-  if (!str) return "#000000";
-
-  let hash = 0;
-
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  const color =
-    "#" +
-    Array.from({ length: 3 })
-      .map((_, i) => {
-        const value = (hash >> (i * 8)) & 0xff;
-        return `00${value.toString(16)}`.slice(-2);
-      })
-      .join("");
-
-  return color;
-};
-
-export const getInitials = (name: string): string => {
-  const nameParts = name.split(" ");
-  return nameParts.length >= 2
-    ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
-    : nameParts[0][0].toUpperCase();
-};
+// Deterministic per-user pattern instead of initials -- initials alone
+// collide constantly at this pool's size (e.g. "Patrick Madden" and
+// "Patrick McCarthy" both read "PM"). Seeded on userId rather than name so
+// it's stable across a display-name change and immune to two users sharing
+// an identical name, which initials couldn't tell apart either.
+const identiconDataUri = (userId: string): string =>
+  "data:image/svg+xml;utf8," + encodeURIComponent(minidenticon(userId, 60, 45));
 
 export const createAvatarProps = (
+  userId: string,
   name: string,
   props: SxProps
-): UserStringProps => {
-  const initials = getInitials(name);
-  return {
-    sx: {
-      ...props,
-      bgcolor: stringToColor(name),
-      lineHeight: 1,
-      // Two-letter initials sit closer to the edge of the circle than one
-      // letter does, so tighten letter-spacing to keep them off the border.
-      letterSpacing: initials.length > 1 ? "-0.05em" : "normal",
-    },
-    children: initials,
-  };
-};
+): UserStringProps => ({
+  src: identiconDataUri(userId),
+  alt: name,
+  // minidenticon's "off" cells are transparent, not a painted background --
+  // give the avatar itself a subtle neutral tile so the pattern reads
+  // against something in both themes.
+  sx: (theme: Theme) => ({
+    ...(props as object),
+    bgcolor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+  }),
+});

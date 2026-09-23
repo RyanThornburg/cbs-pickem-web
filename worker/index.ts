@@ -1,6 +1,7 @@
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends)$/;
 const SEASON_TRENDS_PATTERN = /^\/api\/season\/(\d+)\/trends$/;
+const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -34,6 +35,12 @@ export default {
       if (seasonTrendsMatch) {
         const [, season] = seasonTrendsMatch;
         return await respondWithKvJson(env, `season:${season}:trends`);
+      }
+
+      const userSeasonMatch = pathname.match(USER_SEASON_PATTERN);
+      if (userSeasonMatch) {
+        const [, userId, season] = userSeasonMatch;
+        return await respondWithKvJson(env, `user:${userId}:season:${season}`);
       }
 
       return notFound();

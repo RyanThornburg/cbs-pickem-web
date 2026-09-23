@@ -15,10 +15,9 @@ export const UserAvatar = ({
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, minWidth: 0 }}>
       <Avatar
-        {...createAvatarProps(userName ?? "", {
+        {...createAvatarProps(userId, userName ?? "", {
           width: size,
           height: size,
-          fontSize: fontSize,
         })}
         {...props}
       />

@@ -15,6 +15,7 @@ import LineMoversCard from "./LineMoversCard";
 import SeasonPickTotalsCard from "./SeasonPickTotalsCard";
 import SeasonAtsCard from "./SeasonAtsCard";
 import SeasonAllAloneCard from "./SeasonAllAloneCard";
+import SeasonBelieversFadersCard from "./SeasonBelieversFadersCard";
 
 export type Props = {
   season: number;
@@ -37,6 +38,8 @@ const EMPTY_SEASON_TRENDS: SeasonTrends = {
   team_pick_totals: [],
   cold_teams_season: [],
   team_ats_record: [],
+  trap_team: [],
+  team_believers_faders: [],
   all_alone_picks_season: [],
 };
 
@@ -172,6 +175,14 @@ export default function TrendsSection({ season, week }: Props) {
     {
       title: "Against The Spread",
       content: <SeasonAtsCard teamAtsRecord={seasonTrends.team_ats_record} />,
+    },
+    {
+      title: "Believers vs Faders",
+      content: (
+        <SeasonBelieversFadersCard
+          teamBelieversFaders={seasonTrends.team_believers_faders}
+        />
+      ),
     },
     {
       title: "All Alone Log",

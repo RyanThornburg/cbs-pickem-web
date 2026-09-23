@@ -2,18 +2,12 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
 import { alpha } from "@mui/material/styles";
-import type {} from "@mui/x-data-grid/themeAugmentation";
 import MainGrid from "./components/MainGrid";
 import AppTheme from "./shared-theme/AppTheme";
-import { dataGridCustomizations } from "./theme/customizations";
-
-const xThemeComponents = {
-  ...dataGridCustomizations,
-};
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
   return (
-    <AppTheme {...props} themeComponents={xThemeComponents}>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex" }}>
         {/* Main content */}

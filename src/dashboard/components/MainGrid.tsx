@@ -16,7 +16,8 @@ import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
-import { GameStatus, RankedUser } from "../types";
+import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
+import { GameStatus, RankedUser, UserSeasonTrends } from "../types";
 import {
   getInitialTab,
   isPrimaryTab,
@@ -26,8 +27,6 @@ import {
 import UsersTable from "./UsersTable";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
-// WeeklyCoverChart, CoverResultCard, and TeamCoversCard were removed along with their
-// Firebase reads — rebuild against the phase-2 covers KV key when it exists.
 
 export default function MainGrid() {
   const { currentWeek, season, secondHalfStartWeek } = useCurrentWeek();
@@ -37,6 +36,9 @@ export default function MainGrid() {
   const [user, setUser] = useState<string>("");
   const [userList, setUserList] = useState<RankedUser[]>([]);
   const [hasLiveGame, setHasLiveGame] = useState(false);
+  const [selectedUserTrends, setSelectedUserTrends] = useState<
+    UserSeasonTrends | undefined
+  >(undefined);
 
   const activeTab = isPrimaryTab(tab) ? tab : null;
 
@@ -119,6 +121,23 @@ export default function MainGrid() {
     }
   }, [season, selectedWeek]);
 
+  // Season streak badge + weekly hot/cold icon on the selected-user header --
+  // just the one user, not the whole roster like UsersTable's fetch.
+  useEffect(() => {
+    if (season > 0 && user) {
+      const unsubscribe = GetUserSeasonTrends([user], season, (trends) => {
+        setSelectedUserTrends(trends[user]);
+      });
+
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    }
+    setSelectedUserTrends(undefined);
+  }, [season, user]);
+
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* cards */}
@@ -143,7 +162,11 @@ export default function MainGrid() {
               sx={{ display: { xs: "none", lg: "block" } }}
               size={{ xs: 0, lg: 7 }}
             >
-              <UserSelectedMain userId={user} userList={userList} />
+              <UserSelectedMain
+                userId={user}
+                userList={userList}
+                userTrends={selectedUserTrends}
+              />
             </Grid>
 
             <Grid
@@ -172,7 +195,11 @@ export default function MainGrid() {
               </Stack>
             </Grid>
 
-            <UserSelected userId={user} userList={userList} />
+            <UserSelected
+              userId={user}
+              userList={userList}
+              userTrends={selectedUserTrends}
+            />
           </Grid>
 
           {/* Overall/second-half leaderboard cards are hidden for now -- User
@@ -209,6 +236,7 @@ export default function MainGrid() {
                 userId={user}
                 showSecondHalf={selectedWeek >= secondHalfStartWeek}
                 week={selectedWeek}
+                season={season}
               />
             </Grid>
             <Grid
