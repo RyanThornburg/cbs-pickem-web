@@ -143,6 +143,21 @@
   letter-spacing: 0.03em;
 }
 
+.games-card .gc-venuebadge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--gc-accent-soft);
+  color: var(--gc-accent);
+}
+/* Mobile's kickoff block is right-aligned, so the badge follows it there. */
+.games-card .gc-gamecard-top .gc-venuebadge { align-self: flex-end; }
+
 .games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; max-width: 100%; }
 .games-card .gc-line .gc-num { font-weight: 600; }
 

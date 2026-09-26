@@ -4,6 +4,7 @@ import { GameStatus } from "../../types";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameShort } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
+import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
 import {
   fmtSpread,
@@ -136,6 +137,7 @@ function GameRow({ game }: { game: GameWithOdds }) {
           <div className="gc-kickoff">
             <span className="gc-time">{formatGameShort(game.game_time)}</span>
             <span className="gc-tv">{isFinal ? "Final" : game.tv_network ?? ""}</span>
+            <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
           </div>
         </td>
         <td>

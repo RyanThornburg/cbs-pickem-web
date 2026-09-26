@@ -52,6 +52,7 @@ export interface GameWithOdds {
   tv_network?: string;
   gametracker_url?: string;
   stadium?: Stadium;
+  neutral_site?: boolean;
   forecast?: Forecast | null;
   home_score?: number;
   away_score?: number;
@@ -103,6 +104,7 @@ const joinGameWithOdds = (
     tv_network: game.tv_network ?? undefined,
     gametracker_url: game.gametracker_url ?? undefined,
     stadium: game.stadium,
+    neutral_site: game.neutral_site ?? undefined,
     forecast: game.forecast,
     home_score: game.home_score,
     away_score: game.away_score,

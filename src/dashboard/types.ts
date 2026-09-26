@@ -52,6 +52,9 @@ export interface Game {
   tv_network?: string;
   gametracker_url?: string;
   stadium?: Stadium;
+  // Absent on KV entries written before the data repo added it -- unknown,
+  // not false. See getVenueBadge.
+  neutral_site?: boolean;
   forecast?: Forecast | null;
   picks: {
     home: UserId[];

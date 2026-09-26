@@ -4,6 +4,7 @@ import { GameStatus } from "../../types";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameDate, formatGameTime } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
+import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
 import {
   fmtSpread,
@@ -79,6 +80,7 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
             {formatGameDate(game.game_time)}
             {isFinal ? " · Final" : game.tv_network ? ` · ${game.tv_network}` : ""}
           </span>
+          <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
         </div>
         <TeamRow
           team={game.home_team}

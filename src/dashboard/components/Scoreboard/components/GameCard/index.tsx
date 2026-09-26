@@ -9,7 +9,10 @@ import {
   Box,
   Grid2 as Grid,
 } from "@mui/material";
+import PlaceIcon from "@mui/icons-material/Place";
+import PublicIcon from "@mui/icons-material/Public";
 import { Game, GameStatus } from "../../../../types";
+import { getVenueBadge } from "../../../../utils/venue";
 import TeamScore from "../TeamScore";
 import { formatGameTime, formatGameDate } from "../../utils/dateFormatters";
 import { cardStyles, contentStyles } from "./styles";
@@ -62,6 +65,8 @@ export const GameCard = memo(({ game }: GameCardProps) => {
   };
 
   const isGameLive = game.status === GameStatus.Inprogress;
+  const venueBadge = getVenueBadge(game.stadium, game.neutral_site);
+  const isInternational = venueBadge?.kind === "international";
   const gameChipString = isGameLive ? "Live" : game.status;
 
   return (
@@ -76,9 +81,23 @@ export const GameCard = memo(({ game }: GameCardProps) => {
                 alignItems: "center",
               }}
             >
-              <Typography variant="subtitle2" color="text.secondary">
-                {gameDate} • {gameTime} • {gameTV(game.tv_network)}
-              </Typography>
+              <Stack spacing={0.5} sx={{ alignItems: "flex-start" }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {gameDate} • {gameTime} • {gameTV(game.tv_network)}
+                </Typography>
+                {venueBadge && (
+                  <Chip
+                    icon={isInternational ? <PublicIcon /> : <PlaceIcon />}
+                    label={venueBadge.label}
+                    title={`${isInternational ? "International" : "Neutral-site"} game${
+                      game.stadium?.name ? ` at ${game.stadium.name}` : ""
+                    }`}
+                    size="small"
+                    color="warning"
+                    variant="outlined"
+                  />
+                )}
+              </Stack>
 
               <Chip
                 label={isGameLive ? getTimeLeft() : gameChipString}

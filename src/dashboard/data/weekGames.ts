@@ -46,6 +46,7 @@ export interface ApiGame {
   tv_network?: string | null;
   gametracker_url?: string | null;
   stadium?: Stadium;
+  neutral_site?: boolean | null;
   forecast?: Forecast | null;
   picks?: {
     home: ApiUserRef[];
@@ -92,6 +93,7 @@ export const toGame = (game: ApiGame): Game => ({
   tv_network: game.tv_network ?? undefined,
   gametracker_url: game.gametracker_url ?? undefined,
   stadium: game.stadium,
+  neutral_site: game.neutral_site ?? undefined,
   forecast: game.forecast,
   picks: {
     home: game.picks?.home.map(toUserId) ?? [],
