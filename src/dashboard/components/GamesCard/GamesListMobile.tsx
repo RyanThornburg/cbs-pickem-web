@@ -49,9 +49,9 @@ function TeamRow({
   );
 }
 
-// Kickoff/weather sit next to the team they belong under (away row / home
-// row) rather than off to one side, so the pairing reads as one unit on a
-// narrow screen instead of two separate blocks the eye has to reconcile.
+// Teams stack tight on the left with kickoff beside them (spanning both
+// rows); weather gets its own full-width row below, so neither squeezes the
+// other -- the teams no longer share a column with the weather block.
 function GameCardItem({ game }: { game: GameWithOdds }) {
   const [open, setOpen] = useState(false);
   const total = modeTotal(game.books);
@@ -74,7 +74,12 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
           score={isFinal ? game.away_score : undefined}
           covered={isFinal && game.coveringTeamId === game.away_team.id}
         />
-        <div className="gc-kickoff" style={{ textAlign: "right" }}>
+        <TeamRow
+          team={game.home_team}
+          score={isFinal ? game.home_score : undefined}
+          covered={isFinal && game.coveringTeamId === game.home_team.id}
+        />
+        <div className="gc-kickoff">
           <span className="gc-time">{formatGameTime(game.game_time)}</span>
           <span className="gc-tv">
             {formatGameDate(game.game_time)}
@@ -82,14 +87,10 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
           </span>
           <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
         </div>
-        <TeamRow
-          team={game.home_team}
-          score={isFinal ? game.home_score : undefined}
-          covered={isFinal && game.coveringTeamId === game.home_team.id}
-        />
-        <div style={{ textAlign: "right" }}>
-          <WeatherCell forecast={game.forecast} stadium={game.stadium} alignEnd />
-        </div>
+      </div>
+
+      <div className="gc-gamecard-wx">
+        <WeatherCell forecast={game.forecast} stadium={game.stadium} />
       </div>
 
       {/* Open/Spread on top, Total/CBS Line below -- the market's current

@@ -12,13 +12,13 @@ import { AlertFlagIcon, DomeIcon, ExternalLinkIcon, wxIcon, wxIconFor } from "./
 type Props = {
   forecast?: Forecast | null;
   stadium?: Stadium;
-  // Mobile card: the cell sits in a right-aligned column, so the icon moves
-  // inline next to the temp (instead of its own left column, where it ends
-  // up stranded far from the right-aligned text) and everything aligns right.
-  alignEnd?: boolean;
 };
 
-export default function WeatherCell({ forecast, stadium, alignEnd = false }: Props) {
+// Conditions on the left, hourly strip beside them on the right -- same on
+// the desktop table (wide Weather column) and the mobile card (its own
+// full-width row), so the strip never stacks under the text and doubles the
+// row height.
+export default function WeatherCell({ forecast, stadium }: Props) {
   const forecastUrl = merryskyUrl(stadium);
 
   if (!forecast) {
@@ -36,34 +36,35 @@ export default function WeatherCell({ forecast, stadium, alignEnd = false }: Pro
   const hours = duringGameHours(forecast);
 
   return (
-    <ForecastLink url={forecastUrl} className={`gc-wx${alignEnd ? " gc-wx-end" : ""}`}>
-      {!alignEnd && wxIcon(forecast.condition)}
-      <div className="gc-wxtext">
-        <span className="gc-temp">
-          {alignEnd && wxIcon(forecast.condition)}
-          {forecast.temp_f}°F
-          {forecastUrl && <ExternalLinkIcon />}
-        </span>
-        <span className="gc-cond">
-          {forecast.condition} · {forecast.wind_speed_mph}mph {forecast.wind_direction ?? ""}
-        </span>
-        {trends.map((trend) => (
-          <span key={trend.label} className={`gc-trend${trend.worsening ? " worse" : ""}`}>
-            {trend.direction === "up" ? "↑" : "↓"} {trend.label}
+    <ForecastLink url={forecastUrl} className="gc-wx">
+      <div className="gc-wxmain">
+        {wxIcon(forecast.condition)}
+        <div className="gc-wxtext">
+          <span className="gc-temp">
+            {forecast.temp_f}°F
+            {forecastUrl && <ExternalLinkIcon />}
           </span>
-        ))}
-        {flags.length > 0 && (
-          <div className="gc-flags">
-            {flags.map((flag) => (
-              <span key={flag.label} className={`gc-flag ${flag.tier}`}>
-                {flag.tier === "danger" && <AlertFlagIcon />}
-                {flag.label}
-              </span>
-            ))}
-          </div>
-        )}
-        {hours.length > 0 && <HourlyStrip hours={hours} />}
+          <span className="gc-cond">
+            {forecast.condition} · {forecast.wind_speed_mph}mph {forecast.wind_direction ?? ""}
+          </span>
+          {trends.map((trend) => (
+            <span key={trend.label} className={`gc-trend${trend.worsening ? " worse" : ""}`}>
+              {trend.direction === "up" ? "↑" : "↓"} {trend.label}
+            </span>
+          ))}
+          {flags.length > 0 && (
+            <div className="gc-flags">
+              {flags.map((flag) => (
+                <span key={flag.label} className={`gc-flag ${flag.tier}`}>
+                  {flag.tier === "danger" && <AlertFlagIcon />}
+                  {flag.label}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+      {hours.length > 0 && <HourlyStrip hours={hours} />}
     </ForecastLink>
   );
 }

@@ -53,10 +53,14 @@ function TeamRow({
 }
 
 // Open, Spread, and CBS Line are all the home team's number -- that's the
-// one convention throughout, no team abbreviation shown next to them.
+// one convention throughout, no team abbreviation shown next to them. Open
+// and the O/U total fold into this cell (current line on top) rather than
+// taking their own columns, which frees width for the Weather column.
 function SpreadCell({ game }: { game: GameWithOdds }) {
   const move = getMoveDelta(game);
   const isFinal = game.status === GameStatus.Final;
+  const total = modeTotal(game.books);
+  const totalResult = isFinal ? getTotalResult(game, total) : null;
   const coverSide =
     isFinal && game.market_spread?.close != null && game.coveringTeamId != null
       ? game.coveringTeamId === game.home_team.id
@@ -68,11 +72,25 @@ function SpreadCell({ game }: { game: GameWithOdds }) {
       <span className={`gc-num ${coverSide}`}>
         {fmtSpread(game.market_spread?.close)}
       </span>
-      {move != null && (
-        <span className="gc-movebadge">
-          {move > 0 ? "▲" : "▼"} {Math.abs(move)} pt move since open
-        </span>
-      )}
+      <span className="gc-linesub">
+        Open {fmtSpread(game.market_spread?.open)}
+        {move != null && (
+          <span className="gc-movebadge" title={`${Math.abs(move)} pt move since open`}>
+            {move > 0 ? "▲" : "▼"} {Math.abs(move)}
+          </span>
+        )}
+      </span>
+      <span className="gc-ou">
+        O/U <span className="gc-ou-num">{total ?? "—"}</span>
+        {totalResult && (
+          <span
+            className="gc-total-hit"
+            title={totalResult === "over" ? "Total went over" : "Total went under"}
+          >
+            {totalResult === "over" ? "▲" : "▼"}
+          </span>
+        )}
+      </span>
     </div>
   );
 }
@@ -94,9 +112,7 @@ function CbsLineCell({ game }: { game: GameWithOdds }) {
 
 function GameRow({ game }: { game: GameWithOdds }) {
   const [open, setOpen] = useState(false);
-  const total = modeTotal(game.books);
   const isFinal = game.status === GameStatus.Final;
-  const totalResult = isFinal ? getTotalResult(game, total) : null;
 
   return (
     <>
@@ -115,23 +131,11 @@ function GameRow({ game }: { game: GameWithOdds }) {
             />
           </div>
         </td>
-        <td>{fmtSpread(game.market_spread?.open)}</td>
         <td>
           <SpreadCell game={game} />
         </td>
         <td>
           <CbsLineCell game={game} />
-        </td>
-        <td>
-          {total ?? "—"}
-          {totalResult && (
-            <span
-              className="gc-total-hit"
-              title={totalResult === "over" ? "Total went over" : "Total went under"}
-            >
-              {totalResult === "over" ? "▲" : "▼"}
-            </span>
-          )}
         </td>
         <td>
           <div className="gc-kickoff">
@@ -151,7 +155,7 @@ function GameRow({ game }: { game: GameWithOdds }) {
       </tr>
       {open && (
         <tr className="gc-bookdetail">
-          <td colSpan={8}>
+          <td colSpan={6}>
             <BookOddsTable
               books={game.books}
               homeAbbr={game.home_team.abbr}
@@ -174,13 +178,11 @@ export default function GamesTableDesktop({ games }: Props) {
       <table>
         <thead>
           <tr>
-            <th style={{ width: "19%" }}>Matchup</th>
-            <th style={{ width: "8%" }}>Open</th>
-            <th style={{ width: "13%" }}>Spread</th>
-            <th style={{ width: "9%" }}>CBS Line</th>
-            <th style={{ width: "8%" }}>Total</th>
+            <th style={{ width: "20%" }}>Matchup</th>
+            <th style={{ width: "13%" }}>Spread · O/U</th>
+            <th style={{ width: "10%" }}>CBS Line</th>
             <th style={{ width: "12%" }}>Kickoff</th>
-            <th style={{ width: "18%" }}>Weather</th>
+            <th style={{ width: "35%" }}>Weather</th>
             <th>Books</th>
           </tr>
         </thead>

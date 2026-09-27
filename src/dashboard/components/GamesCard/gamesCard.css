@@ -160,6 +160,16 @@
 
 .games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; max-width: 100%; }
 .games-card .gc-line .gc-num { font-weight: 600; }
+.games-card .gc-line .gc-linesub {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-line .gc-ou { font-size: 0.8rem; color: var(--gc-text-muted); }
+.games-card .gc-line .gc-ou-num { font-weight: 600; color: var(--gc-text); }
 
 .games-card .gc-movebadge {
   display: inline-flex;
@@ -189,17 +199,23 @@
 .games-card .gc-valuearrow.good { color: var(--gc-good); }
 .games-card .gc-valuearrow.bad { color: var(--gc-accent); }
 
-.games-card .gc-wx { display: flex; align-items: flex-start; gap: 8px; }
+.games-card .gc-wx {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.games-card .gc-wx .gc-wxmain { display: flex; align-items: flex-start; gap: 8px; flex: 1 1 auto; min-width: 0; }
 .games-card .gc-wx svg { flex: none; color: var(--gc-weather); margin-top: 1px; }
-.games-card .gc-wx .gc-wxtext { display: flex; flex-direction: column; gap: 3px; }
+.games-card .gc-wx .gc-wxtext { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .games-card .gc-wx .gc-temp { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
 .games-card .gc-wx .gc-cond { color: var(--gc-text-muted); font-size: 0.76rem; }
 .games-card .gc-wx .gc-trend { font-size: 0.74rem; font-weight: 600; color: var(--gc-text-muted); }
 .games-card .gc-wx .gc-trend.worse { color: var(--gc-accent); }
-.games-card .gc-wx .gc-hours { display: flex; gap: 2px; margin-top: 4px; }
+.games-card .gc-wx .gc-hours { display: flex; gap: 2px; flex: 0 1 auto; }
 .games-card .gc-wx .gc-hour {
-  flex: 0 1 48px;
-  min-width: 26px;
+  flex: 0 1 44px;
+  min-width: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -305,35 +321,42 @@ a.gc-wx-link:hover.gc-dome {
 }
 .games-card .gc-gamecard-top {
   display: grid;
-  /* Team column gets its natural width first (so "[WAS] Commanders 0-2"
-     never wraps its record), weather gets the rest but never less than
-     7.75rem -- enough for a 4-tile hourly strip and "↑ Rain 68% by 2PM"
-     on one line, while still fitting "[WAS] Commanders 0-2" at 375px. The old `1fr auto` let the weather column grow to fit its
-     flags/strip and squeeze the teams. Below ~375px the floor wins and long
-     names ellipsize instead. */
-  grid-template-columns: minmax(0, max-content) minmax(7.75rem, 1fr);
-  column-gap: 8px;
-  row-gap: 8px;
+  /* Away/home stacked in column 1, kickoff in column 2 spanning both rows.
+     Weather used to share column 2 with the home team and squeezed the team
+     names; it's now its own row (.gc-gamecard-wx) below. Teams get their
+     natural width first; kickoff takes the rest (min 5.5rem) and lets
+     "SUN, SEP 27 · FOX" wrap on narrow phones instead of truncating names. */
+  grid-template-columns: minmax(0, max-content) minmax(5.5rem, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 5px;
   align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gc-border);
+}
+.games-card .gc-gamecard-top .gc-kickoff {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: right;
+}
+.games-card .gc-gamecard-wx {
   margin-bottom: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--gc-border);
 }
 .games-card .gc-gamecard .gc-mrow { min-width: 0; gap: 6px; }
 .games-card .gc-gamecard .gc-chip { min-width: 36px; padding: 2px 5px; }
 .games-card .gc-gamecard .gc-chip,
 .games-card .gc-gamecard .gc-rec { flex: none; white-space: nowrap; }
+/* Safety net for very narrow phones -- with the full row to themselves the
+   names fit at normal phone widths. */
 .games-card .gc-gamecard .gc-mname {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.games-card .gc-wx.gc-wx-end { justify-content: flex-end; }
-.games-card .gc-wx-end .gc-wxtext { align-items: flex-end; }
-.games-card .gc-wx-end .gc-temp svg { margin-top: 0; }
-.games-card .gc-wx-end .gc-flags,
-.games-card .gc-wx-end .gc-hours { justify-content: flex-end; }
 .games-card .gc-oddsgrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
