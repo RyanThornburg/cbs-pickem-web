@@ -1,13 +1,24 @@
-import { Forecast, Stadium } from "../../types";
-import { merryskyUrl, weatherFlags } from "./gamesCardUtils";
-import { AlertFlagIcon, DomeIcon, ExternalLinkIcon, wxIcon } from "./weatherIcons";
+import dayjs from "dayjs";
+import { Forecast, HourlyForecast, Stadium } from "../../types";
+import {
+  duringGameHours,
+  merryskyUrl,
+  PRECIP_TREND,
+  weatherFlags,
+  weatherTrends,
+} from "./gamesCardUtils";
+import { AlertFlagIcon, DomeIcon, ExternalLinkIcon, wxIcon, wxIconFor } from "./weatherIcons";
 
 type Props = {
   forecast?: Forecast | null;
   stadium?: Stadium;
+  // Mobile card: the cell sits in a right-aligned column, so the icon moves
+  // inline next to the temp (instead of its own left column, where it ends
+  // up stranded far from the right-aligned text) and everything aligns right.
+  alignEnd?: boolean;
 };
 
-export default function WeatherCell({ forecast, stadium }: Props) {
+export default function WeatherCell({ forecast, stadium, alignEnd = false }: Props) {
   const forecastUrl = merryskyUrl(stadium);
 
   if (!forecast) {
@@ -21,18 +32,26 @@ export default function WeatherCell({ forecast, stadium }: Props) {
   }
 
   const flags = weatherFlags(forecast);
+  const trends = weatherTrends(forecast);
+  const hours = duringGameHours(forecast);
 
   return (
-    <ForecastLink url={forecastUrl} className="gc-wx">
-      {wxIcon(forecast.condition)}
+    <ForecastLink url={forecastUrl} className={`gc-wx${alignEnd ? " gc-wx-end" : ""}`}>
+      {!alignEnd && wxIcon(forecast.condition)}
       <div className="gc-wxtext">
         <span className="gc-temp">
+          {alignEnd && wxIcon(forecast.condition)}
           {forecast.temp_f}°F
           {forecastUrl && <ExternalLinkIcon />}
         </span>
         <span className="gc-cond">
           {forecast.condition} · {forecast.wind_speed_mph}mph {forecast.wind_direction ?? ""}
         </span>
+        {trends.map((trend) => (
+          <span key={trend.label} className={`gc-trend${trend.worsening ? " worse" : ""}`}>
+            {trend.direction === "up" ? "↑" : "↓"} {trend.label}
+          </span>
+        ))}
         {flags.length > 0 && (
           <div className="gc-flags">
             {flags.map((flag) => (
@@ -43,8 +62,39 @@ export default function WeatherCell({ forecast, stadium }: Props) {
             ))}
           </div>
         )}
+        {hours.length > 0 && <HourlyStrip hours={hours} />}
       </div>
     </ForecastLink>
+  );
+}
+
+// Shown on every outdoor game once it's inside the hourly window (not just
+// the ones with a trend note) -- a steady strip is itself the answer to
+// "does this change during the game?".
+function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
+  const peak = Math.max(...hours.map((h) => h.precipitation_pct));
+  const notable = (pct: number) => pct >= PRECIP_TREND.minNotablePct;
+
+  return (
+    <div className="gc-hours">
+      {hours.map((h) => {
+        const time = dayjs(h.time).format("hA");
+        const isPeak = notable(h.precipitation_pct) && h.precipitation_pct === peak;
+        return (
+          <div
+            key={h.time}
+            className={`gc-hour${isPeak ? " peak" : ""}`}
+            title={`${time}: ${h.condition}, ${h.temp_f}°F, ${h.precipitation_pct}% precip, gusts ${h.wind_gust_mph}mph`}
+          >
+            <span className="gc-hour-time">{time}</span>
+            {wxIconFor(h.icon, h.condition)}
+            <span className={`gc-hour-pct${notable(h.precipitation_pct) ? " wet" : ""}`}>
+              {h.precipitation_pct}%
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

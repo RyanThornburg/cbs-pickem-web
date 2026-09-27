@@ -194,6 +194,25 @@
 .games-card .gc-wx .gc-wxtext { display: flex; flex-direction: column; gap: 3px; }
 .games-card .gc-wx .gc-temp { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
 .games-card .gc-wx .gc-cond { color: var(--gc-text-muted); font-size: 0.76rem; }
+.games-card .gc-wx .gc-trend { font-size: 0.74rem; font-weight: 600; color: var(--gc-text-muted); }
+.games-card .gc-wx .gc-trend.worse { color: var(--gc-accent); }
+.games-card .gc-wx .gc-hours { display: flex; gap: 2px; margin-top: 4px; }
+.games-card .gc-wx .gc-hour {
+  flex: 0 1 48px;
+  min-width: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 2px;
+  border-radius: 6px;
+  background: var(--gc-surface-2);
+}
+.games-card .gc-wx .gc-hour.peak { background: var(--gc-weather-soft); }
+.games-card .gc-wx .gc-hour svg { width: 16px; height: 16px; margin-top: 0; }
+.games-card .gc-wx .gc-hour-time { font-size: 0.62rem; color: var(--gc-text-muted); white-space: nowrap; }
+.games-card .gc-wx .gc-hour-pct { font-size: 0.68rem; font-weight: 700; color: var(--gc-text-muted); }
+.games-card .gc-wx .gc-hour-pct.wet { color: var(--gc-weather); }
 .games-card .gc-wx .gc-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .games-card .gc-dome { display: inline-flex; align-items: center; gap: 6px; color: var(--gc-text-muted); font-size: 0.8rem; }
 .games-card .gc-dome svg { color: var(--gc-text-muted); }
@@ -286,14 +305,35 @@ a.gc-wx-link:hover.gc-dome {
 }
 .games-card .gc-gamecard-top {
   display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 12px;
+  /* Team column gets its natural width first (so "[WAS] Commanders 0-2"
+     never wraps its record), weather gets the rest but never less than
+     7.75rem -- enough for a 4-tile hourly strip and "↑ Rain 68% by 2PM"
+     on one line, while still fitting "[WAS] Commanders 0-2" at 375px. The old `1fr auto` let the weather column grow to fit its
+     flags/strip and squeeze the teams. Below ~375px the floor wins and long
+     names ellipsize instead. */
+  grid-template-columns: minmax(0, max-content) minmax(7.75rem, 1fr);
+  column-gap: 8px;
   row-gap: 8px;
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--gc-border);
 }
+.games-card .gc-gamecard .gc-mrow { min-width: 0; gap: 6px; }
+.games-card .gc-gamecard .gc-chip { min-width: 36px; padding: 2px 5px; }
+.games-card .gc-gamecard .gc-chip,
+.games-card .gc-gamecard .gc-rec { flex: none; white-space: nowrap; }
+.games-card .gc-gamecard .gc-mname {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.games-card .gc-wx.gc-wx-end { justify-content: flex-end; }
+.games-card .gc-wx-end .gc-wxtext { align-items: flex-end; }
+.games-card .gc-wx-end .gc-temp svg { margin-top: 0; }
+.games-card .gc-wx-end .gc-flags,
+.games-card .gc-wx-end .gc-hours { justify-content: flex-end; }
 .games-card .gc-oddsgrid {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -95,7 +95,49 @@ export interface Forecast {
   wind_direction?: string;
   precipitation_pct: number;
   visibility_mi: number;
-  weather_alert: string | null;
+  // Replaced the old single `weather_alert: string | null` (2026-09-27).
+  weather_alerts?: WeatherAlert[];
+  // Present on every forecast, but only populated once the game is inside
+  // the hourly-forecast window -- until then every field is null and
+  // `hours` is []. Treat an empty `hours` as "no during-game data", not zeros.
+  during_game?: DuringGameForecast | null;
+  source?: string | null;
+  captured_at?: string;
+}
+
+// Only `title` is populated so far -- the rest have been null on every
+// alert seen live.
+export interface WeatherAlert {
+  title: string;
+  severity: string | null;
+  starts: string | null;
+  expires: string | null;
+  uri: string | null;
+}
+
+export interface DuringGameForecast {
+  precipitation_pct_max: number | null;
+  // Defaults to "rain" even when every hour is 0% -- read precip off the
+  // pct/condition, not this.
+  precip_type: string | null;
+  wind_gust_mph_max: number | null;
+  temp_f_low: number | null;
+  temp_f_high: number | null;
+  snow_accumulation_in: number | null;
+  hours: HourlyForecast[];
+}
+
+export interface HourlyForecast {
+  time: string;
+  temp_f: number;
+  feels_like_f: number;
+  condition: string;
+  icon?: string | null;
+  precip_type: string | null;
+  precipitation_pct: number;
+  wind_speed_mph: number;
+  wind_gust_mph: number;
+  wind_direction?: string;
 }
 
 export interface MarketSpread {

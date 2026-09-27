@@ -35,7 +35,7 @@ function TeamRow({
       <span className="gc-chip" style={chipStyle}>
         {team.abbr}
       </span>
-      <span>{data.name}</span>
+      <span className="gc-mname">{data.name}</span>
       <span className="gc-rec">{formatRecord(team.record)}</span>
       {score != null && (
         <span className={`gc-final-score${covered ? " covered" : ""}`}>
@@ -88,7 +88,7 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
           covered={isFinal && game.coveringTeamId === game.home_team.id}
         />
         <div style={{ textAlign: "right" }}>
-          <WeatherCell forecast={game.forecast} stadium={game.stadium} />
+          <WeatherCell forecast={game.forecast} stadium={game.stadium} alignEnd />
         </div>
       </div>
 

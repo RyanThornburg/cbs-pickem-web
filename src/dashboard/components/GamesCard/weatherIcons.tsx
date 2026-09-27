@@ -39,6 +39,15 @@ export const AlertFlagIcon = () => (
   </svg>
 );
 
+// Hourly entries carry a Pirate Weather icon key (clear-day, partly-cloudy-
+// night, rain, snow, ...) -- prefer it, fall back to the condition text.
+export const wxIconFor = (icon: string | null | undefined, cond?: string) => {
+  if (!icon) return wxIcon(cond);
+  if (icon.startsWith("clear")) return <ClearIcon />;
+  if (/rain|snow|sleet|hail|thunder/.test(icon)) return <RainIcon />;
+  return <CloudIcon />;
+};
+
 export const wxIcon = (cond?: string) => {
   if (!cond) return <CloudIcon />;
   const c = cond.toLowerCase();

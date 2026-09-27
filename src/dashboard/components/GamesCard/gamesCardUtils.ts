@@ -1,5 +1,6 @@
 import { GameWithOdds } from "../../data/GetGamesTabData";
-import { Book, Forecast, Stadium, TeamRecord } from "../../types";
+import dayjs from "dayjs";
+import { Book, Forecast, HourlyForecast, Stadium, TeamRecord } from "../../types";
 
 // Thresholds live here (frontend), not the data pipeline -- the data repo
 // only captures raw measurements (temp, wind, precip%, visibility, official
@@ -10,8 +11,17 @@ export const WEATHER_THRESHOLDS = {
   windMph: 20,
   gustMph: 20,
   freezingF: 32,
+  hotF: 90,
   heavyPrecipPct: 50,
   lowVisibilityMi: 3,
+  snowAccumIn: 0.1,
+};
+// During-game trend notes: only call out a precip change when it crosses
+// into "likely" (heavyPrecipPct), or shifts by at least shiftPts and the
+// wetter side of the shift is at least minNotablePct -- 0% -> 12% isn't news.
+export const PRECIP_TREND = {
+  shiftPts: 15,
+  minNotablePct: 30,
 };
 export const BIG_MOVE_PTS = 2;
 export const CBS_DIVERGE_PTS = 1;
@@ -129,28 +139,61 @@ export interface WeatherFlag {
 // up with the displayed condition/temp, nothing contradictory to hide.
 const isFloodAlert = (alert: string): boolean => /flood/i.test(alert);
 
+// Empty `hours` means the game is still outside the hourly-forecast window
+// (during_game's fields are all null then) -- fall back to kickoff-only.
+export const duringGameHours = (forecast: Forecast): HourlyForecast[] =>
+  forecast.during_game?.hours ?? [];
+
 const hasRainSignal = (forecast: Forecast): boolean =>
   forecast.precip_type === "rain" ||
   forecast.precipitation_pct > 0 ||
-  /rain|drizzle|shower|storm/i.test(forecast.condition);
+  /rain|drizzle|shower|storm/i.test(forecast.condition) ||
+  duringGameHours(forecast).some(
+    (h) => h.precipitation_pct > 0 || /rain|drizzle|shower|storm/i.test(h.condition)
+  );
+
+// Worst case across kickoff + every during-game hour, so a game that's dry
+// at kickoff but wet by the 2nd quarter still gets flagged.
+const gameExtremes = (forecast: Forecast) => {
+  const hours = duringGameHours(forecast);
+  const dg = forecast.during_game;
+  return {
+    windMph: Math.max(forecast.wind_speed_mph, ...hours.map((h) => h.wind_speed_mph)),
+    gustMph: Math.max(forecast.wind_gust_mph, ...hours.map((h) => h.wind_gust_mph)),
+    tempLow: Math.min(forecast.temp_f, ...hours.map((h) => h.temp_f)),
+    tempHigh: Math.max(forecast.temp_f, ...hours.map((h) => h.temp_f)),
+    precipPct: Math.max(forecast.precipitation_pct, ...hours.map((h) => h.precipitation_pct)),
+    snowIn: hours.length ? dg?.snow_accumulation_in ?? 0 : 0,
+  };
+};
 
 // Raw measurements come straight from the forecast payload; only the "does
 // this cross a line worth calling out" judgment happens here.
 export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
   const flags: WeatherFlag[] = [];
-  if (forecast.weather_alert && (!isFloodAlert(forecast.weather_alert) || hasRainSignal(forecast))) {
-    flags.push({ label: forecast.weather_alert, tier: "danger" });
+  const x = gameExtremes(forecast);
+  // A game can carry several alerts; dedupe by title so two overlapping
+  // "Flood Watch" entries don't render as two identical flags.
+  const alertTitles = new Set((forecast.weather_alerts ?? []).map((a) => a.title).filter(Boolean));
+  alertTitles.forEach((title) => {
+    if (!isFloodAlert(title) || hasRainSignal(forecast)) {
+      flags.push({ label: title, tier: "danger" });
+    }
+  });
+  if (x.windMph >= WEATHER_THRESHOLDS.windMph) {
+    flags.push({ label: `High Wind ${x.windMph}mph`, tier: "warn" });
+  } else if (x.gustMph >= WEATHER_THRESHOLDS.gustMph) {
+    flags.push({ label: `Gusts to ${x.gustMph}mph`, tier: "warn" });
   }
-  if (forecast.wind_speed_mph >= WEATHER_THRESHOLDS.windMph) {
-    flags.push({ label: `High Wind ${forecast.wind_speed_mph}mph`, tier: "warn" });
-  } else if (forecast.wind_gust_mph >= WEATHER_THRESHOLDS.gustMph) {
-    flags.push({ label: `Gusts to ${forecast.wind_gust_mph}mph`, tier: "warn" });
+  if (x.tempLow <= WEATHER_THRESHOLDS.freezingF) {
+    flags.push({ label: `Freezing ${x.tempLow}°F`, tier: "warn" });
+  } else if (x.tempHigh >= WEATHER_THRESHOLDS.hotF) {
+    flags.push({ label: `Hot ${x.tempHigh}°F`, tier: "warn" });
   }
-  if (forecast.temp_f <= WEATHER_THRESHOLDS.freezingF) {
-    flags.push({ label: `Freezing ${forecast.temp_f}°F`, tier: "warn" });
-  }
-  if (forecast.precipitation_pct >= WEATHER_THRESHOLDS.heavyPrecipPct) {
-    flags.push({ label: `${forecast.precipitation_pct}% Precip`, tier: "warn" });
+  if (x.snowIn >= WEATHER_THRESHOLDS.snowAccumIn) {
+    flags.push({ label: `Snow ${Math.round(x.snowIn * 10) / 10}in`, tier: "warn" });
+  } else if (x.precipPct >= WEATHER_THRESHOLDS.heavyPrecipPct) {
+    flags.push({ label: `${x.precipPct}% Precip`, tier: "warn" });
   }
   if (
     forecast.visibility_mi != null &&
@@ -159,4 +202,78 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
     flags.push({ label: `${forecast.visibility_mi}mi Visibility`, tier: "warn" });
   }
   return flags;
+};
+
+export interface WeatherTrend {
+  direction: "up" | "down";
+  // Arrow and severity are independent: "below freezing" points down but is
+  // worse weather, "clearing" points down and is better.
+  worsening: boolean;
+  label: string;
+}
+
+// "2PM", no space -- trend notes sit in a narrow column on mobile.
+const fmtHour = (time: string): string => dayjs(time).format("hA");
+
+const precipWord = (condition: string): string =>
+  /snow|sleet|flurr|ice/i.test(condition) ? "Snow" : "Rain";
+
+// How conditions change *after* kickoff, as short notes under the kickoff
+// line. Empty for a steady game (most of them) or when there's no hourly
+// data yet. Temps only count when they cross into an extreme -- 54 -> 45 is
+// a non-event, dropping below freezing isn't.
+export const weatherTrends = (forecast: Forecast): WeatherTrend[] => {
+  const hours = duringGameHours(forecast);
+  if (!hours.length) return [];
+  const trends: WeatherTrend[] = [];
+  const { heavyPrecipPct, freezingF, hotF } = WEATHER_THRESHOLDS;
+  const kickPct = forecast.precipitation_pct;
+
+  // Labels stay short ("Rain 68% by 2PM", same shape up or down) -- they
+  // sit in a ~125px column on mobile. Anchored on the wettest (or driest)
+  // hour rather than the first one to qualify, so 10% -> 35% -> 70% reads
+  // "70%", not "35%". The % carries how likely it is, so crossing into
+  // "likely" and a smaller notable rise share one label.
+  const wettest = hours.reduce((a, h) => (h.precipitation_pct > a.precipitation_pct ? h : a));
+  const driest = hours.reduce((a, h) => (h.precipitation_pct < a.precipitation_pct ? h : a));
+  const rising =
+    ((kickPct < heavyPrecipPct && wettest.precipitation_pct >= heavyPrecipPct) ||
+      (wettest.precipitation_pct - kickPct >= PRECIP_TREND.shiftPts &&
+        wettest.precipitation_pct >= PRECIP_TREND.minNotablePct)) &&
+    wettest;
+  const clearing =
+    kickPct >= PRECIP_TREND.minNotablePct &&
+    kickPct - driest.precipitation_pct >= PRECIP_TREND.shiftPts &&
+    driest;
+
+  if (rising) {
+    trends.push({
+      direction: "up",
+      worsening: true,
+      label: `${precipWord(rising.condition)} ${rising.precipitation_pct}% by ${fmtHour(rising.time)}`,
+    });
+  } else if (clearing) {
+    trends.push({
+      direction: "down",
+      worsening: false,
+      // Not "Clearing by 3PM (36%)" -- that read as a 36% chance of
+      // clearing. Name the precip so the % is unambiguous; the word comes
+      // from kickoff, since the driest hour's condition may just be "Cloudy".
+      label: `${precipWord(forecast.condition)} ${clearing.precipitation_pct}% by ${fmtHour(clearing.time)}`,
+    });
+  }
+
+  if (forecast.temp_f > freezingF) {
+    const freeze = hours.find((h) => h.temp_f <= freezingF);
+    if (freeze) {
+      trends.push({ direction: "down", worsening: true, label: `Freezing by ${fmtHour(freeze.time)} (${freeze.temp_f}°F)` });
+    }
+  }
+  if (forecast.temp_f < hotF) {
+    const heat = hours.find((h) => h.temp_f >= hotF);
+    if (heat) {
+      trends.push({ direction: "up", worsening: true, label: `${heat.temp_f}°F by ${fmtHour(heat.time)}` });
+    }
+  }
+  return trends;
 };
