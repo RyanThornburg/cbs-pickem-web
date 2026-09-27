@@ -482,8 +482,10 @@ export interface UserSeasonTrends {
 // /api/admin/status. Every timestamp is ISO 8601 UTC, null if the task has
 // never run (or never succeeded) in that environment.
 
-// Tasks that should run whether or not games are on, so they carry a
-// data-side `stale` flag (based on last_success_at vs. a per-task limit).
+// Tasks with a data-side `stale` flag (last_success_at vs. a per-task limit).
+// Some run regardless of games (pregame weather, user profiles); others pause
+// while any game is live (housekeeping, CBS quiet poll) -- their limits are
+// loosened to allow for a long Sunday without a run.
 export interface AdminWatchedTask {
   last_at: string | null;
   last_success_at: string | null;
@@ -491,6 +493,7 @@ export interface AdminWatchedTask {
 }
 
 // Odds tracks two captures; `stale` only when neither has succeeded in 12h.
+// Baseline pauses while games are live; pre-kickoff runs every tick.
 export interface AdminOddsTask {
   baseline_last_at: string | null;
   baseline_last_success_at: string | null;
@@ -500,7 +503,8 @@ export interface AdminOddsTask {
 }
 
 // Only run during a game's live window, so an old timestamp is normal most
-// of the week -- no stale flag.
+// of the week -- no stale flag. Only sports_io_live_poll records attempts and
+// successes separately; for the rest last_success_at is a copy of last_at.
 export interface AdminLiveTask {
   last_at: string | null;
   last_success_at: string | null;
@@ -516,7 +520,8 @@ export interface AdminLastRun {
   cbs_live_poll: AdminLiveTask;
   game_snapshot_capture: AdminLiveTask;
   live_game_stats_capture: AdminLiveTask;
-  // Bare date ("2026-09-20"), not a timestamp.
+  // Bare date ("2026-09-20"), not a timestamp. Runs on the first tick after
+  // Sunday 1 PM ET, live games or not.
   deadline_last_synced_sunday: string | null;
 }
 

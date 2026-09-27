@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Alert, AlertColor, Button, Stack, Typography } from "@mui/material";
 import { alpha, Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
@@ -16,6 +16,7 @@ import {
   AdminWatchedTask,
 } from "../../types";
 import {
+  deadlineSweepHealth,
   EVENT_ACTIVE_MS,
   formatAgo,
   formatEt,
@@ -39,18 +40,40 @@ type LiveKey =
   | "game_snapshot_capture"
   | "live_game_stats_capture";
 
-const WATCHED_TASKS: { key: WatchedKey; name: string }[] = [
-  { key: "housekeeping", name: "Housekeeping" },
-  { key: "cbs_picks_quiet_poll", name: "CBS quiet picks poll" },
+// Run on their own cadence whether or not games are live (Odds and the Sunday
+// deadline sweep also sit in this group, rendered separately).
+const ALWAYS_TASKS: { key: WatchedKey; name: string }[] = [
   { key: "pregame_weather_capture", name: "Pregame weather" },
   { key: "user_profiles_write", name: "User profiles" },
 ];
 
-const LIVE_TASKS: { key: LiveKey; name: string }[] = [
-  { key: "sports_io_live_poll", name: "Sports IO live poll" },
-  { key: "cbs_live_poll", name: "CBS live poll" },
-  { key: "game_snapshot_capture", name: "Game snapshots" },
-  { key: "live_game_stats_capture", name: "Live game stats" },
+// Skipped while any game is in its live window -- their data-side stale
+// limits already allow for a long Sunday without a run.
+const QUIET_TASKS: { key: WatchedKey; name: string }[] = [
+  { key: "housekeeping", name: "Housekeeping" },
+  { key: "cbs_picks_quiet_poll", name: "CBS quiet picks poll" },
+];
+
+// Only sports_io_live_poll records attempts and successes separately; for the
+// rest last_success_at is a copy of last_at, and a failure aborts the whole
+// tick (so it shows as a stale heartbeat, not a failing card).
+const LIVE_TASKS: { key: LiveKey; name: string; tracksFailures: boolean }[] = [
+  {
+    key: "sports_io_live_poll",
+    name: "Sports IO live poll",
+    tracksFailures: true,
+  },
+  { key: "cbs_live_poll", name: "CBS live poll", tracksFailures: false },
+  {
+    key: "game_snapshot_capture",
+    name: "Game snapshots",
+    tracksFailures: false,
+  },
+  {
+    key: "live_game_stats_capture",
+    name: "Live game stats",
+    tracksFailures: false,
+  },
 ];
 
 // Odds is stale (data-side) only when neither capture has succeeded in 12h,
@@ -69,8 +92,30 @@ const oddsHealth = (odds: AdminOddsTask): TaskHealth => {
 const watchedHealth = (task: AdminWatchedTask) =>
   taskHealth(task.last_at, task.last_success_at, task.stale);
 
-const liveHealth = (task: AdminLiveTask) =>
-  taskHealth(task.last_at, task.last_success_at, undefined);
+const liveHealth = (task: AdminLiveTask, tracksFailures: boolean) =>
+  taskHealth(task.last_at, task.last_success_at, undefined, tracksFailures);
+
+const TaskSection = ({
+  title,
+  caption,
+  children,
+}: {
+  title: string;
+  caption: string;
+  children: ReactNode;
+}) => (
+  <section>
+    <Typography variant="subtitle1" fontWeight={600}>
+      {title}
+    </Typography>
+    <Typography variant="caption" color="text.secondary">
+      {caption}
+    </Typography>
+    <Grid container spacing={2} sx={{ mt: 1 }}>
+      {children}
+    </Grid>
+  </section>
+);
 
 // The shared theme paints every Alert orange (a leftover from the MUI
 // template), which would make a healthy heartbeat and a dead one look alike --
@@ -92,14 +137,11 @@ export default function AdminPanel() {
   // admin data in the background on the public tabs.
   useEffect(
     () =>
-      GetAdminStatus(
-        (data) => {
-          setStatus(data);
-          setError(null);
-        },
-        setError
-      ),
-    []
+      GetAdminStatus((data) => {
+        setStatus(data);
+        setError(null);
+      }, setError),
+    [],
   );
 
   // Keeps the "Nm ago" labels and heartbeat check current between polls.
@@ -159,117 +201,150 @@ export default function AdminPanel() {
           {heartbeatAge > HEARTBEAT_STALE_MS ? (
             <Alert severity="error" sx={severitySx("error")}>
               Pipeline heartbeat is {formatAgo(status.updated_at, now)} (
-              {formatEt(status.updated_at)}). meta:admin normally updates
-              every minute -- cron or the orchestrator has likely stopped, so
-              everything below is out of date too.
+              {formatEt(status.updated_at)}). meta:admin normally updates every
+              minute -- cron or the orchestrator has likely stopped (or is
+              crashing), so everything below is out of date too. Check
+              logs/error.log.
             </Alert>
           ) : (
             <Alert severity="success" sx={severitySx("success")}>
               Pipeline heartbeat {formatAgo(status.updated_at, now)} (
               {formatEt(status.updated_at)}).
+              <Typography
+                variant="caption"
+                display="block"
+                color="text.secondary"
+              >
+                Rewritten every minute. If this goes stale, the orchestrator is
+                crashing or not running -- most task failures abort the tick and
+                only show up here. Check logs/error.log.
+              </Typography>
             </Alert>
           )}
 
-          <section>
-            <Typography variant="subtitle1" fontWeight={600}>
-              Scheduled tasks
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Should run whether or not games are on. Stale means the last
-              success is past the data repo's per-task limit.
-            </Typography>
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={CARD_SIZE}>
-                <TaskCard
-                  name="Odds"
-                  health={oddsHealth(status.last_run.odds)}
-                  now={now}
-                  runs={[
-                    {
-                      label: "Baseline",
-                      lastAt: status.last_run.odds.baseline_last_at,
-                      lastSuccessAt:
-                        status.last_run.odds.baseline_last_success_at,
-                    },
-                    {
-                      label: "Pre-kickoff",
-                      lastAt: status.last_run.odds.prekickoff_last_at,
-                      lastSuccessAt:
-                        status.last_run.odds.prekickoff_last_success_at,
-                    },
-                  ]}
-                />
-              </Grid>
-              {WATCHED_TASKS.map(({ key, name }) => {
-                const task = status.last_run[key];
-                return (
-                  <Grid key={key} size={CARD_SIZE}>
-                    <TaskCard
-                      name={name}
-                      health={watchedHealth(task)}
-                      now={now}
-                      runs={[
-                        {
-                          lastAt: task.last_at,
-                          lastSuccessAt: task.last_success_at,
-                        },
-                      ]}
-                    />
-                  </Grid>
-                );
-              })}
+          <TaskSection
+            title="Always"
+            caption="Run on their own cadence whether or not games are live. Stale means the last success is past the data repo's per-task limit."
+          >
+            <Grid size={CARD_SIZE}>
+              {/* One card, one data-side stale flag for both lines: the
+                  pre-kickoff capture keeps it fresh while the baseline is
+                  paused for live games. */}
+              <TaskCard
+                name="Odds"
+                health={oddsHealth(status.last_run.odds)}
+                now={now}
+                runs={[
+                  {
+                    label: "Pre-kickoff",
+                    lastAt: status.last_run.odds.prekickoff_last_at,
+                    lastSuccessAt:
+                      status.last_run.odds.prekickoff_last_success_at,
+                  },
+                  {
+                    label: "Baseline (pauses during games)",
+                    lastAt: status.last_run.odds.baseline_last_at,
+                    lastSuccessAt:
+                      status.last_run.odds.baseline_last_success_at,
+                  },
+                ]}
+              />
             </Grid>
-          </section>
-
-          <section>
-            <Typography variant="subtitle1" fontWeight={600}>
-              Live-only tasks
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Only run during a game's live window, so an old timestamp is
-              normal most of the week.
-            </Typography>
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              {LIVE_TASKS.map(({ key, name }) => {
-                const task = status.last_run[key];
-                return (
-                  <Grid key={key} size={CARD_SIZE}>
-                    <TaskCard
-                      name={name}
-                      health={liveHealth(task)}
-                      now={now}
-                      runs={[
-                        {
-                          lastAt: task.last_at,
-                          lastSuccessAt: task.last_success_at,
-                        },
-                      ]}
-                    />
-                  </Grid>
-                );
-              })}
-              <Grid size={CARD_SIZE}>
-                <TaskCard
-                  name="Sunday deadline sweep"
-                  health={
-                    status.last_run.deadline_last_synced_sunday
-                      ? "idle"
-                      : "never"
-                  }
-                  now={now}
-                  runs={[]}
-                  detail={
-                    // Bare date, not a timestamp -- shown as-is rather than
-                    // run through the UTC->ET formatting.
+            {ALWAYS_TASKS.map(({ key, name }) => {
+              const task = status.last_run[key];
+              return (
+                <Grid key={key} size={CARD_SIZE}>
+                  <TaskCard
+                    name={name}
+                    health={watchedHealth(task)}
+                    now={now}
+                    runs={[
+                      {
+                        lastAt: task.last_at,
+                        lastSuccessAt: task.last_success_at,
+                      },
+                    ]}
+                  />
+                </Grid>
+              );
+            })}
+            <Grid size={CARD_SIZE}>
+              <TaskCard
+                name="Sunday deadline sweep"
+                health={deadlineSweepHealth(
+                  status.last_run.deadline_last_synced_sunday,
+                  now,
+                )}
+                now={now}
+                runs={[]}
+                detail={
+                  // Bare date, not a timestamp -- shown as-is rather than
+                  // run through the UTC->ET formatting.
+                  <>
                     <Typography variant="body2">
-                      Last Sunday:{" "}
+                      Ran for Sun{" "}
                       {status.last_run.deadline_last_synced_sunday ?? "never"}
                     </Typography>
-                  }
-                />
-              </Grid>
+                    <Typography variant="caption" color="text.secondary">
+                      Once per week, first tick after Sun 1 PM ET
+                    </Typography>
+                  </>
+                }
+              />
             </Grid>
-          </section>
+          </TaskSection>
+
+          <TaskSection
+            title="Quiet only"
+            caption="Paused while any game is live, so hours without a run on a Sunday is normal. Stale limits already allow for that."
+          >
+            {QUIET_TASKS.map(({ key, name }) => {
+              const task = status.last_run[key];
+              return (
+                <Grid key={key} size={CARD_SIZE}>
+                  <TaskCard
+                    name={name}
+                    health={watchedHealth(task)}
+                    now={now}
+                    note="Pauses during games"
+                    runs={[
+                      {
+                        lastAt: task.last_at,
+                        lastSuccessAt: task.last_success_at,
+                      },
+                    ]}
+                  />
+                </Grid>
+              );
+            })}
+          </TaskSection>
+
+          <TaskSection
+            title="Live only"
+            caption={
+              "Only run during a game's live window, so an old timestamp is normal most of the week. \"Ran\" means the data can't tell a success from an attempt."
+            }
+          >
+            {LIVE_TASKS.map(({ key, name, tracksFailures }) => {
+              const task = status.last_run[key];
+              return (
+                <Grid key={key} size={CARD_SIZE}>
+                  <TaskCard
+                    name={name}
+                    health={liveHealth(task, tracksFailures)}
+                    now={now}
+                    runs={[
+                      {
+                        lastAt: task.last_at,
+                        lastSuccessAt: task.last_success_at,
+                        tracksFailures,
+                      },
+                    ]}
+                  />
+                </Grid>
+              );
+            })}
+          </TaskSection>
 
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, lg: 6 }}>
@@ -289,7 +364,10 @@ export default function AdminPanel() {
                     render: (row) => (
                       <Typography
                         variant="body2"
-                        sx={{ fontFamily: "monospace", wordBreak: "break-word" }}
+                        sx={{
+                          fontFamily: "monospace",
+                          wordBreak: "break-word",
+                        }}
                       >
                         {row.message}
                       </Typography>
@@ -336,7 +414,10 @@ export default function AdminPanel() {
                       <>
                         <Typography
                           variant="body2"
-                          sx={{ fontFamily: "monospace", wordBreak: "break-word" }}
+                          sx={{
+                            fontFamily: "monospace",
+                            wordBreak: "break-word",
+                          }}
                         >
                           {row.raw_value}
                         </Typography>
