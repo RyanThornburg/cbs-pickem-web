@@ -98,14 +98,19 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
             <TeamLogo abbr={trailer.abbr} size={22} />
             <Box sx={{ width: 38, lineHeight: 1.1, opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1 }}>
               <Stack direction="row" alignItems="center" spacing={0.25}>
-                <Typography variant="caption" component="div">
+                <Typography variant="caption" component="div" fontWeight={trailerCovered ? 700 : undefined}>
                   {trailer.abbr}
                 </Typography>
                 {trailerCovered && (
                   <CheckCircleOutlineIcon sx={{ fontSize: 12 }} color="success" />
                 )}
               </Stack>
-              <Typography variant="caption" component="div" color="text.secondary">
+              <Typography
+                variant="caption"
+                component="div"
+                color={trailerCovered ? "text.primary" : "text.secondary"}
+                fontWeight={trailerCovered ? 700 : undefined}
+              >
                 {trailer.pick_count}
               </Typography>
             </Box>
@@ -144,11 +149,16 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                 {leaderCovered && (
                   <CheckCircleOutlineIcon sx={{ fontSize: 12 }} color="success" />
                 )}
-                <Typography variant="caption" component="div">
+                <Typography variant="caption" component="div" fontWeight={leaderCovered ? 700 : undefined}>
                   {leader.abbr}
                 </Typography>
               </Stack>
-              <Typography variant="caption" component="div" color="text.secondary">
+              <Typography
+                variant="caption"
+                component="div"
+                color={leaderCovered ? "text.primary" : "text.secondary"}
+                fontWeight={leaderCovered ? 700 : undefined}
+              >
                 {leader.pick_count}
               </Typography>
             </Box>
