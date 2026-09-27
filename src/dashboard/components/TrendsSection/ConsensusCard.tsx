@@ -91,6 +91,9 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
         const trailerCovered = cover?.isFinal && cover.coveringTeamId === trailer.id;
         const leaderCovered = cover?.isFinal && cover.coveringTeamId === leader.id;
         const leaderCurrentlyCovering = cover?.coveringTeamId === leader.id;
+        // Bold tracks the live cover (and stays on once final); the checkmark
+        // and fade only apply once the result is locked in.
+        const trailerCurrentlyCovering = cover?.coveringTeamId === trailer.id;
 
         return (
         <Box key={game_id}>
@@ -98,7 +101,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
             <TeamLogo abbr={trailer.abbr} size={22} />
             <Box sx={{ width: 38, lineHeight: 1.1, opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1 }}>
               <Stack direction="row" alignItems="center" spacing={0.25}>
-                <Typography variant="caption" component="div" fontWeight={trailerCovered ? 700 : undefined}>
+                <Typography variant="caption" component="div" fontWeight={trailerCurrentlyCovering ? 700 : undefined}>
                   {trailer.abbr}
                 </Typography>
                 {trailerCovered && (
@@ -108,8 +111,8 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
               <Typography
                 variant="caption"
                 component="div"
-                color={trailerCovered ? "text.primary" : "text.secondary"}
-                fontWeight={trailerCovered ? 700 : undefined}
+                color={trailerCurrentlyCovering ? "text.primary" : "text.secondary"}
+                fontWeight={trailerCurrentlyCovering ? 700 : undefined}
               >
                 {trailer.pick_count}
               </Typography>
@@ -149,15 +152,15 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                 {leaderCovered && (
                   <CheckCircleOutlineIcon sx={{ fontSize: 12 }} color="success" />
                 )}
-                <Typography variant="caption" component="div" fontWeight={leaderCovered ? 700 : undefined}>
+                <Typography variant="caption" component="div" fontWeight={leaderCurrentlyCovering ? 700 : undefined}>
                   {leader.abbr}
                 </Typography>
               </Stack>
               <Typography
                 variant="caption"
                 component="div"
-                color={leaderCovered ? "text.primary" : "text.secondary"}
-                fontWeight={leaderCovered ? 700 : undefined}
+                color={leaderCurrentlyCovering ? "text.primary" : "text.secondary"}
+                fontWeight={leaderCurrentlyCovering ? 700 : undefined}
               >
                 {leader.pick_count}
               </Typography>
