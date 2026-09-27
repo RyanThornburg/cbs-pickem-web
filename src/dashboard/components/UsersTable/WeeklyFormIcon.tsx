@@ -4,7 +4,7 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { UserPick } from "../../types";
-import { getWeeklyForm } from "./usersTableUtils";
+import { getWeeklyForm, WeeklyFormResult } from "./usersTableUtils";
 
 const FORM_STYLES = {
   hot: {
@@ -24,17 +24,29 @@ const FORM_STYLES = {
   },
 } as const;
 
+const weeklyFormTooltip = (result: WeeklyFormResult): string => {
+  const parts = [
+    result.won && `${result.won} won`,
+    result.lost && `${result.lost} lost`,
+    result.covering && `${result.covering} covering`,
+    result.notCovering && `${result.notCovering} not covering`,
+  ].filter(Boolean);
+  if (!parts.length) return "This week: no picks decided yet";
+  const summary = parts.join(", ");
+  return result.tooEarly
+    ? `This week: too early to call (${result.decided} of ${result.total} decided). ${summary}`
+    : `This week: ${summary}`;
+};
+
 // Per-week hot/cold, derived from this week's picks already loaded in
 // RankedUser -- no separate endpoint. Distinct from StreakBadge's
-// season-level streak.
+// season-level streak. Always rendered (neutral until enough picks decide).
 export function WeeklyFormIcon({ picks }: { picks: UserPick[] }) {
   const result = getWeeklyForm(picks);
-  if (!result) return null;
-
   const style = FORM_STYLES[result.form];
 
   return (
-    <Tooltip title={`This week: ${result.correct}/${result.graded} correct so far`}>
+    <Tooltip title={weeklyFormTooltip(result)}>
       <Box
         sx={{
           width: 22,
