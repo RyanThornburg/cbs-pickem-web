@@ -1,5 +1,7 @@
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
@@ -29,7 +31,8 @@ import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
 
 export default function MainGrid() {
-  const { currentWeek, season, secondHalfStartWeek } = useCurrentWeek();
+  const { currentWeek, season, secondHalfStartWeek, cbsPoolUrl } =
+    useCurrentWeek();
   const { tab } = useParams<{ tab: string }>();
   const navigate = useNavigate();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
@@ -206,8 +209,20 @@ export default function MainGrid() {
               Picks shows the same place/score data and is slated for a
               rework, so this duplicate top-of-page summary was redundant. */}
 
-          <Box sx={{ mt: 2, borderBottom: 1, borderColor: "divider" }}>
-            <Tabs value={activeTab} onChange={handleTabChange}>
+          <Box
+            sx={{
+              mt: 2,
+              borderBottom: 1,
+              borderColor: "divider",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              sx={{ flex: 1, minWidth: 0 }}
+            >
               <Tab label="User Picks" value="picks" />
               <Tab label="Games" value="games" />
               <Tab
@@ -224,6 +239,31 @@ export default function MainGrid() {
               />
               <Tab label="Trends" value="trends" />
             </Tabs>
+            {cbsPoolUrl && (
+              // Icon-only on phones -- the four tabs already use most of the
+              // row at 360px.
+              <Button
+                href={cbsPoolUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                aria-label="Open the pool on CBS Sports"
+                endIcon={<OpenInNewIcon />}
+                sx={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  minWidth: 0,
+                  "& .MuiButton-endIcon": { ml: { xs: 0, sm: 1 } },
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{ display: { xs: "none", sm: "inline" } }}
+                >
+                  CBS Pool
+                </Box>
+              </Button>
+            )}
           </Box>
 
           <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>

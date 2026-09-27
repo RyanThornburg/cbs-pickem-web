@@ -8,6 +8,7 @@ interface ApiMeta {
   season: number;
   current_week: number;
   second_half_start_week: number;
+  cbs_pool_url?: string | null;
 }
 
 type CurrentWeekContextType = {
@@ -16,6 +17,7 @@ type CurrentWeekContextType = {
   season: number;
   secondHalfStartWeek: number;
   isSecondHalf: boolean;
+  cbsPoolUrl: string | null;
 };
 
 const CurrentWeekContext = createContext<CurrentWeekContextType | undefined>(
@@ -30,12 +32,14 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondHalfStartWeek, setSecondHalfStartWeek] = useState<number>(
     DEFAULT_SECOND_HALF_START_WEEK
   );
+  const [cbsPoolUrl, setCbsPoolUrl] = useState<string | null>(null);
 
   useEffect(() => {
     return pollJson<ApiMeta>("/api/meta", META_POLL_INTERVAL_MS, (meta) => {
       setSeason(meta.season);
       setCurrentWeek(meta.current_week);
       setSecondHalfStartWeek(meta.second_half_start_week);
+      setCbsPoolUrl(meta.cbs_pool_url ?? null);
     });
   }, []);
 
@@ -48,6 +52,7 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
         season,
         secondHalfStartWeek,
         isSecondHalf,
+        cbsPoolUrl,
       }}
     >
       {children}
