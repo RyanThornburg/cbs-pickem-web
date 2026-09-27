@@ -5,6 +5,12 @@ export const VALID_TABS: PrimaryTab[] = ["picks", "games", "scoreboard", "trends
 export const isPrimaryTab = (value: string | undefined): value is PrimaryTab =>
   !!value && (VALID_TABS as string[]).includes(value);
 
+// Admin-only tab: a real route (/admin, bookmarked -- Cloudflare Access guards
+// it) but deliberately not a PrimaryTab, so it's never persisted as the
+// last-visited tab or picked as anyone's landing tab.
+export const ADMIN_TAB = "admin";
+export type AppTab = PrimaryTab | typeof ADMIN_TAB;
+
 const ACTIVE_TAB_STORAGE_KEY = "activeTab";
 const COLD_START_TAB: PrimaryTab = "picks";
 

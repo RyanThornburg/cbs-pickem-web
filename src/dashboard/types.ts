@@ -476,3 +476,82 @@ export interface UserSeasonTrends {
   current_season: UserSeasonCurrent;
   updated_at: string;
 }
+
+// meta:admin -- pipeline health summary, rewritten by the data repo on every
+// orchestration tick (~once a minute), served only to the admin via
+// /api/admin/status. Every timestamp is ISO 8601 UTC, null if the task has
+// never run (or never succeeded) in that environment.
+
+// Tasks that should run whether or not games are on, so they carry a
+// data-side `stale` flag (based on last_success_at vs. a per-task limit).
+export interface AdminWatchedTask {
+  last_at: string | null;
+  last_success_at: string | null;
+  stale: boolean;
+}
+
+// Odds tracks two captures; `stale` only when neither has succeeded in 12h.
+export interface AdminOddsTask {
+  baseline_last_at: string | null;
+  baseline_last_success_at: string | null;
+  prekickoff_last_at: string | null;
+  prekickoff_last_success_at: string | null;
+  stale: boolean;
+}
+
+// Only run during a game's live window, so an old timestamp is normal most
+// of the week -- no stale flag.
+export interface AdminLiveTask {
+  last_at: string | null;
+  last_success_at: string | null;
+}
+
+export interface AdminLastRun {
+  odds: AdminOddsTask;
+  housekeeping: AdminWatchedTask;
+  cbs_picks_quiet_poll: AdminWatchedTask;
+  pregame_weather_capture: AdminWatchedTask;
+  user_profiles_write: AdminWatchedTask;
+  sports_io_live_poll: AdminLiveTask;
+  cbs_live_poll: AdminLiveTask;
+  game_snapshot_capture: AdminLiveTask;
+  live_game_stats_capture: AdminLiveTask;
+  // Bare date ("2026-09-20"), not a timestamp.
+  deadline_last_synced_sunday: string | null;
+}
+
+// An external value a loader couldn't match to a D1 row (team id, week name,
+// CBS user...). One row per distinct (source, entity_type, raw_value).
+export interface AdminMappingGap {
+  source: string;
+  entity_type: string;
+  raw_value: string;
+  context: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  occurrences: number;
+}
+
+// A caught failure; one row per distinct (source, message). Never ages out,
+// so compare last_seen_at to now to tell whether it's still happening.
+export interface AdminSystemEvent {
+  source: string;
+  message: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  occurrences: number;
+}
+
+// `recent` is the 20 most recently seen rows; the counts include everything.
+export interface AdminEventSummary<T> {
+  distinct_count: number;
+  total_occurrences: number;
+  recent: T[];
+}
+
+export interface AdminStatus {
+  updated_at: string;
+  last_run: AdminLastRun;
+  mapping_gaps: AdminEventSummary<AdminMappingGap>;
+  system_events: AdminEventSummary<AdminSystemEvent>;
+}

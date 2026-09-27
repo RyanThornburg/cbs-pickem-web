@@ -3,11 +3,16 @@
   "name": "cbs-pickem-web",
   "main": "worker/index.ts",
   "compatibility_date": "2026-09-10",
+  // Only reachable through morlocked.rattsnest.com, where Cloudflare Access
+  // guards /admin and /api/admin/*. A workers.dev or preview URL would be a
+  // second hostname with no Access in front of it.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./build",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/logout"]
   },
   "kv_namespaces": [
     {
@@ -18,6 +23,16 @@
       "id": "55ae4b1a890a46d88557b9d69d9ecdd8"
     }
   ],
+  // Cloudflare Access app guarding /admin + /api/admin/*. Not secrets: the AUD
+  // tag and team domain are what the Worker checks Access's JWT against (see
+  // worker/access.ts). ADMIN_EMAIL -- the only login allowed through even if
+  // the Access policy is ever widened -- is a Worker secret instead
+  // (`wrangler secret put ADMIN_EMAIL`, `.dev.vars` locally) so the address
+  // stays out of this public repo. Unset means every admin request 401s.
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "rattsnest.cloudflareaccess.com",
+    "ACCESS_AUD": "8908b2e7bb19ffe36d2c72106e883568c63d685a4a64f57dae05a60273c556c7"
+  },
   "observability": {
     "enabled": true,
     "logs": { "enabled": true, "head_sampling_rate": 1 },

@@ -28,3 +28,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 node_modules
+
+# wrangler dev secrets (ADMIN_EMAIL etc.)
+.dev.vars
+.dev.vars.*

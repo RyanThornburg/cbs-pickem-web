@@ -1,3 +1,4 @@
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
@@ -10,20 +11,23 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import AdminPanel from "./AdminPanel";
 import GamesCard from "./GamesCard";
 import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
+import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
 import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
 import { GameStatus, RankedUser, UserSeasonTrends } from "../types";
 import {
+  ADMIN_TAB,
+  AppTab,
   getInitialTab,
   isPrimaryTab,
-  PrimaryTab,
   setStoredTab,
 } from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
@@ -43,7 +47,13 @@ export default function MainGrid() {
     UserSeasonTrends | undefined
   >(undefined);
 
-  const activeTab = isPrimaryTab(tab) ? tab : null;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const activeTab: AppTab | null = isPrimaryTab(tab)
+    ? tab
+    : tab === ADMIN_TAB
+      ? ADMIN_TAB
+      : null;
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
@@ -55,10 +65,24 @@ export default function MainGrid() {
     }
   }, [activeTab, navigate]);
 
-  const handleTabChange = (_: React.SyntheticEvent, value: PrimaryTab) => {
-    setStoredTab(value);
+  const handleTabChange = (_: React.SyntheticEvent, value: AppTab) => {
+    if (isPrimaryTab(value)) {
+      setStoredTab(value);
+    }
     navigate(`/${value}`);
   };
+
+  // Only decides whether the Admin tab is shown -- the Worker enforces access
+  // on every /api/admin/* request regardless of what the UI renders.
+  useEffect(() => {
+    let cancelled = false;
+    GetIsAdmin().then((admin) => {
+      if (!cancelled) setIsAdmin(admin);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // If loading from localStorage, make sure the value exists in options first
   useEffect(() => {
@@ -218,9 +242,15 @@ export default function MainGrid() {
               alignItems: "center",
             }}
           >
+            {/* Scrollable so a 5th (Admin) tab can't push the row past
+                360px. Arrows only appear on overflow, i.e. only for the
+                admin on a phone -- the four public tabs still fit. */}
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
               sx={{ flex: 1, minWidth: 0 }}
             >
               <Tab label="User Picks" value="picks" />
@@ -238,6 +268,25 @@ export default function MainGrid() {
                 value="scoreboard"
               />
               <Tab label="Trends" value="trends" />
+              {/* Also rendered while on /admin itself so the Tabs value stays
+                  valid even before (or if) the admin check comes back. */}
+              {(isAdmin || activeTab === ADMIN_TAB) && (
+                <Tab
+                  label="Admin"
+                  value={ADMIN_TAB}
+                  icon={<AdminPanelSettingsIcon fontSize="small" />}
+                  iconPosition="start"
+                  sx={{
+                    ml: 1,
+                    pl: 1.5,
+                    borderLeft: 1,
+                    borderColor: "divider",
+                    borderRadius: 0,
+                    color: "warning.main",
+                    "&.Mui-selected": { color: "warning.main" },
+                  }}
+                />
+              )}
             </Tabs>
             {cbsPoolUrl && (
               // Icon-only on phones -- the four tabs already use most of the
@@ -297,6 +346,13 @@ export default function MainGrid() {
             >
               <TrendsSection season={season} week={selectedWeek} />
             </Grid>
+            {/* Mounted only while open, so admin data is never polled in the
+                background from the public tabs. */}
+            {activeTab === ADMIN_TAB && (
+              <Grid size={{ xs: 12, lg: 12 }}>
+                <AdminPanel />
+              </Grid>
+            )}
           </Grid>
         </>
       )}

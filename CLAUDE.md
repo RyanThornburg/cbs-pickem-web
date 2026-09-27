@@ -25,7 +25,7 @@ There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` 
 
 ### Data flow: Cloudflare Worker + KV, polled from the client
 
-- `worker/index.ts` is a thin, read-only passthrough: it maps request paths to KV keys (`meta:current`, `meta:historical`, `week:{season}:{weekNN}:{games|leaderboard|odds|trends}`, `season:{season}:trends`) and returns the KV value as JSON, or 404. Anything outside `/api/*` falls through to `env.ASSETS` (the built static site). There's no auth (open reads) and no `.put()` anywhere — nothing here can write to KV.
+- `worker/index.ts` is a thin, read-only passthrough: it maps request paths to KV keys (`meta:current`, `meta:historical`, `week:{season}:{weekNN}:{games|leaderboard|odds|trends}`, `season:{season}:trends`) and returns the KV value as JSON, or 404. Anything outside `/api/*` falls through to `env.ASSETS` (the built static site). Public reads need no auth; the one exception is `/api/admin/*` (see Admin below). There's no `.put()` anywhere — nothing here can write to KV.
 - `src/api/pickemApi.ts` has the client-side primitives: `fetchJson` (one-shot), `poll`/`pollJson` (run immediately, then on an interval, until the returned cleanup is called). Cloudflare has no Firebase-style push, so every data hook here polls instead of subscribing — poll intervals vary by how time-sensitive the data is (60s for live games, 5min for odds/trends, 30min for season trends).
 - Data access lives in `src/dashboard/data/`, one file per resource, all following poll → parse → callback (returning the stop function): `GetGameDataByWeek.ts` (games; a thin wrapper around `weekGames.ts`, used by Scoreboard and the live-dot tab badge), `GetGamesTabData.ts` (joins games + odds for the Games tab), `GetUserByWeek.ts` (leaderboard + picks), `GetTrendsByWeek.ts` / `GetSeasonTrends.ts` (Trends tab).
 - `weekGames.ts` is the shared core all the games-related fetchers build on: one `ApiGame` interface for the full `/api/weeks/:season/:week/games` payload (every caller hits the same endpoint), `toGame`/`toTeam` mappers, and shared helpers (`buildGamesById`, `findEarliestGame`, `getGameCoverResult`). Extend this rather than adding a second parallel game-parsing interface for a new consumer.
@@ -36,7 +36,7 @@ There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` 
 
 - `CurrentWeekContext` (`src/dashboard/components/CurrentWeekContext.tsx`) is the only app-wide state: it polls `/api/meta` and holds `season`, `currentWeek`, `secondHalfStartWeek`, and derived `isSecondHalf`. The second-half boundary is a data field (`second_half_start_week` from `meta:current`, set by hand each season on the data side), not a hardcoded week number.
 - `MainGrid.tsx` is the real orchestrator: it reads `currentWeek`/`season`/`secondHalfStartWeek` from context but keeps its own `selectedWeek` (the week the user is browsing, independent of `currentWeek`), `user` (selected user id, persisted to `localStorage` under `"user"`), and `userList` (re-fetched per `selectedWeek` via `GetUserByWeek`). It threads these down as props to each tab's component (`UsersTable`, `GamesCard`, `Scoreboard`, `TrendsSection`) rather than via context — check `MainGrid.tsx` first when tracing how a prop reaches a leaf component.
-- Tabs are real routes, not local state: `/picks`, `/games`, `/scoreboard`, `/trends` (`App.tsx` + `useParams`/`useNavigate` in `MainGrid.tsx`). The last-visited tab persists to `localStorage` (`utils/defaultTab.ts`); a true cold start (nothing stored yet) defaults to `/picks`. An unrecognized `:tab` value redirects through `/` to re-resolve.
+- Tabs are real routes, not local state: `/picks`, `/games`, `/scoreboard`, `/trends` (`App.tsx` + `useParams`/`useNavigate` in `MainGrid.tsx`). The last-visited tab persists to `localStorage` (`utils/defaultTab.ts`); a true cold start (nothing stored yet) defaults to `/picks`. An unrecognized `:tab` value redirects through `/` to re-resolve. `/admin` is a fifth, admin-only tab — deliberately not a `PrimaryTab`, so it's never persisted or used as a landing tab.
 
 ### Types
 
@@ -52,7 +52,15 @@ There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` 
 
 ### Worker
 
-- `worker/index.ts` + `wrangler.jsonc` are the entire backend: one `fetch` handler, a single KV binding (`PICKEM_KV`, no named environments — `wrangler dev --remote` and `wrangler deploy` both read the same prod namespace), and static-asset serving (`assets.directory: ./build`, SPA fallback via `not_found_handling`).
+- `worker/index.ts` + `wrangler.jsonc` are the entire backend: one `fetch` handler, a single KV binding (`PICKEM_KV`, no named environments — `wrangler dev --remote` and `wrangler deploy` both read the same prod namespace), and static-asset serving (`assets.directory: ./build`, SPA fallback via `not_found_handling`). `workers_dev`/`preview_urls` are off so the custom domain (where Access sits) is the only way in.
+
+### Admin (Cloudflare Access)
+
+- `/admin` and `/api/admin/*` are guarded by a **Cloudflare Access** app (team `rattsnest.cloudflareaccess.com`, Google login, policy = one email). Access handles login/sessions; unauthenticated requests get redirected to Google before reaching the Worker.
+- The Worker **also** verifies Access's JWT on every `/api/admin/*` request (`worker/access.ts`: signature against the team's certs, `aud`/`iss`/`exp`, and `email === ADMIN_EMAIL`), failing closed — don't remove this on the assumption Access is always in front. `ACCESS_TEAM_DOMAIN`/`ACCESS_AUD` are plain `vars` in `wrangler.jsonc`; `ADMIN_EMAIL` is a Worker secret (`wrangler secret put ADMIN_EMAIL` in prod, gitignored `.dev.vars` locally) so the address stays out of this public repo — if it's unset, every admin request 401s.
+- Routes: `/api/admin/me` (admin check), `/api/admin/status` (`meta:admin`), both `Cache-Control: no-store`; `/logout` redirects to Access's `/cdn-cgi/access/logout`.
+- The Admin tab's visibility (`GetIsAdmin` in `data/GetAdminStatus.ts`, `redirect: "manual"` so Access's login redirect reads as "not admin") is UX only — the Worker is the actual lock. `meta:admin` can contain raw exception text (possibly URLs with API keys), so never expose it through a public route.
+- No auth bypass for local dev: `wrangler dev` has no Access in front, so admin routes 401 locally. Mock `/api/admin/*` in the browser instead.
 
 ### Deployment
 

@@ -1,3 +1,5 @@
+import { verifyAdmin } from "./access";
+
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends)$/;
 const SEASON_TRENDS_PATTERN = /^\/api\/season\/(\d+)\/trends$/;
@@ -8,11 +10,21 @@ export default {
     const url = new URL(request.url);
     const { pathname } = url;
 
+    // Bookmarkable logout: Access owns /cdn-cgi/access/logout on this
+    // hostname and clears its session cookie there.
+    if (pathname === "/logout") {
+      return Response.redirect(`${url.origin}/cdn-cgi/access/logout`, 302);
+    }
+
     if (!pathname.startsWith("/api/")) {
       return env.ASSETS.fetch(request);
     }
 
     try {
+      if (pathname === "/api/admin" || pathname.startsWith("/api/admin/")) {
+        return await handleAdmin(request, env, pathname);
+      }
+
       if (pathname === "/api/meta") {
         return await respondWithKvJson(env, "meta:current");
       }
@@ -57,21 +69,55 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
-async function respondWithKvJson(env: Env, key: string): Promise<Response> {
-  const value = await env.PICKEM_KV.get(key, "json");
-  if (value === null) {
-    return notFound();
+// Auth runs before route matching so an unauthenticated caller gets the same
+// 401 for every /api/admin/* path, real or not.
+async function handleAdmin(
+  request: Request,
+  env: Env,
+  pathname: string
+): Promise<Response> {
+  const email = await verifyAdmin(request, env);
+  if (!email) {
+    return jsonResponse({ error: "unauthorized" }, 401, NO_STORE);
   }
-  return jsonResponse(value, 200);
+
+  if (pathname === "/api/admin/me") {
+    return jsonResponse({ admin: true, email }, 200, NO_STORE);
+  }
+
+  if (pathname === "/api/admin/status") {
+    return await respondWithKvJson(env, "meta:admin", NO_STORE);
+  }
+
+  return notFound(NO_STORE);
 }
 
-function jsonResponse(body: unknown, status: number): Response {
+// Admin responses must never be cached by the browser or the edge.
+const NO_STORE = { "cache-control": "no-store" };
+
+async function respondWithKvJson(
+  env: Env,
+  key: string,
+  extraHeaders?: Record<string, string>
+): Promise<Response> {
+  const value = await env.PICKEM_KV.get(key, "json");
+  if (value === null) {
+    return notFound(extraHeaders);
+  }
+  return jsonResponse(value, 200, extraHeaders);
+}
+
+function jsonResponse(
+  body: unknown,
+  status: number,
+  extraHeaders?: Record<string, string>
+): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...extraHeaders },
   });
 }
 
-function notFound(): Response {
-  return jsonResponse({ error: "not_found" }, 404);
+function notFound(extraHeaders?: Record<string, string>): Response {
+  return jsonResponse({ error: "not_found" }, 404, extraHeaders);
 }
