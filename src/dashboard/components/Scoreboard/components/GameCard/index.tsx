@@ -230,7 +230,7 @@ export const GameCard = memo(({ game, userId, totalUsers }: GameCardProps) => {
 
       <PickSplitBar game={game} userId={userId} totalUsers={totalUsers} />
 
-      {final && (
+      {(final || isLiveStatus(game.status)) && (
         <Box sx={{ borderTop: 1, borderColor: "divider", pt: 0.5 }}>
           <DetailsToggle open={open} onToggle={() => setOpen((o) => !o)} />
           {open && <GameDetails game={game} />}

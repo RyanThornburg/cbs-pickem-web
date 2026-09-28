@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
 import { Game, Possession } from "../../../../types";
 import { getBallSpot } from "../../utils/scoreboardUtils";
 import { teamColor } from "../../utils/teamData";
@@ -15,8 +16,15 @@ interface Props {
 // compact rows keep their shape.
 export const FieldStrip = ({ game, height = 22 }: Props) => {
   const spot = getBallSpot(game);
+  const possession = game.live?.possession;
   const offense =
-    game.live?.possession === Possession.Home ? game.home_team : game.away_team;
+    possession === Possession.Home ? game.home_team : game.away_team;
+  // "🏈 DEN ball · LAR 37" -- who has it and the spot as the feed prints it
+  const ballTooltip = spot
+    ? possession
+      ? `🏈 ${offense.abbr} ball · ${spot.label}`
+      : `🏈 Ball on the ${spot.label}`
+    : "";
   const endZone = (abbr: string) => (
     <Box
       sx={{
@@ -80,19 +88,43 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
             {spot.firstDownPct != null && (
               <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, left: `${spot.firstDownPct}%`, bgcolor: "#ffd23f" }} />
             )}
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: `${spot.ballPct}%`,
-                width: height * 0.55,
-                height: height * 0.38,
-                borderRadius: "50%",
-                bgcolor: "#8b4a1e",
-                border: "1.5px solid #fff",
-                transform: "translate(-50%, -50%)",
-              }}
-            />
+            <Tooltip
+              title={ballTooltip}
+              arrow
+              placement="top"
+              enterTouchDelay={0}
+              leaveTouchDelay={3000}
+            >
+              {/* Invisible hit area around the ball -- the ball itself is too
+                  small to hover or tap reliably */}
+              <Box
+                tabIndex={0}
+                aria-label={ballTooltip}
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: `${spot.ballPct}%`,
+                  width: Math.max(24, height * 1.4),
+                  height: Math.max(24, height * 1.4),
+                  transform: "translate(-50%, -50%)",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "default",
+                  zIndex: 1,
+                  "&:focus-visible": { outline: "2px solid #fff", borderRadius: "50%" },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: height * 0.55,
+                    height: height * 0.38,
+                    borderRadius: "50%",
+                    bgcolor: "#8b4a1e",
+                    border: "1.5px solid #fff",
+                  }}
+                />
+              </Box>
+            </Tooltip>
           </>
         )}
       </Box>

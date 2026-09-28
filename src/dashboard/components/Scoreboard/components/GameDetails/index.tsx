@@ -4,8 +4,12 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Game, GameDetails as GameDetailsData, PlayerLine, TeamBoxScore } from "../../../../types";
 import { fetchGameDetails } from "../../../../data/GetGameDetails";
+import { poll } from "../../../../../api/pickemApi";
+import { isLiveStatus } from "../../utils/scoreboardUtils";
 import { useCurrentWeek } from "../../../CurrentWeekContext";
 import { TeamLogo } from "../shared/TeamLogo";
+
+const LIVE_DETAILS_POLL_MS = 60_000;
 
 // "38/52, 280 YDS, 2 TD" -- zero TD/INT counts are left off.
 const statLine = (parts: [unknown, string, boolean?][]): string =>
@@ -146,20 +150,34 @@ export const GameDetails = ({ game, columns = false }: { game: Game; columns?: b
   const [details, setDetails] = useState<GameDetailsData | null>(null);
   const [state, setState] = useState<"loading" | "done" | "missing">("loading");
 
+  const live = isLiveStatus(game.status);
+
+  // A live game's team stats keep changing, so refetch them every minute
+  // while the panel is open (leaders and scoring plays already update with
+  // the scoreboard's own poll). Once final, one fetch is enough.
   useEffect(() => {
     let cancelled = false;
-    setState("loading");
-    fetchGameDetails(season, game.game_id)
-      .then((data) => {
-        if (cancelled) return;
-        setDetails(data);
-        setState("done");
-      })
-      .catch(() => !cancelled && setState("missing"));
+    const load = () =>
+      fetchGameDetails(season, game.game_id)
+        .then((data) => {
+          if (cancelled) return;
+          setDetails(data);
+          setState("done");
+        })
+        // Keep the last good stats on a failed refresh
+        .catch(() => !cancelled && setState((s) => (s === "done" ? s : "missing")));
+    if (!live) {
+      load();
+      return () => {
+        cancelled = true;
+      };
+    }
+    const stop = poll(load, LIVE_DETAILS_POLL_MS);
     return () => {
       cancelled = true;
+      stop();
     };
-  }, [season, game.game_id]);
+  }, [season, game.game_id, live]);
 
   const nothing = !game.leaders && !game.scoring_plays?.length && state !== "loading" && !details?.box_score;
   return (
@@ -182,7 +200,7 @@ export const GameDetails = ({ game, columns = false }: { game: Game; columns?: b
         <ScoringPlays game={game} />
       </Box>
       <Box sx={{ minWidth: 0 }}>
-        {state === "loading" && <CircularProgress size={18} />}
+        {state === "loading" && !details && <CircularProgress size={18} />}
         {details && <BoxScore game={game} details={details} />}
       </Box>
     </Box>

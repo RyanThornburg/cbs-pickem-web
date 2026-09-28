@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game, GameStatus } from "../../../../types";
 import {
+  isLiveStatus,
   getGameHighlight,
   hasBall,
   hasStarted,
@@ -29,7 +30,8 @@ export interface GameRowProps {
 }
 
 // The middle column: where the ball is while a game is live, otherwise the
-// forecast (upcoming). Final rows put the box score toggle there instead.
+// forecast (upcoming). Final rows don't render it -- the box score toggle
+// takes that column.
 const Middle = ({ game }: { game: Game }) => {
   const live = game.live;
   if (game.status === GameStatus.Inprogress) {
@@ -61,7 +63,6 @@ const Middle = ({ game }: { game: Game }) => {
       </Box>
     );
   }
-  if (game.status !== GameStatus.Scheduled) return null;
   const f = game.forecast;
   const text =
     f && game.stadium?.roof_type === "Open"
@@ -116,15 +117,24 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
 
   // Phones stack everything full width under status/teams. Final rows move
   // the box score toggle to the bottom, under the pick bar.
-  const mobileAreas = [
+  // Final and live games get the box score toggle. Desktop: final rows put
+  // it in the (otherwise empty) middle column; live rows put it under the
+  // field. Phones: always last, full width, under the pick bar.
+  const hasDetails = final || isLiveStatus(game.status);
+  const areas = (rows: string[]) => rows.map((row) => `"${row}"`).join(" ");
+  const desktopAreas = areas([
+    final ? "status teams toggle picks you" : "status teams middle picks you",
+    ...(hasDetails && !final ? [". . toggle . ."] : []),
+    ...(open ? ["details details details details details"] : []),
+  ]);
+  const mobileAreas = areas([
     "status teams",
-    ...(final ? ["picks picks"] : ["middle middle", "picks picks"]),
+    ...(final ? [] : ["middle middle"]),
+    "picks picks",
     ...(pickSide ? ["you you"] : []),
-    ...(final ? ["middle middle"] : []),
+    ...(hasDetails ? ["toggle toggle"] : []),
     ...(open ? ["details details"] : []),
-  ]
-    .map((row) => `"${row}"`)
-    .join(" ");
+  ]);
 
   return (
     <Box
@@ -132,7 +142,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
         (t) => ({
           display: "grid",
           gridTemplateColumns: "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 96px",
-          gridTemplateAreas: `"status teams middle picks you"${open ? ' "details details details details details"' : ""}`,
+          gridTemplateAreas: desktopAreas,
           columnGap: 2,
           rowGap: 1,
           alignItems: "center",
@@ -160,19 +170,20 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
         {teamLine("away")}
         {teamLine("home")}
       </Box>
-      <Box sx={{ gridArea: "middle", minWidth: 0 }}>
-        {final ? (
-          <Box sx={{ borderTop: { xs: 1, md: 0 }, borderColor: "divider" }}>
-            <DetailsToggle
-              open={open}
-              onToggle={() => setOpen((o) => !o)}
-              sx={{ width: { xs: "100%", md: "auto" }, justifyContent: { xs: "center", md: "flex-start" } }}
-            />
-          </Box>
-        ) : (
+      {!final && (
+        <Box sx={{ gridArea: "middle", minWidth: 0 }}>
           <Middle game={game} />
-        )}
-      </Box>
+        </Box>
+      )}
+      {hasDetails && (
+        <Box sx={{ gridArea: "toggle", minWidth: 0, borderTop: { xs: 1, md: 0 }, borderColor: "divider", mt: { md: final ? 0 : -0.5 } }}>
+          <DetailsToggle
+            open={open}
+            onToggle={() => setOpen((o) => !o)}
+            sx={{ width: { xs: "100%", md: "auto" }, justifyContent: { xs: "center", md: "flex-start" } }}
+          />
+        </Box>
+      )}
       <Box sx={{ gridArea: "picks", minWidth: 0 }}>
         <PickSplitBar game={game} userId={userId} compact />
       </Box>
