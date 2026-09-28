@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Game, GameDetails as GameDetailsData, PlayerLine, TeamBoxScore } from "../../../../types";
+import { useColorScheme } from "@mui/material/styles";
+import { Game, GameDetails as GameDetailsData, PlayerLine } from "../../../../types";
 import { fetchGameDetails } from "../../../../data/GetGameDetails";
 import { poll } from "../../../../../api/pickemApi";
 import { isLiveStatus } from "../../utils/scoreboardUtils";
 import { useCurrentWeek } from "../../../CurrentWeekContext";
 import { TeamLogo } from "../shared/TeamLogo";
+import { teamStatRows } from "../../utils/teamStats";
+import { matchupBarColors } from "../../utils/teamData";
 
 const LIVE_DETAILS_POLL_MS = 60_000;
 
@@ -34,23 +37,6 @@ const LEADER_FORMATS: { key: "passing" | "rushing" | "receiving"; label: string;
     label: "Receiving",
     line: (s) => statLine([[s.total_receptions, "REC"], [s.yards, "YDS"], [s.receiving_touch_downs, "TD", true]]),
   },
-];
-
-const formatSeconds = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
-const ratio = (made?: number, att?: number) => (made == null || att == null ? undefined : `${made}/${att}`);
-
-const BOX_ROWS: { label: string; value: (b: TeamBoxScore) => string | number | undefined }[] = [
-  { label: "Total yards", value: (b) => b.yards_total },
-  { label: "Passing yards", value: (b) => b.passing_yards },
-  { label: "Rushing yards", value: (b) => b.rushing_yards },
-  { label: "First downs", value: (b) => b.first_downs_total },
-  { label: "3rd down", value: (b) => ratio(b.third_down_conversions, b.third_down_attempts) },
-  { label: "4th down", value: (b) => ratio(b.fourth_down_conversions, b.fourth_down_attempts) },
-  { label: "Red zone", value: (b) => ratio(b.redzone_made, b.redzone_attempts) },
-  { label: "Turnovers", value: (b) => b.total_turnovers },
-  { label: "Sacks allowed", value: (b) => b.sacks_given_up },
-  { label: "Penalties", value: (b) => (b.penalties == null ? undefined : `${b.penalties}-${b.penalty_yards ?? 0}`) },
-  { label: "Possession", value: (b) => (b.time_of_possession_sec == null ? undefined : formatSeconds(b.time_of_possession_sec)) },
 ];
 
 const SectionTitle = ({ children }: { children: string }) => (
@@ -118,22 +104,52 @@ const ScoringPlays = ({ game }: { game: Game }) => {
   );
 };
 
+const StatSide = ({ main, sub, align }: { main: string | number; sub?: string | number; align: "left" | "right" }) => (
+  <Box sx={{ display: "flex", gap: 0.5, alignItems: "baseline", justifyContent: align === "left" ? "flex-start" : "flex-end", whiteSpace: "nowrap" }}>
+    {align === "right" && sub != null && <Box component="span" sx={{ color: "text.secondary", fontSize: "0.72rem" }}>({sub})</Box>}
+    <Box component="span" sx={{ fontWeight: 600 }}>{main}</Box>
+    {align === "left" && sub != null && <Box component="span" sx={{ color: "text.secondary", fontSize: "0.72rem" }}>({sub})</Box>}
+  </Box>
+);
+
+// ESPN-style: each stat gets a split bar in the two teams' colors, so who's
+// ahead reads at a glance. Giveaways/penalties are flipped (fewer = longer).
 const BoxScore = ({ game, details }: { game: Game; details: GameDetailsData }) => {
+  // The theme runs on CSS variables, so palette.mode doesn't track the
+  // light/dark switch -- ask the color scheme instead.
+  const { mode, systemMode } = useColorScheme();
+  const resolvedMode = (mode === "system" ? systemMode : mode) ?? "light";
   const box = details.box_score;
   if (!box) return null;
-  const rows = BOX_ROWS.filter(({ value }) => value(box.away) != null || value(box.home) != null);
+  const rows = teamStatRows(box.away, box.home);
+  if (!rows.length) return null;
+  const colors = matchupBarColors(game.away_team.abbr, game.home_team.abbr, resolvedMode);
+
   return (
     <Box>
-      <SectionTitle>Team stats</SectionTitle>
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto auto", columnGap: 2, rowGap: 0.5, fontSize: "0.82rem", fontVariantNumeric: "tabular-nums" }}>
-        <span />
-        <Box sx={{ color: "text.secondary", fontWeight: 600, textAlign: "right" }}>{game.away_team.abbr}</Box>
-        <Box sx={{ color: "text.secondary", fontWeight: 600, textAlign: "right" }}>{game.home_team.abbr}</Box>
-        {rows.map(({ label, value }) => (
-          <Box key={label} sx={{ display: "contents" }}>
-            <Box sx={{ color: "text.secondary" }}>{label}</Box>
-            <Box sx={{ textAlign: "right" }}>{value(box.away) ?? "–"}</Box>
-            <Box sx={{ textAlign: "right" }}>{value(box.home) ?? "–"}</Box>
+      <Box sx={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", mb: 0.5 }}>
+        <TeamLogo abbr={game.away_team.abbr} size={22} />
+        <Box sx={{ textAlign: "center" }}>
+          <SectionTitle>Team stats</SectionTitle>
+        </Box>
+        <TeamLogo abbr={game.home_team.abbr} size={22} />
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, fontSize: "0.82rem", fontVariantNumeric: "tabular-nums" }}>
+        {rows.map((row) => (
+          <Box key={row.label}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "baseline", columnGap: 1 }}>
+              <StatSide {...row.away} align="left" />
+              <Box sx={{ color: "text.secondary", textAlign: "center", fontSize: "0.78rem" }}>{row.label}</Box>
+              <StatSide {...row.home} align="right" />
+            </Box>
+            <Box
+              role="img"
+              aria-label={`${row.label}: ${game.away_team.abbr} ${row.away.main}, ${game.home_team.abbr} ${row.home.main}`}
+              sx={{ display: "flex", gap: "4px", mt: "3px", height: 4 }}
+            >
+              <Box sx={{ width: `${row.awayShare * 100}%`, bgcolor: colors.away, borderRadius: 2, minWidth: 3 }} />
+              <Box sx={{ width: `${(1 - row.awayShare) * 100}%`, bgcolor: colors.home, borderRadius: 2, minWidth: 3 }} />
+            </Box>
           </Box>
         ))}
       </Box>

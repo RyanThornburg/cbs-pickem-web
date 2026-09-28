@@ -128,6 +128,9 @@ export interface TeamBoxScore {
   total_turnovers?: number;
   sacks_given_up?: number;
   time_of_possession_sec?: number;
+  punts?: number;
+  punt_yards?: number;
+  punt_average?: number; // one decimal
   [key: string]: number | undefined;
 }
 

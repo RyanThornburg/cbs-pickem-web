@@ -49,14 +49,15 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
           ? `Ball on the ${spot.label}${spot.driveStartLabel ? `, drive started at the ${spot.driveStartLabel}` : ""}`
           : "No ball spot"
       }
-      sx={{
+      sx={(theme) => ({
         display: "grid",
         gridTemplateColumns: "8% 84% 8%",
         height,
         borderRadius: "4px",
         overflow: "hidden",
-        bgcolor: (theme) => (theme.palette.mode === "dark" ? "#1f5a33" : "#2f7a45"),
-      }}
+        bgcolor: "#2f7a45",
+        ...theme.applyStyles("dark", { bgcolor: "#1f5a33" }),
+      })}
     >
       {endZone(game.away_team.abbr)}
       <Box
