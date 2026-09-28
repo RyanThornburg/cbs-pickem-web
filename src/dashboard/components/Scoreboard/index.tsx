@@ -78,36 +78,51 @@ const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
 
   const groups = groupGames(games, picksFirst ? userId : undefined);
 
-  return (
-    <Box id={`gameWeek-${week}`} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2, textAlign: "left" }}>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={picksFirst}
-              onChange={(e) => changePicksFirst(e.target.checked)}
-            />
-          }
-          label="My picks first"
-          sx={{ mr: 0, "& .MuiFormControlLabel-label": { fontSize: "0.875rem" } }}
-        />
-        <ToggleButtonGroup size="small" exclusive value={layout} onChange={changeLayout} aria-label="Scoreboard layout">
-          <ToggleButton value="full" aria-label="Full cards">
-            <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />
-            Full
-          </ToggleButton>
-          <ToggleButton value="compact" aria-label="Compact list">
-            <ViewListIcon fontSize="small" sx={{ mr: 0.5 }} />
-            Compact
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
+  const controls = (
+    <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap", columnGap: 2, rowGap: 1, ml: "auto" }}>
+      <FormControlLabel
+        control={
+          <Switch
+            size="small"
+            checked={picksFirst}
+            onChange={(e) => changePicksFirst(e.target.checked)}
+          />
+        }
+        label="My picks first"
+        sx={{ mr: 0, "& .MuiFormControlLabel-label": { fontSize: "0.875rem" } }}
+      />
+      <ToggleButtonGroup
+        size="small"
+        exclusive
+        value={layout}
+        onChange={changeLayout}
+        aria-label="Scoreboard layout"
+        sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.25 } }}
+      >
+        <ToggleButton value="full" aria-label="Full cards">
+          <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />
+          Full
+        </ToggleButton>
+        <ToggleButton value="compact" aria-label="Compact list">
+          <ViewListIcon fontSize="small" sx={{ mr: 0.5 }} />
+          Compact
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </Box>
+  );
 
+  // Full cards: the controls share a line with the first section header, so
+  // there's no empty row above the games. Compact keeps its headers inside
+  // the list box, so the controls sit just above it.
+  return (
+    <Box id={`gameWeek-${week}`} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: layout === "full" ? 2 : 1, textAlign: "left" }}>
       {layout === "full" ? (
-        groups.map(({ group, games }) => (
+        groups.map(({ group, games }, i) => (
           <Box key={group} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <GroupHeader>{group}</GroupHeader>
+            <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+              <GroupHeader>{group}</GroupHeader>
+              {i === 0 && controls}
+            </Box>
             <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
               {games.map((game) => (
                 <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
@@ -118,18 +133,21 @@ const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
           </Box>
         ))
       ) : (
-        <Paper variant="outlined" sx={{ overflow: "hidden" }}>
-          {groups.map(({ group, games }) => (
-            <Box key={group}>
-              <Box sx={{ px: 1.75, py: 0.5, bgcolor: "action.hover", borderBottom: 1, borderColor: "divider" }}>
-                <GroupHeader>{group}</GroupHeader>
+        <>
+          {controls}
+          <Paper variant="outlined" sx={{ overflow: "hidden" }}>
+            {groups.map(({ group, games }) => (
+              <Box key={group}>
+                <Box sx={{ px: 1.75, py: 0.5, bgcolor: "action.hover", borderBottom: 1, borderColor: "divider" }}>
+                  <GroupHeader>{group}</GroupHeader>
+                </Box>
+                {games.map((game) => (
+                  <GameRow key={game.game_id} game={game} userId={userId} />
+                ))}
               </Box>
-              {games.map((game) => (
-                <GameRow key={game.game_id} game={game} userId={userId} />
-              ))}
-            </Box>
-          ))}
-        </Paper>
+            ))}
+          </Paper>
+        </>
       )}
     </Box>
   );
