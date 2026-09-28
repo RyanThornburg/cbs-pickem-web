@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useGameData } from "./hooks/useGameData";
@@ -15,12 +17,21 @@ import { GameRow } from "./components/GameRow";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
+const PICKS_FIRST_KEY = "scoreboardMyPicksFirst";
 
 const readLayout = (): Layout => {
   try {
     return localStorage.getItem(LAYOUT_KEY) === "compact" ? "compact" : "full";
   } catch {
     return "full";
+  }
+};
+
+const readPicksFirst = (): boolean => {
+  try {
+    return localStorage.getItem(PICKS_FIRST_KEY) === "true";
+  } catch {
+    return false;
   }
 };
 
@@ -40,6 +51,16 @@ const GroupHeader = ({ children }: { children: string }) => (
 const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
   const { games, loading, error } = useGameData(week);
   const [layout, setLayout] = useState<Layout>(readLayout);
+  const [picksFirst, setPicksFirst] = useState(readPicksFirst);
+
+  const changePicksFirst = (next: boolean) => {
+    setPicksFirst(next);
+    try {
+      localStorage.setItem(PICKS_FIRST_KEY, String(next));
+    } catch {
+      // storage blocked -- choice just won't persist
+    }
+  };
 
   const changeLayout = (_: unknown, next: Layout | null) => {
     if (!next) return;
@@ -55,11 +76,22 @@ const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
   if (error) return <div>{error.message}</div>;
   if (!games.length) return <Box>No games scheduled for week {week}</Box>;
 
-  const groups = groupGames(games);
+  const groups = groupGames(games, picksFirst ? userId : undefined);
 
   return (
     <Box id={`gameWeek-${week}`} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 2, textAlign: "left" }}>
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={picksFirst}
+              onChange={(e) => changePicksFirst(e.target.checked)}
+            />
+          }
+          label="My picks first"
+          sx={{ mr: 0, "& .MuiFormControlLabel-label": { fontSize: "0.875rem" } }}
+        />
         <ToggleButtonGroup size="small" exclusive value={layout} onChange={changeLayout} aria-label="Scoreboard layout">
           <ToggleButton value="full" aria-label="Full cards">
             <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />

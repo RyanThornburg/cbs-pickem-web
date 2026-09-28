@@ -201,4 +201,27 @@ describe("groupGames", () => {
       ["Final", [1]],
     ]);
   });
+
+  it("pins the user's games on top in the same order, without repeating them", () => {
+    const mine = () => ({ home: [{ id: "7", name: "Me" }], away: [] });
+    const games = [
+      game({ game_id: 1, status: GameStatus.Final, game_time: 1, picks: mine() }),
+      game({ game_id: 2, status: GameStatus.Scheduled, game_time: 5 }),
+      game({ game_id: 3, status: GameStatus.Halftime, game_time: 3 }),
+      game({ game_id: 4, status: GameStatus.Inprogress, game_time: 2, picks: mine() }),
+      game({ game_id: 5, status: GameStatus.Scheduled, game_time: 4, picks: mine() }),
+    ];
+    expect(
+      groupGames(games, "7").map(({ group, games }) => [group, games.map((g) => g.game_id)])
+    ).toEqual([
+      ["Your picks", [4, 5, 1]],
+      ["Live", [3]],
+      ["Upcoming", [2]],
+    ]);
+  });
+
+  it("leaves the standard order alone when the user has no picks", () => {
+    const games = [game({ game_id: 1, status: GameStatus.Final, picks: { home: [], away: [] } })];
+    expect(groupGames(games, "7").map(({ group }) => group)).toEqual(["Final"]);
+  });
 });

@@ -195,27 +195,42 @@ export const statusLabel = (game: Game): string => {
   }
 };
 
-export type ScoreboardGroup = "Live" | "Upcoming" | "Final";
+export type ScoreboardGroup = "Your picks" | "Live" | "Upcoming" | "Final";
+
+const STATUS_ORDER = (game: Game): number =>
+  isLiveStatus(game.status) ? 0 : game.status === GameStatus.Scheduled ? 1 : 2;
+
+const byStatusThenKickoff = (a: Game, b: Game) =>
+  STATUS_ORDER(a) - STATUS_ORDER(b) ||
+  a.game_time - b.game_time ||
+  a.game_id - b.game_id;
 
 // Fixed order, never re-sorted by how close a game is: people learn where to
 // look. Live, then upcoming, then final -- each by kickoff time.
+// `pinUserId` ("My picks first"): that user's games come out into one
+// "Your picks" list on top, in the same order, and the standard groups follow
+// without them.
 export const groupGames = (
-  games: Game[]
+  games: Game[],
+  pinUserId?: string
 ): { group: ScoreboardGroup; games: Game[] }[] => {
-  const byKickoff = (a: Game, b: Game) =>
-    a.game_time - b.game_time || a.game_id - b.game_id;
+  const pinned = pinUserId
+    ? games.filter((g) => userPickSide(g, pinUserId) !== null)
+    : [];
+  const rest = games.filter((g) => !pinned.includes(g));
   const groups: { group: ScoreboardGroup; games: Game[] }[] = [
-    { group: "Live", games: games.filter((g) => isLiveStatus(g.status)) },
+    { group: "Your picks", games: pinned },
+    { group: "Live", games: rest.filter((g) => isLiveStatus(g.status)) },
     {
       group: "Upcoming",
-      games: games.filter((g) => g.status === GameStatus.Scheduled),
+      games: rest.filter((g) => g.status === GameStatus.Scheduled),
     },
     {
       group: "Final",
-      games: games.filter((g) => g.status === GameStatus.Final),
+      games: rest.filter((g) => g.status === GameStatus.Final),
     },
   ];
   return groups
-    .map(({ group, games }) => ({ group, games: [...games].sort(byKickoff) }))
+    .map(({ group, games }) => ({ group, games: [...games].sort(byStatusThenKickoff) }))
     .filter(({ games }) => games.length > 0);
 };
