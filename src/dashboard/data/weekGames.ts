@@ -2,8 +2,11 @@ import { fetchJson } from "../../api/pickemApi";
 import {
   Forecast,
   Game,
+  GameLeaders,
   GameStatus,
+  Linescore,
   Possession,
+  ScoringPlay,
   Stadium,
   Team,
   TeamRecord,
@@ -14,6 +17,7 @@ import { normalizeTeamAbbr } from "../utils/teamAssets";
 export interface ApiTeam {
   id: number;
   abbr: string;
+  name?: string;
   record?: TeamRecord;
 }
 
@@ -26,8 +30,18 @@ interface ApiGameLive {
   quarter?: number | null;
   time_remaining?: string | null;
   possession?: string | null;
+  down?: number | null;
+  distance?: number | null;
   down_distance_text?: string | null;
   is_red_zone?: boolean | null;
+  home_timeouts?: number | null;
+  away_timeouts?: number | null;
+  yard_line?: number | null;
+  possession_text?: string | null;
+  last_play?: { text: string | null; type: string | null } | null;
+  drive_text?: string | null;
+  win_probability?: { home: number | null; away: number | null } | null;
+  weather?: Forecast | null;
 }
 
 // The full shape of one entry in `/api/weeks/:season/:week/games` -- every
@@ -53,6 +67,10 @@ export interface ApiGame {
     away: ApiUserRef[];
   };
   live?: ApiGameLive | null;
+  status_desc?: string | null;
+  linescore?: Linescore | null;
+  leaders?: GameLeaders | null;
+  scoring_plays?: ScoringPlay[];
 }
 
 export interface ApiWeekGamesResponse {
@@ -64,6 +82,7 @@ export interface ApiWeekGamesResponse {
 export const toTeam = (team: ApiTeam): Team => ({
   id: team.id,
   abbr: normalizeTeamAbbr(team.abbr),
+  name: team.name,
   record: team.record,
 });
 
@@ -79,7 +98,7 @@ const toPossession = (possession?: string | null): Possession | undefined => {
 };
 
 // Maps the full API shape to the Game type used by the Scoreboard tab (the
-// only consumer that needs picks/live) -- Games tab and leaderboard consumers
+// only consumer that needs picks/live/linescore/leaders) -- Games tab and leaderboard consumers
 // read the fields they need directly off ApiGame instead.
 export const toGame = (game: ApiGame): Game => ({
   game_id: game.game_id,
@@ -104,10 +123,24 @@ export const toGame = (game: ApiGame): Game => ({
         quarter: game.live.quarter ?? undefined,
         time_remaining: game.live.time_remaining ?? undefined,
         possession: toPossession(game.live.possession),
+        down: game.live.down ?? undefined,
+        distance: game.live.distance ?? undefined,
         down_distance_text: game.live.down_distance_text ?? undefined,
         is_red_zone: game.live.is_red_zone ?? undefined,
+        home_timeouts: game.live.home_timeouts ?? undefined,
+        away_timeouts: game.live.away_timeouts ?? undefined,
+        yard_line: game.live.yard_line ?? undefined,
+        possession_text: game.live.possession_text ?? undefined,
+        last_play: game.live.last_play ?? undefined,
+        drive_text: game.live.drive_text ?? undefined,
+        win_probability: game.live.win_probability ?? undefined,
+        weather: game.live.weather,
       }
     : undefined,
+  status_desc: game.status_desc ?? undefined,
+  linescore: game.linescore,
+  leaders: game.leaders,
+  scoring_plays: game.scoring_plays,
 });
 
 export const weekGamesUrl = (season: number, week: number): string =>
@@ -146,8 +179,8 @@ export interface GameCoverResult {
   coveringTeamId: number | null;
 }
 
-// Mirrors the cover formula in Scoreboard/TeamScore/index.tsx's homeTeamStats/
-// awayTeamStats so "covered" means the same thing everywhere in the app.
+// Mirrors the cover formula in Scoreboard/utils/scoreboardUtils.ts's getCover
+// so "covered" means the same thing everywhere in the app.
 export const getGameCoverResult = (game: ApiGame): GameCoverResult => {
   const isFinal = game.status === "FINAL";
 

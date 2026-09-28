@@ -338,7 +338,11 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "scoreboard" ? "block" : "none" }}
             >
-              <Scoreboard week={selectedWeek} />
+              <Scoreboard
+                week={selectedWeek}
+                userId={user}
+                totalUsers={userList.length}
+              />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}

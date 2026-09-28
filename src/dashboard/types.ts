@@ -36,8 +36,106 @@ export interface GameLive {
   quarter?: number;
   time_remaining?: string;
   possession?: Possession;
+  // Numeric down/distance -- down is -1 on a try/kickoff (distance 0, no text)
+  down?: number;
+  distance?: number;
   down_distance_text?: string;
   is_red_zone?: boolean;
+  home_timeouts?: number;
+  away_timeouts?: number;
+  // Yards from the HOME team's goal line (0-100), regardless of possession.
+  // May hold a stale spot between possessions -- only trust it while
+  // possession_text is set.
+  yard_line?: number;
+  possession_text?: string; // the spot as printed, "TB 38"
+  last_play?: { text: string | null; type: string | null };
+  drive_text?: string; // "10 plays, 17 yards, 5:10"
+  win_probability?: { home: number | null; away: number | null };
+  // Actual conditions right now, same shape as the kickoff forecast; null
+  // for domes/retractables.
+  weather?: Forecast | null;
+}
+
+// Scoreboard feed additions (2026-09-27). All optional: the games key only
+// carries them once the data repo's pipeline deploy is running.
+export interface LinescoreSide {
+  q1: number | null;
+  q2: number | null;
+  q3: number | null;
+  q4: number | null;
+  ot: number | null;
+}
+
+export interface Linescore {
+  home: LinescoreSide;
+  away: LinescoreSide;
+}
+
+// One player's line -- `stats` keys vary by group (passing/rushing/...) and
+// the source can add keys without notice, so it's an open record.
+// Compound values stay strings: comp_att "38/52", sacks "2-8".
+export interface PlayerLine {
+  name: string;
+  sports_io_player_id?: number;
+  image?: string | null;
+  stats: Record<string, number | string | null>;
+}
+
+export interface TeamLeaders {
+  passing: PlayerLine | null;
+  rushing: PlayerLine | null;
+  receiving: PlayerLine | null;
+}
+
+export interface GameLeaders {
+  home: TeamLeaders;
+  away: TeamLeaders;
+}
+
+// Chronological -- sort by array position, never by clock (null on ~15%).
+export interface ScoringPlay {
+  quarter: number; // 5 = OT
+  clock: string | null;
+  team_id: number;
+  type: string; // TD, FG, SF/Safety, 2PTC -- plus rare odd values
+  description: string;
+  player_name: string | null;
+  home_score: number; // score after this play
+  away_score: number;
+}
+
+// `game:{season}:{game_id}:details` -- fetched only when a game is opened.
+export interface TeamBoxScore {
+  first_downs_total?: number;
+  third_down_conversions?: number;
+  third_down_attempts?: number;
+  fourth_down_conversions?: number;
+  fourth_down_attempts?: number;
+  redzone_made?: number;
+  redzone_attempts?: number;
+  plays_total?: number;
+  yards_total?: number;
+  yards_per_play?: number;
+  passing_yards?: number;
+  rushing_yards?: number;
+  penalties?: number;
+  penalty_yards?: number;
+  // this team's giveaways
+  total_turnovers?: number;
+  sacks_given_up?: number;
+  time_of_possession_sec?: number;
+  [key: string]: number | undefined;
+}
+
+export interface GameDetails {
+  game_id: number;
+  updated_at: string;
+  box_score: { home: TeamBoxScore; away: TeamBoxScore } | null;
+  players: {
+    home: Record<string, PlayerLine[]>;
+    away: Record<string, PlayerLine[]>;
+  } | null;
+  win_probability: unknown[] | null;
 }
 
 export interface Game {
@@ -59,6 +157,10 @@ export interface Game {
     away: UserId[];
   };
   live?: GameLive;
+  status_desc?: string;
+  linescore?: Linescore | null;
+  leaders?: GameLeaders | null;
+  scoring_plays?: ScoringPlay[];
 }
 
 export interface TeamRecord {
@@ -70,6 +172,7 @@ export interface TeamRecord {
 export interface Team {
   id: number;
   abbr: string;
+  name?: string; // "Steelers"
   record?: TeamRecord;
 }
 
