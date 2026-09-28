@@ -5,6 +5,9 @@ const WEEK_RESOURCE_PATTERN =
 const SEASON_TRENDS_PATTERN = /^\/api\/season\/(\d+)\/trends$/;
 const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 const GAME_DETAILS_PATTERN = /^\/api\/games\/(\d+)\/(\d+)\/details$/;
+// KV caches reads at the edge for 60s by default. The games key carries live
+// scores, so cache it for Cloudflare's 30s minimum instead.
+const GAMES_CACHE_TTL_SECONDS = 30;
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -38,6 +41,14 @@ export default {
       if (weekMatch) {
         const [, season, week, resource] = weekMatch;
         const weekPadded = week.padStart(2, "0");
+        if (resource === "games") {
+          return await respondWithKvJson(
+            env,
+            `week:${season}:${weekPadded}:games`,
+            NO_STORE,
+            GAMES_CACHE_TTL_SECONDS
+          );
+        }
         return await respondWithKvJson(
           env,
           `week:${season}:${weekPadded}:${resource}`
@@ -99,15 +110,17 @@ async function handleAdmin(
   return notFound(NO_STORE);
 }
 
-// Admin responses must never be cached by the browser or the edge.
+// For admin responses (never cached by the browser or the edge) and live
+// games data (the client polls it, so a browser-cached copy would go stale).
 const NO_STORE = { "cache-control": "no-store" };
 
 async function respondWithKvJson(
   env: Env,
   key: string,
-  extraHeaders?: Record<string, string>
+  extraHeaders?: Record<string, string>,
+  cacheTtl?: number
 ): Promise<Response> {
-  const value = await env.PICKEM_KV.get(key, "json");
+  const value = await env.PICKEM_KV.get(key, { type: "json", cacheTtl });
   if (value === null) {
     return notFound(extraHeaders);
   }
