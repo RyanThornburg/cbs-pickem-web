@@ -86,7 +86,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
     const score = side === "home" ? game.home_score : game.away_score;
     const other = side === "home" ? game.away_score : game.home_score;
     return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
         <TeamLogo abbr={team.abbr} size={22} />
         <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>{team.abbr}</Typography>
         <Box component="span" sx={{ fontSize: "0.75rem", color: "text.secondary", width: 36, flexShrink: 0 }}>
@@ -114,6 +114,18 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
     );
   };
 
+  // Phones stack everything full width under status/teams. Final rows move
+  // the box score toggle to the bottom, under the pick bar.
+  const mobileAreas = [
+    "status teams",
+    ...(final ? ["picks picks"] : ["middle middle", "picks picks"]),
+    ...(pickSide ? ["you you"] : []),
+    ...(final ? ["middle middle"] : []),
+    ...(open ? ["details details"] : []),
+  ]
+    .map((row) => `"${row}"`)
+    .join(" ");
+
   return (
     <Box
       sx={[
@@ -134,7 +146,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
           }),
           [t.breakpoints.down("md")]: {
             gridTemplateColumns: "72px minmax(0, 1fr)",
-            gridTemplateAreas: `"status teams" "middle middle" "you picks"${open ? ' "details details"' : ""}`,
+            gridTemplateAreas: mobileAreas,
           },
         }),
         highlightSx(border, true),
@@ -150,7 +162,13 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
       </Box>
       <Box sx={{ gridArea: "middle", minWidth: 0 }}>
         {final ? (
-          <DetailsToggle open={open} onToggle={() => setOpen((o) => !o)} />
+          <Box sx={{ borderTop: { xs: 1, md: 0 }, borderColor: "divider" }}>
+            <DetailsToggle
+              open={open}
+              onToggle={() => setOpen((o) => !o)}
+              sx={{ width: { xs: "100%", md: "auto" }, justifyContent: { xs: "center", md: "flex-start" } }}
+            />
+          </Box>
         ) : (
           <Middle game={game} />
         )}
@@ -158,9 +176,13 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
       <Box sx={{ gridArea: "picks", minWidth: 0 }}>
         <PickSplitBar game={game} userId={userId} compact />
       </Box>
-      <Box sx={{ gridArea: "you", display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
-        {pickSide && <YourPickBadge game={game} side={pickSide} compact />}
-      </Box>
+      {/* Only rendered with a pick: the phone layout has no "you" area otherwise,
+          and an unplaced area name makes the grid add phantom columns. */}
+      {pickSide && (
+        <Box sx={{ gridArea: "you", display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
+          <YourPickBadge game={game} side={pickSide} compact />
+        </Box>
+      )}
       {open && (
         <Box sx={{ gridArea: "details", minWidth: 0, borderTop: 1, borderColor: "divider" }}>
           <GameDetails game={game} columns />
