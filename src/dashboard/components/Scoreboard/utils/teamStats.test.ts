@@ -1,6 +1,5 @@
 import { TeamBoxScore } from "../../../types";
 import { barShare, teamStatRows } from "./teamStats";
-import { matchupBarColors } from "./teamData";
 
 describe("barShare", () => {
   it("splits by value, evenly when both are zero", () => {
@@ -49,18 +48,5 @@ describe("punts", () => {
     );
     expect(row).toMatchObject({ label: "Punts (Avg)", away: { main: 2, sub: "42.0" }, home: { main: 1, sub: "51.0" } });
     expect(row.awayShare).toBeCloseTo(1 / 3);
-  });
-});
-
-describe("matchupBarColors", () => {
-  it("swaps a near-black primary for the alternate in dark mode", () => {
-    // PIT: primary black, alternate gold
-    expect(matchupBarColors("CIN", "PIT", "dark").home.toLowerCase()).toBe("#ffb612");
-  });
-
-  it("keeps two teams' bars apart when their primaries match", () => {
-    // DAL and NE share navy #002a5c
-    const { away, home } = matchupBarColors("NE", "DAL", "light");
-    expect(away.toLowerCase()).not.toBe(home.toLowerCase());
   });
 });

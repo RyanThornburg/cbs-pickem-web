@@ -1,5 +1,12 @@
 import { TeamBoxScore } from "../../../types";
 
+// Fixed away/home bar colors, the same in every game. Team colors were tried
+// first, but some matchups can't be told apart (ARI/SF are both red, BAL
+// purple vs DAL navy), and logos + position already say which side is whose.
+// Blue/orange stays distinct for color-blind viewers and clear of the
+// green/red the app uses for covering.
+export const STAT_BAR_COLORS = { away: "#1f77d0", home: "#f28c28" } as const;
+
 const formatSeconds = (sec: number) =>
   `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
 

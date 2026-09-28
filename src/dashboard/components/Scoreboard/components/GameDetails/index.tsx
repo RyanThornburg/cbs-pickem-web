@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useColorScheme } from "@mui/material/styles";
 import { Game, GameDetails as GameDetailsData, PlayerLine } from "../../../../types";
 import { fetchGameDetails } from "../../../../data/GetGameDetails";
 import { poll } from "../../../../../api/pickemApi";
 import { isLiveStatus } from "../../utils/scoreboardUtils";
 import { useCurrentWeek } from "../../../CurrentWeekContext";
 import { TeamLogo } from "../shared/TeamLogo";
-import { teamStatRows } from "../../utils/teamStats";
-import { matchupBarColors } from "../../utils/teamData";
+import { STAT_BAR_COLORS, teamStatRows } from "../../utils/teamStats";
 
 const LIVE_DETAILS_POLL_MS = 60_000;
 
@@ -115,24 +113,27 @@ const StatSide = ({ main, sub, align }: { main: string | number; sub?: string | 
 // ESPN-style: each stat gets a split bar in the two teams' colors, so who's
 // ahead reads at a glance. Giveaways/penalties are flipped (fewer = longer).
 const BoxScore = ({ game, details }: { game: Game; details: GameDetailsData }) => {
-  // The theme runs on CSS variables, so palette.mode doesn't track the
-  // light/dark switch -- ask the color scheme instead.
-  const { mode, systemMode } = useColorScheme();
-  const resolvedMode = (mode === "system" ? systemMode : mode) ?? "light";
   const box = details.box_score;
   if (!box) return null;
   const rows = teamStatRows(box.away, box.home);
   if (!rows.length) return null;
-  const colors = matchupBarColors(game.away_team.abbr, game.home_team.abbr, resolvedMode);
+  const colors = STAT_BAR_COLORS;
+  // Logo with a stripe in its bar color underneath, as the key
+  const keyedLogo = (abbr: string, color: string) => (
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
+      <TeamLogo abbr={abbr} size={22} />
+      <Box sx={{ width: 22, height: 3, borderRadius: 2, bgcolor: color }} />
+    </Box>
+  );
 
   return (
     <Box>
       <Box sx={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", mb: 0.5 }}>
-        <TeamLogo abbr={game.away_team.abbr} size={22} />
+        {keyedLogo(game.away_team.abbr, colors.away)}
         <Box sx={{ textAlign: "center" }}>
           <SectionTitle>Team stats</SectionTitle>
         </Box>
-        <TeamLogo abbr={game.home_team.abbr} size={22} />
+        {keyedLogo(game.home_team.abbr, colors.home)}
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1, fontSize: "0.82rem", fontVariantNumeric: "tabular-nums" }}>
         {rows.map((row) => (

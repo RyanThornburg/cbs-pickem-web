@@ -14,9 +14,3 @@ export const formatGameTime = (gameStart: number): string => {
 export const formatGameShort = (gameStart: number): string => {
   return dayjs(gameStart).format("ddd h:mm A");
 };
-
-export const isGameToday = (gameStart: number): boolean => {
-  const now = dayjs().format("ddd, MMM DD");
-  const gameTime = formatGameDate(gameStart);
-  return now === gameTime;
-};
