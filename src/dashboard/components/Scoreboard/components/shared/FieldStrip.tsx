@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Game } from "../../../../types";
+import { Game, Possession } from "../../../../types";
 import { getBallSpot } from "../../utils/scoreboardUtils";
 import { teamColor } from "../../utils/teamData";
 
@@ -10,10 +10,13 @@ interface Props {
 
 // Away end zone on the left, home on the right (away is listed first
 // everywhere on the scoreboard). Blue line = line of scrimmage, yellow =
-// first-down marker. With no current spot the empty field still shows, so
+// first-down marker, shaded band in the offense's color = the current drive
+// from where it started to the ball. With no current spot the empty field still shows, so
 // compact rows keep their shape.
 export const FieldStrip = ({ game, height = 22 }: Props) => {
   const spot = getBallSpot(game);
+  const offense =
+    game.live?.possession === Possession.Home ? game.home_team : game.away_team;
   const endZone = (abbr: string) => (
     <Box
       sx={{
@@ -33,7 +36,11 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
   return (
     <Box
       role="img"
-      aria-label={spot ? `Ball on the ${spot.label}` : "No ball spot"}
+      aria-label={
+        spot
+          ? `Ball on the ${spot.label}${spot.driveStartLabel ? `, drive started at the ${spot.driveStartLabel}` : ""}`
+          : "No ball spot"
+      }
       sx={{
         display: "grid",
         gridTemplateColumns: "8% 84% 8%",
@@ -54,6 +61,21 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
       >
         {spot && (
           <>
+            {spot.driveStartPct != null && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "22%",
+                  bottom: "22%",
+                  left: `${Math.min(spot.driveStartPct, spot.ballPct)}%`,
+                  width: `${Math.abs(spot.ballPct - spot.driveStartPct)}%`,
+                  bgcolor: teamColor(offense.abbr),
+                  opacity: 0.75,
+                  boxShadow: "0 0 0 1px rgba(255,255,255,0.5)",
+                  borderRadius: "2px",
+                }}
+              />
+            )}
             <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, left: `${spot.ballPct}%`, bgcolor: "#4aa3ff" }} />
             {spot.firstDownPct != null && (
               <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, left: `${spot.firstDownPct}%`, bgcolor: "#ffd23f" }} />

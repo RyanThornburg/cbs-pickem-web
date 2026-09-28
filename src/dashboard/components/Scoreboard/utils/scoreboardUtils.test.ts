@@ -137,7 +137,30 @@ describe("getBallSpot", () => {
       })
     );
     // TB 38 is 38 yds from TB's (home) goal = 62% from the away end zone
-    expect(spot).toEqual({ ballPct: 62, firstDownPct: 78, label: "TB 38" });
+    expect(spot).toEqual({
+      ballPct: 62,
+      firstDownPct: 78,
+      label: "TB 38",
+      driveStartPct: null,
+      driveStartLabel: null,
+    });
+  });
+
+  it("places drive_start on the same scale as the ball", () => {
+    const spot = getBallSpot(
+      game({
+        home_team: { id: 10, abbr: "DEN" },
+        away_team: { id: 20, abbr: "LAR" },
+        live: {
+          possession: Possession.Away,
+          yard_line: 5,
+          possession_text: "DEN 5",
+          drive_start: { yard_line: 63, text: "LAR 37" },
+        },
+      })
+    );
+    // LAR (away, left) drove from its own 37 (37%) to the DEN 5 (95%)
+    expect(spot).toMatchObject({ ballPct: 95, driveStartPct: 37, driveStartLabel: "LAR 37" });
   });
 
   it("hides the ball when there's no current spot", () => {
@@ -157,7 +180,7 @@ describe("getBallSpot", () => {
         },
       })
     );
-    expect(spot).toEqual({ ballPct: 37, firstDownPct: 44, label: "MIN 37" });
+    expect(spot).toMatchObject({ ballPct: 37, firstDownPct: 44, label: "MIN 37", driveStartPct: null });
   });
 });
 

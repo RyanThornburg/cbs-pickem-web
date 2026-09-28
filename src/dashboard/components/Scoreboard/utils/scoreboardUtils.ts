@@ -130,6 +130,11 @@ export interface BallSpot {
   ballPct: number;
   firstDownPct: number | null;
   label: string;
+  // Where the current drive began, same scale as ballPct -- only from the
+  // feed's drive_start, never derived from drive_text's net yards (penalties
+  // would put it in the wrong place).
+  driveStartPct: number | null;
+  driveStartLabel: string | null;
 }
 
 // From the home goal line (yard_line) when the feed has it; before the
@@ -140,9 +145,15 @@ export const getBallSpot = (game: Game): BallSpot | null => {
 
   let yardsFromHomeGoal: number | null = null;
   let label = "";
+  let driveStartPct: number | null = null;
+  let driveStartLabel: string | null = null;
   if (live.yard_line != null && live.possession_text) {
     yardsFromHomeGoal = live.yard_line;
     label = live.possession_text;
+    if (live.drive_start?.yard_line != null) {
+      driveStartPct = 100 - live.drive_start.yard_line;
+      driveStartLabel = live.drive_start.text;
+    }
   } else {
     const match = /at (\w+) (\d+)/.exec(live.down_distance_text ?? "");
     if (match) {
@@ -162,7 +173,7 @@ export const getBallSpot = (game: Game): BallSpot | null => {
       ? Math.min(100, Math.max(0, ballPct + direction * live.distance))
       : null;
 
-  return { ballPct, firstDownPct, label };
+  return { ballPct, firstDownPct, label, driveStartPct, driveStartLabel };
 };
 
 // "Q3 11:07", "OT 4:12", "Halftime", "Final", "Final/OT".

@@ -89,7 +89,12 @@ const Situation = ({ game }: { game: Game }) => {
       )}
       {inProgress && (live.drive_text || leader || weather) && (
         <Box sx={{ display: "flex", flexWrap: "wrap", columnGap: 1.5, rowGap: 0.25, color: "text.secondary", fontSize: "0.8rem" }}>
-          {live.drive_text && <span>Drive: {live.drive_text}</span>}
+          {live.drive_text && (
+            <span>
+              Drive: {live.drive_text}
+              {live.possession_text && live.drive_start?.text ? ` · from ${live.drive_start.text}` : ""}
+            </span>
+          )}
           {leader && <span>Win prob: {leader.abbr} {Math.round(leader.pct)}%</span>}
           {weather && (
             <span>

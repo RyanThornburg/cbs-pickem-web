@@ -50,6 +50,10 @@ export interface GameLive {
   possession_text?: string; // the spot as printed, "TB 38"
   last_play?: { text: string | null; type: string | null };
   drive_text?: string; // "10 plays, 17 yards, 5:10"
+  // Where the current drive began, same home-goal-line frame as yard_line.
+  // Both null when ESPN has no drive; can briefly still be the previous
+  // drive's right after a change of possession, until the first snap.
+  drive_start?: { yard_line: number | null; text: string | null };
   win_probability?: { home: number | null; away: number | null };
   // Actual conditions right now, same shape as the kickoff forecast; null
   // for domes/retractables.

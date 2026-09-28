@@ -40,6 +40,7 @@ interface ApiGameLive {
   possession_text?: string | null;
   last_play?: { text: string | null; type: string | null } | null;
   drive_text?: string | null;
+  drive_start?: { yard_line: number | null; text: string | null } | null;
   win_probability?: { home: number | null; away: number | null } | null;
   weather?: Forecast | null;
 }
@@ -133,6 +134,7 @@ export const toGame = (game: ApiGame): Game => ({
         possession_text: game.live.possession_text ?? undefined,
         last_play: game.live.last_play ?? undefined,
         drive_text: game.live.drive_text ?? undefined,
+        drive_start: game.live.drive_start ?? undefined,
         win_probability: game.live.win_probability ?? undefined,
         weather: game.live.weather,
       }
