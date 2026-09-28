@@ -2,11 +2,9 @@ import { memo, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import PlaceIcon from "@mui/icons-material/Place";
 import PublicIcon from "@mui/icons-material/Public";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Game, GameStatus, LinescoreSide } from "../../../../types";
 import { getVenueBadge } from "../../../../utils/venue";
 import {
@@ -30,6 +28,7 @@ import { HighlightFlags } from "../shared/HighlightFlags";
 import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
 import { GameDetails } from "../GameDetails";
+import { DetailsToggle } from "../shared/DetailsToggle";
 
 export interface GameCardProps {
   game: Game;
@@ -228,15 +227,7 @@ export const GameCard = memo(({ game, userId, totalUsers }: GameCardProps) => {
 
       {final && (
         <Box sx={{ borderTop: 1, borderColor: "divider", pt: 0.5 }}>
-          <Button
-            size="small"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            endIcon={<ExpandMoreIcon sx={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />}
-            sx={{ px: 0.5, color: "text.secondary" }}
-          >
-            Box score and leaders
-          </Button>
+          <DetailsToggle open={open} onToggle={() => setOpen((o) => !o)} />
           {open && <GameDetails game={game} />}
         </Box>
       )}

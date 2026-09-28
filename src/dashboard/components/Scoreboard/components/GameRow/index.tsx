@@ -1,9 +1,8 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game, GameStatus } from "../../../../types";
 import {
-  favoriteLine,
   getGameHighlight,
   hasBall,
   hasStarted,
@@ -21,6 +20,8 @@ import { YourPickBadge } from "../shared/YourPickBadge";
 import { HighlightFlags } from "../shared/HighlightFlags";
 import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
+import { DetailsToggle } from "../shared/DetailsToggle";
+import { GameDetails } from "../GameDetails";
 
 export interface GameRowProps {
   game: Game;
@@ -28,7 +29,7 @@ export interface GameRowProps {
 }
 
 // The middle column: where the ball is while a game is live, otherwise the
-// forecast (upcoming) or the line (final).
+// forecast (upcoming). Final rows put the box score toggle there instead.
 const Middle = ({ game }: { game: Game }) => {
   const live = game.live;
   if (game.status === GameStatus.Inprogress) {
@@ -60,13 +61,12 @@ const Middle = ({ game }: { game: Game }) => {
       </Box>
     );
   }
+  if (game.status !== GameStatus.Scheduled) return null;
   const f = game.forecast;
   const text =
-    game.status === GameStatus.Scheduled
-      ? f && game.stadium?.roof_type === "Open"
-        ? `${Math.round(f.temp_f)}° · ${f.condition}`
-        : game.stadium?.name ?? ""
-      : favoriteLine(game);
+    f && game.stadium?.roof_type === "Open"
+      ? `${Math.round(f.temp_f)}° · ${f.condition}`
+      : game.stadium?.name ?? "";
   return (
     <Typography variant="body2" noWrap sx={{ color: "text.secondary", fontSize: "0.82rem" }}>
       {text}
@@ -75,6 +75,7 @@ const Middle = ({ game }: { game: Game }) => {
 };
 
 export const GameRow = memo(({ game, userId }: GameRowProps) => {
+  const [open, setOpen] = useState(false);
   const border = highlightBorder(getGameHighlight(game));
   const pickSide = userPickSide(game, userId);
   const started = hasStarted(game);
@@ -119,7 +120,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
         (t) => ({
           display: "grid",
           gridTemplateColumns: "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 96px",
-          gridTemplateAreas: '"status teams middle picks you"',
+          gridTemplateAreas: `"status teams middle picks you"${open ? ' "details details details details details"' : ""}`,
           columnGap: 2,
           rowGap: 1,
           alignItems: "center",
@@ -133,7 +134,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
           }),
           [t.breakpoints.down("md")]: {
             gridTemplateColumns: "72px minmax(0, 1fr)",
-            gridTemplateAreas: '"status teams" "middle middle" "you picks"',
+            gridTemplateAreas: `"status teams" "middle middle" "you picks"${open ? ' "details details"' : ""}`,
           },
         }),
         highlightSx(border, true),
@@ -148,7 +149,11 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
         {teamLine("home")}
       </Box>
       <Box sx={{ gridArea: "middle", minWidth: 0 }}>
-        <Middle game={game} />
+        {final ? (
+          <DetailsToggle open={open} onToggle={() => setOpen((o) => !o)} />
+        ) : (
+          <Middle game={game} />
+        )}
       </Box>
       <Box sx={{ gridArea: "picks", minWidth: 0 }}>
         <PickSplitBar game={game} userId={userId} compact />
@@ -156,6 +161,11 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
       <Box sx={{ gridArea: "you", display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
         {pickSide && <YourPickBadge game={game} side={pickSide} compact />}
       </Box>
+      {open && (
+        <Box sx={{ gridArea: "details", minWidth: 0, borderTop: 1, borderColor: "divider" }}>
+          <GameDetails game={game} columns />
+        </Box>
+      )}
     </Box>
   );
 });

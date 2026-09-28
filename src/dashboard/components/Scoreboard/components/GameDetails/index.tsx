@@ -139,7 +139,9 @@ const BoxScore = ({ game, details }: { game: Game; details: GameDetailsData }) =
 
 // Opened from a card: leaders and scoring plays come with the games feed;
 // team stats are fetched from the per-game details key on first open.
-export const GameDetails = ({ game }: { game: Game }) => {
+// `columns`: wide rows (compact layout) put team stats beside the leaders
+// and scoring plays instead of under them.
+export const GameDetails = ({ game, columns = false }: { game: Game; columns?: boolean }) => {
   const { season } = useCurrentWeek();
   const [details, setDetails] = useState<GameDetailsData | null>(null);
   const [state, setState] = useState<"loading" | "done" | "missing">("loading");
@@ -161,16 +163,28 @@ export const GameDetails = ({ game }: { game: Game }) => {
 
   const nothing = !game.leaders && !game.scoring_plays?.length && state !== "loading" && !details?.box_score;
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, pt: 1 }}>
+    <Box
+      sx={{
+        display: "grid",
+        gap: 1.5,
+        pt: 1,
+        alignItems: "start",
+        gridTemplateColumns: columns ? { xs: "1fr", md: "minmax(0, 3fr) minmax(0, 2fr)" } : "1fr",
+      }}
+    >
       {nothing && (
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
           No stats for this game yet.
         </Typography>
       )}
-      <Leaders game={game} />
-      <ScoringPlays game={game} />
-      {state === "loading" && <CircularProgress size={18} />}
-      {details && <BoxScore game={game} details={details} />}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, minWidth: 0 }}>
+        <Leaders game={game} />
+        <ScoringPlays game={game} />
+      </Box>
+      <Box sx={{ minWidth: 0 }}>
+        {state === "loading" && <CircularProgress size={18} />}
+        {details && <BoxScore game={game} details={details} />}
+      </Box>
     </Box>
   );
 };

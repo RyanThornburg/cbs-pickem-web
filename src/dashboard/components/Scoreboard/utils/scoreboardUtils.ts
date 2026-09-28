@@ -119,14 +119,6 @@ export const sideLine = (game: Game, side: Side): string => {
   return `${value < 0 ? "−" : "+"}${Math.abs(value)}`;
 };
 
-// The line as the favorite: "PHI −3.5".
-export const favoriteLine = (game: Game): string => {
-  if (game.cbs_spread == null) return "No line";
-  if (game.cbs_spread === 0) return "Pick'em";
-  const favorite = game.cbs_spread < 0 ? game.home_team : game.away_team;
-  return `${favorite.abbr} −${Math.abs(game.cbs_spread)}`;
-};
-
 export const hasBall = (game: Game, side: Side): boolean =>
   game.status === GameStatus.Inprogress &&
   game.live?.possession ===

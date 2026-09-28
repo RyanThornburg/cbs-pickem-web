@@ -66,8 +66,16 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
       : cover.side === side
       ? "success.main"
       : "error.main";
-  const count = (abbr: string, n: number, mine: boolean, align: "left" | "right") => (
-    <Box component="span" sx={{ display: "inline-flex", gap: 0.5, alignItems: "center", flexDirection: align === "right" ? "row-reverse" : "row" }}>
+  // Each side's label takes the same green/red as its half of the bar:
+  // winning (or won) the pick vs. losing (or lost) it.
+  const labelColor = (side: Side) =>
+    !cover || cover.side === null
+      ? "text.secondary"
+      : cover.side === side
+      ? "success.main"
+      : "error.main";
+  const count = (side: Side, abbr: string, n: number, mine: boolean, align: "left" | "right") => (
+    <Box component="span" sx={{ display: "inline-flex", gap: 0.5, alignItems: "center", flexDirection: align === "right" ? "row-reverse" : "row", color: labelColor(side), fontWeight: cover?.side ? 600 : 400 }}>
       <span>
         {align === "left" ? (
           <>
@@ -126,9 +134,9 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
             }}
           >
             <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, fontSize: "0.8rem", color: "text.secondary" }}>
-              {count(game.away_team.abbr, away.length, mySide === "away", "left")}
+              {count("away", game.away_team.abbr, away.length, mySide === "away", "left")}
               {!compact && totalUsers ? <span>{total} of {totalUsers} picked this game</span> : null}
-              {count(game.home_team.abbr, home.length, mySide === "home", "right")}
+              {count("home", game.home_team.abbr, home.length, mySide === "home", "right")}
             </Box>
             <Box sx={{ display: "flex", height: 6, borderRadius: 3, overflow: "hidden", bgcolor: "action.hover" }}>
               <Box sx={{ width: `${(away.length / total) * 100}%`, bgcolor: colorFor("away") }} />
