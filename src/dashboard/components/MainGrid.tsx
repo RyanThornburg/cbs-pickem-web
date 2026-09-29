@@ -1,4 +1,5 @@
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
@@ -13,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import AdminPanel from "./AdminPanel";
 import GamesCard from "./GamesCard";
+import RecordsSection from "./RecordsSection";
 import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
@@ -26,6 +28,7 @@ import { GameStatus, RankedUser, UserSeasonTrends } from "../types";
 import {
   ADMIN_TAB,
   AppTab,
+  RECORDS_TAB,
   getInitialTab,
   isPrimaryTab,
   setStoredTab,
@@ -51,8 +54,8 @@ export default function MainGrid() {
 
   const activeTab: AppTab | null = isPrimaryTab(tab)
     ? tab
-    : tab === ADMIN_TAB
-      ? ADMIN_TAB
+    : tab === ADMIN_TAB || tab === RECORDS_TAB
+      ? tab
       : null;
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
@@ -209,11 +212,14 @@ export default function MainGrid() {
                 spacing={2}
                 direction="row"
               >
-                <WeekDropdown
-                  currentWeek={currentWeek}
-                  selectedWeek={selectedWeek}
-                  onUserChange={onWeekChange}
-                />
+                {/* Records isn't weekly data, so there's no week to pick. */}
+                {activeTab !== RECORDS_TAB && (
+                  <WeekDropdown
+                    currentWeek={currentWeek}
+                    selectedWeek={selectedWeek}
+                    onUserChange={onWeekChange}
+                  />
+                )}
                 <UserSelectDropdown
                   userList={userList}
                   user={user}
@@ -242,18 +248,33 @@ export default function MainGrid() {
               alignItems: "center",
             }}
           >
-            {/* Scrollable so a 5th (Admin) tab can't push the row past
-                360px. Arrows only appear on overflow, i.e. only for the
-                admin on a phone -- the four public tabs still fit. */}
+            {/* Scrollable so the Admin tab can't push the row past 360px.
+                Arrows only appear on overflow, i.e. only for the admin on a
+                phone. The five public tabs fit at 360px thanks to the short
+                "Picks" label and tighter padding on phones. */}
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
               allowScrollButtonsMobile
-              sx={{ flex: 1, minWidth: 0 }}
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                "& .MuiTab-root": { px: { xs: "4px", sm: 1 } },
+              }}
             >
-              <Tab label="User Picks" value="picks" />
+              <Tab
+                label={
+                  <>
+                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                      User{" "}
+                    </Box>
+                    Picks
+                  </>
+                }
+                value="picks"
+              />
               <Tab label="Games" value="games" />
               <Tab
                 label={
@@ -268,6 +289,30 @@ export default function MainGrid() {
                 value="scoreboard"
               />
               <Tab label="Trends" value="trends" />
+              {/* Set apart like Admin: all-time data, not this week's.
+                  Icon-only on phones so the row still fits at 360px. */}
+              <Tab
+                label={
+                  <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                    Records
+                  </Box>
+                }
+                aria-label="Records"
+                value={RECORDS_TAB}
+                icon={<EmojiEventsIcon fontSize="small" />}
+                iconPosition="start"
+                sx={{
+                  ml: { xs: 0.5, sm: 1 },
+                  pl: { xs: 1, sm: 1.5 },
+                  minWidth: 0,
+                  borderLeft: 1,
+                  borderColor: "divider",
+                  borderRadius: 0,
+                  color: "#a87f12",
+                  "& .MuiTab-icon": { mr: { xs: 0, sm: 1 } },
+                  "&.Mui-selected": { color: "#a87f12" },
+                }}
+              />
               {/* Also rendered while on /admin itself so the Tabs value stays
                   valid even before (or if) the admin check comes back. */}
               {(isAdmin || activeTab === ADMIN_TAB) && (
@@ -350,6 +395,11 @@ export default function MainGrid() {
             >
               <TrendsSection season={season} week={selectedWeek} />
             </Grid>
+            {activeTab === RECORDS_TAB && (
+              <Grid size={{ xs: 12, lg: 12 }}>
+                <RecordsSection season={season} userId={user} />
+              </Grid>
+            )}
             {/* Mounted only while open, so admin data is never polled in the
                 background from the public tabs. */}
             {activeTab === ADMIN_TAB && (

@@ -9,7 +9,12 @@ export const isPrimaryTab = (value: string | undefined): value is PrimaryTab =>
 // it) but deliberately not a PrimaryTab, so it's never persisted as the
 // last-visited tab or picked as anyone's landing tab.
 export const ADMIN_TAB = "admin";
-export type AppTab = PrimaryTab | typeof ADMIN_TAB;
+
+// All-time records: a real, public route (/records), but also not a
+// PrimaryTab -- it isn't weekly data, so it's never saved as the landing tab.
+export const RECORDS_TAB = "records";
+
+export type AppTab = PrimaryTab | typeof ADMIN_TAB | typeof RECORDS_TAB;
 
 const ACTIVE_TAB_STORAGE_KEY = "activeTab";
 const COLD_START_TAB: PrimaryTab = "picks";

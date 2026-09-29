@@ -670,3 +670,58 @@ export interface AdminStatus {
   mapping_gaps: AdminEventSummary<AdminMappingGap>;
   system_events: AdminEventSummary<AdminSystemEvent>;
 }
+
+// ---- meta:historical (GET /api/historical) -- the Records tab ----
+
+// One player's finish in one closed season. Before 2025 the half-season
+// fields are always null; from 2025 on they're only set for the paid spots.
+export interface HistoricalStanding {
+  user_id: number;
+  name: string;
+  rank: number;
+  score: number;
+  first_half_rank: number | null;
+  first_half_score: number | null;
+  second_half_rank: number | null;
+  second_half_score: number | null;
+}
+
+// Standings only include players still on file, so ranks can skip (the
+// missing ranks belong to players who left before this site existed).
+// incomplete = the season is known to be missing rows (2015, 2016 --
+// including the champion).
+export interface HistoricalSeason {
+  pool_name: string;
+  incomplete: boolean;
+  standings: HistoricalStanding[];
+}
+
+// names has more than one entry for a tie. An unknown champion (2015, 2016)
+// comes through as a single "??? unknown/missing user" name with a null score.
+export interface HistoricalChampion {
+  year: number;
+  incomplete?: boolean;
+  names: string[];
+  score: number | null;
+}
+
+export interface HistoricalCareer {
+  user_id: number;
+  name: string;
+  // In this season's pool (matches the current leaderboard roster).
+  is_active: boolean;
+  appearances: number[];
+  titles: number;
+  best_finish: number;
+  best_finish_years: number[];
+  season_history: SeasonHistoryEntry[];
+}
+
+export interface HistoricalRecords {
+  // Keyed by season year as a string ("2013"). Closed seasons only.
+  years: Record<string, HistoricalSeason>;
+  champions: HistoricalChampion[];
+  first_half_champions: HistoricalChampion[];
+  second_half_champions: HistoricalChampion[];
+  career: HistoricalCareer[];
+}
