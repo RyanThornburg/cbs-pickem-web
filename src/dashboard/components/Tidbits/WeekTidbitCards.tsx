@@ -195,6 +195,13 @@ function CrowdCard({ card }: { card: WeekCard }) {
   const top = ((popular?.data.games ?? []) as CrowdGame[])[0];
   const resultColor = { win: "success.main", loss: "error.main", push: "text.secondary" };
   const resultText = { win: "covered", loss: "didn't cover", push: "pushed" };
+  // The week's cutoff (30% of the pool, rounded up); falls back to the
+  // season's latest week when there's no weekly tidbit.
+  const byWeek = (popularSeason?.data.min_picks_by_week ?? {}) as Record<string, number>;
+  const minPicks =
+    (popular?.data.min_picks as number | undefined) ??
+    byWeek[Object.keys(byWeek).sort((a, b) => Number(b) - Number(a))[0]] ??
+    10;
   return (
     <CardShell title="Following the crowd" category="crowd" scope={week ? "week" : "season"}>
       {week && <Big value={record(week.data)} suffix="this week" />}
@@ -207,18 +214,23 @@ function CrowdCard({ card }: { card: WeekCard }) {
         </Sub>
       )}
       {(popular || popularSeason) && (
-        <Parts
-          rows={[
-            ...(popular ? [[`Teams ${popular.data.min_picks}+ of you picked, this week`, record(popular.data)] as [string, string]] : []),
-            ...(popularSeason ? [["Same, this season", record(popularSeason.data)] as [string, string]] : []),
-          ]}
-        />
+        <Box>
+          <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mb: 0.25 }}>
+            Teams {minPicks}+ of you picked
+          </Typography>
+          <Parts
+            rows={[
+              ...(popular ? [["This week", record(popular.data)] as [string, string]] : []),
+              ...(popularSeason ? [["This season", record(popularSeason.data)] as [string, string]] : []),
+            ]}
+          />
+        </Box>
       )}
       {top && (
         <Stack direction="row" alignItems="center" spacing={0.75} sx={{ fontSize: "0.78rem", color: "text.secondary" }}>
           <TeamLogo abbr={top.crowd_team.abbr} size={16} />
           <span>
-            Most picked: {top.crowd_team.abbr} ({top.pick_count} of you){" "}
+            Most picked: {top.crowd_team.abbr} ({top.pick_count}){" "}
             <Box component="span" sx={{ color: resultColor[top.result], fontWeight: 600 }}>
               {resultText[top.result]}
             </Box>
