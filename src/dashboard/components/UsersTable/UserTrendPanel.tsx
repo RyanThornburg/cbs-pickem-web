@@ -26,7 +26,7 @@ const trendIcon = (direction: string) => {
 // is the user's current standing (that's current_season.current_rank,
 // shown elsewhere as the Place column). Anchor both numbers to their actual
 // years so this can't be misread as "currently in Nth."
-const careerTrendText = (trends: UserSeasonTrends): string => {
+export const careerTrendText = (trends: UserSeasonTrends): string => {
   const trend = trends.career.trend;
   if (!trend || !trend.last_season || !trend.prior_season) {
     return "Not enough season history yet.";
@@ -50,7 +50,7 @@ const careerTrendText = (trends: UserSeasonTrends): string => {
 // card), but the card itself lists every top-5 season individually rather
 // than just the single best rank -- otherwise a user who finished 1st once
 // and 2nd another year only ever showed the 1st, with the 2nd invisible.
-const bestFinishSummary = (
+export const bestFinishSummary = (
   trends: UserSeasonTrends
 ): { label: string; value: string } | null => {
   const { best_finish, best_finish_years, season_history } = trends.career;
@@ -108,7 +108,7 @@ const PICK_BIAS_LABELS: Record<keyof PickBias, string> = {
 // pick'em games, so not exactly). Report whichever axis has the more
 // lopsided season-wide split, using pct rather than current_streak so there's
 // no implied ordering.
-const strongestPickLean = (bias: PickBias): { label: string; pct: number } | null => {
+export const strongestPickLean = (bias: PickBias): { label: string; pct: number } | null => {
   const axes: Array<[keyof PickBias, keyof PickBias]> = [
     ["home", "away"],
     ["favorite", "underdog"],
@@ -132,7 +132,7 @@ const strongestPickLean = (bias: PickBias): { label: string; pct: number } | nul
 // twice used to rank the same as one picked ten times and lost eight).
 // Shared formatter since both are volume-weighted the same way, just
 // opposite direction.
-const volumeWeightedTeamText = (entry: VolumeWeightedTeam): string => {
+export const volumeWeightedTeamText = (entry: VolumeWeightedTeam): string => {
   const pct = Math.round(entry.pct_of_picks * 100);
   return `${entry.wins}-${entry.losses} picking the ${entry.team.name} (${pct}% of all picks)`;
 };
@@ -142,10 +142,19 @@ const volumeWeightedTeamText = (entry: VolumeWeightedTeam): string => {
 // bet, so every graded pick counts toward both teams' tallies at once.
 // Different question from trap/lucky ("stop picking FOR this team"): this is
 // "stop picking this team's games AT ALL, either way."
-const spotTeamText = (entry: SpotTeam): string => {
+export const spotTeamText = (entry: SpotTeam): string => {
   const pct = Math.round(entry.accuracy * 100);
   return `${pct}% correct on ${entry.team.name} games (${entry.picks} picks, either side)`;
 };
+
+// blind_spot_team/sweet_spot_team count picks on EITHER side of a team's
+// games. When a user has only ever picked a team's own side (never faded
+// its opponent), the either-side tally is identical to the for-this-team-
+// only tally -- same team, same pick count -- so the spot card would just
+// repeat the trap/lucky card's numbers. Drop the redundant spot card in
+// that case rather than show the same data twice.
+export const isRedundantSpot = (bad: VolumeWeightedTeam | null, spot: SpotTeam | null): boolean =>
+  !!bad && !!spot && bad.team.id === spot.team.id && bad.wins + bad.losses === spot.picks;
 
 interface TrendCardProps {
   icon: ReactNode;
@@ -194,15 +203,6 @@ export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   // or all four -- render only whichever are populated rather than padding
   // the panel with "no data" placeholders.
   const { trap_team, lucky_team, blind_spot_team, sweet_spot_team } = trends.current_season;
-
-  // blind_spot_team/sweet_spot_team count picks on EITHER side of a team's
-  // games. When a user has only ever picked a team's own side (never faded
-  // its opponent), the either-side tally is identical to the for-this-team-
-  // only tally -- same team, same pick count -- so the spot card would just
-  // repeat the trap/lucky card's numbers. Drop the redundant spot card in
-  // that case rather than show the same data twice.
-  const isRedundantSpot = (bad: VolumeWeightedTeam | null, spot: SpotTeam | null): boolean =>
-    !!bad && !!spot && bad.team.id === spot.team.id && bad.wins + bad.losses === spot.picks;
 
   const showBlindSpot = blind_spot_team && !isRedundantSpot(trap_team, blind_spot_team);
   const showSweetSpot = sweet_spot_team && !isRedundantSpot(lucky_team, sweet_spot_team);

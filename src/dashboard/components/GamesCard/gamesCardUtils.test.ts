@@ -1,6 +1,18 @@
 import dayjs from "dayjs";
-import { Forecast, HourlyForecast, WeatherAlert } from "../../types";
-import { weatherFlags, weatherTrends } from "./gamesCardUtils";
+import { Book, Forecast, HourlyForecast, WeatherAlert } from "../../types";
+import { GameWithOdds } from "../../data/GetGamesTabData";
+import {
+  bestOf,
+  fmtSpread,
+  formatRecord,
+  getMoveDelta,
+  getTotalResult,
+  getValueSide,
+  isBest,
+  modeTotal,
+  weatherFlags,
+  weatherTrends,
+} from "./gamesCardUtils";
 
 const hour = (time: string, overrides: Partial<HourlyForecast> = {}): HourlyForecast => ({
   time,
@@ -164,5 +176,68 @@ describe("weatherFlags", () => {
       [hour(H1), hour(H2, { precipitation_pct: 20 })]
     );
     expect(weatherFlags(f).map((x) => x.label)).toEqual(["Flood Watch"]);
+  });
+});
+
+const oddsGame = (overrides: Partial<GameWithOdds> = {}): GameWithOdds =>
+  ({ market_spread: null, books: [], ...overrides }) as GameWithOdds;
+const market = (open: number, close: number) => ({ book_count: 5, open, open_agreement: 1, close, close_agreement: 1 });
+
+describe("odds helpers", () => {
+  it("getValueSide: the side CBS undercharges, once the market is 1+ point off", () => {
+    // Market gives home more points than CBS: market rates home weaker, so away is the value.
+    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -2) }))).toBe("away");
+    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -4.5) }))).toBe("home");
+    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -3.5) }))).toBeNull();
+    expect(getValueSide(oddsGame({ cbs_spread: undefined, market_spread: market(-3, -6) }))).toBeNull();
+    expect(getValueSide(oddsGame({ cbs_spread: -3 }))).toBeNull();
+  });
+
+  it("getMoveDelta: open-to-close moves of 2+ points only", () => {
+    expect(getMoveDelta(oddsGame({ market_spread: market(-3, -5) }))).toBe(-2);
+    expect(getMoveDelta(oddsGame({ market_spread: market(1, 4.5) }))).toBe(3.5);
+    expect(getMoveDelta(oddsGame({ market_spread: market(-3, -4.5) }))).toBeNull();
+    expect(getMoveDelta(oddsGame())).toBeNull();
+  });
+
+  it("getTotalResult: over, under, or null on a push or with no score", () => {
+    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), 44.5)).toBe("over");
+    expect(getTotalResult(oddsGame({ home_score: 20, away_score: 21 }), 44.5)).toBe("under");
+    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 20 }), 44)).toBeNull();
+    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), null)).toBeNull();
+    expect(getTotalResult(oddsGame(), 44.5)).toBeNull();
+  });
+
+  it("modeTotal: the most common book total (the Over line), not an average", () => {
+    const book = (total?: number | null): Book => ({
+      bookmaker: "b",
+      total: total === undefined ? undefined : { home_point: total, home_price: -110, away_point: total, away_price: -110, captured_at: "" },
+    });
+    expect(modeTotal([54.5, 54.5, 54.5, 55, 55].map(book))).toBe(54.5);
+    expect(modeTotal([book(47), book(undefined), book(null), book(47.5), book(47.5)])).toBe(47.5);
+    // A tie goes to the value seen first.
+    expect(modeTotal([book(44), book(44.5)])).toBe(44);
+    expect(modeTotal([book(undefined)])).toBeNull();
+    expect(modeTotal([])).toBeNull();
+  });
+
+  it("bestOf / isBest: bigger is better for spreads and prices alike", () => {
+    expect(bestOf([-3, -2.5, null, undefined, -3.5])).toBe(-2.5);
+    expect(bestOf([-110, -105, 100])).toBe(100);
+    expect(bestOf([null, undefined])).toBeNull();
+    expect(isBest(-2.5, -2.5)).toBe(true);
+    expect(isBest(-3, -2.5)).toBe(false);
+    expect(isBest(null, -2.5)).toBe(false);
+    expect(isBest(-2.5, null)).toBe(false);
+  });
+
+  it("formats spreads and records", () => {
+    expect(fmtSpread(3.5)).toBe("+3.5");
+    expect(fmtSpread(-7)).toBe("-7");
+    expect(fmtSpread(0)).toBe("PK");
+    expect(fmtSpread(null)).toBe("—");
+    expect(formatRecord({ wins: 2, losses: 1, ties: 0 })).toBe("2-1");
+    expect(formatRecord({ wins: 2, losses: 1, ties: 1 })).toBe("2-1-1");
+    expect(formatRecord(undefined)).toBe("");
   });
 });
