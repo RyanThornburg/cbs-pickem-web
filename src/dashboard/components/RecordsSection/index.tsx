@@ -117,13 +117,9 @@ export default function RecordsSection({ season, userId }: Props) {
             variant="caption"
             color="text.secondary"
             sx={{ bgcolor: "background.default", borderRadius: 1, px: 1.5, py: 1 }}
-          >
-            Records before {HALVES_FROM_SEASON} are incomplete. First- and second-half results
-            start in {HALVES_FROM_SEASON}.
+          >* Records before {HALVES_FROM_SEASON} are incomplete. First and second-half results start in {HALVES_FROM_SEASON}.
             {incompleteYears.length > 0 &&
               ` ${incompleteYears.join(" and ")} ${incompleteYears.length === 1 ? "is" : "are"} missing some players, including the champion.`}{" "}
-            Earlier standings only include players the site still has on file, so ranks keep their
-            real numbers and can skip.
           </Typography>
         </Stack>
       </CardContent>

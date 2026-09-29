@@ -99,11 +99,6 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
           </Typography>
         )
       )}
-      <Typography variant="caption" color="text.secondary">
-        {halves
-          ? "Half-season places are only recorded for the paid spots."
-          : `First- and second-half results start in ${HALVES_FROM_SEASON}.`}
-      </Typography>
 
       <TableContainer>
         <Table size="small" sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}>
