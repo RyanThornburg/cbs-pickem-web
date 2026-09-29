@@ -43,7 +43,8 @@ export default function UserSelectedMain({ userList, userId, userTrends }: Props
       // 13px while it shares the header row with the title at 1200-1535px.
       sx={{
         alignItems: "center",
-        mb: { md: "8px", xl: "0px" },
+        // Only needs space below when it has its own row (md).
+        mb: { md: "8px", lg: 0 },
         fontSize: { lg: "0.8125rem", xl: "0.875rem" },
       }}
     >
