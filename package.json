@@ -37,6 +37,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:worker": "node --test \"worker/*.test.ts\"",
     "eject": "react-scripts eject",
     "dev": "wrangler dev --remote",
     "deploy": "wrangler deploy",

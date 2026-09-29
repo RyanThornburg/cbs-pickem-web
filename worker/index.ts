@@ -1,4 +1,4 @@
-import { verifyAdmin } from "./access";
+import { verifyAdmin } from "./access.ts";
 
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
