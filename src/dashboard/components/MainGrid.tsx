@@ -24,7 +24,8 @@ import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
 import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
-import { GameStatus, RankedUser, UserSeasonTrends } from "../types";
+import { GetTidbitsByWeek } from "../data/GetTidbitsByWeek";
+import { GameStatus, RankedUser, UserSeasonTrends, WeekTidbits } from "../types";
 import {
   ADMIN_TAB,
   AppTab,
@@ -34,6 +35,7 @@ import {
   setStoredTab,
 } from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
+import TidbitStrip from "./Tidbits/TidbitStrip";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
 
@@ -51,6 +53,7 @@ export default function MainGrid() {
   >(undefined);
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [tidbits, setTidbits] = useState<WeekTidbits | undefined>(undefined);
 
   const activeTab: AppTab | null = isPrimaryTab(tab)
     ? tab
@@ -124,6 +127,15 @@ export default function MainGrid() {
           unsubscribe();
         }
       };
+    }
+  }, [season, selectedWeek]);
+
+  // The browsed week's tidbits: the strip on User Picks.
+  useEffect(() => {
+    setTidbits(undefined);
+    if (season > 0 && selectedWeek > 0) {
+      const unsubscribe = GetTidbitsByWeek(season, selectedWeek, setTidbits);
+      return () => unsubscribe?.();
     }
   }, [season, selectedWeek]);
 
@@ -386,6 +398,7 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
+              <TidbitStrip tidbits={tidbits} />
               <UsersTable
                 userList={userList}
                 userId={user}

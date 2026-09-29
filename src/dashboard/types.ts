@@ -725,3 +725,97 @@ export interface HistoricalRecords {
   second_half_champions: HistoricalChampion[];
   career: HistoricalCareer[];
 }
+
+// ---- week:{season}:{weekNN}:tidbits (GET /api/weeks/:season/:week/tidbits) ----
+// Reference: https://claude.ai/artifact/3ka6jtP25PpYik7reiZ2G3. The data repo
+// bumps `version` on any rename or shape change; the UI only reads versions
+// it was written for (TIDBITS_VERSION in GetTidbitsByWeek.ts).
+
+export interface TidbitPerson {
+  user_id: number;
+  name: string;
+}
+
+export type TidbitCategory =
+  | "pool"
+  | "spread"
+  | "crowd"
+  | "chaos"
+  | "users"
+  | "teams"
+  | "league"
+  | "splits";
+
+export interface Tidbit {
+  // Unique in the key and stable week to week.
+  id: string;
+  kind: string;
+  category: TidbitCategory | string;
+  scope: "week" | "season";
+  score: number;
+  // Full sentence, and the same fact in 80 characters or fewer.
+  headline: string;
+  short: string;
+  sample_size: number | null;
+  // Kind-specific; typed where a component reads it.
+  data: Record<string, unknown>;
+}
+
+export interface TidbitMove {
+  user_id: number;
+  name: string;
+  rank_before: number;
+  rank_after: number;
+  // Positive = climbed.
+  change: number;
+}
+
+export interface TidbitCoverStreak {
+  team: { id: number; abbr: string; name: string };
+  streak_type: "cover" | "miss";
+  length: number;
+}
+
+export interface TidbitPoolAccuracyPoint {
+  week: number;
+  correct: number;
+  graded: number;
+  accuracy: number;
+  perfect: TidbitPerson[];
+  winless: TidbitPerson[];
+}
+
+export interface TidbitChaosPoint {
+  week: number;
+  // The current week while it's still in progress (shows from 8 finals).
+  partial: boolean;
+  games_final: number;
+  games_total: number;
+  index: number;
+  underdog_covers: number;
+  ats_decided: number;
+  outright_upsets: number;
+  big_favorite_losses: number;
+  big_favorites: number;
+  pool_accuracy: number;
+}
+
+export interface WeekTidbits {
+  version: number;
+  season: number;
+  week: number;
+  updated_at: string;
+  week_complete: boolean;
+  games_final: number;
+  games_total: number;
+  // Already ranked, highest first: don't re-sort.
+  tidbits: Tidbit[];
+  series: {
+    pool_accuracy: TidbitPoolAccuracyPoint[];
+    chaos: TidbitChaosPoint[];
+  };
+  // Every leaderboard move of 3+ places vs last week (empty in week 1).
+  movers: TidbitMove[];
+  // Every team on an active cover/miss streak of 3+.
+  cover_streaks: TidbitCoverStreak[];
+}
