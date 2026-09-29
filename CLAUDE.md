@@ -11,13 +11,14 @@ A Create React App (react-scripts) + TypeScript dashboard for the "Morlocked" NF
 - `npm start` — CRA dev server (localhost:3000). `/api/*` is proxied to `http://localhost:8787` (see `proxy` in package.json), so pair this with `npm run dev` in another terminal to get live API data.
 - `npm run dev` — `wrangler dev --remote`: runs the Worker + static assets locally against the real production KV namespace (there's no separate local/preview namespace — the Worker never writes, so this can't corrupt prod).
 - `npm run build` — production build to `build/`.
-- `npm run deploy` — `wrangler deploy`, ships the Worker + `build/` to Cloudflare. Deploys are fully manual — there's no CI workflow that builds or deploys automatically, so run `npm run build` first.
+- `npm run deploy` — `wrangler deploy`, ships the Worker + `build/` to Cloudflare. Its `predeploy` hook runs `npm run test:all` first, and a failing test stops the deploy (calling `npx wrangler deploy` directly skips the tests). Deploys are fully manual — there's no CI workflow that builds or deploys automatically, so run `npm run build` first.
 - `npm run tail` — `wrangler tail`, stream production Worker logs.
 - `npm run types` — `wrangler types`, regenerate the `Env` type from `wrangler.jsonc`.
 - `npm test` — run tests via react-scripts (Jest + React Testing Library) in interactive watch mode.
 - `npm test -- --watchAll=false` — run tests once (CI mode).
 - `npm test -- -t "test name"` — run a single test by name.
 - `npm test -- defaultTab.test.ts` — run a single test file.
+- `npm run test:all` — both suites once, app then Worker (what `predeploy` runs).
 - `npm run test:worker` — run the Worker's tests (`worker/*.test.ts`) with Node's built-in test runner. CRA's Jest only sees `src/`, so these run separately, straight from TypeScript with no build step. That needs Node 22.18+ (type stripping), and it's why Worker imports name the `.ts` file (`./access.ts`; `allowImportingTsExtensions` in `worker/tsconfig.json`). `worker/testHelpers.ts` signs real RS256 Access tokens and stubs the team's certs URL, so `access.ts` is tested end to end.
 
 There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` in package.json) runs as part of `npm start`/`npm run build`.

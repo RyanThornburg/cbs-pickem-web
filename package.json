@@ -38,8 +38,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:worker": "node --test \"worker/*.test.ts\"",
+    "test:all": "react-scripts test --watchAll=false && npm run test:worker",
     "eject": "react-scripts eject",
     "dev": "wrangler dev --remote",
+    "predeploy": "npm run test:all",
     "deploy": "wrangler deploy",
     "types": "wrangler types",
     "tail": "wrangler tail"
