@@ -430,7 +430,7 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "trends" ? "block" : "none" }}
             >
-              <TrendsSection season={season} week={selectedWeek} />
+              <TrendsSection season={season} week={selectedWeek} tidbits={tidbits} />
             </Grid>
             {activeTab === RECORDS_TAB && (
               <Grid size={{ xs: 12, lg: 12 }}>

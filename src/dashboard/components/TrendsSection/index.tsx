@@ -8,7 +8,9 @@ import {
   getGameCoverResult,
   GameCoverResult,
 } from "../../data/weekGames";
-import { SeasonTrends, WeekTrends } from "../../types";
+import { SeasonTrends, WeekTidbits, WeekTrends } from "../../types";
+import WeekTidbitsSection from "../Tidbits/WeekTidbitsSection";
+import SeasonTidbitCharts from "../Tidbits/SeasonTidbitCharts";
 import ConsensusCard from "./ConsensusCard";
 import AllAloneCard from "./AllAloneCard";
 import LineMoversCard from "./LineMoversCard";
@@ -18,6 +20,9 @@ import SeasonTeamTable from "./SeasonTeamTable";
 export type Props = {
   season: number;
   week: number;
+  // The selected week's tidbits: the "Week N in tidbits" cards, and the
+  // week-over-week charts (its `series` covers every week through this one).
+  tidbits?: WeekTidbits;
 };
 
 const EMPTY_WEEK_TRENDS: WeekTrends = {
@@ -52,7 +57,7 @@ const DEFAULT_SECTION_SIZE = { xs: 12, md: 4 };
 
 const GAME_RESULTS_POLL_INTERVAL_MS = 5 * 60_000;
 
-export default function TrendsSection({ season, week }: Props) {
+export default function TrendsSection({ season, week, tidbits }: Props) {
   const [tab, setTab] = useState<"week" | "season">("week");
   const [weekTrends, setWeekTrends] = useState<WeekTrends>(EMPTY_WEEK_TRENDS);
   const [seasonTrends, setSeasonTrends] =
@@ -219,9 +224,12 @@ export default function TrendsSection({ season, week }: Props) {
             <Tab value="season" label="Season" sx={{ minHeight: 32, py: 0 }} />
           </Tabs>
         </Box>
+        <Box sx={{ mt: 2 }}>
+          {tab === "week" ? <WeekTidbitsSection tidbits={tidbits} /> : <SeasonTidbitCharts tidbits={tidbits} />}
+        </Box>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
-          {sections.map((section) => (
-            <Grid key={section.title} size={section.size ?? DEFAULT_SECTION_SIZE}>
+          {sections.map((section, i) => (
+            <Grid key={section.title ?? i} size={section.size ?? DEFAULT_SECTION_SIZE}>
               {section.title ? (<Typography
                 variant="subtitle2"
                 sx={{ mb: 1, color: "text.secondary" }}

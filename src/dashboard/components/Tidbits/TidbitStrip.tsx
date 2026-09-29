@@ -1,6 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Box, IconButton, Typography, useMediaQuery } from "@mui/material";
+import { Box, IconButton, Link, Typography, useMediaQuery } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { WeekTidbits } from "../../types";
 import { CategoryMark, ScopeTag } from "./tidbitCategory";
@@ -130,6 +131,14 @@ export default function TidbitStrip({ tidbits }: Props) {
         <IconButton size="small" aria-label="Next tidbit" onClick={() => step(1)}>
           <ChevronRightIcon fontSize="small" />
         </IconButton>
+        <Link
+          component={RouterLink}
+          to="/trends"
+          underline="hover"
+          sx={{ fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap", ml: 0.5, display: { xs: "none", sm: "inline" } }}
+        >
+          All tidbits →
+        </Link>
       </Box>
     </Box>
   );
