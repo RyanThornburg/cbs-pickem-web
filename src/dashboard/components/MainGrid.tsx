@@ -261,7 +261,10 @@ export default function MainGrid() {
               sx={{
                 flex: 1,
                 minWidth: 0,
-                "& .MuiTab-root": { px: { xs: "4px", sm: 1 } },
+                "& .MuiTab-root": {
+                  px: { xs: "4px", sm: 1 },
+                  fontSize: { xs: "0.8125rem", sm: undefined },
+                },
               }}
             >
               <Tab
@@ -349,6 +352,7 @@ export default function MainGrid() {
                   flexShrink: 0,
                   whiteSpace: "nowrap",
                   minWidth: 0,
+                  px: { xs: 0.5, sm: 1 },
                   "& .MuiButton-endIcon": { ml: { xs: 0, sm: 1 } },
                 }}
               >
