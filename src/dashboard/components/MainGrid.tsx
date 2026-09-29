@@ -183,14 +183,22 @@ export default function MainGrid() {
               alignItems: "center",
             }}
           >
-            <Grid size={{ xs: 12, sm: "grow" }}>
-              <Typography align="left" variant="h5" sx={{ size: 3 }}>
+            {/* The pick summary only sits inline from xl (1536px) up, where
+                title + summary + dropdowns all fit on one row. Below that
+                UserSelected puts it on its own row, since squeezing it in
+                wrapped the title (or the summary) at 1200-1400px. */}
+            <Grid size={{ xs: 12, sm: "grow", xl: "auto" }}>
+              <Typography
+                align="left"
+                variant="h5"
+                sx={{ whiteSpace: { xl: "nowrap" } }}
+              >
                 Morlocked Pick'em Results
               </Typography>
             </Grid>
             <Grid
-              sx={{ display: { xs: "none", lg: "block" } }}
-              size={{ xs: 0, lg: 7 }}
+              sx={{ display: { xs: "none", xl: "block" }, minWidth: 0 }}
+              size={{ xs: 0, xl: "grow" }}
             >
               <UserSelectedMain
                 userId={user}

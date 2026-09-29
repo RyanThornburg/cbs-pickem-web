@@ -14,7 +14,7 @@ export default function UserSelectedSizes({ userList, userId, userTrends }: Prop
     <>
       <Grid
         size={{ sm: 12 }}
-        sx={{ display: { xs: "none", md: "block", lg: "none" } }}
+        sx={{ display: { xs: "none", md: "block", xl: "none" } }}
       >
         <UserSelectedMain userId={userId} userList={userList} userTrends={userTrends} />
       </Grid>
