@@ -23,10 +23,14 @@ import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
 import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameDetails } from "../GameDetails";
+import { GameTidbitTags } from "../shared/GameTidbitTags";
+import { GameTag } from "../../../Tidbits/tidbitBadges";
 
 export interface GameRowProps {
   game: Game;
   userId?: string;
+  // Tidbit tags for this game ("Upset of the week", "Won, didn't cover").
+  tags?: GameTag[];
 }
 
 // The middle column: where the ball is while a game is live, otherwise the
@@ -75,7 +79,7 @@ const Middle = ({ game }: { game: Game }) => {
   );
 };
 
-export const GameRow = memo(({ game, userId }: GameRowProps) => {
+export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
   const [open, setOpen] = useState(false);
   const border = highlightBorder(getGameHighlight(game));
   const pickSide = userPickSide(game, userId);
@@ -165,6 +169,7 @@ export const GameRow = memo(({ game, userId }: GameRowProps) => {
       <Box sx={{ gridArea: "status", display: "flex", flexDirection: "column", gap: 0.25, minWidth: 0 }}>
         <StatusText game={game} />
         <Typography variant="caption" sx={{ color: "text.secondary" }}>{tvName(game.tv_network)}</Typography>
+        <GameTidbitTags tags={tags} wrap />
       </Box>
       <Box sx={{ gridArea: "teams", display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
         {teamLine("away")}

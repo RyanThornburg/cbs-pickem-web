@@ -130,7 +130,8 @@ export default function MainGrid() {
     }
   }, [season, selectedWeek]);
 
-  // The browsed week's tidbits: the strip on User Picks.
+  // The browsed week's tidbits: the strip on User Picks, plus the badges on
+  // User Picks rows, Scoreboard games and Games teams.
   useEffect(() => {
     setTidbits(undefined);
     if (season > 0 && selectedWeek > 0) {
@@ -405,13 +406,14 @@ export default function MainGrid() {
                 showSecondHalf={selectedWeek >= secondHalfStartWeek}
                 week={selectedWeek}
                 season={season}
+                tidbits={tidbits}
               />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "games" ? "block" : "none" }}
             >
-              <GamesCard week={selectedWeek} />
+              <GamesCard week={selectedWeek} tidbits={tidbits} />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}
@@ -421,6 +423,7 @@ export default function MainGrid() {
                 week={selectedWeek}
                 userId={user}
                 totalUsers={userList.length}
+                tidbits={tidbits}
               />
             </Grid>
             <Grid

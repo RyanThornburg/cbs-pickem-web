@@ -87,6 +87,19 @@
 .games-card .gc-matchup { display: flex; flex-direction: column; gap: 5px; }
 .games-card .gc-mrow { display: flex; align-items: center; gap: 8px; }
 .games-card .gc-mrow .gc-rec { color: var(--gc-text-muted); font-size: 0.78rem; }
+/* Active cover/miss streak of 3+ (from the week's tidbits). */
+.games-card .gc-streaks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.games-card .gc-streak {
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.5;
+  border-radius: 4px;
+  padding: 0 5px;
+  white-space: nowrap;
+  flex: none;
+}
+.games-card .gc-streak.cover { background: #dcefdf; color: var(--gc-good); }
+.games-card .gc-streak.miss { background: var(--gc-danger-soft); color: var(--gc-danger); }
 
 .games-card .gc-final-score {
   margin-left: auto;
@@ -157,6 +170,8 @@
 }
 /* Mobile's kickoff block is right-aligned, so the badge follows it there. */
 .games-card .gc-gamecard-top .gc-venuebadge { align-self: flex-end; }
+/* Streak line spans the card under both teams and the kickoff. */
+.games-card .gc-gamecard-top .gc-streaks { grid-column: 1 / -1; margin-top: 2px; }
 
 .games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; max-width: 100%; }
 .games-card .gc-line .gc-num { font-weight: 600; }

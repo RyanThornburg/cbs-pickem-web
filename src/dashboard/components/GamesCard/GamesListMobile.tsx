@@ -1,6 +1,7 @@
 import { CSSProperties, useState } from "react";
 import { GameWithOdds } from "../../data/GetGamesTabData";
-import { GameStatus } from "../../types";
+import { GameStatus, TidbitCoverStreak } from "../../types";
+import CoverStreaks from "./CoverStreaks";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameDate, formatGameTime } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
@@ -17,6 +18,8 @@ import {
 
 type Props = {
   games: GameWithOdds[];
+  // Active cover/miss streaks of 3+, by team id (from the week's tidbits).
+  streaks: Map<number, TidbitCoverStreak>;
 };
 
 function TeamRow({
@@ -52,7 +55,7 @@ function TeamRow({
 // Teams stack tight on the left with kickoff beside them (spanning both
 // rows); weather gets its own full-width row below, so neither squeezes the
 // other -- the teams no longer share a column with the weather block.
-function GameCardItem({ game }: { game: GameWithOdds }) {
+function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["streaks"] }) {
   const [open, setOpen] = useState(false);
   const total = modeTotal(game.books);
   const vSide = getValueSide(game);
@@ -87,6 +90,7 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
           </span>
           <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
         </div>
+        <CoverStreaks streaks={[streaks.get(game.away_team.id), streaks.get(game.home_team.id)]} />
       </div>
 
       <div className="gc-gamecard-wx">
@@ -157,7 +161,7 @@ function GameCardItem({ game }: { game: GameWithOdds }) {
   );
 }
 
-export default function GamesListMobile({ games }: Props) {
+export default function GamesListMobile({ games, streaks }: Props) {
   if (!games.length) {
     return <p style={{ color: "var(--gc-text-muted)" }}>No games scheduled.</p>;
   }
@@ -165,7 +169,7 @@ export default function GamesListMobile({ games }: Props) {
   return (
     <div className="gc-cardlist">
       {games.map((game) => (
-        <GameCardItem key={game.game_id} game={game} />
+        <GameCardItem key={game.game_id} game={game} streaks={streaks} />
       ))}
     </div>
   );

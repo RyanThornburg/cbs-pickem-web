@@ -1,4 +1,4 @@
-import { RankedUser, UserSeasonTrends } from "../../types";
+import { RankedUser, UserSeasonTrends, WeekTidbits } from "../../types";
 
 export type UserGridProps = {
   userList: RankedUser[];
@@ -6,6 +6,8 @@ export type UserGridProps = {
   showSecondHalf: boolean;
   week: number;
   season: number;
+  // This week's tidbits, for the mover and 5-0 badges next to names.
+  tidbits?: WeekTidbits;
 };
 
 // UsersTable/index.tsx fetches season trends itself (derived from

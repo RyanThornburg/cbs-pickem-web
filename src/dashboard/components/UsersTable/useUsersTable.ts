@@ -5,13 +5,15 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { RankedUser, UserSeasonTrends } from "../../types";
+import { RankedUser, UserSeasonTrends, WeekTidbits } from "../../types";
+import { moversByUserId, perfectWeekUserIds } from "../Tidbits/tidbitBadges";
 import { buildUsersTableColumns, toUsersTableRow } from "./usersTableColumns";
 
 interface UseUsersTableArgs {
   userList: RankedUser[];
   trends: Record<string, UserSeasonTrends>;
   showSecondHalf: boolean;
+  tidbits?: WeekTidbits;
 }
 
 // Shared sort + expand state for both the desktop and mobile UsersTable
@@ -20,14 +22,17 @@ interface UseUsersTableArgs {
 // Row expansion (for UserTrendPanel) is plain local state rather than
 // tanstack's row-expansion feature, since only one row is ever open at a
 // time -- a Set/tree model would be more than this needs.
-export const useUsersTable = ({ userList, trends, showSecondHalf }: UseUsersTableArgs) => {
+export const useUsersTable = ({ userList, trends, showSecondHalf, tidbits }: UseUsersTableArgs) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "place", desc: false }]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const data = useMemo(
-    () => userList.map((user) => toUsersTableRow(user, trends)),
-    [userList, trends]
-  );
+  const data = useMemo(() => {
+    const movers = moversByUserId(tidbits);
+    const perfect = perfectWeekUserIds(tidbits);
+    return userList.map((user) =>
+      toUsersTableRow(user, trends, { move: movers.get(user.id), perfectWeek: perfect.has(user.id) })
+    );
+  }, [userList, trends, tidbits]);
   const columns = useMemo(() => buildUsersTableColumns(), []);
 
   const table = useReactTable({

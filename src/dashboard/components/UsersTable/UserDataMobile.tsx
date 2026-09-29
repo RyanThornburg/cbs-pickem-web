@@ -41,12 +41,14 @@ export default function UserDataMobile({
   userList,
   userId,
   showSecondHalf,
+  tidbits,
   trends,
 }: UserGridWithTrendsProps) {
   const { table, expandedId, toggleExpanded } = useUsersTable({
     userList,
     trends,
     showSecondHalf,
+    tidbits,
   });
 
   if (userList.length === 0) {

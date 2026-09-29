@@ -29,11 +29,15 @@ import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
 import { GameDetails } from "../GameDetails";
 import { DetailsToggle } from "../shared/DetailsToggle";
+import { GameTidbitTags } from "../shared/GameTidbitTags";
+import { GameTag } from "../../../Tidbits/tidbitBadges";
 
 export interface GameCardProps {
   game: Game;
   userId?: string;
   totalUsers?: number;
+  // Tidbit tags for this game ("Upset of the week", "Won, didn't cover").
+  tags?: GameTag[];
 }
 
 const QUARTERS: (keyof LinescoreSide)[] = ["q1", "q2", "q3", "q4"];
@@ -119,7 +123,7 @@ const PregameLine = ({ game }: { game: Game }) => {
   );
 };
 
-export const GameCard = memo(({ game, userId, totalUsers }: GameCardProps) => {
+export const GameCard = memo(({ game, userId, totalUsers, tags }: GameCardProps) => {
   const [open, setOpen] = useState(false);
   const highlight = getGameHighlight(game);
   const border = highlightBorder(highlight);
@@ -192,6 +196,7 @@ export const GameCard = memo(({ game, userId, totalUsers }: GameCardProps) => {
         <StatusText game={game} />
         <span>{tvName(game.tv_network)}</span>
         <HighlightFlags highlight={highlight} />
+        <GameTidbitTags tags={tags} />
         {venueBadge && (
           <Chip
             icon={venueBadge.kind === "international" ? <PublicIcon /> : <PlaceIcon />}

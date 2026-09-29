@@ -1,6 +1,7 @@
 import { CSSProperties, useState } from "react";
 import { GameWithOdds } from "../../data/GetGamesTabData";
-import { GameStatus } from "../../types";
+import { GameStatus, TidbitCoverStreak } from "../../types";
+import CoverStreaks from "./CoverStreaks";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameShort } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
@@ -17,6 +18,8 @@ import {
 
 type Props = {
   games: GameWithOdds[];
+  // Active cover/miss streaks of 3+, by team id (from the week's tidbits).
+  streaks: Map<number, TidbitCoverStreak>;
 };
 
 function TeamRow({
@@ -110,7 +113,7 @@ function CbsLineCell({ game }: { game: GameWithOdds }) {
   );
 }
 
-function GameRow({ game }: { game: GameWithOdds }) {
+function GameRow({ game, streaks }: { game: GameWithOdds; streaks: Props["streaks"] }) {
   const [open, setOpen] = useState(false);
   const isFinal = game.status === GameStatus.Final;
 
@@ -129,6 +132,7 @@ function GameRow({ game }: { game: GameWithOdds }) {
               score={isFinal ? game.home_score : undefined}
               covered={isFinal && game.coveringTeamId === game.home_team.id}
             />
+            <CoverStreaks streaks={[streaks.get(game.away_team.id), streaks.get(game.home_team.id)]} />
           </div>
         </td>
         <td>
@@ -168,7 +172,7 @@ function GameRow({ game }: { game: GameWithOdds }) {
   );
 }
 
-export default function GamesTableDesktop({ games }: Props) {
+export default function GamesTableDesktop({ games, streaks }: Props) {
   if (!games.length) {
     return <p style={{ color: "var(--gc-text-muted)" }}>No games scheduled.</p>;
   }
@@ -188,7 +192,7 @@ export default function GamesTableDesktop({ games }: Props) {
         </thead>
         <tbody>
           {games.map((game) => (
-            <GameRow key={game.game_id} game={game} />
+            <GameRow key={game.game_id} game={game} streaks={streaks} />
           ))}
         </tbody>
       </table>

@@ -55,7 +55,10 @@ export default function UserSelectedMain({ userList, userId, userTrends }: Props
           size={24}
           fontSize={"0.875rem"}
         />
-        <StreakBadge weeks={userTrends?.current_season.hot_streak.current_streak ?? 0} />
+        <StreakBadge
+          weeks={userTrends?.current_season.hot_streak.current_streak ?? 0}
+          thresholdPct={userTrends?.current_season.hot_streak.threshold_pct}
+        />
       </Stack>
 
       {/* Score and place share one item ("Score: 7 · 13th") to keep the

@@ -1,4 +1,7 @@
 import { CircularProgress } from "@mui/material";
+import { useMemo } from "react";
+import { WeekTidbits } from "../../types";
+import { coverStreaksByTeamId } from "../Tidbits/tidbitBadges";
 import "./gamesCard.css";
 import GamesListMobile from "./GamesListMobile";
 import GamesTableDesktop from "./GamesTableDesktop";
@@ -6,9 +9,12 @@ import { useGamesWithOdds } from "./hooks/useGamesWithOdds";
 
 type Props = {
   week: number;
+  // This week's tidbits, for the cover-streak labels next to teams.
+  tidbits?: WeekTidbits;
 };
 
-export default function GamesCard({ week }: Props) {
+export default function GamesCard({ week, tidbits }: Props) {
+  const streaks = useMemo(() => coverStreaksByTeamId(tidbits), [tidbits]);
   const { games, loading } = useGamesWithOdds(week);
 
   if (loading) {
@@ -35,10 +41,10 @@ export default function GamesCard({ week }: Props) {
       </div>
 
       <div className="gc-desktop-view">
-        <GamesTableDesktop games={games} />
+        <GamesTableDesktop games={games} streaks={streaks} />
       </div>
       <div className="gc-mobile-view">
-        <GamesListMobile games={games} />
+        <GamesListMobile games={games} streaks={streaks} />
       </div>
     </div>
   );

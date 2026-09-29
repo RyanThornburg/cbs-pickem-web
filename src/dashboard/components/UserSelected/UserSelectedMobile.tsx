@@ -60,7 +60,10 @@ export default function UserSelected({ userList, userId, userTrends }: Props) {
                 xs: "0.75rem",
               }}
             />
-            <StreakBadge weeks={userTrends?.current_season.hot_streak.current_streak ?? 0} />
+            <StreakBadge
+          weeks={userTrends?.current_season.hot_streak.current_streak ?? 0}
+          thresholdPct={userTrends?.current_season.hot_streak.threshold_pct}
+        />
           </Stack>
 
           <Box sx={commonBoxStyles}>

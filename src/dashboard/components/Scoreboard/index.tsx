@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid2";
@@ -14,6 +14,8 @@ import { useGameData } from "./hooks/useGameData";
 import { groupGames } from "./utils/scoreboardUtils";
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
+import { WeekTidbits } from "../../types";
+import { gameTagsById } from "../Tidbits/tidbitBadges";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
@@ -40,6 +42,8 @@ interface Props {
   // Selected user -- drives "Your pick" badges and highlights
   userId?: string;
   totalUsers?: number;
+  // This week's tidbits, for the "Upset of the week" / "Won, didn't cover" tags.
+  tidbits?: WeekTidbits;
 }
 
 const GroupHeader = ({ children }: { children: string }) => (
@@ -48,7 +52,8 @@ const GroupHeader = ({ children }: { children: string }) => (
   </Typography>
 );
 
-const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
+const Scoreboard = memo(({ week, userId, totalUsers, tidbits }: Props) => {
+  const gameTags = useMemo(() => gameTagsById(tidbits), [tidbits]);
   const { games, loading, error } = useGameData(week);
   const [layout, setLayout] = useState<Layout>(readLayout);
   const [picksFirst, setPicksFirst] = useState(readPicksFirst);
@@ -126,7 +131,7 @@ const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
             <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
               {games.map((game) => (
                 <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
-                  <GameCard game={game} userId={userId} totalUsers={totalUsers} />
+                  <GameCard game={game} userId={userId} totalUsers={totalUsers} tags={gameTags.get(game.game_id)} />
                 </Grid>
               ))}
             </Grid>
@@ -142,7 +147,7 @@ const Scoreboard = memo(({ week, userId, totalUsers }: Props) => {
                   <GroupHeader>{group}</GroupHeader>
                 </Box>
                 {games.map((game) => (
-                  <GameRow key={game.game_id} game={game} userId={userId} />
+                  <GameRow key={game.game_id} game={game} userId={userId} tags={gameTags.get(game.game_id)} />
                 ))}
               </Box>
             ))}
