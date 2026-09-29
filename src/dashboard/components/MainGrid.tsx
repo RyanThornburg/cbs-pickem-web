@@ -265,13 +265,15 @@ export default function MainGrid() {
               }}
             >
               <Tab
+                // One span: Tab lays its children out as a flex column, so
+                // "User" and "Picks" as siblings would stack.
                 label={
-                  <>
+                  <span>
                     <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
                       User{" "}
                     </Box>
                     Picks
-                  </>
+                  </span>
                 }
                 value="picks"
               />
