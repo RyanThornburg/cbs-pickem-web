@@ -183,10 +183,10 @@ export default function MainGrid() {
               alignItems: "center",
             }}
           >
-            {/* From lg up the pick summary sits beside the title in the
-                header row. If it can't fit (e.g. from week 10, when the
-                second-half score and place join it) it wraps under the
-                title rather than squeezing the title onto two lines. */}
+            {/* From lg up the pick summary shares the header row, pushed
+                right next to the Week/User dropdowns since it describes the
+                selected user. If it can't fit it wraps below rather than
+                squeezing the title onto two lines. */}
             <Grid size={{ xs: 12, sm: "grow" }} sx={{ minWidth: 0 }}>
               <Box
                 sx={{
@@ -204,7 +204,7 @@ export default function MainGrid() {
                 >
                   Morlocked Pick'em
                 </Typography>
-                <Box sx={{ display: { xs: "none", lg: "block" } }}>
+                <Box sx={{ display: { xs: "none", lg: "block" }, ml: "auto", mr: 1 }}>
                   <UserSelectedMain
                     userId={user}
                     userList={userList}
