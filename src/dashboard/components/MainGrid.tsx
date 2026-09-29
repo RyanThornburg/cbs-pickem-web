@@ -175,7 +175,7 @@ export default function MainGrid() {
         <>
           <Grid
             container
-            spacing={4}
+            spacing={{ xs: 4, lg: 2 }}
             rowSpacing={0.5}
             sx={{
               mt: 2,
@@ -183,28 +183,35 @@ export default function MainGrid() {
               alignItems: "center",
             }}
           >
-            {/* The pick summary only sits inline from xl (1536px) up, where
-                title + summary + dropdowns all fit on one row. Below that
-                UserSelected puts it on its own row, since squeezing it in
-                wrapped the title (or the summary) at 1200-1400px. */}
-            <Grid size={{ xs: 12, sm: "grow", xl: "auto" }}>
-              <Typography
-                align="left"
-                variant="h5"
-                sx={{ whiteSpace: { xl: "nowrap" } }}
+            {/* From lg up the pick summary sits beside the title in the
+                header row. If it can't fit (e.g. from week 10, when the
+                second-half score and place join it) it wraps under the
+                title rather than squeezing the title onto two lines. */}
+            <Grid size={{ xs: 12, sm: "grow" }} sx={{ minWidth: 0 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  columnGap: 3,
+                  rowGap: 1,
+                }}
               >
-                Morlocked Pick'em Results
-              </Typography>
-            </Grid>
-            <Grid
-              sx={{ display: { xs: "none", xl: "block" }, minWidth: 0 }}
-              size={{ xs: 0, xl: "grow" }}
-            >
-              <UserSelectedMain
-                userId={user}
-                userList={userList}
-                userTrends={selectedUserTrends}
-              />
+                <Typography
+                  align="left"
+                  variant="h5"
+                  sx={{ whiteSpace: { lg: "nowrap" } }}
+                >
+                  Morlocked Pick'em
+                </Typography>
+                <Box sx={{ display: { xs: "none", lg: "block" } }}>
+                  <UserSelectedMain
+                    userId={user}
+                    userList={userList}
+                    userTrends={selectedUserTrends}
+                  />
+                </Box>
+              </Box>
             </Grid>
 
             <Grid

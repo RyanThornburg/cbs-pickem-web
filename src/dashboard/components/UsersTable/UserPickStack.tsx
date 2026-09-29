@@ -15,7 +15,7 @@ const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
   return "NONE";
 };
 
-const GamePickFormatted = (pick: UserPick, index: number) => {
+const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
   const team = pick.visible ? pick.team : "TBD";
 
   let fontWeight = "regular";
@@ -36,8 +36,10 @@ const GamePickFormatted = (pick: UserPick, index: number) => {
         padding: 0.3,
       },
       width: 60,
+      // The header row is tight at 1200-1400px, and a team abbreviation
+      // needs far less than the table's 70px.
       [theme.breakpoints.up("lg")]: {
-        width: 70,
+        width: header ? 48 : 70,
       },
       textAlign: "center",
       color: theme.palette.text.primary,
@@ -86,7 +88,7 @@ export const UserGamePicksStack = (
       spacing={{ xs: 0.35, md: spacingSize }}
       divider={<Divider orientation="vertical" flexItem />}
     >
-      {picks.map(GamePickFormatted)}
+      {picks.map((pick, index) => GamePickFormatted(pick, index, header))}
     </Stack>
   );
 };

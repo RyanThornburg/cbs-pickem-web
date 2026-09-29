@@ -12,6 +12,15 @@ export type Props = {
   userTrends: UserSeasonTrends | undefined;
 };
 
+const PlaceSuffix = ({ place }: { place: number | null | undefined }) =>
+  place ? (
+    <Box component="span" sx={{ color: "text.secondary" }}>
+      {" · "}
+      {place}
+      {getOrdinal(place)}
+    </Box>
+  ) : null;
+
 export default function UserSelectedMain({ userList, userId, userTrends }: Props) {
   const [user, setUser] = useState<RankedUser | undefined>(undefined);
 
@@ -31,7 +40,12 @@ export default function UserSelectedMain({ userList, userId, userTrends }: Props
       direction={{ xs: "column", sm: "row" }}
       divider={<Divider orientation="vertical" flexItem />}
       spacing={{ xs: 1, md: 1, xl: 2 }}
-      sx={{ alignItems: "center", mb: { md: "8px", xl: "0px" } }}
+      // 13px while it shares the header row with the title at 1200-1535px.
+      sx={{
+        alignItems: "center",
+        mb: { md: "8px", xl: "0px" },
+        fontSize: { lg: "0.8125rem", xl: "0.875rem" },
+      }}
     >
       <Stack sx={{ alignItems: "center" }} direction="row" spacing={1}>
         <UserAvatar
@@ -43,26 +57,18 @@ export default function UserSelectedMain({ userList, userId, userTrends }: Props
         <StreakBadge weeks={userTrends?.current_season.hot_streak.current_streak ?? 0} />
       </Stack>
 
-      <Box>
+      {/* Score and place share one item ("Score: 7 · 13th") to keep the
+          header on one row at 1200px+. */}
+      <Box sx={{ whiteSpace: "nowrap" }}>
         Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
-      </Box>
-      <Box>
-        {user.place}
-        {getOrdinal(user.place)}
-        {" Place"}
+        <PlaceSuffix place={user.place} />
       </Box>
       {user.second_half_score !== null && (
-        <>
-          <Box>
-            2nd Half:{" "}
-            {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
-          </Box>
-          <Box>
-            {user?.second_half_place}
-            {getOrdinal(user?.second_half_place ?? 0)}
-            {" Place"}
-          </Box>
-        </>
+        <Box sx={{ whiteSpace: "nowrap" }}>
+          2nd Half:{" "}
+          {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
+          <PlaceSuffix place={user.second_half_place} />
+        </Box>
       )}
 
       {UserGamePicksStack(user.picks, true)}
