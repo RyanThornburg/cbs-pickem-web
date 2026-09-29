@@ -74,7 +74,7 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
       : cover.side === side
       ? "success.main"
       : "error.main";
-  const count = (side: Side, abbr: string, n: number, mine: boolean, align: "left" | "right") => (
+  const count = (side: Side, abbr: string, n: number, align: "left" | "right") => (
     <Box component="span" sx={{ display: "inline-flex", gap: 0.5, alignItems: "center", flexDirection: align === "right" ? "row-reverse" : "row", color: labelColor(side), fontWeight: cover?.side ? 600 : 400 }}>
       <span>
         {align === "left" ? (
@@ -87,18 +87,8 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
           </>
         )}
       </span>
-      {mine && (
-        <Box component="span" sx={{ fontSize: "0.7rem", fontWeight: 700, color: "primary.main" }}>
-          You
-        </Box>
-      )}
     </Box>
   );
-  const mySide = away.some((u) => u.id === userId)
-    ? "away"
-    : home.some((u) => u.id === userId)
-    ? "home"
-    : null;
 
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>
@@ -134,9 +124,9 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
             }}
           >
             <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, fontSize: "0.8rem", color: "text.secondary" }}>
-              {count("away", game.away_team.abbr, away.length, mySide === "away", "left")}
+              {count("away", game.away_team.abbr, away.length, "left")}
               {!compact && totalUsers ? <span>{total} of {totalUsers} picked this game</span> : null}
-              {count("home", game.home_team.abbr, home.length, mySide === "home", "right")}
+              {count("home", game.home_team.abbr, home.length, "right")}
             </Box>
             <Box sx={{ display: "flex", height: 6, borderRadius: 3, overflow: "hidden", bgcolor: "action.hover" }}>
               <Box sx={{ width: `${(away.length / total) * 100}%`, bgcolor: colorFor("away") }} />
