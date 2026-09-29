@@ -141,60 +141,76 @@ function ChaosCard({ tidbit }: { tidbit: Tidbit }) {
 
 function AccuracyCard({ card }: { card: WeekCard }) {
   const acc = byKind(card, "pool_accuracy");
-  const perfect = (byKind(card, "perfect_week")?.data.users ?? []) as TidbitPerson[];
+  const perfectTidbit = byKind(card, "perfect_week");
+  const perfect = (perfectTidbit?.data.users ?? []) as TidbitPerson[];
   const winless = (byKind(card, "winless_week")?.data.users ?? []) as TidbitPerson[];
-  const nobodyPerfect = !!byKind(card, "perfect_week") && perfect.length === 0;
   const d = (acc?.data ?? {}) as Record<string, number | string | null>;
+  const note = d.season_rank_note === "worst" ? "Worst week this season" : d.season_rank_note === "best" ? "Best week this season" : null;
   return (
     <CardShell title="Pool accuracy" category="pool" scope="week">
-      {acc && (
-        <>
-          <Big value={pct(d.accuracy as number)} suffix="of picks right" />
-          <Sub>
-            {d.correct} of {d.graded} picks right.
-            {d.season_rank_note === "worst" && " Worst week this season"}
-            {d.season_rank_note === "best" && " Best week this season"}
-            {d.prior_accuracy != null &&
-              (d.season_rank_note
-                ? ` (earlier weeks: ${pct(d.prior_accuracy as number)}).`
-                : ` Earlier weeks: ${pct(d.prior_accuracy as number)}.`)}
-          </Sub>
-        </>
+      {acc && <Big value={pct(d.accuracy as number)} suffix="of picks right" />}
+      {note && <Sub>{note}</Sub>}
+      {/* The perfect_week tidbit only exists once someone went 5-0, or once
+          the week is complete with nobody at 5-0. */}
+      {perfectTidbit && (
+        <PeopleLine label="5-0">
+          {perfect.length ? <PersonChips people={perfect} tone="good" /> : <Sub>nobody</Sub>}
+        </PeopleLine>
       )}
-      {perfect.length > 0 && (
-        <Box>
-          <Sub>Went 5-0</Sub>
-          <PersonChips people={perfect} tone="good" />
-        </Box>
-      )}
-      {nobodyPerfect && <Sub>Nobody went 5-0.</Sub>}
       {winless.length > 0 && (
-        <Box>
-          <Sub>Went 0-5</Sub>
+        <PeopleLine label="0-5">
           <PersonChips people={winless} tone="bad" />
-        </Box>
+        </PeopleLine>
       )}
     </CardShell>
   );
 }
 
+function PeopleLine({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <Stack direction="row" spacing={1} alignItems="flex-start">
+      <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "text.secondary", minWidth: 26, lineHeight: "20px" }}>
+        {label}
+      </Typography>
+      <Box sx={{ minWidth: 0 }}>{children}</Box>
+    </Stack>
+  );
+}
+
 interface CrowdGame {
-  game_id: number;
   crowd_team: TeamRef;
   pick_count: number;
-  crowd_pct: number;
   result: "win" | "loss" | "push";
 }
 
+// Two records under one label, big enough to read at a glance.
+function RecordRows({ label, rows }: { label: string; rows: [string, string][] }) {
+  return (
+    <Box>
+      <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mb: 0.5 }}>{label}</Typography>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: 2, rowGap: 0.25, alignItems: "baseline" }}>
+        {rows.map(([name, value]) => (
+          <Box key={name} sx={{ display: "contents" }}>
+            <Typography variant="body2">{name}</Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+              {value}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+// Popular picks only: "teams 10+ of you picked" is easy to read at a glance,
+// where the per-game crowd record (whichever side more of you took, even
+// 3 vs 2) needed explaining. The crowd record stays in "All tidbits"; it's
+// only used here when there are no popular-pick tidbits.
 function CrowdCard({ card }: { card: WeekCard }) {
-  const week = byKind(card, "crowd_record", "week");
-  const season = byKind(card, "crowd_record", "season");
   const popular = byKind(card, "popular_picks", "week");
   const popularSeason = byKind(card, "popular_picks", "season");
-  // Only the most-picked team: listing every popular pick was too much text.
-  const top = ((popular?.data.games ?? []) as CrowdGame[])[0];
-  const resultColor = { win: "success.main", loss: "error.main", push: "text.secondary" };
-  const resultText = { win: "covered", loss: "didn't cover", push: "pushed" };
+  const week = byKind(card, "crowd_record", "week");
+  const season = byKind(card, "crowd_record", "season");
   // The week's cutoff (30% of the pool, rounded up); falls back to the
   // season's latest week when there's no weekly tidbit.
   const byWeek = (popularSeason?.data.min_picks_by_week ?? {}) as Record<string, number>;
@@ -202,40 +218,33 @@ function CrowdCard({ card }: { card: WeekCard }) {
     (popular?.data.min_picks as number | undefined) ??
     byWeek[Object.keys(byWeek).sort((a, b) => Number(b) - Number(a))[0]] ??
     10;
+  const rows = (w: Tidbit | undefined, sn: Tidbit | undefined) => [
+    ...(w ? [["This week", record(w.data)] as [string, string]] : []),
+    ...(sn ? [["This season", record(sn.data)] as [string, string]] : []),
+  ];
+  const usePopular = !!(popular || popularSeason);
+  const top = ((popular?.data.games ?? []) as CrowdGame[])[0];
+  const resultColor = { win: "success.main", loss: "error.main", push: "text.secondary" };
+  const resultText = { win: "covered", loss: "didn't cover", push: "pushed" };
   return (
-    <CardShell title="Following the crowd" category="crowd" scope={week ? "week" : "season"}>
-      {week && <Big value={record(week.data)} suffix="this week" />}
-      {season && (
-        <Sub>
-          The side more of the pool took. Season: {record(season.data)}
-          {Number(season.data.losses) > Number(season.data.wins) &&
-            `, so fading it would be ${season.data.fade_wins}-${season.data.fade_losses}`}
-          .
-        </Sub>
-      )}
-      {(popular || popularSeason) && (
-        <Box>
-          <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mb: 0.25 }}>
-            Teams {minPicks}+ of you picked
-          </Typography>
-          <Parts
-            rows={[
-              ...(popular ? [["This week", record(popular.data)] as [string, string]] : []),
-              ...(popularSeason ? [["This season", record(popularSeason.data)] as [string, string]] : []),
-            ]}
-          />
-        </Box>
-      )}
-      {top && (
-        <Stack direction="row" alignItems="center" spacing={0.75} sx={{ fontSize: "0.78rem", color: "text.secondary" }}>
-          <TeamLogo abbr={top.crowd_team.abbr} size={16} />
-          <span>
-            Most picked: {top.crowd_team.abbr} ({top.pick_count}){" "}
-            <Box component="span" sx={{ color: resultColor[top.result], fontWeight: 600 }}>
-              {resultText[top.result]}
-            </Box>
-          </span>
-        </Stack>
+    <CardShell title="Popular picks" category="crowd">
+      {usePopular ? (
+        <>
+          <RecordRows label={`Teams ${minPicks}+ of you picked`} rows={rows(popular, popularSeason)} />
+          {top && (
+            <Stack direction="row" alignItems="center" spacing={0.75} sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+              <TeamLogo abbr={top.crowd_team.abbr} size={16} />
+              <span>
+                Most picked: {top.crowd_team.abbr} ({top.pick_count}){" "}
+                <Box component="span" sx={{ color: resultColor[top.result], fontWeight: 600 }}>
+                  {resultText[top.result]}
+                </Box>
+              </span>
+            </Stack>
+          )}
+        </>
+      ) : (
+        <RecordRows label="The side more of you took" rows={rows(week, season)} />
       )}
     </CardShell>
   );
@@ -246,11 +255,9 @@ function SpreadSeasonCard({ tidbit }: { tidbit: Tidbit }) {
   const decided = d.games - (d.pushes ?? 0);
   return (
     <CardShell title="Just pick the winner?" category="spread" scope="season">
-      <Big value={pct(d.winner_covered / Math.max(1, decided))} suffix="of games" />
+      <Big value={pct(d.winner_covered / Math.max(1, decided))} />
       <Sub>
-        The team that won also covered in {d.winner_covered} of {decided} games this season.
-        {d.spread_flipped > 0 &&
-          ` In the other ${d.spread_flipped}, the winner didn't cover, which cost ${d.winner_lost_picks} pool picks.`}
+        of game winners also covered ({d.winner_covered} of {decided} games)
       </Sub>
     </CardShell>
   );
