@@ -1,8 +1,8 @@
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { TidbitChaosPoint, TidbitPoolAccuracyPoint, WeekTidbits } from "../../types";
+import { RecapChaosPoint, RecapPoolAccuracyPoint, WeekRecap } from "../../types";
 
-// Week-over-week charts for Trends › Season, from the tidbits key's `series`
+// Week-over-week charts for Trends › Season, from the recap key's `series`
 // (every week through the selected one). Hand-drawn SVG: two single-series
 // charts don't justify a chart library. Each week's column is one hover /
 // focus target (bigger than the mark) that opens a tooltip.
@@ -157,7 +157,7 @@ function HitColumns({
   );
 }
 
-function PoolAccuracyChart({ series, inProgressWeek }: { series: TidbitPoolAccuracyPoint[]; inProgressWeek: number | null }) {
+function PoolAccuracyChart({ series, inProgressWeek }: { series: RecapPoolAccuracyPoint[]; inProgressWeek: number | null }) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
@@ -259,7 +259,7 @@ function PoolAccuracyChart({ series, inProgressWeek }: { series: TidbitPoolAccur
   );
 }
 
-function ChaosChart({ series }: { series: TidbitChaosPoint[] }) {
+function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
@@ -339,11 +339,11 @@ function ChaosChart({ series }: { series: TidbitChaosPoint[] }) {
   );
 }
 
-export default function SeasonTidbitCharts({ tidbits }: { tidbits: WeekTidbits | undefined }) {
-  const accuracy = tidbits?.series.pool_accuracy ?? [];
-  const chaos = tidbits?.series.chaos ?? [];
+export default function SeasonRecapCharts({ recap }: { recap: WeekRecap | undefined }) {
+  const accuracy = recap?.series.pool_accuracy ?? [];
+  const chaos = recap?.series.chaos ?? [];
   if (accuracy.length === 0 && chaos.length === 0) return null;
-  const inProgressWeek = tidbits && !tidbits.week_complete ? tidbits.week : null;
+  const inProgressWeek = recap && !recap.week_complete ? recap.week : null;
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(2, minmax(0, 1fr))" }, gap: 1.5, mb: 3 }}>
       {accuracy.length > 0 && <PoolAccuracyChart series={accuracy} inProgressWeek={inProgressWeek} />}

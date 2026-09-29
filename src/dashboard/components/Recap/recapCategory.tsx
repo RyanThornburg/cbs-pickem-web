@@ -10,7 +10,7 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import Box from "@mui/material/Box";
 import { SvgIconComponent } from "@mui/icons-material";
 
-// One icon + color per tidbit category. An unknown category (the data repo
+// One icon + color per item category. An unknown category (the data repo
 // can add one) falls back to a neutral lightbulb.
 const CATEGORY_STYLES: Record<string, { Icon: SvgIconComponent; color: string; label: string }> = {
   pool: { Icon: GroupsIcon, color: "hsl(210, 90%, 45%)", label: "The pool" },
@@ -22,7 +22,7 @@ const CATEGORY_STYLES: Record<string, { Icon: SvgIconComponent; color: string; l
   league: { Icon: PublicIcon, color: "hsl(200, 30%, 40%)", label: "League" },
   splits: { Icon: PieChartIcon, color: "hsl(220, 25%, 45%)", label: "Pool splits" },
 };
-const FALLBACK = { Icon: LightbulbIcon, color: "hsl(220, 20%, 55%)", label: "Tidbit" };
+const FALLBACK = { Icon: LightbulbIcon, color: "hsl(220, 20%, 55%)", label: "Recap" };
 
 export const categoryStyle = (category: string) => CATEGORY_STYLES[category] ?? FALLBACK;
 

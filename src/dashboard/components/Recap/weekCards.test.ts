@@ -1,7 +1,7 @@
-import { Tidbit } from "../../types";
+import { RecapItem } from "../../types";
 import { cardGroupOf, groupIntoCards, MAX_CARDS, selectWeekCards } from "./weekCards";
 
-const t = (id: string, overrides: Partial<Tidbit> = {}): Tidbit => ({
+const t = (id: string, overrides: Partial<RecapItem> = {}): RecapItem => ({
   id,
   kind: id.split(":")[0],
   category: "pool",
@@ -48,11 +48,11 @@ describe("cardGroupOf", () => {
 });
 
 describe("groupIntoCards", () => {
-  it("folds a group's tidbits into one card at its best rank", () => {
+  it("folds a group's items into one card at its best rank", () => {
     const cards = groupIntoCards(WEEK3);
     expect(cards.map((c) => c.key).slice(0, 4)).toEqual(["accuracy", "splits", "chaos", "upset"]);
-    expect(cards.find((c) => c.key === "splits")?.tidbits).toHaveLength(5);
-    expect(cards.find((c) => c.key === "accuracy")?.tidbits.map((x) => x.id)).toEqual([
+    expect(cards.find((c) => c.key === "splits")?.items).toHaveLength(5);
+    expect(cards.find((c) => c.key === "accuracy")?.items.map((x) => x.id)).toEqual([
       "winless_week",
       "pool_accuracy",
       "perfect_week",
@@ -67,13 +67,12 @@ describe("groupIntoCards", () => {
 
 describe("selectWeekCards", () => {
   it("picks week 3's cards: chaos and accuracy first, then groups not shown elsewhere", () => {
-    expect(selectWeekCards(WEEK3).map((c) => c.key)).toEqual([
-      "chaos",
-      "accuracy",
-      "splits",
-      "crowd",
-      "spreadSeason",
-    ]);
+    expect(selectWeekCards(WEEK3).map((c) => c.key)).toEqual(["chaos", "accuracy", "crowd", "spreadSeason"]);
+  });
+
+  it("uses the splits card only to fill a short row, ahead of badge groups", () => {
+    const short = [t("pool_split:side:away"), t("pool_accuracy"), t("upset_of_week"), t("biggest_mover:up")];
+    expect(selectWeekCards(short).map((c) => c.key)).toEqual(["accuracy", "splits", "upset", "movers"]);
   });
 
   it("caps the number of cards", () => {

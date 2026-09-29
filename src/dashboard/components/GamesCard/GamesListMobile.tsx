@@ -1,6 +1,6 @@
 import { CSSProperties, useState } from "react";
 import { GameWithOdds } from "../../data/GetGamesTabData";
-import { GameStatus, TidbitCoverStreak } from "../../types";
+import { GameStatus, RecapCoverStreak } from "../../types";
 import CoverStreaks from "./CoverStreaks";
 import { getTeamData } from "../../utils/teamAssets";
 import { formatGameDate, formatGameTime } from "../Scoreboard/utils/dateFormatters";
@@ -18,8 +18,8 @@ import {
 
 type Props = {
   games: GameWithOdds[];
-  // Active cover/miss streaks of 3+, by team id (from the week's tidbits).
-  streaks: Map<number, TidbitCoverStreak>;
+  // Active cover/miss streaks of 3+, by team id (from the week's recap).
+  streaks: Map<number, RecapCoverStreak>;
 };
 
 function TeamRow({

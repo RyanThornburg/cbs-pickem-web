@@ -1,12 +1,12 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { getOrdinal } from "../../helper";
-import { Tidbit, TidbitMove, TidbitPerson } from "../../types";
+import { RecapItem, RecapMove, RecapPerson } from "../../types";
 import TeamLogo from "../TrendsSection/TeamLogo";
-import { CategoryMark, ScopeTag } from "./tidbitCategory";
+import { CategoryMark, ScopeTag } from "./recapCategory";
 import { WeekCard } from "./weekCards";
 
-// Renderers for the Trends › Week tidbit cards. Each reads its tidbits'
-// `data` (shapes per the data repo's tidbits reference, version 2); anything
+// Renderers for the Trends › Week item cards. Each reads its items'
+// `data` (shapes per the data repo's recap reference, version 3); anything
 // without a dedicated card falls back to its headlines.
 
 interface TeamRef {
@@ -17,7 +17,7 @@ interface TeamRef {
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const byKind = (card: WeekCard, kind: string, scope?: "week" | "season") =>
-  card.tidbits.find((t) => t.kind === kind && (!scope || t.scope === scope));
+  card.items.find((t) => t.kind === kind && (!scope || t.scope === scope));
 const record = (d: Record<string, unknown>) =>
   `${d.wins}-${d.losses}${d.pushes ? `-${d.pushes}` : ""}`;
 
@@ -79,7 +79,7 @@ function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
   );
 }
 
-function PersonChips({ people, tone }: { people: TidbitPerson[]; tone: "good" | "bad" }) {
+function PersonChips({ people, tone }: { people: RecapPerson[]; tone: "good" | "bad" }) {
   return (
     <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
       {people.map((p) => (
@@ -103,8 +103,8 @@ function PersonChips({ people, tone }: { people: TidbitPerson[]; tone: "good" | 
   );
 }
 
-function ChaosCard({ tidbit }: { tidbit: Tidbit }) {
-  const d = tidbit.data as Record<string, number | boolean | null>;
+function ChaosCard({ item }: { item: RecapItem }) {
+  const d = item.data as Record<string, number | boolean | null>;
   const index = d.index as number;
   const partial = !!d.partial;
   const rank = d.season_rank as number | null;
@@ -141,18 +141,18 @@ function ChaosCard({ tidbit }: { tidbit: Tidbit }) {
 
 function AccuracyCard({ card }: { card: WeekCard }) {
   const acc = byKind(card, "pool_accuracy");
-  const perfectTidbit = byKind(card, "perfect_week");
-  const perfect = (perfectTidbit?.data.users ?? []) as TidbitPerson[];
-  const winless = (byKind(card, "winless_week")?.data.users ?? []) as TidbitPerson[];
+  const perfectItem = byKind(card, "perfect_week");
+  const perfect = (perfectItem?.data.users ?? []) as RecapPerson[];
+  const winless = (byKind(card, "winless_week")?.data.users ?? []) as RecapPerson[];
   const d = (acc?.data ?? {}) as Record<string, number | string | null>;
   const note = d.season_rank_note === "worst" ? "Worst week this season" : d.season_rank_note === "best" ? "Best week this season" : null;
   return (
     <CardShell title="Pool accuracy" category="pool" scope="week">
       {acc && <Big value={pct(d.accuracy as number)} suffix="of picks right" />}
       {note && <Sub>{note}</Sub>}
-      {/* The perfect_week tidbit only exists once someone went 5-0, or once
+      {/* The perfect_week item only exists once someone went 5-0, or once
           the week is complete with nobody at 5-0. */}
-      {perfectTidbit && (
+      {perfectItem && (
         <PeopleLine label="5-0">
           {perfect.length ? <PersonChips people={perfect} tone="good" /> : <Sub>nobody</Sub>}
         </PeopleLine>
@@ -204,21 +204,21 @@ function RecordRows({ label, rows }: { label: string; rows: [string, string][] }
 
 // Popular picks only: "teams 10+ of you picked" is easy to read at a glance,
 // where the per-game crowd record (whichever side more of you took, even
-// 3 vs 2) needed explaining. The crowd record stays in "All tidbits"; it's
-// only used here when there are no popular-pick tidbits.
+// 3 vs 2) needed explaining. The crowd record stays in the full list; it's
+// only used here when there are no popular-pick items.
 function CrowdCard({ card }: { card: WeekCard }) {
   const popular = byKind(card, "popular_picks", "week");
   const popularSeason = byKind(card, "popular_picks", "season");
   const week = byKind(card, "crowd_record", "week");
   const season = byKind(card, "crowd_record", "season");
   // The week's cutoff (30% of the pool, rounded up); falls back to the
-  // season's latest week when there's no weekly tidbit.
+  // season's latest week when there's no weekly item.
   const byWeek = (popularSeason?.data.min_picks_by_week ?? {}) as Record<string, number>;
   const minPicks =
     (popular?.data.min_picks as number | undefined) ??
     byWeek[Object.keys(byWeek).sort((a, b) => Number(b) - Number(a))[0]] ??
     10;
-  const rows = (w: Tidbit | undefined, sn: Tidbit | undefined) => [
+  const rows = (w: RecapItem | undefined, sn: RecapItem | undefined) => [
     ...(w ? [["This week", record(w.data)] as [string, string]] : []),
     ...(sn ? [["This season", record(sn.data)] as [string, string]] : []),
   ];
@@ -250,8 +250,8 @@ function CrowdCard({ card }: { card: WeekCard }) {
   );
 }
 
-function SpreadSeasonCard({ tidbit }: { tidbit: Tidbit }) {
-  const d = tidbit.data as Record<string, number>;
+function SpreadSeasonCard({ item }: { item: RecapItem }) {
+  const d = item.data as Record<string, number>;
   const decided = d.games - (d.pushes ?? 0);
   return (
     <CardShell title="Just pick the winner?" category="spread" scope="season">
@@ -263,12 +263,12 @@ function SpreadSeasonCard({ tidbit }: { tidbit: Tidbit }) {
   );
 }
 
-// Pool splits and league-wide cover trends: one bar per tidbit against 50%.
+// Pool splits and league-wide cover trends: one bar per item against 50%.
 function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
   return (
-    <CardShell title={title} category={card.tidbits[0].category} scope="season">
+    <CardShell title={title} category={card.items[0].category} scope="season">
       <Stack spacing={1}>
-        {card.tidbits.map((t) => {
+        {card.items.map((t) => {
           const d = t.data as Record<string, number | string>;
           const p = Number(d.pct);
           const label = typeof d.label === "string" ? d.label : t.short;
@@ -294,14 +294,14 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
   );
 }
 
-function UpsetCard({ tidbit }: { tidbit: Tidbit }) {
-  const d = tidbit.data as Record<string, unknown>;
+function UpsetCard({ item }: { item: RecapItem }) {
+  const d = item.data as Record<string, unknown>;
   const dog = d.underdog as TeamRef;
   const fav = d.favorite as TeamRef;
   const home = d.home_team as TeamRef;
   const dogScore = dog.id === home.id ? d.home_score : d.away_score;
   const favScore = dog.id === home.id ? d.away_score : d.home_score;
-  const believers = (d.believers ?? []) as TidbitPerson[];
+  const believers = (d.believers ?? []) as RecapPerson[];
   return (
     <CardShell title="Upset of the week" category="chaos" scope="week">
       <Stack spacing={0.5}>
@@ -332,7 +332,7 @@ function UpsetCard({ tidbit }: { tidbit: Tidbit }) {
 }
 
 function MoversCard({ card }: { card: WeekCard }) {
-  const moves = card.tidbits.flatMap((t) => (t.data.moves ?? []) as TidbitMove[]);
+  const moves = card.items.flatMap((t) => (t.data.moves ?? []) as RecapMove[]);
   return (
     <CardShell title="Biggest movers" category="users" scope="week">
       <Stack spacing={0.5}>
@@ -359,33 +359,33 @@ function MoversCard({ card }: { card: WeekCard }) {
 
 // Anything without a dedicated card: its headlines as-is.
 function HeadlineCard({ card }: { card: WeekCard }) {
-  const first = card.tidbits[0];
+  const first = card.items[0];
   return (
     <CardShell title={first.short} category={first.category} scope={first.scope}>
-      {card.tidbits.map((t) => (
+      {card.items.map((t) => (
         <Sub key={t.id}>{t.headline}</Sub>
       ))}
     </CardShell>
   );
 }
 
-export function WeekTidbitCard({ card }: { card: WeekCard }) {
-  const first = card.tidbits[0];
+export function WeekRecapCard({ card }: { card: WeekCard }) {
+  const first = card.items[0];
   switch (card.group) {
     case "chaos":
-      return <ChaosCard tidbit={first} />;
+      return <ChaosCard item={first} />;
     case "accuracy":
       return <AccuracyCard card={card} />;
     case "crowd":
       return <CrowdCard card={card} />;
     case "spreadSeason":
-      return <SpreadSeasonCard tidbit={first} />;
+      return <SpreadSeasonCard item={first} />;
     case "splits":
       return <SplitsCard card={card} title="Where the pool wins and loses" />;
     case "league":
       return <SplitsCard card={card} title="League-wide cover trends" />;
     case "upset":
-      return <UpsetCard tidbit={first} />;
+      return <UpsetCard item={first} />;
     case "movers":
       return <MoversCard card={card} />;
     default:

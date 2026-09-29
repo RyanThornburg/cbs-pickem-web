@@ -3,42 +3,42 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Box, IconButton, Link, Typography, useMediaQuery } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { WeekTidbits } from "../../types";
-import { CategoryMark, ScopeTag } from "./tidbitCategory";
-import { getSeenTidbits, markTidbitSeen, orderForRotation } from "./tidbitUtils";
+import { WeekRecap } from "../../types";
+import { CategoryMark, ScopeTag } from "./recapCategory";
+import { getSeenItems, markItemSeen, orderForRotation } from "./recapUtils";
 
 const ROTATE_MS = 8000;
 
 type Props = {
-  tidbits: WeekTidbits | undefined;
+  recap: WeekRecap | undefined;
 };
 
-// One-line rotating strip of the week's top tidbits on User Picks. Unseen
-// tidbits come first; rotation pauses while hovered or focused, and doesn't
+// One-line rotating strip of the week's top items on User Picks. Unseen
+// items come first; rotation pauses while hovered or focused, and doesn't
 // auto-advance at all for reduced motion.
-export default function TidbitStrip({ tidbits }: Props) {
+export default function RecapStrip({ recap }: Props) {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const season = tidbits?.season ?? 0;
-  const week = tidbits?.week ?? 0;
-  // Re-order only when the set of tidbits changes, not on every 5-minute
+  const season = recap?.season ?? 0;
+  const week = recap?.week ?? 0;
+  // Re-order only when the set of items changes, not on every 5-minute
   // poll, so the strip doesn't jump around under the viewer.
-  const idsKey = tidbits?.tidbits.map((t) => t.id).join("|") ?? "";
+  const idsKey = recap?.items.map((t) => t.id).join("|") ?? "";
   const items = useMemo(
-    () => (tidbits ? orderForRotation(tidbits.tidbits, getSeenTidbits(season, week)) : []),
+    () => (recap ? orderForRotation(recap.items, getSeenItems(season, week)) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [idsKey, season, week]
   );
   // Same order, but the latest poll's text (numbers change during the week).
-  const byId = new Map(tidbits?.tidbits.map((t) => [t.id, t]) ?? []);
+  const byId = new Map(recap?.items.map((t) => [t.id, t]) ?? []);
   const current = items.length ? byId.get(items[index % items.length].id) : undefined;
 
   useEffect(() => setIndex(0), [idsKey, season, week]);
 
   useEffect(() => {
-    if (current) markTidbitSeen(season, week, current.id);
+    if (current) markItemSeen(season, week, current.id);
   }, [current, season, week]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function TidbitStrip({ tidbits }: Props) {
           gap: 0.75,
         }}
       >
-        <IconButton size="small" aria-label="Previous tidbit" onClick={() => step(-1)}>
+        <IconButton size="small" aria-label="Previous item" onClick={() => step(-1)}>
           <ChevronLeftIcon fontSize="small" />
         </IconButton>
         <Box sx={{ display: "flex", gap: 0.5 }}>
@@ -112,7 +112,7 @@ export default function TidbitStrip({ tidbits }: Props) {
                 key={item.id}
                 component="button"
                 type="button"
-                aria-label={`Show tidbit ${i + 1}`}
+                aria-label={`Show item ${i + 1}`}
                 aria-current={on}
                 onClick={() => setIndex(i)}
                 sx={{
@@ -128,7 +128,7 @@ export default function TidbitStrip({ tidbits }: Props) {
             );
           })}
         </Box>
-        <IconButton size="small" aria-label="Next tidbit" onClick={() => step(1)}>
+        <IconButton size="small" aria-label="Next item" onClick={() => step(1)}>
           <ChevronRightIcon fontSize="small" />
         </IconButton>
         <Link
@@ -137,7 +137,7 @@ export default function TidbitStrip({ tidbits }: Props) {
           underline="hover"
           sx={{ fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap", ml: 0.5, display: { xs: "none", sm: "inline" } }}
         >
-          All tidbits →
+          Full recap →
         </Link>
       </Box>
     </Box>

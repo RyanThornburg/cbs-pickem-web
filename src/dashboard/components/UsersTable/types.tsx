@@ -1,4 +1,4 @@
-import { RankedUser, UserSeasonTrends, WeekTidbits } from "../../types";
+import { RankedUser, UserSeasonTrends, WeekRecap } from "../../types";
 
 export type UserGridProps = {
   userList: RankedUser[];
@@ -6,8 +6,10 @@ export type UserGridProps = {
   showSecondHalf: boolean;
   week: number;
   season: number;
-  // This week's tidbits, for the mover and 5-0 badges next to names.
-  tidbits?: WeekTidbits;
+  // This week's recap, for the mover and 5-0 badges next to names.
+  recap?: WeekRecap;
+  // False while browsing a past week: the hot streak is only known as of now.
+  showStreak: boolean;
 };
 
 // UsersTable/index.tsx fetches season trends itself (derived from

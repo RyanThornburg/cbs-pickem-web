@@ -87,7 +87,7 @@
 .games-card .gc-matchup { display: flex; flex-direction: column; gap: 5px; }
 .games-card .gc-mrow { display: flex; align-items: center; gap: 8px; }
 .games-card .gc-mrow .gc-rec { color: var(--gc-text-muted); font-size: 0.78rem; }
-/* Active cover/miss streak of 3+ (from the week's tidbits). */
+/* Active cover/miss streak of 3+ (from the week's recap). */
 .games-card .gc-streaks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .games-card .gc-streak {
   font-size: 0.66rem;

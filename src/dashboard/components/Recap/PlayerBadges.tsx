@@ -1,9 +1,9 @@
 import { Box, Tooltip } from "@mui/material";
 import { getOrdinal } from "../../helper";
-import { TidbitMove } from "../../types";
+import { RecapMove } from "../../types";
 
-// Leaderboard move of 3+ places since last week (from the tidbits key).
-export function MoverBadge({ move }: { move: TidbitMove | undefined }) {
+// Leaderboard move of 3+ places since last week (from the recap key).
+export function MoverBadge({ move }: { move: RecapMove | undefined }) {
   if (!move || move.change === 0) return null;
   const up = move.change > 0;
   const places = Math.abs(move.change);

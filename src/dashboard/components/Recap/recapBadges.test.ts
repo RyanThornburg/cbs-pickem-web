@@ -1,13 +1,13 @@
-import { Tidbit, WeekTidbits } from "../../types";
+import { RecapItem, WeekRecap } from "../../types";
 import {
   coverStreakLabel,
   coverStreaksByTeamId,
   gameTagsById,
   moversByUserId,
   perfectWeekUserIds,
-} from "./tidbitBadges";
+} from "./recapBadges";
 
-const tidbit = (kind: string, data: Record<string, unknown>, headline = kind): Tidbit => ({
+const item = (kind: string, data: Record<string, unknown>, headline = kind): RecapItem => ({
   id: kind,
   kind,
   category: "pool",
@@ -19,15 +19,15 @@ const tidbit = (kind: string, data: Record<string, unknown>, headline = kind): T
   data,
 });
 
-const week = (overrides: Partial<WeekTidbits>): WeekTidbits => ({
-  version: 2,
+const week = (overrides: Partial<WeekRecap>): WeekRecap => ({
+  version: 3,
   season: 2026,
   week: 3,
   updated_at: "",
   week_complete: true,
   games_final: 16,
   games_total: 16,
-  tidbits: [],
+  items: [],
   series: { pool_accuracy: [], chaos: [] },
   movers: [],
   cover_streaks: [],
@@ -36,8 +36,8 @@ const week = (overrides: Partial<WeekTidbits>): WeekTidbits => ({
 
 const team = (id: number, abbr: string) => ({ id, abbr, name: abbr });
 
-describe("tidbit badge lookups", () => {
-  it("handles no tidbits at all", () => {
+describe("recap badge lookups", () => {
+  it("handles no recap at all", () => {
     expect(moversByUserId(undefined).size).toBe(0);
     expect(perfectWeekUserIds(undefined).size).toBe(0);
     expect(coverStreaksByTeamId(undefined).size).toBe(0);
@@ -59,9 +59,9 @@ describe("tidbit badge lookups", () => {
 
   it("finds perfect weeks, including the empty 'nobody went 5-0' case", () => {
     expect(
-      perfectWeekUserIds(week({ tidbits: [tidbit("perfect_week", { users: [{ user_id: 35, name: "Scott Miller" }] })] }))
+      perfectWeekUserIds(week({ items: [item("perfect_week", { users: [{ user_id: 35, name: "Scott Miller" }] })] }))
     ).toEqual(new Set(["35"]));
-    expect(perfectWeekUserIds(week({ tidbits: [tidbit("perfect_week", { users: [] })] })).size).toBe(0);
+    expect(perfectWeekUserIds(week({ items: [item("perfect_week", { users: [] })] })).size).toBe(0);
   });
 
   it("maps cover streaks by team id and labels them", () => {
@@ -80,9 +80,9 @@ describe("tidbit badge lookups", () => {
   it("tags the upset and the games the winner didn't cover", () => {
     const tags = gameTagsById(
       week({
-        tidbits: [
-          tidbit("upset_of_week", { game_id: 41 }, "Upset of the week: WAS (+7.5) beat SEA outright."),
-          tidbit("spread_mattered", {
+        items: [
+          item("upset_of_week", { game_id: 41 }, "Upset of the week: WAS (+7.5) beat SEA outright."),
+          item("spread_mattered", {
             flipped_games: [
               {
                 game_id: 43,

@@ -1,7 +1,7 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import Stack from "@mui/material/Stack";
-import { RankedUser, TidbitMove, UserSeasonTrends } from "../../types";
-import { MoverBadge, PerfectWeekBadge } from "../Tidbits/PlayerBadges";
+import { RankedUser, RecapMove, UserSeasonTrends } from "../../types";
+import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import UserAvatar from "../UserAvatar";
 import { PlaceCell } from "./PlaceCell";
 import { StreakBadge } from "./StreakBadge";
@@ -22,15 +22,15 @@ export interface UsersTableRow {
   streakWeeks: number;
   streakThresholdPct: number | undefined;
   defendingChampionSeason: number | null;
-  // From this week's tidbits.
-  move: TidbitMove | undefined;
+  // From this week's recap.
+  move: RecapMove | undefined;
   perfectWeek: boolean;
 }
 
 export const toUsersTableRow = (
   user: RankedUser,
   trends: Record<string, UserSeasonTrends>,
-  weekBadges: { move?: TidbitMove; perfectWeek?: boolean } = {}
+  weekBadges: { move?: RecapMove; perfectWeek?: boolean; showStreak?: boolean } = {}
 ): UsersTableRow => {
   const lastSeason = trends[user.id]?.career.trend?.last_season;
 
@@ -43,7 +43,7 @@ export const toUsersTableRow = (
     second_half_score: (user.second_half_score ?? 0) + user.trending_score,
     weekly_score: user.weekly_score + user.trending_score,
     picks: user.picks,
-    streakWeeks: trends[user.id]?.current_season.hot_streak.current_streak ?? 0,
+    streakWeeks: weekBadges.showStreak === false ? 0 : trends[user.id]?.current_season.hot_streak.current_streak ?? 0,
     streakThresholdPct: trends[user.id]?.current_season.hot_streak.threshold_pct,
     defendingChampionSeason: lastSeason?.rank === 1 ? lastSeason.season : null,
     move: weekBadges.move,
@@ -96,13 +96,15 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
             <Stack
               direction="row"
               alignItems="center"
-              spacing={0.75}
-              sx={{ width: { xs: "100%", sm: "auto" }, pl: { xs: "32px", sm: 0 } }}
+              // gap, not spacing: spacing's margins break when the row wraps.
+              // Phones fit about two badges a line, so a full set wraps.
+              sx={{ width: { xs: "100%", sm: "auto" }, pl: { xs: "32px", sm: 0 }, flexWrap: { xs: "wrap", sm: "nowrap" }, gap: 0.75 }}
             >
-              <DefendingChampionBadge season={row.defendingChampionSeason} />
+              {/* Most common first, so each badge lands in a predictable spot. */}
+              <MoverBadge move={row.move} />
               <StreakBadge weeks={row.streakWeeks} thresholdPct={row.streakThresholdPct} />
               <PerfectWeekBadge perfect={row.perfectWeek} />
-              <MoverBadge move={row.move} />
+              <DefendingChampionBadge season={row.defendingChampionSeason} />
             </Stack>
           )}
         </Stack>

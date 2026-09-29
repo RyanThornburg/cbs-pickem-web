@@ -1,15 +1,15 @@
 import { Box, Tooltip } from "@mui/material";
-import { GameTag, GameTagKind } from "../../../Tidbits/tidbitBadges";
+import { GameTag, GameTagKind } from "../../../Recap/recapBadges";
 
 const TAG_COLORS: Record<GameTagKind, { bg: string; fg: string }> = {
   upset: { bg: "hsl(12, 90%, 93%)", fg: "hsl(12, 75%, 38%)" },
   flipped: { bg: "hsl(265, 70%, 95%)", fg: "hsl(265, 50%, 42%)" },
 };
 
-// Tidbit tags on a game: "Upset of the week", "Won, didn't cover".
+// Recap tags on a game: "Upset of the week", "Won, didn't cover".
 // `wrap` lets the text wrap inside a narrow column (the compact rows'
 // status column is only 72-88px wide).
-export function GameTidbitTags({ tags, wrap = false }: { tags: GameTag[] | undefined; wrap?: boolean }) {
+export function GameRecapTags({ tags, wrap = false }: { tags: GameTag[] | undefined; wrap?: boolean }) {
   if (!tags?.length) return null;
   return (
     <>

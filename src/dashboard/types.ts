@@ -726,17 +726,17 @@ export interface HistoricalRecords {
   career: HistoricalCareer[];
 }
 
-// ---- week:{season}:{weekNN}:tidbits (GET /api/weeks/:season/:week/tidbits) ----
+// ---- week:{season}:{weekNN}:recap (GET /api/weeks/:season/:week/recap) ----
 // Reference: https://claude.ai/artifact/3ka6jtP25PpYik7reiZ2G3. The data repo
 // bumps `version` on any rename or shape change; the UI only reads versions
-// it was written for (TIDBITS_VERSION in GetTidbitsByWeek.ts).
+// it was written for (RECAP_VERSION in GetRecapByWeek.ts).
 
-export interface TidbitPerson {
+export interface RecapPerson {
   user_id: number;
   name: string;
 }
 
-export type TidbitCategory =
+export type RecapCategory =
   | "pool"
   | "spread"
   | "crowd"
@@ -746,11 +746,11 @@ export type TidbitCategory =
   | "league"
   | "splits";
 
-export interface Tidbit {
+export interface RecapItem {
   // Unique in the key and stable week to week.
   id: string;
   kind: string;
-  category: TidbitCategory | string;
+  category: RecapCategory | string;
   scope: "week" | "season";
   score: number;
   // Full sentence, and the same fact in 80 characters or fewer.
@@ -761,7 +761,7 @@ export interface Tidbit {
   data: Record<string, unknown>;
 }
 
-export interface TidbitMove {
+export interface RecapMove {
   user_id: number;
   name: string;
   rank_before: number;
@@ -770,22 +770,22 @@ export interface TidbitMove {
   change: number;
 }
 
-export interface TidbitCoverStreak {
+export interface RecapCoverStreak {
   team: { id: number; abbr: string; name: string };
   streak_type: "cover" | "miss";
   length: number;
 }
 
-export interface TidbitPoolAccuracyPoint {
+export interface RecapPoolAccuracyPoint {
   week: number;
   correct: number;
   graded: number;
   accuracy: number;
-  perfect: TidbitPerson[];
-  winless: TidbitPerson[];
+  perfect: RecapPerson[];
+  winless: RecapPerson[];
 }
 
-export interface TidbitChaosPoint {
+export interface RecapChaosPoint {
   week: number;
   // The current week while it's still in progress (shows from 8 finals).
   partial: boolean;
@@ -800,7 +800,7 @@ export interface TidbitChaosPoint {
   pool_accuracy: number;
 }
 
-export interface WeekTidbits {
+export interface WeekRecap {
   version: number;
   season: number;
   week: number;
@@ -809,13 +809,13 @@ export interface WeekTidbits {
   games_final: number;
   games_total: number;
   // Already ranked, highest first: don't re-sort.
-  tidbits: Tidbit[];
+  items: RecapItem[];
   series: {
-    pool_accuracy: TidbitPoolAccuracyPoint[];
-    chaos: TidbitChaosPoint[];
+    pool_accuracy: RecapPoolAccuracyPoint[];
+    chaos: RecapChaosPoint[];
   };
   // Every leaderboard move of 3+ places vs last week (empty in week 1).
-  movers: TidbitMove[];
+  movers: RecapMove[];
   // Every team on an active cover/miss streak of 3+.
-  cover_streaks: TidbitCoverStreak[];
+  cover_streaks: RecapCoverStreak[];
 }

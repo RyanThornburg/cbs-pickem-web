@@ -8,9 +8,9 @@ import {
   getGameCoverResult,
   GameCoverResult,
 } from "../../data/weekGames";
-import { SeasonTrends, WeekTidbits, WeekTrends } from "../../types";
-import WeekTidbitsSection from "../Tidbits/WeekTidbitsSection";
-import SeasonTidbitCharts from "../Tidbits/SeasonTidbitCharts";
+import { SeasonTrends, WeekRecap, WeekTrends } from "../../types";
+import WeekRecapSection from "../Recap/WeekRecapSection";
+import SeasonRecapCharts from "../Recap/SeasonRecapCharts";
 import ConsensusCard from "./ConsensusCard";
 import AllAloneCard from "./AllAloneCard";
 import LineMoversCard from "./LineMoversCard";
@@ -20,9 +20,9 @@ import SeasonTeamTable from "./SeasonTeamTable";
 export type Props = {
   season: number;
   week: number;
-  // The selected week's tidbits: the "Week N in tidbits" cards, and the
+  // The selected week's recap: the "Week N recap" cards, and the
   // week-over-week charts (its `series` covers every week through this one).
-  tidbits?: WeekTidbits;
+  recap?: WeekRecap;
 };
 
 const EMPTY_WEEK_TRENDS: WeekTrends = {
@@ -57,7 +57,7 @@ const DEFAULT_SECTION_SIZE = { xs: 12, md: 4 };
 
 const GAME_RESULTS_POLL_INTERVAL_MS = 5 * 60_000;
 
-export default function TrendsSection({ season, week, tidbits }: Props) {
+export default function TrendsSection({ season, week, recap }: Props) {
   const [tab, setTab] = useState<"week" | "season">("week");
   const [weekTrends, setWeekTrends] = useState<WeekTrends>(EMPTY_WEEK_TRENDS);
   const [seasonTrends, setSeasonTrends] =
@@ -225,7 +225,7 @@ export default function TrendsSection({ season, week, tidbits }: Props) {
           </Tabs>
         </Box>
         <Box sx={{ mt: 2 }}>
-          {tab === "week" ? <WeekTidbitsSection tidbits={tidbits} /> : <SeasonTidbitCharts tidbits={tidbits} />}
+          {tab === "week" ? <WeekRecapSection recap={recap} /> : <SeasonRecapCharts recap={recap} />}
         </Box>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
           {sections.map((section, i) => (

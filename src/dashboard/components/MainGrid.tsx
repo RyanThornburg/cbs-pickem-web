@@ -24,8 +24,8 @@ import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
 import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
-import { GetTidbitsByWeek } from "../data/GetTidbitsByWeek";
-import { GameStatus, RankedUser, UserSeasonTrends, WeekTidbits } from "../types";
+import { GetRecapByWeek } from "../data/GetRecapByWeek";
+import { GameStatus, RankedUser, UserSeasonTrends, WeekRecap } from "../types";
 import {
   ADMIN_TAB,
   AppTab,
@@ -35,7 +35,7 @@ import {
   setStoredTab,
 } from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
-import TidbitStrip from "./Tidbits/TidbitStrip";
+import RecapStrip from "./Recap/RecapStrip";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
 
@@ -45,6 +45,9 @@ export default function MainGrid() {
   const { tab } = useParams<{ tab: string }>();
   const navigate = useNavigate();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
+  // The hot streak badge is season data as of now, with no week-by-week
+  // history, so it only shows while browsing the current week.
+  const isCurrentWeek = selectedWeek === currentWeek;
   const [user, setUser] = useState<string>("");
   const [userList, setUserList] = useState<RankedUser[]>([]);
   const [hasLiveGame, setHasLiveGame] = useState(false);
@@ -53,7 +56,7 @@ export default function MainGrid() {
   >(undefined);
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [tidbits, setTidbits] = useState<WeekTidbits | undefined>(undefined);
+  const [recap, setRecap] = useState<WeekRecap | undefined>(undefined);
 
   const activeTab: AppTab | null = isPrimaryTab(tab)
     ? tab
@@ -130,12 +133,12 @@ export default function MainGrid() {
     }
   }, [season, selectedWeek]);
 
-  // The browsed week's tidbits: the strip on User Picks, plus the badges on
+  // The browsed week's recap: the strip on User Picks, plus the badges on
   // User Picks rows, Scoreboard games and Games teams.
   useEffect(() => {
-    setTidbits(undefined);
+    setRecap(undefined);
     if (season > 0 && selectedWeek > 0) {
-      const unsubscribe = GetTidbitsByWeek(season, selectedWeek, setTidbits);
+      const unsubscribe = GetRecapByWeek(season, selectedWeek, setRecap);
       return () => unsubscribe?.();
     }
   }, [season, selectedWeek]);
@@ -222,6 +225,7 @@ export default function MainGrid() {
                     userId={user}
                     userList={userList}
                     userTrends={selectedUserTrends}
+                    showStreak={isCurrentWeek}
                   />
                 </Box>
               </Box>
@@ -260,6 +264,7 @@ export default function MainGrid() {
               userId={user}
               userList={userList}
               userTrends={selectedUserTrends}
+              showStreak={isCurrentWeek}
             />
           </Grid>
 
@@ -399,21 +404,22 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
-              <TidbitStrip tidbits={tidbits} />
+              <RecapStrip recap={recap} />
               <UsersTable
                 userList={userList}
                 userId={user}
                 showSecondHalf={selectedWeek >= secondHalfStartWeek}
                 week={selectedWeek}
                 season={season}
-                tidbits={tidbits}
+                recap={recap}
+                showStreak={isCurrentWeek}
               />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "games" ? "block" : "none" }}
             >
-              <GamesCard week={selectedWeek} tidbits={tidbits} />
+              <GamesCard week={selectedWeek} recap={recap} />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}
@@ -423,14 +429,14 @@ export default function MainGrid() {
                 week={selectedWeek}
                 userId={user}
                 totalUsers={userList.length}
-                tidbits={tidbits}
+                recap={recap}
               />
             </Grid>
             <Grid
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "trends" ? "block" : "none" }}
             >
-              <TrendsSection season={season} week={selectedWeek} tidbits={tidbits} />
+              <TrendsSection season={season} week={selectedWeek} recap={recap} />
             </Grid>
             {activeTab === RECORDS_TAB && (
               <Grid size={{ xs: 12, lg: 12 }}>

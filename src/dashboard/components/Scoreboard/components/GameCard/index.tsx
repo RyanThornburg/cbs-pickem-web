@@ -29,14 +29,14 @@ import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
 import { GameDetails } from "../GameDetails";
 import { DetailsToggle } from "../shared/DetailsToggle";
-import { GameTidbitTags } from "../shared/GameTidbitTags";
-import { GameTag } from "../../../Tidbits/tidbitBadges";
+import { GameRecapTags } from "../shared/GameRecapTags";
+import { GameTag } from "../../../Recap/recapBadges";
 
 export interface GameCardProps {
   game: Game;
   userId?: string;
   totalUsers?: number;
-  // Tidbit tags for this game ("Upset of the week", "Won, didn't cover").
+  // Recap tags for this game ("Upset of the week", "Won, didn't cover").
   tags?: GameTag[];
 }
 
@@ -196,7 +196,7 @@ export const GameCard = memo(({ game, userId, totalUsers, tags }: GameCardProps)
         <StatusText game={game} />
         <span>{tvName(game.tv_network)}</span>
         <HighlightFlags highlight={highlight} />
-        <GameTidbitTags tags={tags} />
+        <GameRecapTags tags={tags} />
         {venueBadge && (
           <Chip
             icon={venueBadge.kind === "international" ? <PublicIcon /> : <PlaceIcon />}

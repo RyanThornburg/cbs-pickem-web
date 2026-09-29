@@ -14,8 +14,8 @@ import { useGameData } from "./hooks/useGameData";
 import { groupGames } from "./utils/scoreboardUtils";
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
-import { WeekTidbits } from "../../types";
-import { gameTagsById } from "../Tidbits/tidbitBadges";
+import { WeekRecap } from "../../types";
+import { gameTagsById } from "../Recap/recapBadges";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
@@ -42,8 +42,8 @@ interface Props {
   // Selected user -- drives "Your pick" badges and highlights
   userId?: string;
   totalUsers?: number;
-  // This week's tidbits, for the "Upset of the week" / "Won, didn't cover" tags.
-  tidbits?: WeekTidbits;
+  // This week's recap, for the "Upset of the week" / "Won, didn't cover" tags.
+  recap?: WeekRecap;
 }
 
 const GroupHeader = ({ children }: { children: string }) => (
@@ -52,8 +52,8 @@ const GroupHeader = ({ children }: { children: string }) => (
   </Typography>
 );
 
-const Scoreboard = memo(({ week, userId, totalUsers, tidbits }: Props) => {
-  const gameTags = useMemo(() => gameTagsById(tidbits), [tidbits]);
+const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
+  const gameTags = useMemo(() => gameTagsById(recap), [recap]);
   const { games, loading, error } = useGameData(week);
   const [layout, setLayout] = useState<Layout>(readLayout);
   const [picksFirst, setPicksFirst] = useState(readPicksFirst);

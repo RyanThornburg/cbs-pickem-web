@@ -23,13 +23,13 @@ import { StatusText, tvName } from "../shared/StatusText";
 import { highlightSx } from "../shared/highlightSx";
 import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameDetails } from "../GameDetails";
-import { GameTidbitTags } from "../shared/GameTidbitTags";
-import { GameTag } from "../../../Tidbits/tidbitBadges";
+import { GameRecapTags } from "../shared/GameRecapTags";
+import { GameTag } from "../../../Recap/recapBadges";
 
 export interface GameRowProps {
   game: Game;
   userId?: string;
-  // Tidbit tags for this game ("Upset of the week", "Won, didn't cover").
+  // Recap tags for this game ("Upset of the week", "Won, didn't cover").
   tags?: GameTag[];
 }
 
@@ -169,7 +169,7 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
       <Box sx={{ gridArea: "status", display: "flex", flexDirection: "column", gap: 0.25, minWidth: 0 }}>
         <StatusText game={game} />
         <Typography variant="caption" sx={{ color: "text.secondary" }}>{tvName(game.tv_network)}</Typography>
-        <GameTidbitTags tags={tags} wrap />
+        <GameRecapTags tags={tags} wrap />
       </Box>
       <Box sx={{ gridArea: "teams", display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
         {teamLine("away")}

@@ -1,7 +1,7 @@
 import { verifyAdmin } from "./access";
 
 const WEEK_RESOURCE_PATTERN =
-  /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|tidbits)$/;
+  /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
 const SEASON_TRENDS_PATTERN = /^\/api\/season\/(\d+)\/trends$/;
 const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 const GAME_DETAILS_PATTERN = /^\/api\/games\/(\d+)\/(\d+)\/details$/;

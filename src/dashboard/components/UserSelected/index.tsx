@@ -7,19 +7,20 @@ type Props = {
   userList: RankedUser[];
   userId: string;
   userTrends: UserSeasonTrends | undefined;
+  showStreak: boolean;
 };
 
-export default function UserSelectedSizes({ userList, userId, userTrends }: Props) {
+export default function UserSelectedSizes({ userList, userId, userTrends, showStreak }: Props) {
   return (
     <>
       <Grid
         size={{ sm: 12 }}
         sx={{ display: { xs: "none", md: "block", lg: "none" } }}
       >
-        <UserSelectedMain userId={userId} userList={userList} userTrends={userTrends} />
+        <UserSelectedMain userId={userId} userList={userList} userTrends={userTrends} showStreak={showStreak} />
       </Grid>
       <Grid size={{ xs: 12 }} sx={{ display: { xs: "block", md: "none" } }}>
-        <UserSelectedMobile userId={userId} userList={userList} userTrends={userTrends} />
+        <UserSelectedMobile userId={userId} userList={userList} userTrends={userTrends} showStreak={showStreak} />
       </Grid>
     </>
   );
