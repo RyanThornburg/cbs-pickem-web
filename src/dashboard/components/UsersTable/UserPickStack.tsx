@@ -25,6 +25,9 @@ const visuallyHidden = {
   position: "absolute",
   width: 1,
   height: 1,
+  margin: "-1px",
+  padding: 0,
+  border: 0,
   overflow: "hidden",
   clip: "rect(0 0 0 0)",
   whiteSpace: "nowrap",
@@ -65,6 +68,9 @@ const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
     {
       backgroundColor: statusColor.bgColor,
       ...theme.typography.body2,
+      // Contains the visually hidden result text, which would otherwise be
+      // placed against the page and widen it.
+      position: "relative",
       padding: 0.5,
       width: 60,
       // The header row is tight at 1200-1400px, so its tiles fit their
