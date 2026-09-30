@@ -22,11 +22,11 @@ export default function WeekDropdown({
   return (
     <Box sx={{ minWidth: 75 }}>
       <FormControl variant="standard" sx={{ minWidth: 75 }}>
-        <InputLabel id="userListLabel">Week</InputLabel>
+        <InputLabel id="week-select-label">Week</InputLabel>
         <Select
           // 40px tall on phones so it's an easy tap target.
           sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
-          labelId="weekList"
+          labelId="week-select-label"
           id="week-drop-down"
           value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
           onChange={handleChange}

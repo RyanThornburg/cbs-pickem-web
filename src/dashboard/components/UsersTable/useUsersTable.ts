@@ -34,6 +34,9 @@ export const useUsersTable = ({
     { id: "place", desc: false },
   ]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const toggleExpanded = (id: string) => {
+    setExpandedId((current) => (current === id ? null : id));
+  };
 
   const data = useMemo(() => {
     const movers = moversByUserId(recap);
@@ -62,11 +65,9 @@ export const useUsersTable = ({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.id,
+    // Read by the name cell's expand button (usersTableColumns.tsx).
+    meta: { expandedId, toggleExpanded },
   });
-
-  const toggleExpanded = (id: string) => {
-    setExpandedId((current) => (current === id ? null : id));
-  };
 
   return { table, expandedId, toggleExpanded };
 };

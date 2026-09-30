@@ -29,7 +29,9 @@ export function StreakBadge({
           display: "inline-flex",
           alignItems: "center",
           gap: 0.3,
-          background: "linear-gradient(90deg, #ff7043, #ff5252)",
+          // Deep enough for white text at 11px (5.6:1); the brighter
+          // #ff7043 → #ff5252 flame was 2.7:1.
+          background: "linear-gradient(90deg, #bf360c, #c62828)",
           color: "#fff",
           borderRadius: "12px",
           padding: "1px 7px 1px 5px",

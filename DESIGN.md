@@ -17,6 +17,8 @@ colors:
   medal-bronze: "#d9a27a"
   selected-lime: "#f0f4c3"
   streak-flame: "#ff7043"
+  streak-pill: "#bf360c"
+  streak-pill-end: "#c62828"
   pick-won-fill: "#e8f5e9"
   pick-won-edge: "#66bb6a"
   pick-lost-fill: "#ffcdd2"
@@ -56,6 +58,10 @@ typography:
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.43
+  compact:
+    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 400
   label:
     fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "0.75rem"
@@ -185,7 +191,7 @@ The palette is ink on white paper, a traffic-light status set for results, and o
 - **Covered Green** (`covered-green`) and **Missed Red** (`missed-red`): won or lost, covering or not. Used in the your-pick badge, the pick-split bar, ATS tags and fourth-down text.
 - **Pick fills**: each of the five pick tiles per row is tinted by result. Won is a pale green fill (`pick-won-fill`), lost is pale pink (`pick-lost-fill`), and open or TBD is pale blue (`pick-open-fill`). Once a game is final the tile gets a thin solid edge in the matching mid tone (`*-edge`). While it's live the edge is dashed and the text is italic.
 - **Caution Orange** (`caution-orange`): warnings, and the shared theme's `Alert` (which paints every alert orange unless a component re-colors it by severity, as `AdminPanel` does).
-- **Streak Flame** (`streak-flame`): the weekly hot icon and the hot-streak pill (a flame gradient to `#ff5252`).
+- **Streak Flame** (`streak-flame`): the weekly hot icon. The hot-streak pill uses a deeper flame, `streak-pill` to `streak-pill-end`, so its white 11px text reaches 5.6:1 (the brighter flame was 2.7:1).
 - **Selected Lime** (`selected-lime`): the selected player's row on User Picks and in the leader cards. It's pale yellow-green, so it reads as a highlighter mark, not as a status.
 - **Box score pair**: `away-blue` and `home-orange` are fixed stat-bar colors for away and home in every game, chosen because team colors clashed (ARI/SF, BAL/DAL). `turf-green` is the Scoreboard field strip.
 - **Team colors**: logos, the Games team chips and the drive band use each team's own color from `team_data.json`, applied inline.
@@ -216,6 +222,7 @@ Warm slate paper (`gc-bg`) with white table surfaces, a cooler tinted header row
 - **Headline** (600, 1.25rem, h5): the app title "Morlocked Pick'em" and section heads. The theme's h1–h4 sizes (3rem–1.5rem) exist but aren't used on screen.
 - **Title** (600, 1.125rem): card titles such as "Week N recap" and the leader cards.
 - **Body** (400, 0.875rem, 1.43): everything in tables, cards and panels. The theme sets both body1 and body2 to 14px.
+- **Compact** (400, 0.8125rem): where 14px is a hair too wide: phone tabs, the header summary and its pick tiles from `lg` to `xl`, player names in the table.
 - **Label** (500, 0.75rem): captions, column heads, chip labels, badge text, "Since week 10" subtitles.
 - **Stat** (700, 1.75rem): the biggest type in the app, used for Scoreboard final totals and the one big number on each recap card (Records tiles use 1.6rem). The losing score is set in faint ink.
 - **Games label** (Oswald 500, 0.72rem, 0.06em tracking, uppercase): Games tab column heads.
@@ -274,7 +281,7 @@ Quiet and tactile. Ripples are off everywhere; transitions are 100ms.
 - **Your-pick badge (Scoreboard):** a pill colored by result, with an icon. Covering or won is green with a trend-up or check; not covering or lost is red with a trend-down or ✕; a push is amber with a dash; not started is plain blue.
 
 ### Pick tiles
-The signature element of the app: five small rounded rectangles, one per pick, holding the team abbreviation. 70px wide in the table and 48px in the header at `lg` and up; 60px, with 12px text, on phones. The fill carries the result; the edge carries the game's state (none before kickoff, dashed and italic while live, solid when final).
+The signature element of the app: five small rounded rectangles, one per pick, holding the team abbreviation. 70px wide in the table and 48px in the header at `lg` and up; 60px, with 12px text, on phones. The fill carries the result; the edge carries the game's state (none before kickoff, dashed and italic while live, solid when final). A small icon after the abbreviation repeats the result for anyone who can't rely on color: ✓ won, ✕ lost, and while live the Scoreboard's trend arrows for covering and not covering. Visually hidden text gives screen readers the same ("NYJ, won").
 
 ### Cards / Containers
 - **Corner style:** 8px.

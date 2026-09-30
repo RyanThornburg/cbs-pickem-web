@@ -534,6 +534,34 @@
           "#bde5c4",
           "#edf8ef"
         ]
+      },
+      "streak-pill": {
+        "role": "tertiary",
+        "displayName": "Streak Pill",
+        "tonalRamp": [
+          "#481405",
+          "#7d2308",
+          "#b2320b",
+          "#e6410e",
+          "#f3663a",
+          "#f68f6f",
+          "#fabca9",
+          "#fdece7"
+        ]
+      },
+      "streak-pill-end": {
+        "role": "tertiary",
+        "displayName": "Streak Pill End",
+        "tonalRamp": [
+          "#400d0d",
+          "#6e1616",
+          "#9d2020",
+          "#cc2929",
+          "#dc5151",
+          "#e58080",
+          "#f0b3b3",
+          "#fbeaea"
+        ]
       }
     },
     "typographyMeta": {
@@ -564,6 +592,10 @@
       "gc-label": {
         "displayName": "Kickoff Label",
         "purpose": "Games tab column heads (Oswald, uppercase)."
+      },
+      "compact": {
+        "displayName": "Compact",
+        "purpose": "13px where 14px is a hair too wide: phone tabs, header summary and its tiles (lg–xl), table names."
       }
     },
     "shadows": [
@@ -642,8 +674,8 @@
       "name": "Pick Tiles",
       "kind": "custom",
       "refersTo": "pick-won",
-      "description": "Signature element: one tile per pick; fill = result, edge = game state (none / dashed+italic live / solid final).",
-      "html": "<div class=\"ds-picks\"><span class=\"ds-pick ds-pick-won is-final\">BAL</span><span class=\"ds-pick ds-pick-lost is-final\">CAR</span><span class=\"ds-pick ds-pick-won is-live\">MIN</span><span class=\"ds-pick ds-pick-lost is-live\">TEN</span><span class=\"ds-pick ds-pick-open\">TBD</span></div>",
+      "description": "Signature element: one tile per pick; fill = result, edge = game state (none / dashed+italic live / solid final). A ✓/✕ (or trend arrow while live) repeats the result.",
+      "html": "<div class=\"ds-picks\"><span class=\"ds-pick ds-pick-won is-final\">BAL ✓</span><span class=\"ds-pick ds-pick-lost is-final\">CAR ✕</span><span class=\"ds-pick ds-pick-won is-live\">MIN</span><span class=\"ds-pick ds-pick-lost is-live\">TEN</span><span class=\"ds-pick ds-pick-open\">TBD</span></div>",
       "css": ".ds-picks{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:flex; gap:8px;} .ds-pick{box-sizing:border-box; width:70px; padding:4px; text-align:center; font-size:14px; color:rgba(0,0,0,0.87); border-radius:4px;} .ds-pick-won{background:#e8f5e9;} .ds-pick-lost{background:#ffcdd2;} .ds-pick-open{background:#e3f2fd;} .ds-pick-won.is-final{border:thin solid #66bb6a;} .ds-pick-lost.is-final{border:thin solid #ef5350;} .ds-pick.is-live{font-style:italic; border-width:3px; border-style:dashed;} .ds-pick-won.is-live{border-color:#00e676;} .ds-pick-lost.is-live{border-color:#ff1744;}"
     },
     {
@@ -652,7 +684,7 @@
       "refersTo": "chip-default",
       "description": "Small clubhouse marks beside a player's name: mover arrows, hot streak, defending champ, 5-0.",
       "html": "<span class=\"ds-name\">Finley Knoll <span class=\"ds-badge ds-up\">▲3</span><span class=\"ds-badge ds-down\">▼4</span><span class=\"ds-badge ds-flame\">🔥 2</span><span class=\"ds-badge ds-gold\">5-0</span></span>",
-      "css": ".ds-name{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; color:rgba(0,0,0,0.87); display:inline-flex; align-items:center; gap:6px;} .ds-badge{font-size:11px; font-weight:700; padding:1px 5px; border-radius:999px; line-height:1.4;} .ds-up{color:#2e7d32; background:#e8f5e9;} .ds-down{color:#c62828; background:#ffebee;} .ds-flame{color:#fff; background:linear-gradient(90deg,#ff7043,#ff5252);} .ds-gold{color:#3d2c05; background:#d4a017;}"
+      "css": ".ds-name{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; color:rgba(0,0,0,0.87); display:inline-flex; align-items:center; gap:6px;} .ds-badge{font-size:11px; font-weight:700; padding:1px 5px; border-radius:999px; line-height:1.4;} .ds-up{color:#2e7d32; background:#e8f5e9;} .ds-down{color:#c62828; background:#ffebee;} .ds-flame{color:#fff; background:linear-gradient(90deg,#bf360c,#c62828);} .ds-gold{color:#3d2c05; background:#d4a017;}"
     },
     {
       "name": "Your-Pick Badge",

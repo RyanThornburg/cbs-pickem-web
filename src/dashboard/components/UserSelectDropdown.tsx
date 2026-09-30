@@ -27,15 +27,15 @@ export default function UserSelectDropdown({
   return (
     <Box sx={{ minWidth: 150 }}>
       <FormControl variant="standard" sx={{ minWidth: 150 }}>
-        <InputLabel id="userListLabel">User</InputLabel>
+        <InputLabel id="user-select-label">User</InputLabel>
         <Select
           // 40px tall on phones so it's an easy tap target.
           sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
-          labelId="userList"
+          labelId="user-select-label"
           id="user-drop-down"
           value={users ? user : ""}
           onChange={handleChange}
-          label="User Details"
+          label="User"
         >
           <MenuItem value="">
             <em>None</em>
