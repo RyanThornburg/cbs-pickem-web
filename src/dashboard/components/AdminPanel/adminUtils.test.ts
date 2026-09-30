@@ -1,8 +1,12 @@
 import {
+  activeEventCount,
   deadlineSweepHealth,
+  EVERY_MINUTE_STALE_MS,
+  everyMinuteHealth,
   dueDeadlineSunday,
   FAILING_GAP_MS,
   formatAgo,
+  isEventActive,
   isFailing,
   taskHealth,
 } from "./adminUtils";
@@ -131,5 +135,50 @@ describe("deadlineSweepHealth", () => {
 
   it("is never without a sweep on record", () => {
     expect(deadlineSweepHealth(null, sundayAfternoon)).toBe("never");
+  });
+});
+
+describe("everyMinuteHealth", () => {
+  const now = Date.parse(T);
+  it("is fresh while it keeps ticking", () => {
+    expect(everyMinuteHealth(plus(T, -60_000), plus(T, -60_000), now)).toBe(
+      "fresh"
+    );
+  });
+
+  it("goes stale once it stops for longer than the limit", () => {
+    const old = plus(T, -(EVERY_MINUTE_STALE_MS + 1));
+    expect(everyMinuteHealth(old, old, now)).toBe("stale");
+  });
+
+  it("reports failing and never-run like any other task", () => {
+    expect(everyMinuteHealth(T, plus(T, -120_000), now)).toBe("failing");
+    expect(everyMinuteHealth(null, null, now)).toBe("never");
+  });
+});
+
+describe("system event activity", () => {
+  const now = Date.parse(T);
+  const recent = { last_seen_at: plus(T, -60 * 60_000) };
+  const old = { last_seen_at: plus(T, -3 * 24 * 60 * 60_000) };
+
+  it("uses the data repo's active flag when it's there", () => {
+    expect(isEventActive({ ...old, active: true }, now)).toBe(true);
+    expect(isEventActive({ ...recent, active: false }, now)).toBe(false);
+  });
+
+  it("falls back to last_seen_at within 24h", () => {
+    expect(isEventActive(recent, now)).toBe(true);
+    expect(isEventActive(old, now)).toBe(false);
+  });
+
+  it("prefers active_count, which covers rows outside recent", () => {
+    expect(activeEventCount({ active_count: 3, recent: [recent] }, now)).toBe(
+      3
+    );
+    expect(activeEventCount({ active_count: 0, recent: [recent] }, now)).toBe(
+      0
+    );
+    expect(activeEventCount({ recent: [recent, old, recent] }, now)).toBe(2);
   });
 });

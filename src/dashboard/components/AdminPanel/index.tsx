@@ -16,11 +16,13 @@ import {
   AdminWatchedTask,
 } from "../../types";
 import {
+  activeEventCount,
   deadlineSweepHealth,
-  EVENT_ACTIVE_MS,
+  everyMinuteHealth,
   formatAgo,
   formatEt,
   HEARTBEAT_STALE_MS,
+  isEventActive,
   isFailing,
   TaskHealth,
   taskHealth,
@@ -32,19 +34,36 @@ type WatchedKey =
   | "housekeeping"
   | "cbs_picks_quiet_poll"
   | "pregame_weather_capture"
-  | "user_profiles_write";
+  | "user_profiles_write"
+  | "recap_write";
 
 type LiveKey =
   | "sports_io_live_poll"
   | "cbs_live_poll"
   | "game_snapshot_capture"
-  | "live_game_stats_capture";
+  | "live_game_stats_capture"
+  | "live_player_stats_capture";
+
+type EveryMinuteKey = "scoring_plays_refresh" | "win_probability_capture";
+
+// Tasks added to meta:admin later can be missing from an older payload;
+// they render as "Never run" rather than crashing the page.
+const NOT_RUN = { last_at: null, last_success_at: null };
 
 // Run on their own cadence whether or not games are live (Odds and the Sunday
 // deadline sweep also sit in this group, rendered separately).
 const ALWAYS_TASKS: { key: WatchedKey; name: string }[] = [
   { key: "pregame_weather_capture", name: "Pregame weather" },
   { key: "user_profiles_write", name: "User profiles" },
+  { key: "recap_write", name: "Week recap" },
+];
+
+// Also always on, but with no data-side stale flag: they tick every minute
+// and only call their API when there's something new, so the page judges
+// staleness itself (EVERY_MINUTE_STALE_MS).
+const EVERY_MINUTE_TASKS: { key: EveryMinuteKey; name: string }[] = [
+  { key: "scoring_plays_refresh", name: "Scoring plays" },
+  { key: "win_probability_capture", name: "Win probability (finals)" },
 ];
 
 // Skipped while any game is in its live window -- their data-side stale
@@ -73,6 +92,11 @@ const LIVE_TASKS: { key: LiveKey; name: string; tracksFailures: boolean }[] = [
     key: "live_game_stats_capture",
     name: "Live game stats",
     tracksFailures: false,
+  },
+  {
+    key: "live_player_stats_capture",
+    name: "Live player stats",
+    tracksFailures: true,
   },
 ];
 
@@ -238,7 +262,7 @@ export default function AdminPanel() {
 
           <TaskSection
             title="Always"
-            caption="Run on their own cadence whether or not games are live. Stale means the last success is past the data repo's per-task limit."
+            caption="Run on their own cadence whether or not games are live. Stale means the last success is past the data repo's per-task limit; for the every-minute tasks, no run in 10 minutes."
           >
             <Grid size={CARD_SIZE}>
               {/* One card, one data-side stale flag for both lines: the
@@ -265,13 +289,36 @@ export default function AdminPanel() {
               />
             </Grid>
             {ALWAYS_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key];
+              const task = status.last_run[key] ?? { ...NOT_RUN, stale: false };
               return (
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
                     name={name}
                     health={watchedHealth(task)}
                     now={now}
+                    runs={[
+                      {
+                        lastAt: task.last_at,
+                        lastSuccessAt: task.last_success_at,
+                      },
+                    ]}
+                  />
+                </Grid>
+              );
+            })}
+            {EVERY_MINUTE_TASKS.map(({ key, name }) => {
+              const task = status.last_run[key] ?? NOT_RUN;
+              return (
+                <Grid key={key} size={CARD_SIZE}>
+                  <TaskCard
+                    name={name}
+                    health={everyMinuteHealth(
+                      task.last_at,
+                      task.last_success_at,
+                      now
+                    )}
+                    now={now}
+                    note="Every minute"
                     runs={[
                       {
                         lastAt: task.last_at,
@@ -318,7 +365,7 @@ export default function AdminPanel() {
             caption="Paused while any game is live, so hours without a run on a Sunday is normal. Stale limits already allow for that."
           >
             {QUIET_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key];
+              const task = status.last_run[key] ?? { ...NOT_RUN, stale: false };
               return (
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
@@ -345,7 +392,7 @@ export default function AdminPanel() {
             }
           >
             {LIVE_TASKS.map(({ key, name, tracksFailures }) => {
-              const task = status.last_run[key];
+              const task = status.last_run[key] ?? NOT_RUN;
               return (
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
@@ -372,6 +419,7 @@ export default function AdminPanel() {
                 description="Caught failures, one row per source + message. These never age out -- Active means seen in the last 24h."
                 distinctCount={status.system_events.distinct_count}
                 totalOccurrences={status.system_events.total_occurrences}
+                activeCount={activeEventCount(status.system_events, now)}
                 rows={status.system_events.recent}
                 rowKey={(row) => `${row.source}|${row.message}`}
                 emptyText="No recorded failures."
@@ -398,7 +446,7 @@ export default function AdminPanel() {
                       <LastSeenCell
                         iso={row.last_seen_at}
                         now={now}
-                        activeWithinMs={EVENT_ACTIVE_MS}
+                        active={isEventActive(row, now)}
                       />
                     ),
                   },

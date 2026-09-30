@@ -15,6 +15,11 @@ export const FAILING_GAP_MS = 30_000;
 // system_events never age out; one seen within this window counts as active.
 export const EVENT_ACTIVE_MS = 24 * 60 * 60_000;
 
+// For tasks that tick every minute but carry no data-side stale flag
+// (scoring_plays_refresh, win_probability_capture): this long without a run
+// means that task has stopped, even if the heartbeat is fine.
+export const EVERY_MINUTE_STALE_MS = 10 * 60_000;
+
 export type TaskHealth =
   "fresh" | "stale" | "failing" | "never" | "idle" | "done" | "missed";
 
@@ -142,3 +147,38 @@ export const deadlineSweepHealth = (
   if (!lastSunday) return "never";
   return lastSunday < dueDeadlineSunday(now) ? "missed" : "done";
 };
+
+// Health for an every-minute task with no stale flag of its own.
+export const everyMinuteHealth = (
+  lastAt: string | null,
+  lastSuccessAt: string | null,
+  now: number
+): TaskHealth => {
+  const health = taskHealth(lastAt, lastSuccessAt, false);
+  if (health !== "fresh") return health;
+  const attempt = toMs(lastAt);
+  return attempt !== null && now - attempt > EVERY_MINUTE_STALE_MS
+    ? "stale"
+    : "fresh";
+};
+
+// Whether a system event is still happening: the data repo's flag when it's
+// there, otherwise last_seen_at within EVENT_ACTIVE_MS.
+export const isEventActive = (
+  event: { active?: boolean; last_seen_at: string },
+  now: number
+): boolean =>
+  event.active ??
+  now - new Date(event.last_seen_at).getTime() <= EVENT_ACTIVE_MS;
+
+// Active failures for the card header: the data repo's active_count (which
+// covers every row, not just `recent`) when present, else a count of recent.
+export const activeEventCount = (
+  summary: {
+    active_count?: number;
+    recent: { active?: boolean; last_seen_at: string }[];
+  },
+  now: number
+): number =>
+  summary.active_count ??
+  summary.recent.filter((e) => isEventActive(e, now)).length;

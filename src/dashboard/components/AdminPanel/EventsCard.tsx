@@ -28,6 +28,8 @@ export type Props<T> = {
   description: string;
   distinctCount: number;
   totalOccurrences: number;
+  // Shown as a red "N active" chip in the header when above 0.
+  activeCount?: number;
   rows: T[];
   columns: Column<T>[];
   rowKey: (row: T) => string;
@@ -37,15 +39,12 @@ export type Props<T> = {
 export function LastSeenCell({
   iso,
   now,
-  activeWithinMs,
+  active = false,
 }: {
   iso: string;
   now: number;
-  activeWithinMs?: number;
+  active?: boolean;
 }) {
-  const active =
-    activeWithinMs !== undefined &&
-    now - new Date(iso).getTime() <= activeWithinMs;
   return (
     <Stack
       spacing={0.25}
@@ -75,6 +74,7 @@ export default function EventsCard<T>({
   description,
   distinctCount,
   totalOccurrences,
+  activeCount,
   rows,
   columns,
   rowKey,
@@ -99,15 +99,28 @@ export default function EventsCard<T>({
           >
             {title}
           </Typography>
-          <Typography
-            variant="body2"
-            noWrap
-            sx={{
-              color: "text.secondary",
-            }}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: "center", flexShrink: 0 }}
           >
-            {distinctCount} distinct · {totalOccurrences} total
-          </Typography>
+            {activeCount !== undefined && activeCount > 0 && (
+              <Chip
+                size="small"
+                color="error"
+                label={`${activeCount} active`}
+              />
+            )}
+            <Typography
+              variant="body2"
+              noWrap
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              {distinctCount} distinct · {totalOccurrences} total
+            </Typography>
+          </Stack>
         </Stack>
         <Typography
           variant="caption"

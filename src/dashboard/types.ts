@@ -605,10 +605,19 @@ export interface AdminLastRun {
   cbs_picks_quiet_poll: AdminWatchedTask;
   pregame_weather_capture: AdminWatchedTask;
   user_profiles_write: AdminWatchedTask;
+  // Optional: added to meta:admin after the others.
+  recap_write?: AdminWatchedTask;
   sports_io_live_poll: AdminLiveTask;
   cbs_live_poll: AdminLiveTask;
   game_snapshot_capture: AdminLiveTask;
   live_game_stats_capture: AdminLiveTask;
+  // Feeds the games key's leaders and details.players; records attempts and
+  // successes separately.
+  live_player_stats_capture?: AdminLiveTask;
+  // Tick every minute whether or not games are on (they only call their API
+  // when there's something new), with no data-side stale flag.
+  scoring_plays_refresh?: AdminLiveTask;
+  win_probability_capture?: AdminLiveTask;
   // Bare date ("2026-09-20"), not a timestamp. Runs on the first tick after
   // Sunday 1 PM ET, live games or not.
   deadline_last_synced_sunday: string | null;
@@ -634,12 +643,18 @@ export interface AdminSystemEvent {
   first_seen_at: string;
   last_seen_at: string;
   occurrences: number;
+  // Seen in the last 24h, i.e. still happening. Set by the data repo; older
+  // payloads lack it, so the UI falls back to comparing last_seen_at.
+  active?: boolean;
 }
 
 // `recent` is the 20 most recently seen rows; the counts include everything.
 export interface AdminEventSummary<T> {
   distinct_count: number;
   total_occurrences: number;
+  // system_events only: distinct failures active across all rows, not just
+  // `recent`. Optional for the same reason as AdminSystemEvent.active.
+  active_count?: number;
   recent: T[];
 }
 
