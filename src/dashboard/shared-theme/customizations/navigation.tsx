@@ -135,10 +135,11 @@ export const navigationCustomizations: Components<Theme> = {
           left: 0,
           backgroundColor: theme.palette.text.secondary,
           opacity: 0.3,
-          transition: "width 0.3s ease, opacity 0.3s ease",
+          transformOrigin: "left",
+          transition: "transform 0.3s ease, opacity 0.3s ease",
         },
         "&:hover::before": {
-          width: 0,
+          transform: "scaleX(0)",
         },
         "&:focus-visible": {
           outline: `3px solid ${alpha(brand[500], 0.5)}`,
