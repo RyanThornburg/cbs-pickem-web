@@ -5,6 +5,7 @@ import {
   formatEt,
   HEALTH_COLOR,
   HEALTH_LABEL,
+  healthSeverity,
   isFailing,
   TaskHealth,
 } from "./adminUtils";
@@ -13,9 +14,6 @@ export type TaskRun = {
   label?: string;
   lastAt: string | null;
   lastSuccessAt: string | null;
-  // False when last_success_at is just a copy of last_at, so success can't be
-  // told apart from an attempt -- shown as "ran", never as failing.
-  tracksFailures?: boolean;
 };
 
 export type Props = {
@@ -27,6 +25,9 @@ export type Props = {
   note?: string;
   // Freeform body for a task that doesn't fit the attempt/success shape.
   detail?: ReactNode;
+  // The heartbeat is stale, so this card's health is out of date too: grey it
+  // out rather than keep showing a green "Fresh".
+  dimmed?: boolean;
 };
 
 export default function TaskCard({
@@ -36,16 +37,36 @@ export default function TaskCard({
   now,
   note,
   detail,
+  dimmed = false,
 }: Props) {
+  // A problem card gets a colored edge so it stands out in a grid of healthy
+  // ones; the chip alone was easy to miss.
+  const severity = dimmed ? null : healthSeverity(health);
   return (
-    <Card variant="outlined" sx={{ height: "100%" }}>
-      <CardContent sx={{ "&:last-child": { pb: 2 } }}>
+    <Card
+      variant="outlined"
+      sx={{
+        height: "100%",
+        // The theme pads the Card itself (CardContent has none); a little
+        // less on phones.
+        p: { xs: 1.5, sm: 2 },
+        opacity: dimmed ? 0.55 : 1,
+        ...(severity && {
+          borderColor: `${severity}.main`,
+          borderLeftWidth: 4,
+        }),
+      }}
+    >
+      <CardContent>
         <Stack
           direction="row"
-          spacing={1}
+          useFlexGap
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: "wrap",
+            columnGap: 1,
+            rowGap: 0.5,
             mb: 1,
           }}
         >
@@ -53,8 +74,8 @@ export default function TaskCard({
           <Chip
             size="small"
             label={HEALTH_LABEL[health]}
-            color={HEALTH_COLOR[health]}
-            variant={health === "idle" ? "outlined" : "filled"}
+            color={dimmed ? "default" : HEALTH_COLOR[health]}
+            variant={health === "idle" || dimmed ? "outlined" : "filled"}
           />
         </Stack>
         {note && (
@@ -67,10 +88,14 @@ export default function TaskCard({
           />
         )}
         <Stack spacing={0.5}>
-          {runs.map((run) => {
-            const tracksFailures = run.tracksFailures ?? true;
-            return (
-              <div key={run.label ?? "run"}>
+          {runs.map((run) => (
+            <div key={run.label ?? "run"}>
+              {/* Wraps to two lines in a narrow card, one line on a phone. */}
+              <Stack
+                direction="row"
+                useFlexGap
+                sx={{ flexWrap: "wrap", alignItems: "baseline", columnGap: 1 }}
+              >
                 <Typography variant="body2">
                   {run.label && (
                     <Typography
@@ -83,8 +108,7 @@ export default function TaskCard({
                       {run.label}:{" "}
                     </Typography>
                   )}
-                  {tracksFailures ? "ok" : "ran"}{" "}
-                  {formatAgo(run.lastSuccessAt, now)}
+                  ok {formatAgo(run.lastSuccessAt, now)}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -94,22 +118,22 @@ export default function TaskCard({
                 >
                   {formatEt(run.lastSuccessAt)}
                 </Typography>
-                {/* Attempted more recently than it succeeded -- the matching
+              </Stack>
+              {/* Attempted more recently than it succeeded -- the matching
                   system_events row (same source) should say why. */}
-                {tracksFailures && isFailing(run.lastAt, run.lastSuccessAt) && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "error.main",
-                      display: "block",
-                    }}
-                  >
-                    last attempt {formatAgo(run.lastAt, now)}
-                  </Typography>
-                )}
-              </div>
-            );
-          })}
+              {isFailing(run.lastAt, run.lastSuccessAt) && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "error.main",
+                    display: "block",
+                  }}
+                >
+                  last attempt {formatAgo(run.lastAt, now)}
+                </Typography>
+              )}
+            </div>
+          ))}
           {detail}
         </Stack>
       </CardContent>

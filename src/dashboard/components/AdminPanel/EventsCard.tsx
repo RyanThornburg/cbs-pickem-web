@@ -10,7 +10,9 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { Theme } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { formatAgo, formatEt } from "./adminUtils";
 
@@ -18,9 +20,9 @@ export type Column<T> = {
   header: string;
   render: (row: T) => ReactNode;
   align?: "right";
-  // Long freeform text (event messages) would otherwise get squeezed to a
-  // few characters per line on a phone -- scroll the table sideways instead.
-  minWidth?: number;
+  // Long freeform text (an event message). Takes the leftover width in the
+  // table, and gets a full-width line of its own on phones.
+  wide?: boolean;
 };
 
 export type Props<T> = {
@@ -69,6 +71,66 @@ export function LastSeenCell({
   );
 }
 
+// Shrink-to-fit, so the wide column gets the rest of the row and nothing
+// narrow (a count, a timestamp) wraps or gets clipped.
+const NARROW_CELL_SX = { width: "1%", whiteSpace: "nowrap" } as const;
+
+// Phone layout: the short columns side by side with their headers as small
+// labels, then the wide column on its own line underneath.
+function CompactRows<T>({
+  rows,
+  columns,
+  rowKey,
+}: Pick<Props<T>, "rows" | "columns" | "rowKey">) {
+  const short = columns.filter((column) => !column.wide);
+  const wide = columns.filter((column) => column.wide);
+  return (
+    <Stack sx={{ mt: 1 }}>
+      {rows.map((row) => (
+        <Box
+          key={rowKey(row)}
+          sx={{ py: 1.5, borderTop: 1, borderColor: "divider" }}
+        >
+          {/* One line: the short columns shrink (and wrap inside) before
+              anything drops to a second row. */}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: short
+                .map((column) =>
+                  column.align === "right" ? "auto" : "minmax(0, auto)"
+                )
+                .join(" "),
+              justifyContent: "space-between",
+              columnGap: 1.5,
+            }}
+          >
+            {short.map((column) => (
+              <Box
+                key={column.header}
+                sx={{ textAlign: column.align, overflowWrap: "anywhere" }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{ display: "block", color: "text.secondary" }}
+                >
+                  {column.header}
+                </Typography>
+                {column.render(row)}
+              </Box>
+            ))}
+          </Box>
+          {wide.map((column) => (
+            <Box key={column.header} sx={{ mt: 1 }}>
+              {column.render(row)}
+            </Box>
+          ))}
+        </Box>
+      ))}
+    </Stack>
+  );
+}
+
 export default function EventsCard<T>({
   title,
   description,
@@ -80,15 +142,22 @@ export default function EventsCard<T>({
   rowKey,
   emptyText,
 }: Props<T>) {
+  // Four columns don't fit a phone: the message got squeezed and pushed
+  // Last seen and Count off screen.
+  const compact = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   return (
     <Card variant="outlined" sx={{ height: "100%" }}>
       <CardContent>
         <Stack
           direction="row"
-          spacing={2}
+          useFlexGap
           sx={{
             justifyContent: "space-between",
             alignItems: "baseline",
+            // On a phone the counts drop under the title instead of
+            // squeezing it onto two lines.
+            flexWrap: "wrap",
+            columnGap: 2,
           }}
         >
           <Typography
@@ -140,39 +209,42 @@ export default function EventsCard<T>({
           >
             {emptyText}
           </Typography>
+        ) : compact ? (
+          <CompactRows rows={rows} columns={columns} rowKey={rowKey} />
         ) : (
-          <Box sx={{ overflowX: "auto", mt: 1 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
+          <Table size="small" sx={{ mt: 1 }}>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.header}
+                    align={column.align}
+                    sx={column.wide ? undefined : NARROW_CELL_SX}
+                  >
+                    {column.header}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={rowKey(row)}>
                   {columns.map((column) => (
                     <TableCell
                       key={column.header}
                       align={column.align}
-                      sx={{ minWidth: column.minWidth }}
+                      sx={{
+                        verticalAlign: "top",
+                        ...(column.wide ? undefined : NARROW_CELL_SX),
+                      }}
                     >
-                      {column.header}
+                      {column.render(row)}
                     </TableCell>
                   ))}
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={rowKey(row)}>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column.header}
-                        align={column.align}
-                        sx={{ verticalAlign: "top" }}
-                      >
-                        {column.render(row)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>

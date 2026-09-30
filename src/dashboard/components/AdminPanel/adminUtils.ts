@@ -38,17 +38,13 @@ export const isFailing = (
 
 // Watched tasks have a data-side stale flag; live-only tasks don't, so an old
 // timestamp there is just "idle" (no game on), not a problem.
-// `tracksFailures` is false for tasks whose last_success_at is just a copy of
-// last_at (a failure there aborts the whole tick, so it shows up as a stale
-// heartbeat instead) -- "failing" can't be detected for those.
 export const taskHealth = (
   lastAt: string | null,
   lastSuccessAt: string | null,
-  stale: boolean | undefined,
-  tracksFailures = true
+  stale: boolean | undefined
 ): TaskHealth => {
   if (lastAt === null && lastSuccessAt === null) return "never";
-  if (tracksFailures && isFailing(lastAt, lastSuccessAt)) return "failing";
+  if (isFailing(lastAt, lastSuccessAt)) return "failing";
   if (stale === undefined) return "idle";
   return stale ? "stale" : "fresh";
 };
@@ -74,6 +70,38 @@ export const HEALTH_COLOR: Record<
   idle: "default",
   done: "success",
   missed: "error",
+};
+
+// Which health values are problems, and how bad. Everything else (fresh,
+// done, and idle live-only tasks) is fine.
+export const healthSeverity = (
+  health: TaskHealth
+): "error" | "warning" | null => {
+  if (health === "failing" || health === "missed") return "error";
+  if (health === "stale" || health === "never") return "warning";
+  return null;
+};
+
+// Worst first, so the banner lists what needs attention in that order.
+const PROBLEM_ORDER: TaskHealth[] = ["failing", "missed", "stale", "never"];
+
+export type HealthSummary = {
+  severity: "error" | "warning" | null;
+  problems: { health: TaskHealth; count: number }[];
+};
+
+export const summarizeHealth = (healths: TaskHealth[]): HealthSummary => {
+  const problems = PROBLEM_ORDER.map((health) => ({
+    health,
+    count: healths.filter((h) => h === health).length,
+  })).filter(({ count }) => count > 0);
+  const severities = problems.map(({ health }) => healthSeverity(health));
+  const severity = severities.includes("error")
+    ? "error"
+    : severities.includes("warning")
+      ? "warning"
+      : null;
+  return { severity, problems };
 };
 
 export const formatAgo = (iso: string | null, now: number): string => {

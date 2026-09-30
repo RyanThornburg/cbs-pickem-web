@@ -59,6 +59,9 @@ export default function MainGrid() {
     : tab === ADMIN_TAB || tab === RECORDS_TAB
       ? tab
       : null;
+  // Pipeline status has nothing to do with a week or a player, so the admin
+  // page drops the dropdowns and the selected-player header.
+  const showPlayerControls = activeTab !== ADMIN_TAB;
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
@@ -131,53 +134,59 @@ export default function MainGrid() {
                     mr: 1,
                   }}
                 >
-                  <UserSelectedMain
-                    userId={user}
-                    userList={userList}
-                    userTrends={selectedUserTrends}
-                    showStreak={isCurrentWeek}
-                  />
+                  {showPlayerControls && (
+                    <UserSelectedMain
+                      userId={user}
+                      userList={userList}
+                      userTrends={selectedUserTrends}
+                      showStreak={isCurrentWeek}
+                    />
+                  )}
                 </Box>
               </Box>
             </Grid>
 
-            <Grid
-              size={{ xs: 12, sm: "auto" }}
-              sx={{
-                alignItems: { xs: "center", sm: "flex-end" },
-              }}
-            >
-              <Stack
+            {showPlayerControls && (
+              <Grid
+                size={{ xs: 12, sm: "auto" }}
                 sx={{
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
-                  pb: 2,
+                  alignItems: { xs: "center", sm: "flex-end" },
                 }}
-                spacing={2}
-                direction="row"
               >
-                {/* Records isn't weekly data, so there's no week to pick. */}
-                {activeTab !== RECORDS_TAB && (
-                  <WeekDropdown
-                    currentWeek={currentWeek}
-                    selectedWeek={selectedWeek}
-                    onWeekChange={onWeekChange}
+                <Stack
+                  sx={{
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                    pb: 2,
+                  }}
+                  spacing={2}
+                  direction="row"
+                >
+                  {/* Records isn't weekly data, so there's no week to pick. */}
+                  {activeTab !== RECORDS_TAB && (
+                    <WeekDropdown
+                      currentWeek={currentWeek}
+                      selectedWeek={selectedWeek}
+                      onWeekChange={onWeekChange}
+                    />
+                  )}
+                  <UserSelectDropdown
+                    userList={userList}
+                    user={user}
+                    onUserChange={onUserChange}
                   />
-                )}
-                <UserSelectDropdown
-                  userList={userList}
-                  user={user}
-                  onUserChange={onUserChange}
-                />
-              </Stack>
-            </Grid>
+                </Stack>
+              </Grid>
+            )}
 
-            <UserSelected
-              userId={user}
-              userList={userList}
-              userTrends={selectedUserTrends}
-              showStreak={isCurrentWeek}
-            />
+            {showPlayerControls && (
+              <UserSelected
+                userId={user}
+                userList={userList}
+                userTrends={selectedUserTrends}
+                showStreak={isCurrentWeek}
+              />
+            )}
           </Grid>
 
           <Box

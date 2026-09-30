@@ -21,9 +21,11 @@ import {
   everyMinuteHealth,
   formatAgo,
   formatEt,
+  HEALTH_LABEL,
   HEARTBEAT_STALE_MS,
   isEventActive,
   isFailing,
+  summarizeHealth,
   TaskHealth,
   taskHealth,
 } from "./adminUtils";
@@ -73,31 +75,12 @@ const QUIET_TASKS: { key: WatchedKey; name: string }[] = [
   { key: "cbs_picks_quiet_poll", name: "CBS quiet picks poll" },
 ];
 
-// Only sports_io_live_poll records attempts and successes separately; for the
-// rest last_success_at is a copy of last_at, and a failure aborts the whole
-// tick (so it shows as a stale heartbeat, not a failing card).
-const LIVE_TASKS: { key: LiveKey; name: string; tracksFailures: boolean }[] = [
-  {
-    key: "sports_io_live_poll",
-    name: "Sports IO live poll",
-    tracksFailures: true,
-  },
-  { key: "cbs_live_poll", name: "CBS live poll", tracksFailures: false },
-  {
-    key: "game_snapshot_capture",
-    name: "Game snapshots",
-    tracksFailures: false,
-  },
-  {
-    key: "live_game_stats_capture",
-    name: "Live game stats",
-    tracksFailures: false,
-  },
-  {
-    key: "live_player_stats_capture",
-    name: "Live player stats",
-    tracksFailures: true,
-  },
+const LIVE_TASKS: { key: LiveKey; name: string }[] = [
+  { key: "sports_io_live_poll", name: "Sports IO live poll" },
+  { key: "cbs_live_poll", name: "CBS live poll" },
+  { key: "game_snapshot_capture", name: "Game snapshots" },
+  { key: "live_game_stats_capture", name: "Live game stats" },
+  { key: "live_player_stats_capture", name: "Live player stats" },
 ];
 
 // Odds is stale (data-side) only when neither capture has succeeded in 12h,
@@ -116,8 +99,62 @@ const oddsHealth = (odds: AdminOddsTask): TaskHealth => {
 const watchedHealth = (task: AdminWatchedTask) =>
   taskHealth(task.last_at, task.last_success_at, task.stale);
 
-const liveHealth = (task: AdminLiveTask, tracksFailures: boolean) =>
-  taskHealth(task.last_at, task.last_success_at, undefined, tracksFailures);
+const liveHealth = (task: AdminLiveTask) =>
+  taskHealth(task.last_at, task.last_success_at, undefined);
+
+type CardKey = "odds" | "deadline" | WatchedKey | EveryMinuteKey | LiveKey;
+
+// Every card's health in one place, so the cards and the banner's summary
+// can't disagree.
+const cardHealths = (
+  status: AdminStatus,
+  now: number
+): Record<CardKey, TaskHealth> => {
+  const { last_run } = status;
+  const watched = (key: WatchedKey) =>
+    watchedHealth(last_run[key] ?? { ...NOT_RUN, stale: false });
+  const everyMinute = (key: EveryMinuteKey) => {
+    const task = last_run[key] ?? NOT_RUN;
+    return everyMinuteHealth(task.last_at, task.last_success_at, now);
+  };
+  const live = (key: LiveKey) => liveHealth(last_run[key] ?? NOT_RUN);
+  return {
+    odds: oddsHealth(last_run.odds),
+    deadline: deadlineSweepHealth(last_run.deadline_last_synced_sunday, now),
+    housekeeping: watched("housekeeping"),
+    cbs_picks_quiet_poll: watched("cbs_picks_quiet_poll"),
+    pregame_weather_capture: watched("pregame_weather_capture"),
+    user_profiles_write: watched("user_profiles_write"),
+    recap_write: watched("recap_write"),
+    scoring_plays_refresh: everyMinute("scoring_plays_refresh"),
+    win_probability_capture: everyMinute("win_probability_capture"),
+    sports_io_live_poll: live("sports_io_live_poll"),
+    cbs_live_poll: live("cbs_live_poll"),
+    game_snapshot_capture: live("game_snapshot_capture"),
+    live_game_stats_capture: live("live_game_stats_capture"),
+    live_player_stats_capture: live("live_player_stats_capture"),
+  };
+};
+
+const plural = (count: number, word: string) =>
+  `${count} ${word}${count === 1 ? "" : "s"}`;
+
+// "All 14 tasks OK", or what's wrong, worst first: "1 Failing · 2 Stale ·
+// 1 active event".
+const summaryText = (
+  healths: TaskHealth[],
+  activeEvents: number
+): { severity: AlertColor; text: string } => {
+  const { severity, problems } = summarizeHealth(healths);
+  const parts = problems.map(
+    ({ health, count }) => `${count} ${HEALTH_LABEL[health]}`
+  );
+  if (activeEvents > 0) parts.push(plural(activeEvents, "active event"));
+  if (parts.length === 0) {
+    return { severity: "success", text: `All ${healths.length} tasks OK.` };
+  }
+  return { severity: severity ?? "warning", text: parts.join(" · ") };
+};
 
 const TaskSection = ({
   title,
@@ -188,6 +225,13 @@ export default function AdminPanel() {
   const heartbeatAge = status
     ? now - new Date(status.updated_at).getTime()
     : null;
+  const heartbeatDead =
+    heartbeatAge !== null && heartbeatAge > HEARTBEAT_STALE_MS;
+  const health = status ? cardHealths(status, now) : null;
+  const activeEvents = status ? activeEventCount(status.system_events, now) : 0;
+  const summary = health
+    ? summaryText(Object.values(health), activeEvents)
+    : null;
 
   return (
     <Stack spacing={3} sx={{ textAlign: "left" }}>
@@ -232,32 +276,40 @@ export default function AdminPanel() {
         </Alert>
       )}
 
-      {status && heartbeatAge !== null && (
+      {status && health && (
         <>
-          {heartbeatAge > HEARTBEAT_STALE_MS ? (
+          {heartbeatDead ? (
             <Alert severity="error" sx={severitySx("error")}>
               Pipeline heartbeat is {formatAgo(status.updated_at, now)} (
               {formatEt(status.updated_at)}). meta:admin normally updates every
-              minute -- cron or the orchestrator has likely stopped (or is
-              crashing), so everything below is out of date too. Check
-              logs/error.log.
+              minute, so the pipeline isn't running: the machine is off, the
+              cron has stopped, or it crashes on startup. Everything below is
+              out of date too, so it's greyed out.
             </Alert>
           ) : (
-            <Alert severity="success" sx={severitySx("success")}>
-              Pipeline heartbeat {formatAgo(status.updated_at, now)} (
-              {formatEt(status.updated_at)}).
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  color: "text.secondary",
-                }}
+            summary && (
+              <Alert
+                severity={summary.severity}
+                sx={severitySx(summary.severity)}
               >
-                Rewritten every minute. If this goes stale, the orchestrator is
-                crashing or not running -- most task failures abort the tick and
-                only show up here. Check logs/error.log.
-              </Typography>
-            </Alert>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {summary.text}
+                </Typography>
+                Pipeline heartbeat {formatAgo(status.updated_at, now)} (
+                {formatEt(status.updated_at)}).
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: "block",
+                    color: "text.secondary",
+                  }}
+                >
+                  Rewritten every minute. If this goes stale, the pipeline isn't
+                  running. A single failing task doesn't stop it: those show up
+                  below as a Failing card and in System events.
+                </Typography>
+              </Alert>
+            )
           )}
 
           <TaskSection
@@ -270,7 +322,8 @@ export default function AdminPanel() {
                   paused for live games. */}
               <TaskCard
                 name="Odds"
-                health={oddsHealth(status.last_run.odds)}
+                health={health.odds}
+                dimmed={heartbeatDead}
                 now={now}
                 runs={[
                   {
@@ -294,7 +347,8 @@ export default function AdminPanel() {
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
                     name={name}
-                    health={watchedHealth(task)}
+                    health={health[key]}
+                    dimmed={heartbeatDead}
                     now={now}
                     runs={[
                       {
@@ -312,11 +366,8 @@ export default function AdminPanel() {
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
                     name={name}
-                    health={everyMinuteHealth(
-                      task.last_at,
-                      task.last_success_at,
-                      now
-                    )}
+                    health={health[key]}
+                    dimmed={heartbeatDead}
                     now={now}
                     note="Every minute"
                     runs={[
@@ -332,10 +383,8 @@ export default function AdminPanel() {
             <Grid size={CARD_SIZE}>
               <TaskCard
                 name="Sunday deadline sweep"
-                health={deadlineSweepHealth(
-                  status.last_run.deadline_last_synced_sunday,
-                  now
-                )}
+                health={health.deadline}
+                dimmed={heartbeatDead}
                 now={now}
                 runs={[]}
                 detail={
@@ -370,9 +419,9 @@ export default function AdminPanel() {
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
                     name={name}
-                    health={watchedHealth(task)}
+                    health={health[key]}
+                    dimmed={heartbeatDead}
                     now={now}
-                    note="Pauses during games"
                     runs={[
                       {
                         lastAt: task.last_at,
@@ -387,23 +436,21 @@ export default function AdminPanel() {
 
           <TaskSection
             title="Live only"
-            caption={
-              "Only run during a game's live window, so an old timestamp is normal most of the week. \"Ran\" means the data can't tell a success from an attempt."
-            }
+            caption="Only run during a game's live window, so an old timestamp is normal most of the week."
           >
-            {LIVE_TASKS.map(({ key, name, tracksFailures }) => {
+            {LIVE_TASKS.map(({ key, name }) => {
               const task = status.last_run[key] ?? NOT_RUN;
               return (
                 <Grid key={key} size={CARD_SIZE}>
                   <TaskCard
                     name={name}
-                    health={liveHealth(task, tracksFailures)}
+                    health={health[key]}
+                    dimmed={heartbeatDead}
                     now={now}
                     runs={[
                       {
                         lastAt: task.last_at,
                         lastSuccessAt: task.last_success_at,
-                        tracksFailures,
                       },
                     ]}
                   />
@@ -413,13 +460,13 @@ export default function AdminPanel() {
           </TaskSection>
 
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, lg: 6 }}>
+            <Grid size={12}>
               <EventsCard<AdminSystemEvent>
                 title="System events"
-                description="Caught failures, one row per source + message. These never age out -- Active means seen in the last 24h."
+                description="Caught failures, one row per source + message. These never age out. Active means seen in the last 24h."
                 distinctCount={status.system_events.distinct_count}
                 totalOccurrences={status.system_events.total_occurrences}
-                activeCount={activeEventCount(status.system_events, now)}
+                activeCount={activeEvents}
                 rows={status.system_events.recent}
                 rowKey={(row) => `${row.source}|${row.message}`}
                 emptyText="No recorded failures."
@@ -427,7 +474,7 @@ export default function AdminPanel() {
                   { header: "Source", render: (row) => row.source },
                   {
                     header: "Message",
-                    minWidth: 240,
+                    wide: true,
                     render: (row) => (
                       <Typography
                         variant="body2"
@@ -458,7 +505,7 @@ export default function AdminPanel() {
                 ]}
               />
             </Grid>
-            <Grid size={{ xs: 12, lg: 6 }}>
+            <Grid size={12}>
               <EventsCard<AdminMappingGap>
                 title="Mapping gaps"
                 description="Source values a loader couldn't match to a D1 row. These never raise an error, so they only show up here."
@@ -476,7 +523,7 @@ export default function AdminPanel() {
                   },
                   {
                     header: "Value",
-                    minWidth: 160,
+                    wide: true,
                     render: (row) => (
                       <>
                         <Typography

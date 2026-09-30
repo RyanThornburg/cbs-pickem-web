@@ -592,8 +592,8 @@ export interface AdminOddsTask {
 }
 
 // Only run during a game's live window, so an old timestamp is normal most
-// of the week -- no stale flag. Only sports_io_live_poll records attempts and
-// successes separately; for the rest last_success_at is a copy of last_at.
+// of the week -- no stale flag. last_at moves on every attempt and
+// last_success_at only when it worked, so a gap between them means failing.
 export interface AdminLiveTask {
   last_at: string | null;
   last_success_at: string | null;
@@ -611,8 +611,7 @@ export interface AdminLastRun {
   cbs_live_poll: AdminLiveTask;
   game_snapshot_capture: AdminLiveTask;
   live_game_stats_capture: AdminLiveTask;
-  // Feeds the games key's leaders and details.players; records attempts and
-  // successes separately.
+  // Feeds the games key's leaders and details.players.
   live_player_stats_capture?: AdminLiveTask;
   // Tick every minute whether or not games are on (they only call their API
   // when there's something new), with no data-side stale flag.

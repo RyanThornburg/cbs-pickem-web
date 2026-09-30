@@ -6,8 +6,10 @@ import {
   dueDeadlineSunday,
   FAILING_GAP_MS,
   formatAgo,
+  healthSeverity,
   isEventActive,
   isFailing,
+  summarizeHealth,
   taskHealth,
 } from "./adminUtils";
 
@@ -40,11 +42,6 @@ describe("taskHealth", () => {
     expect(taskHealth(T, T, undefined)).toBe("idle");
     expect(taskHealth(T, T, true)).toBe("stale");
     expect(taskHealth(T, T, false)).toBe("fresh");
-  });
-
-  it("can't call a task failing when it doesn't record attempts separately", () => {
-    expect(taskHealth(plus(T, 60_000), T, false, false)).toBe("fresh");
-    expect(taskHealth(T, null, true, false)).toBe("stale");
   });
 });
 
@@ -180,5 +177,35 @@ describe("system event activity", () => {
       0
     );
     expect(activeEventCount({ recent: [recent, old, recent] }, now)).toBe(2);
+  });
+});
+
+describe("healthSeverity / summarizeHealth", () => {
+  it("treats failing and missed as errors, stale and never as warnings", () => {
+    expect(healthSeverity("failing")).toBe("error");
+    expect(healthSeverity("missed")).toBe("error");
+    expect(healthSeverity("stale")).toBe("warning");
+    expect(healthSeverity("never")).toBe("warning");
+    expect(healthSeverity("fresh")).toBeNull();
+    expect(healthSeverity("done")).toBeNull();
+    expect(healthSeverity("idle")).toBeNull();
+  });
+
+  it("counts problems worst first, with the worst severity", () => {
+    expect(
+      summarizeHealth(["stale", "fresh", "failing", "idle", "stale", "never"])
+    ).toEqual({
+      severity: "error",
+      problems: [
+        { health: "failing", count: 1 },
+        { health: "stale", count: 2 },
+        { health: "never", count: 1 },
+      ],
+    });
+    expect(summarizeHealth(["fresh", "stale"]).severity).toBe("warning");
+    expect(summarizeHealth(["fresh", "done", "idle"])).toEqual({
+      severity: null,
+      problems: [],
+    });
   });
 });
