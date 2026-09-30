@@ -108,6 +108,7 @@ export default function UserDataMobile({
             return (
               <Fragment key={row.id}>
                 <TableRow
+                  data-user-row={row.id}
                   onClick={() => toggleExpanded(row.id)}
                   sx={[
                     { borderTop: `2px solid ${grey[300]}`, cursor: "pointer" },

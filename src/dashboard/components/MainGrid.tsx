@@ -9,7 +9,7 @@ import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import AdminPanel from "./AdminPanel";
@@ -18,6 +18,7 @@ import RecordsSection from "./RecordsSection";
 import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
+import PickYourselfHint from "./PickYourselfHint";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
 import {
@@ -51,6 +52,48 @@ export default function MainGrid() {
   const isCurrentWeek = selectedWeek === currentWeek;
   const { userList, recap, hasLiveGame } = useWeekData(season, selectedWeek);
   const [user, onUserChange] = useSelectedUser(userList);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // After picking someone on User Picks, bring their row into view if it's
+  // off screen. Runs once the menu has finished closing: until then the
+  // page is scroll-locked, and the select takes focus back as it closes.
+  const pendingScrollRef = useRef<string | null>(null);
+  const handleUserChange = (userId: string) => {
+    onUserChange(userId);
+    pendingScrollRef.current = userId && activeTab === "picks" ? userId : null;
+  };
+  const scrollToPendingRow = () => {
+    const userId = pendingScrollRef.current;
+    pendingScrollRef.current = null;
+    if (!userId) return;
+    // The menu hands focus back to the select right after it exits, which
+    // scrolls a phone back up to it; start after that.
+    window.setTimeout(() => scrollToRow(userId), 50);
+  };
+  const scrollToRow = (userId: string) => {
+    const row = [
+      ...document.querySelectorAll<HTMLElement>(
+        `[data-user-row="${CSS.escape(userId)}"]`
+      ),
+    ].find((el) => el.offsetParent !== null);
+    if (!row) return;
+    const { top, bottom } = row.getBoundingClientRect();
+    if (top >= 0 && bottom <= window.innerHeight) return;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    row.scrollIntoView({
+      block: "center",
+      behavior: reduce ? "auto" : "smooth",
+    });
+  };
+
+  const openUserMenu = () => {
+    document
+      .getElementById("user-drop-down")
+      ?.scrollIntoView({ block: "center" });
+    setUserMenuOpen(true);
+  };
   const selectedUserTrends = useSelectedUserTrends(season, user);
   const isAdmin = useIsAdmin();
 
@@ -173,7 +216,10 @@ export default function MainGrid() {
                   <UserSelectDropdown
                     userList={userList}
                     user={user}
-                    onUserChange={onUserChange}
+                    onUserChange={handleUserChange}
+                    open={userMenuOpen}
+                    onOpenChange={setUserMenuOpen}
+                    onMenuClosed={scrollToPendingRow}
                   />
                 </Stack>
               </Grid>
@@ -329,6 +375,9 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
+              {!user && userList.length > 0 && (
+                <PickYourselfHint onChoose={openUserMenu} />
+              )}
               {selectedWeek >= secondHalfStartWeek && (
                 <SecondHalfLeaders
                   userList={userList}

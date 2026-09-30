@@ -9,12 +9,20 @@ export type Props = {
   userList: RankedUser[];
   user: string | undefined;
   onUserChange: (userId: string) => void;
+  // Controlled from MainGrid so the "Choose your name" hint can open it.
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  // After the menu has finished closing (focus is back on the select).
+  onMenuClosed?: () => void;
 };
 
 export default function UserSelectDropdown({
   userList,
   user,
   onUserChange,
+  open,
+  onOpenChange,
+  onMenuClosed,
 }: Props) {
   const users = [...userList].sort((a, b) =>
     a.name < b.name ? -1 : a.name > b.name ? 1 : 0
@@ -27,18 +35,36 @@ export default function UserSelectDropdown({
   return (
     <Box sx={{ minWidth: 150 }}>
       <FormControl variant="standard" sx={{ minWidth: 150 }}>
-        <InputLabel id="user-select-label">User</InputLabel>
+        {/* Always above the field: with nothing chosen, the empty select
+            shows the "Find yourself" placeholder instead. */}
+        <InputLabel id="user-select-label" shrink>
+          User
+        </InputLabel>
         <Select
           // 40px tall on phones so it's an easy tap target.
           sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
           labelId="user-select-label"
           id="user-drop-down"
-          value={users ? user : ""}
+          value={user ?? ""}
           onChange={handleChange}
+          open={open}
+          onOpen={() => onOpenChange(true)}
+          onClose={() => onOpenChange(false)}
+          MenuProps={{ slotProps: { transition: { onExited: onMenuClosed } } }}
+          displayEmpty
+          renderValue={(value) =>
+            value ? (
+              (users.find((u) => u.id === value)?.name ?? "")
+            ) : (
+              <Box component="span" sx={{ color: "text.secondary" }}>
+                Find yourself…
+              </Box>
+            )
+          }
           label="User"
         >
           <MenuItem value="">
-            <em>None</em>
+            <em>No one</em>
           </MenuItem>
           {users.map((userItem: RankedUser) => {
             return (

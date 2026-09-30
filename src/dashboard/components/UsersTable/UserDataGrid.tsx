@@ -77,6 +77,7 @@ const UserDataGrid = ({
               <Fragment key={row.id}>
                 <TableRow
                   hover
+                  data-user-row={row.id}
                   onClick={() => toggleExpanded(row.id)}
                   sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
                 >
