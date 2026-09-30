@@ -1,7 +1,7 @@
 import { RankedUser, UserSeasonTrends } from "../../types";
 import { Box, Divider, Grid2 as Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { stringOrdinalPlace } from "../../helper";
+import { ordinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import UserAvatar from "../UserAvatar";
 import { StreakBadge } from "../UsersTable/StreakBadge";
@@ -70,14 +70,14 @@ export default function UserSelected({ userList, userId, userTrends, showStreak 
 
           <Box sx={commonBoxStyles}>
             Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)} (
-            {stringOrdinalPlace(user.place)})
+            {ordinal(user.place)})
           </Box>
 
           {user.second_half_score !== null && (
             <Box sx={commonBoxStyles}>
               2nd Half:{" "}
               {(user.second_half_score ?? 0) + (user.trending_score ?? 0)} (
-              {stringOrdinalPlace(user.second_half_place ?? 99)})
+              {ordinal(user.second_half_place ?? 99)})
             </Box>
           )}
         </Stack>

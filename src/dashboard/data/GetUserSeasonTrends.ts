@@ -1,4 +1,4 @@
-import { fetchJson, poll } from "../../api/pickemApi";
+import { fetchJson, pollAsync } from "../../api/pickemApi";
 import { UserSeasonTrends } from "../types";
 
 // Matches the cadence of the other season-scoped trends endpoint
@@ -21,28 +21,18 @@ export const GetUserSeasonTrends = (
     return;
   }
 
-  let cancelled = false;
-
-  const stop = poll(() => {
-    Promise.allSettled(
-      userIds.map((id) =>
-        fetchJson<UserSeasonTrends>(`/api/users/${id}/season/${season}`)
-      )
-    ).then((results) => {
-      if (cancelled) return;
-
-      const trends: Record<string, UserSeasonTrends> = {};
-      results.forEach((result, index) => {
-        if (result.status === "fulfilled") {
-          trends[userIds[index]] = result.value;
-        }
-      });
-      callback(trends);
+  const load = async (): Promise<Record<string, UserSeasonTrends>> => {
+    const results = await Promise.allSettled(
+      userIds.map((id) => fetchJson<UserSeasonTrends>(`/api/users/${id}/season/${season}`))
+    );
+    const trends: Record<string, UserSeasonTrends> = {};
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        trends[userIds[index]] = result.value;
+      }
     });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
+    return trends;
   };
+
+  return pollAsync(load, POLL_INTERVAL_MS, callback);
 };

@@ -1,4 +1,4 @@
-import { fetchJson, poll } from "../../api/pickemApi";
+import { fetchJson, pollAsync } from "../../api/pickemApi";
 import { Book, BookMarketSide, Forecast, GameStatus, MarketSpread, Stadium, Team } from "../types";
 import { ApiGame, fetchWeekGames, getGameCoverResult, toTeam } from "./weekGames";
 
@@ -134,29 +134,18 @@ export const GetGamesTabData = (
     return () => {};
   }
 
-  let cancelled = false;
-
-  const stop = poll(() => {
-    Promise.all([fetchWeekGames(season, week), fetchOdds(season, week)])
-      .then(([weekGames, odds]) => {
-        if (cancelled) return;
-
-        const oddsByGameId = new Map(odds.games.map((o) => [o.game_id, o]));
-        const games = weekGames.games
-          .map((game) => joinGameWithOdds(game, oddsByGameId.get(game.game_id)))
-          .sort((a, b) => a.game_time - b.game_time);
-
-        callback(games);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          console.error("Failed to fetch games tab data", error);
-        }
-      });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
+  const load = async (): Promise<GameWithOdds[]> => {
+    const [weekGames, odds] = await Promise.all([
+      fetchWeekGames(season, week),
+      fetchOdds(season, week),
+    ]);
+    const oddsByGameId = new Map(odds.games.map((o) => [o.game_id, o]));
+    return weekGames.games
+      .map((game) => joinGameWithOdds(game, oddsByGameId.get(game.game_id)))
+      .sort((a, b) => a.game_time - b.game_time);
   };
+
+  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) =>
+    console.error("Failed to fetch games tab data", error)
+  );
 };

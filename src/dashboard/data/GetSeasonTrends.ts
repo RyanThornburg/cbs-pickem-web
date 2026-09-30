@@ -1,4 +1,4 @@
-import { fetchJson, poll } from "../../api/pickemApi";
+import { fetchJson, pollAsync } from "../../api/pickemApi";
 import {
   ColdTeamSeason,
   GroupTrapTeam,
@@ -58,20 +58,10 @@ export const GetSeasonTrends = (
     return;
   }
 
-  let cancelled = false;
-
-  const stop = poll(() => {
-    fetchJson<ApiSeasonTrends>(`/api/season/${season}/trends`)
-      .then((data) => {
-        if (!cancelled) callback(toSeasonTrends(data));
-      })
-      .catch((error) => {
-        if (!cancelled) console.error("Failed to fetch season trends", error);
-      });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
-  };
+  return pollAsync(
+    () => fetchJson<ApiSeasonTrends>(`/api/season/${season}/trends`).then(toSeasonTrends),
+    POLL_INTERVAL_MS,
+    callback,
+    (error) => console.error("Failed to fetch season trends", error)
+  );
 };

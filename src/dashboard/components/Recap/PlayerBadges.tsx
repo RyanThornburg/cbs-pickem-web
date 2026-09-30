@@ -1,5 +1,5 @@
 import { Box, Tooltip } from "@mui/material";
-import { getOrdinal } from "../../helper";
+import { ordinal } from "../../helper";
 import { RecapMove } from "../../types";
 
 // Leaderboard move of 3+ places since last week (from the recap key).
@@ -9,9 +9,7 @@ export function MoverBadge({ move }: { move: RecapMove | undefined }) {
   const places = Math.abs(move.change);
   return (
     <Tooltip
-      title={`${up ? "Up" : "Down"} ${places} places since last week (${move.rank_before}${getOrdinal(
-        move.rank_before
-      )} → ${move.rank_after}${getOrdinal(move.rank_after)})`}
+      title={`${up ? "Up" : "Down"} ${places} places since last week (${ordinal(move.rank_before)} → ${ordinal(move.rank_after)})`}
     >
       <Box
         component="span"

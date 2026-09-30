@@ -60,8 +60,8 @@ export interface GameLive {
   weather?: Forecast | null;
 }
 
-// Scoreboard feed additions (2026-09-27). All optional: the games key only
-// carries them once the data repo's pipeline deploy is running.
+// Scoreboard feed fields. All optional: weeks that were already complete when
+// they shipped (weeks 1-2 of 2026) never get them.
 export interface LinescoreSide {
   q1: number | null;
   q2: number | null;
@@ -205,7 +205,7 @@ export interface Forecast {
   wind_direction?: string;
   precipitation_pct: number;
   visibility_mi: number;
-  // Replaced the old single `weather_alert: string | null` (2026-09-27).
+  // Official alerts for the venue. Only `title` is populated so far.
   weather_alerts?: WeatherAlert[];
   // Present on every forecast, but only populated once the game is inside
   // the hourly-forecast window -- until then every field is null and
@@ -275,16 +275,6 @@ export interface Book {
   moneyline?: BookMarketSide;
   spread?: BookMarketSide;
   total?: BookMarketSide;
-}
-
-export interface GameOdds {
-  game_id: number;
-  home_team: Team;
-  away_team: Team;
-  game_time?: number;
-  cbs_spread?: number;
-  market_spread: MarketSpread | null;
-  books?: Book[];
 }
 
 export enum Possession {
@@ -378,8 +368,7 @@ export interface SeasonAllAlonePick extends AllAlonePick {
 
 // Pool-wide version of a user's personal TrapTeam (types.ts) -- same
 // trap_score = pct_of_all_picks * (1 - cover_pct) formula, unscoped to one
-// user. Added 2026-09-23 as "public_enemy"/"enemy_score", renamed to
-// "trap_team"/"trap_score" the same day.
+// user.
 export interface GroupTrapTeam {
   id: number;
   abbr: string;
@@ -392,9 +381,8 @@ export interface GroupTrapTeam {
 
 // Per team, everyone who picked it ("believers") vs everyone who picked
 // their opponent instead ("faders"), each with their own ATS accuracy on
-// that split. Replaced the per-user head_to_head field 2026-09-23 -- this is
-// team-centric ("who's actually right when people disagree"), not a
-// user-vs-user pairing.
+// that split. Team-centric ("who's actually right when people disagree"),
+// not a user-vs-user pairing.
 export interface TeamBelieversFaders {
   id: number;
   abbr: string;
@@ -451,12 +439,8 @@ export interface UserCareer {
 }
 
 // One side of a pick-bias split (home/away/favorite/underdog): how often the
-// user picks that side, season-wide. Used to carry current_streak/
-// longest_streak (consecutive picks), but the data repo dropped those
-// 2026-09-23 -- ordered by kickoff time, not actual pick order (CBS exposes
-// no per-pick timestamp), and didn't reset at week boundaries the way
-// hot_streak/team_pick_streak deliberately do. pct needs no ordering and is
-// what's actually reliable here.
+// user picks that side, season-wide. A plain proportion with no ordering:
+// CBS exposes no per-pick timestamp, so there's no real pick-by-pick streak.
 export interface PickBiasSide {
   pct: number;
   picks: number;
@@ -488,15 +472,12 @@ export interface ContrarianStats {
   chalk_accuracy_pct: number | null;
 }
 
-// current_season's matchup/records fields form a 2x2, reworked 2026-09-23:
+// current_season's matchup/records fields form a 2x2:
 //   picks FOR this team only   x   either side of the matchup
 //   bad:  trap_team                blind_spot_team
 //   good: lucky_team               sweet_spot_team
-// The old pure-rate nemesis_team/lucky_team pair (a team picked twice and
-// lost twice ranked the same as one picked ten times and lost eight) was
-// dropped the same day a real example showed it could rank a 3-loss team
-// above a 7-loss team just because the 3-loss team's *rate* happened worse
-// on a smaller sample -- volume-weighting fixes that.
+// The "picks for" pair is volume-weighted, so a team picked ten times and
+// lost eight outranks one picked twice and lost twice.
 
 // Shared shape for trap_team/lucky_team -- "picks for this team only",
 // weighted by pct_of_picks so a habit that's actually costly/rewarding
@@ -511,11 +492,9 @@ export interface VolumeWeightedTeam {
 }
 
 // "The team you keep picking that keeps burning you" --
-// trap_score = pct_of_picks * (1 - win_pct). Added 2026-09-23 as
-// "public_enemy"/"enemy_score", renamed to "trap_team"/"trap_score" the same
-// day. Guarded: null unless win_pct < 0.5 (an exact .500 team reports null
-// for both trap_team and lucky_team, not both at once -- a same-day bug fix,
-// since a naive "score is nonzero" check doesn't exclude .500). Has a
+// trap_score = pct_of_picks * (1 - win_pct). Guarded: null unless
+// win_pct < 0.5 (an exact .500 team reports null for both trap_team and
+// lucky_team). Has a
 // pool-wide counterpart on season:{season}:trends (same shape, unscoped to
 // one user).
 export interface TrapTeam extends VolumeWeightedTeam {
@@ -534,7 +513,7 @@ export interface LuckyTeam extends VolumeWeightedTeam {
 // tallies at once. Different question from trap_team/lucky_team ("stop
 // picking FOR this team") -- this is "stop picking this team's games AT ALL,
 // either way." blind_spot_team requires accuracy < 0.5, sweet_spot_team
-// requires accuracy > 0.5. Added 2026-09-23.
+// requires accuracy > 0.5.
 export interface SpotTeam {
   team: TeamRef;
   picks: number;

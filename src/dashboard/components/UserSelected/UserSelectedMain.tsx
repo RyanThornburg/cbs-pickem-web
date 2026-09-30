@@ -1,7 +1,7 @@
 import { RankedUser, UserSeasonTrends } from "../../types";
 import { Box, Divider, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getOrdinal } from "../../helper";
+import { ordinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import UserAvatar from "../UserAvatar";
 import { StreakBadge } from "../UsersTable/StreakBadge";
@@ -18,8 +18,7 @@ const PlaceSuffix = ({ place }: { place: number | null | undefined }) =>
   place ? (
     <Box component="span" sx={{ color: "text.secondary" }}>
       {" · "}
-      {place}
-      {getOrdinal(place)}
+      {ordinal(place)}
     </Box>
   ) : null;
 

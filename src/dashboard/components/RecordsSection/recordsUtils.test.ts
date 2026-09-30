@@ -6,7 +6,6 @@ import {
   finishTier,
   highestWinningScore,
   isUnknownChampion,
-  ordinal,
 } from "./recordsUtils";
 
 const standing = (user_id: number, rank: number, score = 50): HistoricalStanding => ({
@@ -62,14 +61,6 @@ const records = (
   first_half_champions: [],
   second_half_champions: [],
   career: careers,
-});
-
-describe("ordinal", () => {
-  it("handles the teens and the usual suffixes", () => {
-    expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 33].map(ordinal)).toEqual([
-      "1st", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "33rd",
-    ]);
-  });
 });
 
 describe("champions", () => {

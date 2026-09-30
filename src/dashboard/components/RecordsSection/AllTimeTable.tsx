@@ -22,7 +22,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { CareerRow, ordinal } from "./recordsUtils";
+import { ordinal } from "../../helper";
+import { CareerRow } from "./recordsUtils";
 import { GOLD, youRowSx } from "./recordsTheme";
 
 const dash = <Typography variant="body2" color="text.secondary">–</Typography>;

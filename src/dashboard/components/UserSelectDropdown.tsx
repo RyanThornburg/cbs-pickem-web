@@ -8,7 +8,7 @@ import { RankedUser } from "../types";
 export type Props = {
   userList: RankedUser[];
   user: string | undefined;
-  onUserChange: any;
+  onUserChange: (userId: string) => void;
 };
 
 export default function UserSelectDropdown({

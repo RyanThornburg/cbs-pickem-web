@@ -1,4 +1,4 @@
-import { poll } from "../../api/pickemApi";
+import { pollAsync } from "../../api/pickemApi";
 import { AdminStatus } from "../types";
 
 // meta:admin is rewritten every orchestration tick (~1 min).
@@ -29,34 +29,22 @@ export const GetAdminStatus = (
   onData: (status: AdminStatus) => void,
   onError: (error: Error) => void
 ): (() => void) => {
-  let cancelled = false;
-  let stop: () => void = () => {};
-
-  stop = poll(() => {
-    adminFetch("/api/admin/status")
-      .then(async (response) => {
-        if (response.type === "opaqueredirect" || response.status === 401) {
-          throw new AdminUnauthorizedError("Admin session missing or expired");
-        }
-        if (!response.ok) {
-          throw new Error(`/api/admin/status responded with ${response.status}`);
-        }
-        return (await response.json()) as AdminStatus;
-      })
-      .then((status) => {
-        if (!cancelled) onData(status);
-      })
-      .catch((error) => {
-        if (cancelled) return;
-        // Polling can't fix an expired session -- stop until the page is
-        // reloaded (which goes back through the Access login).
-        if (error instanceof AdminUnauthorizedError) stop();
-        onError(error instanceof Error ? error : new Error(String(error)));
-      });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
+  const load = async (): Promise<AdminStatus> => {
+    const response = await adminFetch("/api/admin/status");
+    if (response.type === "opaqueredirect" || response.status === 401) {
+      throw new AdminUnauthorizedError("Admin session missing or expired");
+    }
+    if (!response.ok) {
+      throw new Error(`/api/admin/status responded with ${response.status}`);
+    }
+    return (await response.json()) as AdminStatus;
   };
+
+  const stop = pollAsync(load, POLL_INTERVAL_MS, onData, (error) => {
+    // Polling can't fix an expired session -- stop until the page is
+    // reloaded (which goes back through the Access login).
+    if (error instanceof AdminUnauthorizedError) stop();
+    onError(error);
+  });
+  return stop;
 };

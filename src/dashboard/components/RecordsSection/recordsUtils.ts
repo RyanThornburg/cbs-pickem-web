@@ -3,6 +3,7 @@ import {
   HistoricalRecords,
   HistoricalStanding,
 } from "../../types";
+import { ordinal } from "../../helper";
 
 // Half-season results (first/second half standings and champions) only
 // exist from this season on. Earlier years get an "incomplete" note instead.
@@ -10,12 +11,6 @@ export const HALVES_FROM_SEASON = 2025;
 
 // "Best average finish" needs a real sample, or one great season wins it.
 export const BEST_AVG_MIN_SEASONS = 5;
-
-export const ordinal = (n: number): string => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const v = n % 100;
-  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
-};
 
 // A few names in the data carry double spaces ("Omar  Selim").
 export const cleanName = (name: string): string => name.replace(/\s+/g, " ").trim();

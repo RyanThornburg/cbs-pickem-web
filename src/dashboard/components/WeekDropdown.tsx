@@ -7,16 +7,16 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 export type Props = {
   currentWeek: number;
   selectedWeek: number;
-  onUserChange: any;
+  onWeekChange: (week: number) => void;
 };
 
 export default function WeekDropdown({
   currentWeek,
   selectedWeek,
-  onUserChange,
+  onWeekChange,
 }: Props) {
   const handleChange = (event: SelectChangeEvent) => {
-    onUserChange(event.target.value);
+    onWeekChange(Number(event.target.value));
   };
 
   return (

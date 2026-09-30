@@ -7,16 +7,19 @@ export const fetchJson = async <T>(path: string): Promise<T> => {
 };
 
 // Runs `tick` immediately, then every `intervalMs`, until the returned cleanup is
-// called. Callers that need more than one fetch per tick (e.g. joining two endpoints)
-// use this directly; single-endpoint pollers should use `pollJson` below instead.
+// called. Most callers want `pollAsync`/`pollJson` below, which also drop
+// results that land after cleanup.
 export const poll = (tick: () => void, intervalMs: number): (() => void) => {
   tick();
   const intervalId = setInterval(tick, intervalMs);
   return () => clearInterval(intervalId);
 };
 
-export const pollJson = <T>(
-  path: string,
+// Polls `load` (one fetch, or several joined), handing each result to
+// `onData`. Nothing is delivered after the returned cleanup runs, so a slow
+// response for a week the user already left can't overwrite the new one.
+export const pollAsync = <T>(
+  load: () => Promise<T>,
   intervalMs: number,
   onData: (data: T) => void,
   onError?: (error: Error) => void
@@ -24,7 +27,7 @@ export const pollJson = <T>(
   let cancelled = false;
 
   const stop = poll(() => {
-    fetchJson<T>(path)
+    load()
       .then((data) => {
         if (!cancelled) {
           onData(data);
@@ -42,3 +45,10 @@ export const pollJson = <T>(
     stop();
   };
 };
+
+export const pollJson = <T>(
+  path: string,
+  intervalMs: number,
+  onData: (data: T) => void,
+  onError?: (error: Error) => void
+): (() => void) => pollAsync(() => fetchJson<T>(path), intervalMs, onData, onError);

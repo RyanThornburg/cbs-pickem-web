@@ -12,7 +12,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { HistoricalRecords } from "../../types";
-import { CareerRow, closedSeasons, FinishTier, finishTier, ordinal } from "./recordsUtils";
+import { ordinal } from "../../helper";
+import { CareerRow, closedSeasons, FinishTier, finishTier } from "./recordsUtils";
 import {
   FINISH_TIER_COLORS,
   FINISH_TIER_LABELS,

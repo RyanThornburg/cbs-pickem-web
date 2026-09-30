@@ -48,20 +48,10 @@ export const StatusColor: StatusColorMap = {
   },
 } as const;
 
-export function getOrdinal(n: number) {
-  let ord = "th";
-
-  if (n % 10 === 1 && n % 100 !== 11) {
-    ord = "st";
-  } else if (n % 10 === 2 && n % 100 !== 12) {
-    ord = "nd";
-  } else if (n % 10 === 3 && n % 100 !== 13) {
-    ord = "rd";
-  }
-
-  return ord;
-}
-
-export function stringOrdinalPlace(place: number): string {
-  return `${place}${getOrdinal(place)}`;
-}
+// 1 -> "1st", 12 -> "12th", 22 -> "22nd".
+export const ordinal = (n: number): string => {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${n}th`;
+  const suffix = ["th", "st", "nd", "rd"][n % 10] ?? "th";
+  return `${n}${suffix}`;
+};

@@ -13,6 +13,7 @@ import { styled } from "@mui/material/styles";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { UserTrendPanel } from "./UserTrendPanel";
+import { selectedRowSx } from "./selectedRowSx";
 
 const StyledTableCellHeader = styled(TableCell)(({ theme }) => ({
   "&.MuiTableCell-head": {
@@ -31,11 +32,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   paddingLeft: 4,
   paddingRight: 4,
 }));
-
-const highlightSx = {
-  bgcolor: (theme: any) =>
-    theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
-};
 
 export default function UserDataMobile({
   userList,
@@ -95,19 +91,12 @@ export default function UserDataMobile({
             const mainCells = cells.filter((cell) => cell.column.id !== "picks");
             const isExpanded = expandedId === row.id;
             const isSelected = row.id === userId;
-            const highlightClass = isSelected ? "highlight" : "";
 
             return (
               <Fragment key={row.id}>
                 <TableRow
                   onClick={() => toggleExpanded(row.id)}
-                  className={highlightClass}
-                  sx={{
-                    borderTop: `2px solid ${grey[300]}`,
-                    cursor: "pointer",
-                    ".highlight": highlightSx,
-                    ...(isSelected ? highlightSx : {}),
-                  }}
+                  sx={[{ borderTop: `2px solid ${grey[300]}`, cursor: "pointer" }, isSelected && selectedRowSx]}
                 >
                   {mainCells.map((cell) => (
                     <StyledTableCell
@@ -127,7 +116,7 @@ export default function UserDataMobile({
                   ))}
                 </TableRow>
                 {picksCell && (
-                  <TableRow className={highlightClass} sx={{ ".highlight": highlightSx }}>
+                  <TableRow>
                     <StyledTableCell
                       style={{ paddingBottom: "10px", paddingTop: "4px" }}
                       colSpan={mainCells.length}

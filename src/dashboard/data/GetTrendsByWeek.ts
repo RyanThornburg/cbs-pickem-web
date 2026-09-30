@@ -1,4 +1,4 @@
-import { fetchJson, poll } from "../../api/pickemApi";
+import { fetchJson, pollAsync } from "../../api/pickemApi";
 import {
   AllAlonePick,
   ColdTeam,
@@ -51,20 +51,10 @@ export const GetTrendsByWeek = (
     return;
   }
 
-  let cancelled = false;
-
-  const stop = poll(() => {
-    fetchJson<ApiWeekTrends>(`/api/weeks/${season}/${week}/trends`)
-      .then((data) => {
-        if (!cancelled) callback(toWeekTrends(data));
-      })
-      .catch((error) => {
-        if (!cancelled) console.error("Failed to fetch week trends", error);
-      });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
-  };
+  return pollAsync(
+    () => fetchJson<ApiWeekTrends>(`/api/weeks/${season}/${week}/trends`).then(toWeekTrends),
+    POLL_INTERVAL_MS,
+    callback,
+    (error) => console.error("Failed to fetch week trends", error)
+  );
 };

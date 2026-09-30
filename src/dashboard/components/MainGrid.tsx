@@ -66,8 +66,8 @@ export default function MainGrid() {
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
-  // unrecognized value back through "/" so it re-resolves to the stored/
-  // day-time default instead of rendering a blank tab.
+  // unrecognized value back through "/" so it re-resolves to the stored
+  // tab (or the cold-start default) instead of rendering a blank tab.
   useEffect(() => {
     if (activeTab === null) {
       navigate(`/${getInitialTab()}`, { replace: true });
@@ -249,7 +249,7 @@ export default function MainGrid() {
                   <WeekDropdown
                     currentWeek={currentWeek}
                     selectedWeek={selectedWeek}
-                    onUserChange={onWeekChange}
+                    onWeekChange={onWeekChange}
                   />
                 )}
                 <UserSelectDropdown

@@ -11,11 +11,7 @@ import Collapse from "@mui/material/Collapse";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { UserTrendPanel } from "./UserTrendPanel";
-
-const highlightSx = {
-  bgcolor: (theme: any) =>
-    theme.palette.mode === "dark" ? "#78909c" : "#f0f4c3",
-};
+import { selectedRowSx } from "./selectedRowSx";
 
 const UserDataGrid = ({
   userList,
@@ -75,12 +71,7 @@ const UserDataGrid = ({
                 <TableRow
                   hover
                   onClick={() => toggleExpanded(row.id)}
-                  className={isSelected ? "highlight" : ""}
-                  sx={{
-                    cursor: "pointer",
-                    ".highlight": highlightSx,
-                    ...(isSelected ? highlightSx : {}),
-                  }}
+                  sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

@@ -1,4 +1,4 @@
-import { fetchJson, poll } from "../../api/pickemApi";
+import { fetchJson, pollAsync } from "../../api/pickemApi";
 import { GameStatus, RankedUser, UserPick } from "../types";
 import {
   ApiGame,
@@ -192,41 +192,31 @@ export const GetUserByWeek = (
     return;
   }
 
-  let cancelled = false;
+  const load = async (): Promise<RankedUser[]> => {
+    const [leaderboard, weekGames] = await Promise.all([
+      fetchLeaderboard(season, week),
+      fetchWeekGames(season, week),
+    ]);
 
-  const stop = poll(() => {
-    Promise.all([fetchLeaderboard(season, week), fetchWeekGames(season, week)])
-      .then(([leaderboard, weekGames]) => {
-        if (cancelled) return;
-
-        const gamesById = buildGamesById(weekGames.games);
-        const weekLocked = isWeekLocked(weekGames.games);
-        const overallRanks = rankByScore(
-          leaderboard.users,
-          (user) => user.cumulative_score + user.trending_score
-        );
-        const secondHalfRanks = rankByScore(leaderboard.users, (user) =>
-          user.second_half_score == null
-            ? null
-            : user.second_half_score + user.trending_score
-        );
-        const rankedUsers = leaderboard.users
-          .map((user) =>
-            toRankedUser(user, gamesById, weekLocked, overallRanks, secondHalfRanks)
-          )
-          .sort(compareUsers);
-
-        callback(rankedUsers);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          console.error("Failed to fetch week leaderboard", error);
-        }
-      });
-  }, POLL_INTERVAL_MS);
-
-  return () => {
-    cancelled = true;
-    stop();
+    const gamesById = buildGamesById(weekGames.games);
+    const weekLocked = isWeekLocked(weekGames.games);
+    const overallRanks = rankByScore(
+      leaderboard.users,
+      (user) => user.cumulative_score + user.trending_score
+    );
+    const secondHalfRanks = rankByScore(leaderboard.users, (user) =>
+      user.second_half_score == null
+        ? null
+        : user.second_half_score + user.trending_score
+    );
+    return leaderboard.users
+      .map((user) =>
+        toRankedUser(user, gamesById, weekLocked, overallRanks, secondHalfRanks)
+      )
+      .sort(compareUsers);
   };
+
+  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) =>
+    console.error("Failed to fetch week leaderboard", error)
+  );
 };

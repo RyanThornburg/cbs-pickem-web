@@ -1,7 +1,7 @@
 import { Avatar, Box, Typography } from "@mui/material";
 import { UserAvatarProps } from "./UserAvatar.types";
 import { createAvatarProps } from "./UserAvatar.util";
-import { stringOrdinalPlace } from "../../helper";
+import { ordinal } from "../../helper";
 
 export const UserAvatar = ({
   userName,
@@ -40,7 +40,7 @@ export const UserAvatar = ({
               }}
               noWrap={true}
             >
-              {stringOrdinalPlace(place)}
+              {ordinal(place)}
             </Typography>
           )}
         </Box>

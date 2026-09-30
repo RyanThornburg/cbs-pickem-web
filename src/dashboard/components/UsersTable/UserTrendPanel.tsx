@@ -14,6 +14,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { PickBias, SpotTeam, UserSeasonTrends, VolumeWeightedTeam } from "../../types";
+import { ordinal } from "../../helper";
 import { PICK_BIAS_MIN_PCT, PICK_BIAS_MIN_PICKS } from "./usersTableUtils";
 
 const trendIcon = (direction: string) => {
@@ -34,14 +35,12 @@ export const careerTrendText = (trends: UserSeasonTrends): string => {
   const { direction, prior_season, last_season } = trend;
 
   if (direction === "same") {
-    return `Finished ${last_season.rank}${ordinal(last_season.rank)} in ${last_season.season}, same as ${
+    return `Finished ${ordinal(last_season.rank)} in ${last_season.season}, same as ${
       prior_season.season
     }.`;
   }
   const verb = direction === "improving" ? "Climbed" : "Fell";
-  return `${verb} from ${prior_season.rank}${ordinal(prior_season.rank)} in ${prior_season.season} to ${
-    last_season.rank
-  }${ordinal(last_season.rank)} in ${last_season.season}.`;
+  return `${verb} from ${ordinal(prior_season.rank)} in ${prior_season.season} to ${ordinal(last_season.rank)} in ${last_season.season}.`;
 };
 
 // best_finish is 0 (falsy) for a user with no closed prior seasons, per the
@@ -60,7 +59,7 @@ export const bestFinishSummary = (
   if (topFive.length <= 1) {
     return {
       label: "Best finish",
-      value: `${best_finish}${ordinal(best_finish)} place (${best_finish_years.join(", ")})`,
+      value: `${ordinal(best_finish)} place (${best_finish_years.join(", ")})`,
     };
   }
 
@@ -75,25 +74,10 @@ export const bestFinishSummary = (
 
   const value = Array.from(yearsByRank.entries())
     .sort(([rankA], [rankB]) => rankA - rankB)
-    .map(([rank, years]) => `${rank}${ordinal(rank)} (${years.sort((a, b) => b - a).join(", ")})`)
+    .map(([rank, years]) => `${ordinal(rank)} (${years.sort((a, b) => b - a).join(", ")})`)
     .join(", ");
 
   return { label: "Top finishes", value };
-};
-
-const ordinal = (n: number): string => {
-  const mod100 = n % 100;
-  if (mod100 >= 11 && mod100 <= 13) return "th";
-  switch (n % 10) {
-    case 1:
-      return "st";
-    case 2:
-      return "nd";
-    case 3:
-      return "rd";
-    default:
-      return "th";
-  }
 };
 
 const PICK_BIAS_LABELS: Record<keyof PickBias, string> = {

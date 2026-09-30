@@ -1,5 +1,5 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
-import { getOrdinal } from "../../helper";
+import { ordinal } from "../../helper";
 import { RecapItem, RecapMove, RecapPerson } from "../../types";
 import TeamLogo from "../TrendsSection/TeamLogo";
 import { CategoryMark, ScopeTag } from "./recapCategory";
@@ -113,7 +113,7 @@ function ChaosCard({ item }: { item: RecapItem }) {
       <Big
         value={index.toFixed(1)}
         suffix={`/ 10${partial ? ` · so far, ${d.games_final} of ${d.games_total} final` : ""}${
-          rank && !partial ? ` · ${rank === 1 ? "most chaotic" : `${rank}${getOrdinal(rank)} of ${d.weeks_ranked}`}` : ""
+          rank && !partial ? ` · ${rank === 1 ? "most chaotic" : `${ordinal(rank)} of ${d.weeks_ranked}`}` : ""
         }`}
       />
       <Box
@@ -346,9 +346,7 @@ function MoversCard({ card }: { card: WeekCard }) {
               {m.name}
             </Box>
             <Box component="span" sx={{ color: "text.secondary" }}>
-              {m.rank_before}
-              {getOrdinal(m.rank_before)} → {m.rank_after}
-              {getOrdinal(m.rank_after)}
+              {ordinal(m.rank_before)} → {ordinal(m.rank_after)}
             </Box>
           </Stack>
         ))}
