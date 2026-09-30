@@ -32,3 +32,8 @@ node_modules
 # wrangler dev secrets (ADMIN_EMAIL etc.)
 .dev.vars
 .dev.vars.*
+
+# Impeccable: per-developer settings, hook cache, and local critique reports
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/critique/

@@ -1,0 +1,24 @@
+{
+  "hook": {
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/dashboard/components/GamesCard/gamesCard.css"
+        ],
+        "createdAt": "2026-09-30T20:07:12.190Z",
+        "reason": "User confirmed: 3px stripe on the small team-abbreviation chip carries team color, not a card accent"
+      }
+    ]
+  }
+}
