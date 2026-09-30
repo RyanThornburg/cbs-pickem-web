@@ -24,7 +24,8 @@ export default function WeekDropdown({
       <FormControl variant="standard" sx={{ minWidth: 75 }}>
         <InputLabel id="userListLabel">Week</InputLabel>
         <Select
-          sx={{ pl: "12px" }}
+          // 40px tall on phones so it's an easy tap target.
+          sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
           labelId="weekList"
           id="week-drop-down"
           value={selectedWeek === 0 ? "1" : selectedWeek.toString()}

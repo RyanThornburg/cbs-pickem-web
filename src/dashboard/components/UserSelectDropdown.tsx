@@ -29,7 +29,8 @@ export default function UserSelectDropdown({
       <FormControl variant="standard" sx={{ minWidth: 150 }}>
         <InputLabel id="userListLabel">User</InputLabel>
         <Select
-          sx={{ pl: "12px" }}
+          // 40px tall on phones so it's an easy tap target.
+          sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
           labelId="userList"
           id="user-drop-down"
           value={users ? user : ""}

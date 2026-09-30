@@ -134,10 +134,11 @@ export default function RecapStrip({ recap }: Props) {
         >
           <ChevronLeftIcon fontSize="small" />
         </IconButton>
-        <Box sx={{ display: "flex", gap: 0.5 }}>
+        <Box sx={{ display: "flex" }}>
           {items.map((item, i) => {
             const on = i === index % items.length;
             return (
+              // The button is a 24px-tall hit area; the dot is drawn inside it.
               <Box
                 key={item.id}
                 component="button"
@@ -146,13 +147,21 @@ export default function RecapStrip({ recap }: Props) {
                 aria-current={on}
                 onClick={() => setIndex(i)}
                 sx={{
-                  width: on ? 14 : 6,
-                  height: 6,
+                  display: "grid",
+                  placeItems: "center",
+                  width: on ? 22 : 14,
+                  height: 24,
                   p: 0,
                   border: 0,
-                  borderRadius: 3,
+                  bgcolor: "transparent",
                   cursor: "pointer",
-                  bgcolor: on ? "primary.main" : "divider",
+                  "&::before": {
+                    content: '""',
+                    width: on ? 14 : 6,
+                    height: 6,
+                    borderRadius: 3,
+                    bgcolor: on ? "primary.main" : "divider",
+                  },
                 }}
               />
             );

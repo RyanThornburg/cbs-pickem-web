@@ -214,6 +214,8 @@ export default function MainGrid() {
                 "& .MuiTab-root": {
                   px: { xs: "4px", sm: 1 },
                   fontSize: { xs: "0.8125rem", sm: undefined },
+                  // Taller tap targets on phones; the width is unchanged.
+                  minHeight: { xs: 44, sm: "fit-content" },
                 },
               }}
             >

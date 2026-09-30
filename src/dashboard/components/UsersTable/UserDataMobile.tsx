@@ -113,13 +113,12 @@ export default function UserDataMobile({
                     <StyledTableCell
                       key={cell.id}
                       align={cell.column.columnDef.meta?.align ?? "left"}
+                      // The name takes whatever the number columns leave,
+                      // so it truncates only when it really can't fit.
                       sx={
                         cell.column.id === "name"
-                          ? {
-                              width: { xs: "35%", sm: "40%" },
-                              maxWidth: { xs: "120px", sm: "140px" },
-                            }
-                          : undefined
+                          ? { width: "100%", maxWidth: 0 }
+                          : { width: "1%", whiteSpace: "nowrap" }
                       }
                     >
                       {flexRender(
@@ -130,7 +129,7 @@ export default function UserDataMobile({
                   ))}
                 </TableRow>
                 {picksCell && (
-                  <TableRow>
+                  <TableRow sx={[isSelected && selectedRowSx]}>
                     <StyledTableCell
                       style={{ paddingBottom: "10px", paddingTop: "4px" }}
                       colSpan={mainCells.length}

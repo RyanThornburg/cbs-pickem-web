@@ -32,20 +32,20 @@ const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
       backgroundColor: statusColor.bgColor,
       ...theme.typography.body2,
       padding: 0.5,
-      [theme.breakpoints.only("xs")]: {
-        padding: 0.3,
-      },
       width: 60,
       // The header row is tight at 1200-1400px, and a team abbreviation
       // needs far less than the table's 70px.
       [theme.breakpoints.up("lg")]: {
         width: header ? 48 : 70,
       },
-      textAlign: "center",
-      color: theme.palette.text.primary,
+      // On phones the five tiles share the row's width instead, so they fit
+      // at 360px (fixed 60px tiles overflowed the table).
       [theme.breakpoints.only("xs")]: {
+        width: "100%",
         fontSize: ".75rem",
       },
+      textAlign: "center",
+      color: theme.palette.text.primary,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
@@ -63,7 +63,7 @@ const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
   ]);
 
   return (
-    <Box key={index}>
+    <Box key={index} sx={{ flex: { xs: "1 1 0", sm: "none" }, minWidth: 0 }}>
       <Item>{team}</Item>
     </Box>
   );
@@ -83,10 +83,17 @@ export const UserGamePicksStack = (
       sx={{
         justifyContent: "flex-start",
         alignItems: "center",
+        width: { xs: "100%", sm: "auto" },
       }}
       direction="row"
-      spacing={{ xs: 0.35, md: spacingSize }}
-      divider={<Divider orientation="vertical" flexItem />}
+      spacing={{ xs: 0.5, sm: 0.35, md: spacingSize }}
+      divider={
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ display: { xs: "none", sm: "block" } }}
+        />
+      }
     >
       {picks.map((pick, index) => GamePickFormatted(pick, index, header))}
     </Stack>
