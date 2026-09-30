@@ -14,7 +14,7 @@ import {
   highlightBorder,
   isLiveStatus,
   Side,
-  sideLine,
+  teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
 import { TeamLogo } from "../shared/TeamLogo";
@@ -41,6 +41,8 @@ export interface GameCardProps {
   // False before the Sunday deadline on a game that hasn't started, when an
   // empty pick list means the picks aren't public yet.
   picksRevealed?: boolean;
+  // The game's O/U, shown next to the away team (the spread sits by home).
+  total?: number | null;
 }
 
 const QUARTERS: (keyof LinescoreSide)[] = ["q1", "q2", "q3", "q4"];
@@ -171,7 +173,14 @@ const PregameLine = ({ game }: { game: Game }) => {
 };
 
 export const GameCard = memo(
-  ({ game, userId, totalUsers, tags, picksRevealed = true }: GameCardProps) => {
+  ({
+    game,
+    userId,
+    totalUsers,
+    tags,
+    picksRevealed = true,
+    total,
+  }: GameCardProps) => {
     const [open, setOpen] = useState(false);
     const highlight = getGameHighlight(game);
     const border = highlightBorder(highlight);
@@ -241,7 +250,7 @@ export const GameCard = memo(
                 }}
               >
                 <span>
-                  {[recordText(game, side), sideLine(game, side)]
+                  {[recordText(game, side), teamLineText(game, side, total)]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>

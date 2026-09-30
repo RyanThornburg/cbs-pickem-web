@@ -11,6 +11,9 @@ import Switch from "@mui/material/Switch";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useGameData } from "./hooks/useGameData";
+import { useWeekTotals } from "./hooks/useWeekTotals";
+import { byeTeams } from "../../data/weekGames";
+import { ByeTeams } from "../ByeTeams";
 import {
   groupGames,
   pickDeadline,
@@ -63,6 +66,8 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
   const { games, loading, error } = useGameData(week);
   const deadline = useMemo(() => pickDeadline(games), [games]);
+  const totals = useWeekTotals(week);
+  const byes = useMemo(() => byeTeams(games), [games]);
   const [layout, setLayout] = useState<Layout>(readLayout);
   const [picksFirst, setPicksFirst] = useState(readPicksFirst);
 
@@ -177,6 +182,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
                     totalUsers={totalUsers}
                     tags={gameTags.get(game.game_id)}
                     picksRevealed={picksRevealed(game, deadline, now)}
+                    total={totals.get(game.game_id)}
                   />
                 </Grid>
               ))}
@@ -207,6 +213,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
                     userId={userId}
                     tags={gameTags.get(game.game_id)}
                     picksRevealed={picksRevealed(game, deadline, now)}
+                    total={totals.get(game.game_id)}
                   />
                 ))}
               </Box>
@@ -214,6 +221,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
           </Paper>
         </>
       )}
+      <ByeTeams teams={byes} />
     </Box>
   );
 });

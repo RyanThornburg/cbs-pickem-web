@@ -12,6 +12,7 @@ import {
   TeamRecord,
   UserId,
 } from "../types";
+import TeamData from "../components/Scoreboard/utils/team_data.json";
 import { normalizeTeamAbbr } from "../utils/teamAssets";
 
 export interface ApiTeam {
@@ -193,4 +194,21 @@ export const getGameCoverResult = (game: ApiGame): GameCoverResult => {
     coveringTeamId:
       margin > 0 ? game.home_team.id : margin < 0 ? game.away_team.id : null,
   };
+};
+
+// Teams with no game this week, alphabetical. Empty when the week has no
+// games loaded, so a missing feed never reads as "everyone's on bye".
+export const byeTeams = (
+  games: { home_team: { abbr: string }; away_team: { abbr: string } }[]
+): string[] => {
+  if (!games.length) return [];
+  const playing = new Set(
+    games.flatMap((g) => [
+      normalizeTeamAbbr(g.home_team.abbr),
+      normalizeTeamAbbr(g.away_team.abbr),
+    ])
+  );
+  return Object.keys(TeamData)
+    .filter((abbr) => !playing.has(abbr))
+    .sort();
 };

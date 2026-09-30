@@ -10,6 +10,7 @@ import {
   picksRevealed,
   sideLine,
   swingToFlip,
+  teamLineText,
   userPickSide,
 } from "./scoreboardUtils";
 
@@ -326,5 +327,23 @@ describe("pickDeadline / picksRevealed", () => {
       game_time: Date.parse("2026-10-06T00:15:00Z"), // MNF
     });
     expect(picksRevealed(late, deadline, deadline)).toBe(true);
+  });
+});
+
+describe("teamLineText", () => {
+  it("puts the spread by home and the total by away", () => {
+    const g = game(); // TB (home) -3.5
+    expect(teamLineText(g, "home", 44.5)).toBe("−3.5");
+    expect(teamLineText(g, "away", 44.5)).toBe("O/U 44.5");
+  });
+
+  it("shows home's side as an underdog too, and PK", () => {
+    expect(teamLineText(game({ cbs_spread: 2.5 }), "home")).toBe("+2.5");
+    expect(teamLineText(game({ cbs_spread: 0 }), "home")).toBe("PK");
+  });
+
+  it("leaves away blank without a total", () => {
+    expect(teamLineText(game(), "away")).toBe("");
+    expect(teamLineText(game(), "away", null)).toBe("");
   });
 });

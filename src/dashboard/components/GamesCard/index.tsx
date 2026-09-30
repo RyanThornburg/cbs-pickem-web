@@ -1,5 +1,7 @@
 import { CircularProgress } from "@mui/material";
 import { useMemo } from "react";
+import { byeTeams } from "../../data/weekGames";
+import { ByeTeams } from "../ByeTeams";
 import { WeekRecap } from "../../types";
 import { coverStreaksByTeamId } from "../Recap/recapBadges";
 import "./gamesCard.css";
@@ -51,6 +53,7 @@ export default function GamesCard({ week, recap }: Props) {
       <div className="gc-mobile-view">
         <GamesListMobile games={games} streaks={streaks} />
       </div>
+      <ByeTeams teams={byeTeams(games)} />
     </div>
   );
 }

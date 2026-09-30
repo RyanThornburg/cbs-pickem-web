@@ -9,7 +9,7 @@ import {
   hasStarted,
   highlightBorder,
   Side,
-  sideLine,
+  teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
 import { TeamLogo } from "../shared/TeamLogo";
@@ -33,6 +33,8 @@ export interface GameRowProps {
   tags?: GameTag[];
   // See GameCardProps.picksRevealed.
   picksRevealed?: boolean;
+  // See GameCardProps.total.
+  total?: number | null;
 }
 
 // The middle column: where the ball is while a game is live, otherwise the
@@ -106,7 +108,7 @@ const Middle = ({ game }: { game: Game }) => {
 };
 
 export const GameRow = memo((props: GameRowProps) => {
-  const { game, userId, tags, picksRevealed = true } = props;
+  const { game, userId, tags, picksRevealed = true, total } = props;
   const [open, setOpen] = useState(false);
   const border = highlightBorder(getGameHighlight(game));
   const pickSide = userPickSide(game, userId);
@@ -135,11 +137,12 @@ export const GameRow = memo((props: GameRowProps) => {
           sx={{
             fontSize: "0.75rem",
             color: "text.secondary",
-            width: 36,
+            width: 52,
             flexShrink: 0,
+            whiteSpace: "nowrap",
           }}
         >
-          {sideLine(game, side)}
+          {teamLineText(game, side, total)}
         </Box>
         <Box
           component="span"

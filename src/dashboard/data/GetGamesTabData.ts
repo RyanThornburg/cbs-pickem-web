@@ -139,6 +139,25 @@ const joinGameWithOdds = (
   };
 };
 
+// Just the books per game, for the Scoreboard's O/U. Logs and delivers
+// nothing when the week has no odds key yet.
+export const GetWeekBooks = (
+  season: number,
+  week: number,
+  callback: (booksByGameId: Map<number, Book[]>) => void
+): (() => void) => {
+  if (season === 0 || week === 0) return () => {};
+  const load = async () => {
+    const odds = await fetchOdds(season, week);
+    return new Map(
+      odds.games.map((o) => [o.game_id, (o.books ?? []).map(toBook)])
+    );
+  };
+  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) =>
+    console.warn("No odds for the scoreboard totals", error)
+  );
+};
+
 export const GetGamesTabData = (
   season: number,
   week: number,

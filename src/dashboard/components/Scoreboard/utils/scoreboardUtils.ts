@@ -175,6 +175,19 @@ export const sideLine = (game: Game, side: Side): string => {
   return `${value < 0 ? "−" : "+"}${Math.abs(value)}`;
 };
 
+// The line shown under each team: the spread next to home (from home's side;
+// away's is just the inverse), the game total next to away.
+export const teamLineText = (
+  game: Game,
+  side: Side,
+  total?: number | null
+): string =>
+  side === "home"
+    ? sideLine(game, "home")
+    : total != null
+      ? `O/U ${total}`
+      : "";
+
 export const hasBall = (game: Game, side: Side): boolean =>
   game.status === GameStatus.Inprogress &&
   game.live?.possession ===
