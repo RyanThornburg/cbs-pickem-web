@@ -2,17 +2,12 @@
   "name": "morlocked-web",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8787",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.2",
     "@mui/material": "^6.1.2",
     "@tanstack/react-table": "^8.21.3",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.112",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
@@ -21,55 +16,42 @@
     "minidenticons": "^4.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-ga4": "^2.1.0",
-    "react-router-dom": "^6.30.6",
-    "react-scripts": "^5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-ga4": "^3.0.1",
+    "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.0",
-    "@babel/plugin-transform-private-property-in-object": "^7.25.8",
-    "file-loader": "^6.2.0",
+    "@eslint/js": "^10.0.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
+    "jsdom": "^29.1.1",
     "prettier": "3.9.9",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.0",
+    "vite": "^8.3.1",
+    "vitest": "^4.1.11",
     "wrangler": "^4.131.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:worker": "node --test \"worker/*.test.ts\"",
-    "test:all": "react-scripts test --watchAll=false && npm run test:worker",
-    "eject": "react-scripts eject",
+    "start": "vite",
     "dev": "wrangler dev --remote",
+    "build": "tsc -p . && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:all": "vitest run",
+    "test:worker": "vitest run --project worker",
+    "lint": "eslint src worker",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,css}\" \"worker/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,css}\" \"worker/**/*.ts\"",
     "predeploy": "npm run test:all",
     "deploy": "wrangler deploy",
     "types": "wrangler types",
-    "tail": "wrangler tail",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,css}\" \"worker/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,css}\" \"worker/**/*.ts\""
+    "tail": "wrangler tail"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!minidenticons/)"
-    ]
-  }
+  "type": "module"
 }

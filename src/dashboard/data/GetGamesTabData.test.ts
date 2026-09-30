@@ -24,7 +24,7 @@ const side = (home_point: number | null, away_point: number | null) => ({
 });
 
 const load = (games: ApiGame[], odds: unknown[]): Promise<GameWithOdds[]> => {
-  global.fetch = jest.fn((path: string) => {
+  global.fetch = vi.fn((path: string) => {
     const body = path.endsWith("/odds")
       ? { week: 3, updated_at: "now", games: odds }
       : { week: 3, updated_at: "now", games };

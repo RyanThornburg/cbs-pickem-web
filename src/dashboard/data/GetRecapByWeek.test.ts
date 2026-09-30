@@ -7,7 +7,7 @@ const load = (
   body: unknown
 ): Promise<{ recap: WeekRecap | undefined; path: string }> => {
   let path = "";
-  global.fetch = jest.fn((p: string) => {
+  global.fetch = vi.fn((p: string) => {
     path = p;
     return Promise.resolve({
       ok: status < 400,
@@ -28,7 +28,7 @@ describe("GetRecapByWeek", () => {
   const realFetch = global.fetch;
   const realWarn = console.warn;
   beforeEach(() => {
-    console.warn = jest.fn();
+    console.warn = vi.fn();
   });
   afterEach(() => {
     global.fetch = realFetch;
@@ -58,8 +58,8 @@ describe("GetRecapByWeek", () => {
   });
 
   it("reports no data without fetching before season and week are known", () => {
-    global.fetch = jest.fn() as unknown as typeof fetch;
-    const callback = jest.fn();
+    global.fetch = vi.fn() as unknown as typeof fetch;
+    const callback = vi.fn();
     GetRecapByWeek(2026, 0, callback);
     expect(callback).toHaveBeenCalledWith(undefined);
     expect(global.fetch).not.toHaveBeenCalled();

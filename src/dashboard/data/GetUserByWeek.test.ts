@@ -58,7 +58,7 @@ const load = (
   users: ReturnType<typeof user>[],
   games: ApiGame[] = STARTED
 ): Promise<RankedUser[]> => {
-  global.fetch = jest.fn((path: string) => {
+  global.fetch = vi.fn((path: string) => {
     const body = path.endsWith("/leaderboard")
       ? { week: 3, second_half_start_week: 10, users }
       : { week: 3, updated_at: "2026-09-27T21:00:00Z", games };
@@ -260,8 +260,8 @@ describe("GetUserByWeek", () => {
   });
 
   it("returns an empty list without fetching before season and week are known", () => {
-    global.fetch = jest.fn() as unknown as typeof fetch;
-    const callback = jest.fn();
+    global.fetch = vi.fn() as unknown as typeof fetch;
+    const callback = vi.fn();
     GetUserByWeek(0, 3, callback);
     expect(callback).toHaveBeenCalledWith([]);
     expect(global.fetch).not.toHaveBeenCalled();

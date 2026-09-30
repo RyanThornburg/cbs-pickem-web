@@ -15,7 +15,7 @@ import { useUsersTable } from "./useUsersTable";
 import { UserTrendPanel } from "./UserTrendPanel";
 import { selectedRowSx } from "./selectedRowSx";
 
-const StyledTableCellHeader = styled(TableCell)(({ theme }) => ({
+const StyledTableCellHeader = styled(TableCell)(() => ({
   "&.MuiTableCell-head": {
     fontSize: "0.75rem",
     fontWeight: "bold",
@@ -24,7 +24,7 @@ const StyledTableCellHeader = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(() => ({
   "&.MuiTableCell-head": {
     fontSize: "0.75rem",
     fontWeight: "regular",

@@ -74,6 +74,9 @@ declare module "@tanstack/react-table" {
 
 const columnHelper = createColumnHelper<UsersTableRow>();
 
+// Columns hold different value types, so TanStack's own docs type the array
+// with `any` for the value.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
   columnHelper.accessor("place", {
     header: "#",

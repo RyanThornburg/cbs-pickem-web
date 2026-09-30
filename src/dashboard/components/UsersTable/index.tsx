@@ -21,7 +21,6 @@ export default function UsersTable(props: UserGridProps) {
     const userIds = userIdsKey.split(",");
     const unsubscribe = GetUserSeasonTrends(userIds, season, setTrends);
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userIdsKey, season]);
 
   const gridProps = { ...props, trends };

@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import { getTeamLogoSrc } from "../../../../utils/teamAssets";
 import { getTeamData } from "../../utils/teamData";
 
 interface Props {
@@ -7,12 +8,13 @@ interface Props {
 }
 
 export const TeamLogo = ({ abbr, size = 28 }: Props) => {
-  const { icon, color } = getTeamData(abbr);
-  if (icon) {
+  const { color } = getTeamData(abbr);
+  const src = getTeamLogoSrc(abbr);
+  if (src) {
     return (
       <Box
         component="img"
-        src={require(`../../../../icons/${icon}`)}
+        src={src}
         alt={abbr}
         sx={{ width: size, height: size, flexShrink: 0, objectFit: "contain" }}
       />

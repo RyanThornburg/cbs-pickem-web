@@ -1,5 +1,11 @@
 import TeamData from "../components/Scoreboard/utils/team_data.json";
 
+// Every team logo, bundled by Vite and keyed by path ("../icons/ARI.png").
+const TEAM_ICONS = import.meta.glob<string>("../icons/*.png", {
+  eager: true,
+  import: "default",
+});
+
 type TeamAsset = { icon: string | undefined; color: string; name: string };
 
 // The KV feed's team abbreviations don't always match team_data.json's ESPN-derived
@@ -29,5 +35,5 @@ export const getTeamData = (abbr: string): TeamAsset => {
 
 export const getTeamLogoSrc = (abbr: string): string | undefined => {
   const icon = getTeamData(abbr).icon;
-  return icon ? require(`../icons/${icon}`) : undefined;
+  return icon ? TEAM_ICONS[`../icons/${icon}`] : undefined;
 };

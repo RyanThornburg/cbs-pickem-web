@@ -18,8 +18,8 @@ const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
 const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
   const team = pick.visible ? pick.team : "TBD";
 
-  let fontWeight = "regular";
-  let fontStyle = "normal";
+  const fontWeight = "regular";
+  const fontStyle = "normal";
 
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;

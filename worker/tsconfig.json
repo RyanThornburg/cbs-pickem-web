@@ -7,8 +7,8 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    // Lets imports name the .ts file, which Node needs to run the tests
-    // (npm run test:worker) without a build step. Wrangler bundles either way.
+    // Lets imports name the .ts file. Vitest and Wrangler resolve either
+    // way; kept so the Worker's imports stay explicit.
     "allowImportingTsExtensions": true
   },
   "include": ["./**/*.ts", "../worker-configuration.d.ts"]

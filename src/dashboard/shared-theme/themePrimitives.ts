@@ -19,6 +19,8 @@ declare module "@mui/material/styles/createPalette" {
     900: string;
   }
 
+  // Module augmentation: adds ColorRange's shades to MUI's PaletteColor.
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface PaletteColor extends ColorRange {}
 
   interface Palette {
@@ -414,7 +416,7 @@ export const shape = {
   borderRadius: 8,
 };
 
-// @ts-ignore
+// @ts-expect-error -- Shadows is a fixed 25-tuple; the spread reads as string[]
 // prettier-ignore
 const defaultShadows: Shadows = ['var(--mui-palette-baseShadow)', ...defaultTheme.shadows.slice(1)];
 export const shadows = defaultShadows;
