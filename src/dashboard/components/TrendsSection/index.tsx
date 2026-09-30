@@ -1,6 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 import { Box, Card, CardContent, Tab, Tabs, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import { GetTrendsByWeek } from "../../data/GetTrendsByWeek";
 import { GetSeasonTrends } from "../../data/GetSeasonTrends";
 import {

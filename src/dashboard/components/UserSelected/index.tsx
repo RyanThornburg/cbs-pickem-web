@@ -1,5 +1,5 @@
 import { RankedUser, UserSeasonTrends } from "../../types";
-import { Grid2 as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import UserSelectedMain from "./UserSelectedMain";
 import UserSelectedMobile from "./UserSelectedMobile";
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Grid2 as Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import UserDataGrid from "./UserDataGrid";
 import UserDataMobile from "./UserDataMobile";
 import { UserGridProps } from "./types";

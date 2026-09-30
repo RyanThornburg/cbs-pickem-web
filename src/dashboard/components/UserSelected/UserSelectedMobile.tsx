@@ -1,5 +1,5 @@
 import { RankedUser, UserSeasonTrends } from "../../types";
-import { Box, Divider, Grid2 as Grid, Stack } from "@mui/material";
+import { Box, Divider, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ordinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";

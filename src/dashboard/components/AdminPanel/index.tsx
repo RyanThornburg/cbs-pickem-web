@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Alert, AlertColor, Button, Stack, Typography } from "@mui/material";
 import { alpha, Theme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
   AdminUnauthorizedError,
