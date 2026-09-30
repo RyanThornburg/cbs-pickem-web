@@ -69,6 +69,10 @@ export default function UserDataMobile({
                   >
                     {header.column.getCanSort() ? (
                       <TableSortLabel
+                        // An inactive arrow still takes ~22px per column,
+                        // which the name needs at 360px (six columns from
+                        // the 2nd half on).
+                        hideSortIcon
                         active={header.column.getIsSorted() !== false}
                         direction={header.column.getIsSorted() || "asc"}
                         onClick={header.column.getToggleSortingHandler()}
