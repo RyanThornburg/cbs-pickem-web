@@ -158,28 +158,39 @@ export const GetWeekBooks = (
   );
 };
 
+// Odds are optional: when the week's odds key is missing or fails, the games
+// still come through (with no lines or books) and oddsAvailable is false.
 export const GetGamesTabData = (
   season: number,
   week: number,
-  callback: (games: GameWithOdds[]) => void
+  callback: (games: GameWithOdds[], oddsAvailable: boolean) => void
 ): (() => void) => {
   if (season === 0 || week === 0) {
-    callback([]);
+    callback([], true);
     return () => {};
   }
 
-  const load = async (): Promise<GameWithOdds[]> => {
+  const load = async () => {
     const [weekGames, odds] = await Promise.all([
       fetchWeekGames(season, week),
-      fetchOdds(season, week),
+      fetchOdds(season, week).catch((error) => {
+        console.warn("Games tab: no odds for this week", error);
+        return null;
+      }),
     ]);
-    const oddsByGameId = new Map(odds.games.map((o) => [o.game_id, o]));
-    return weekGames.games
+    const oddsByGameId = new Map(
+      (odds?.games ?? []).map((o) => [o.game_id, o])
+    );
+    const games = weekGames.games
       .map((game) => joinGameWithOdds(game, oddsByGameId.get(game.game_id)))
       .sort((a, b) => a.game_time - b.game_time);
+    return { games, oddsAvailable: odds !== null };
   };
 
-  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) =>
-    console.error("Failed to fetch games tab data", error)
+  return pollAsync(
+    load,
+    POLL_INTERVAL_MS,
+    ({ games, oddsAvailable }) => callback(games, oddsAvailable),
+    (error) => console.error("Failed to fetch games tab data", error)
   );
 };

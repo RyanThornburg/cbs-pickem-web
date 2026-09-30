@@ -163,3 +163,44 @@ describe("GetGamesTabData", () => {
     expect(g.coveringTeamId).toBeNull();
   });
 });
+
+describe("GetGamesTabData without odds", () => {
+  const realFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = realFetch;
+  });
+
+  it("still returns the games when the odds key 404s", async () => {
+    global.fetch = vi.fn((path: string) =>
+      Promise.resolve(
+        path.endsWith("/odds")
+          ? { ok: false, status: 404, json: () => Promise.resolve({}) }
+          : {
+              ok: true,
+              status: 200,
+              json: () =>
+                Promise.resolve({
+                  week: 3,
+                  updated_at: "now",
+                  games: [game(1, "2026-09-27T17:00:00Z", { cbs_spread: -3 })],
+                }),
+            }
+      )
+    ) as unknown as typeof fetch;
+    console.warn = vi.fn();
+
+    const [games, oddsAvailable] = await new Promise<[GameWithOdds[], boolean]>(
+      (resolve) => {
+        const stop = GetGamesTabData(2026, 3, (result, hasOdds) => {
+          stop();
+          resolve([result, hasOdds]);
+        });
+      }
+    );
+    expect(oddsAvailable).toBe(false);
+    expect(games).toHaveLength(1);
+    expect(games[0].cbs_spread).toBe(-3);
+    expect(games[0].market_spread).toBeNull();
+    expect(games[0].books).toEqual([]);
+  });
+});

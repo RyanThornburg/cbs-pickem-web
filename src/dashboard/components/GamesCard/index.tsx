@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/material";
+import { Alert, CircularProgress } from "@mui/material";
 import { useMemo } from "react";
 import { byeTeams } from "../../data/weekGames";
 import { ByeTeams } from "../ByeTeams";
@@ -17,7 +17,7 @@ type Props = {
 
 export default function GamesCard({ week, recap }: Props) {
   const streaks = useMemo(() => coverStreaksByTeamId(recap), [recap]);
-  const { games, loading } = useGamesWithOdds(week);
+  const { games, loading, oddsAvailable } = useGamesWithOdds(week);
 
   if (loading) {
     return <CircularProgress />;
@@ -25,6 +25,13 @@ export default function GamesCard({ week, recap }: Props) {
 
   return (
     <div className="games-card">
+      {!oddsAvailable && games.length > 0 && (
+        <Alert severity="warning" sx={{ mb: 1.5 }}>
+          Odds unavailable for week {week} right now. Games, CBS lines and
+          weather still show; the market spread, O/U and books will fill in once
+          the odds update.
+        </Alert>
+      )}
       <div className="gc-legend">
         <span className="gc-legend-item">
           <span className="gc-swatch danger" />

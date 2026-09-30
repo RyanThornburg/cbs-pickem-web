@@ -6,6 +6,7 @@ export const useGamesWithOdds = (week: number) => {
   const { season } = useCurrentWeek();
   const [games, setGames] = useState<GameWithOdds[]>([]);
   const [loading, setLoading] = useState(true);
+  const [oddsAvailable, setOddsAvailable] = useState(true);
 
   useEffect(() => {
     if (week <= 0 || season <= 0) {
@@ -13,8 +14,9 @@ export const useGamesWithOdds = (week: number) => {
       return;
     }
 
-    const unsubscribe = GetGamesTabData(season, week, (newGames) => {
+    const unsubscribe = GetGamesTabData(season, week, (newGames, hasOdds) => {
       setGames(newGames);
+      setOddsAvailable(hasOdds);
       setLoading(false);
     });
 
@@ -25,5 +27,5 @@ export const useGamesWithOdds = (week: number) => {
     };
   }, [week, season]);
 
-  return { games, loading };
+  return { games, loading, oddsAvailable };
 };
