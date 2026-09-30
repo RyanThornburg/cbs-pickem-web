@@ -30,6 +30,7 @@ import {
 } from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
 import RecapStrip from "./Recap/RecapStrip";
+import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
 import {
@@ -179,10 +180,6 @@ export default function MainGrid() {
             />
           </Grid>
 
-          {/* Overall/second-half leaderboard cards are hidden for now -- User
-              Picks shows the same place/score data and is slated for a
-              rework, so this duplicate top-of-page summary was redundant. */}
-
           <Box
             sx={{
               mt: 2,
@@ -321,6 +318,13 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
+              {selectedWeek >= secondHalfStartWeek && (
+                <SecondHalfLeaders
+                  userList={userList}
+                  userId={user}
+                  week={selectedWeek}
+                />
+              )}
               <RecapStrip recap={recap} />
               <UsersTable
                 userList={userList}

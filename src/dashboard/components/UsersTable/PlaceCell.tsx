@@ -5,10 +5,8 @@ import Looks4 from "@mui/icons-material/Looks4";
 import Looks5 from "@mui/icons-material/Looks5";
 import Typography from "@mui/material/Typography";
 
-// Same top-5 medal icons as LeaderboardCard, so a user's rank reads the same
-// way here as it did on the (now hidden) overall leaderboard. This table
-// isn't filtered to the top 5 like that card was, so ranks past 5th fall
-// back to a plain number instead of an icon.
+// Numbered icons for the top 5 (the overall paid places); ranks past 5th are
+// a plain number.
 const iconLookup = {
   1: <LooksOneIcon color="success" fontSize="small" />,
   2: <LooksTwoIcon color="primary" fontSize="small" />,

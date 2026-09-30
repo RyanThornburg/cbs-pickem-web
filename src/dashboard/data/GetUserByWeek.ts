@@ -45,7 +45,7 @@ const fetchLeaderboard = (
 
 // The API's own place/second_half_place rank on cumulative_score alone and don't
 // account for trending_score -- but the score shown in the UI is
-// cumulative_score + trending_score (see LeaderboardCard's getScore), so a user
+// cumulative_score + trending_score (the User Picks table and the leader cards), so a user
 // with a trending bonus can display the same total as 1st place while the API
 // ranks them lower. Re-rank client-side against the score actually displayed,
 // using standard competition ranking (ties share a rank; the next rank skips

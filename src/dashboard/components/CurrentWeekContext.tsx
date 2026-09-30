@@ -3,12 +3,20 @@ import { pollJson } from "../../api/pickemApi";
 
 const META_POLL_INTERVAL_MS = 5 * 60_000;
 const DEFAULT_SECOND_HALF_START_WEEK = 10;
+// How many places pay out, from meta:current's paid_places (set on the data
+// side). Drives how many rows the second-half leader cards show.
+export interface PaidPlaces {
+  overall: number;
+  second_half: number;
+}
+const DEFAULT_PAID_PLACES: PaidPlaces = { overall: 5, second_half: 3 };
 
 interface ApiMeta {
   season: number;
   current_week: number;
   second_half_start_week: number;
   cbs_pool_url?: string | null;
+  paid_places?: Partial<PaidPlaces> | null;
 }
 
 type CurrentWeekContextType = {
@@ -18,6 +26,7 @@ type CurrentWeekContextType = {
   secondHalfStartWeek: number;
   isSecondHalf: boolean;
   cbsPoolUrl: string | null;
+  paidPlaces: PaidPlaces;
 };
 
 const CurrentWeekContext = createContext<CurrentWeekContextType | undefined>(
@@ -33,6 +42,7 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
     DEFAULT_SECOND_HALF_START_WEEK
   );
   const [cbsPoolUrl, setCbsPoolUrl] = useState<string | null>(null);
+  const [paidPlaces, setPaidPlaces] = useState<PaidPlaces>(DEFAULT_PAID_PLACES);
 
   useEffect(() => {
     return pollJson<ApiMeta>("/api/meta", META_POLL_INTERVAL_MS, (meta) => {
@@ -40,6 +50,11 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentWeek(meta.current_week);
       setSecondHalfStartWeek(meta.second_half_start_week);
       setCbsPoolUrl(meta.cbs_pool_url ?? null);
+      setPaidPlaces({
+        overall: meta.paid_places?.overall ?? DEFAULT_PAID_PLACES.overall,
+        second_half:
+          meta.paid_places?.second_half ?? DEFAULT_PAID_PLACES.second_half,
+      });
     });
   }, []);
 
@@ -53,6 +68,7 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
         secondHalfStartWeek,
         isSecondHalf,
         cbsPoolUrl,
+        paidPlaces,
       }}
     >
       {children}
