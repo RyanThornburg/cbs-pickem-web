@@ -297,7 +297,10 @@ The Week and User dropdowns are the only inputs. They're outlined selects on pap
 The tabs are real routes. Each tab is text-only, 6px 8px padding, in muted ink, and gets a slate-100 fill with a slate-200 border on hover. The selected tab is dark ink with a dark underline indicator. **Records** sits after a vertical divider in Deep Trophy Gold with a trophy icon, and becomes icon-only on phones. **Admin** sits after its own divider in warning color with a shield icon. On phones, "User Picks" reads "Picks" and tabs are 13px.
 
 ### Leader cards
-Overall and 2nd-half standings, shown from the second-half start week. Each row is a medal tile (gold, silver, bronze, then a neutral place number), the avatar and name, the score with a green "+N" for picks covering now, and the gap to 1st. The selected player's row uses Selected Lime, and they get their own row below a "···" if they're outside the paid places.
+Before the second-half start week, one "Leaders" card lists everyone through the overall paid places with both cutoff lines (1st-half and overall standings are the same points until then). From the second-half start week, two cards: Overall and 2nd half. Each row is a medal tile (gold, silver, bronze, then a neutral place number), the avatar and name, the score with a green "+N" for picks covering now, and the gap to 1st. The selected player's row uses Selected Lime, and they get their own row below a "···" if they're outside the paid places.
+
+### Paid lines
+A dashed 1.5px rule in Deep Trophy Gold under the last paid place, with a small 12px gold label on the right ("Paid · top 5 overall (8 with the tie)"). In the User Picks table it appears only in rank order: by place (overall, plus the 1st half until the 2nd half starts, since both rank the same points) or by 2nd-half place. Everyone tied at a cutoff sits above the line. The weeks 1–9 leader card draws the same lines ("1st half pays top 3", "Overall pays top 5"). The place column marks 1st–3rd with the leader cards' gold, silver and bronze medals; other places are plain numbers, since the line, not the marker color, says who's paid.
 
 ### Recap strip
 A well-rounded (20px) bar at the top of User Picks that rotates the week's recap headlines, with a category icon, a "This week" tag and a dot pager. It pauses on hover or tap.

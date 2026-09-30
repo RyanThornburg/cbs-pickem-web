@@ -10,6 +10,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Collapse from "@mui/material/Collapse";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
+import { PaidLineRule } from "./PaidLineRule";
 import { UserTrendPanel } from "./UserTrendPanel";
 import { selectedRowSx } from "./selectedRowSx";
 
@@ -21,7 +22,7 @@ const UserDataGrid = ({
   showStreak,
   trends,
 }: UserGridWithTrendsProps) => {
-  const { table, expandedId, toggleExpanded } = useUsersTable({
+  const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     showSecondHalf,
@@ -68,7 +69,7 @@ const UserDataGrid = ({
           ))}
         </TableHead>
         <TableBody>
-          {table.getRowModel().rows.map((row) => {
+          {table.getRowModel().rows.map((row, rowIndex) => {
             const isExpanded = expandedId === row.id;
             const isSelected = row.id === userId;
 
@@ -101,6 +102,16 @@ const UserDataGrid = ({
                     </Collapse>
                   </TableCell>
                 </TableRow>
+                {paidLinesAfter(rowIndex).map((line) => (
+                  <TableRow key={line.label}>
+                    <TableCell
+                      colSpan={row.getVisibleCells().length}
+                      sx={{ py: 0, border: 0 }}
+                    >
+                      <PaidLineRule label={line.label} />
+                    </TableCell>
+                  </TableRow>
+                ))}
               </Fragment>
             );
           })}

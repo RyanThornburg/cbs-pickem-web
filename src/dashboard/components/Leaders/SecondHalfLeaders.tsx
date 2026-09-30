@@ -3,24 +3,19 @@ import Paper from "@mui/material/Paper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { UserAvatar } from "../UserAvatar";
 import { selectedRowSx } from "../UsersTable/selectedRowSx";
 import { LeaderBoard, LeaderList, LeaderRow, leaderList } from "./leadersUtils";
+import { MEDAL } from "./medals";
+import { PaidLineRule } from "../UsersTable/PaidLineRule";
 
 type Props = {
   userList: RankedUser[];
   userId?: string;
   week: number;
-};
-
-// Place badge colors: gold, silver, bronze, then neutral.
-const MEDAL: Record<number, { bg: string; fg: string }> = {
-  1: { bg: "#d4a017", fg: "#3d2c05" },
-  2: { bg: "#c3c7cf", fg: "#262c38" },
-  3: { bg: "#d9a27a", fg: "#4a2a12" },
 };
 
 const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
@@ -99,11 +94,26 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
   );
 };
 
-const Rows = ({ list, userId }: { list: LeaderList; userId?: string }) => (
+export const Rows = ({
+  list,
+  userId,
+  linesAfter,
+  endLine,
+}: {
+  list: LeaderList;
+  userId?: string;
+  // Paid lines under the row at an index, and one after the last row.
+  linesAfter?: Map<number, string>;
+  endLine?: string;
+}) => (
   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
-    {list.rows.map((row) => (
-      <Row key={row.id} row={row} selected={row.id === userId} />
+    {list.rows.map((row, i) => (
+      <Fragment key={row.id}>
+        <Row row={row} selected={row.id === userId} />
+        {linesAfter?.get(i) && <PaidLineRule label={linesAfter.get(i)!} />}
+      </Fragment>
     ))}
+    {endLine && <PaidLineRule label={endLine} />}
     {list.youRow && (
       <>
         <Typography
@@ -128,7 +138,7 @@ const Rows = ({ list, userId }: { list: LeaderList; userId?: string }) => (
   </Box>
 );
 
-const CardHead = ({ title, sub }: { title: string; sub: string }) => (
+export const CardHead = ({ title, sub }: { title: string; sub: string }) => (
   <Box
     sx={{
       display: "flex",

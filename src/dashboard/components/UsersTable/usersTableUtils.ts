@@ -79,3 +79,56 @@ export const getWeeklyForm = (picks: UserPick[]): WeeklyFormResult => {
     tooEarly,
   };
 };
+
+export interface PaidLine {
+  label: string;
+}
+
+interface PaidLineRow {
+  place: number | null;
+  second_half_place: number | null;
+}
+
+// Where the dashed "paid" lines go in User Picks, keyed by the index of the
+// row they sit under. Only drawn when the table is in rank order: by place
+// (overall, plus the 1st half while it's being played, since until the 2nd
+// half starts both rank the same points) or by 2nd-half place. Everyone tied
+// at a cutoff sits above its line, and there's no line when nobody is below
+// it (e.g. week 1 before any scores, when everyone is tied for 1st).
+export const paidLines = (
+  rows: PaidLineRow[],
+  sort: { id: string; desc: boolean } | undefined,
+  paid: { overall: number; first_half: number; second_half: number },
+  secondHalf: boolean
+): Map<number, PaidLine[]> => {
+  const lines = new Map<number, PaidLine[]>();
+  if (!sort || sort.desc) return lines;
+
+  const add = (
+    placeOf: (row: PaidLineRow) => number | null,
+    cutoff: number,
+    what: string
+  ) => {
+    let last = -1;
+    rows.forEach((row, i) => {
+      const place = placeOf(row);
+      if (place != null && place <= cutoff) last = i;
+    });
+    const next = rows[last + 1];
+    const nextPlace = next ? placeOf(next) : null;
+    if (last < 0 || nextPlace == null || nextPlace <= cutoff) return;
+    const inMoney = last + 1;
+    const tie = inMoney > cutoff ? ` (${inMoney} with the tie)` : "";
+    const list = lines.get(last) ?? [];
+    list.push({ label: `Paid · top ${cutoff}${what}${tie}` });
+    lines.set(last, list);
+  };
+
+  if (sort.id === "place") {
+    if (!secondHalf) add((r) => r.place, paid.first_half, ", 1st half");
+    add((r) => r.place, paid.overall, " overall");
+  } else if (sort.id === "second_half_place" && secondHalf) {
+    add((r) => r.second_half_place, paid.second_half, ", 2nd half");
+  }
+  return lines;
+};

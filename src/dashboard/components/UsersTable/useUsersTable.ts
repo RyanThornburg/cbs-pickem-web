@@ -8,6 +8,8 @@ import {
 import { RankedUser, UserSeasonTrends, WeekRecap } from "../../types";
 import { moversByUserId, perfectWeekUserIds } from "../Recap/recapBadges";
 import { buildUsersTableColumns, toUsersTableRow } from "./usersTableColumns";
+import { useCurrentWeek } from "../CurrentWeekContext";
+import { paidLines } from "./usersTableUtils";
 
 interface UseUsersTableArgs {
   userList: RankedUser[];
@@ -69,5 +71,16 @@ export const useUsersTable = ({
     meta: { expandedId, toggleExpanded },
   });
 
-  return { table, expandedId, toggleExpanded };
+  const { paidPlaces } = useCurrentWeek();
+  const rows = table.getRowModel().rows;
+  const lines = paidLines(
+    rows.map((row) => row.original),
+    sorting[0],
+    paidPlaces,
+    showSecondHalf
+  );
+  // Paid lines to draw under the row at this index in the sorted rows.
+  const paidLinesAfter = (rowIndex: number) => lines.get(rowIndex) ?? [];
+
+  return { table, expandedId, toggleExpanded, paidLinesAfter };
 };

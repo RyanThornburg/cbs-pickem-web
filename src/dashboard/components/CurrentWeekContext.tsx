@@ -7,9 +7,14 @@ const DEFAULT_SECOND_HALF_START_WEEK = 10;
 // side). Drives how many rows the second-half leader cards show.
 export interface PaidPlaces {
   overall: number;
+  first_half: number;
   second_half: number;
 }
-const DEFAULT_PAID_PLACES: PaidPlaces = { overall: 5, second_half: 3 };
+const DEFAULT_PAID_PLACES: PaidPlaces = {
+  overall: 5,
+  first_half: 3,
+  second_half: 3,
+};
 
 interface ApiMeta {
   season: number;
@@ -52,6 +57,8 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
       setCbsPoolUrl(meta.cbs_pool_url ?? null);
       setPaidPlaces({
         overall: meta.paid_places?.overall ?? DEFAULT_PAID_PLACES.overall,
+        first_half:
+          meta.paid_places?.first_half ?? DEFAULT_PAID_PLACES.first_half,
         second_half:
           meta.paid_places?.second_half ?? DEFAULT_PAID_PLACES.second_half,
       });

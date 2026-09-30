@@ -12,6 +12,7 @@ import { grey } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
+import { PaidLineRule } from "./PaidLineRule";
 import { UserTrendPanel } from "./UserTrendPanel";
 import { selectedRowSx } from "./selectedRowSx";
 
@@ -41,7 +42,7 @@ export default function UserDataMobile({
   showStreak,
   trends,
 }: UserGridWithTrendsProps) {
-  const { table, expandedId, toggleExpanded } = useUsersTable({
+  const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     showSecondHalf,
@@ -91,7 +92,7 @@ export default function UserDataMobile({
           ))}
         </TableHead>
         <TableBody sx={{ mb: 2 }}>
-          {table.getRowModel().rows.map((row) => {
+          {table.getRowModel().rows.map((row, rowIndex) => {
             const cells = row.getVisibleCells();
             const picksCell = cells.find((cell) => cell.column.id === "picks");
             const mainCells = cells.filter(
@@ -151,6 +152,16 @@ export default function UserDataMobile({
                     </Collapse>
                   </StyledTableCell>
                 </TableRow>
+                {paidLinesAfter(rowIndex).map((line) => (
+                  <TableRow key={line.label}>
+                    <StyledTableCell
+                      colSpan={mainCells.length}
+                      sx={{ py: 0, border: 0 }}
+                    >
+                      <PaidLineRule label={line.label} />
+                    </StyledTableCell>
+                  </TableRow>
+                ))}
               </Fragment>
             );
           })}
