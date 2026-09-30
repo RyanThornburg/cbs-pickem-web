@@ -1,6 +1,19 @@
 import { fetchJson, pollAsync } from "../../api/pickemApi";
-import { Book, BookMarketSide, Forecast, GameStatus, MarketSpread, Stadium, Team } from "../types";
-import { ApiGame, fetchWeekGames, getGameCoverResult, toTeam } from "./weekGames";
+import {
+  Book,
+  BookMarketSide,
+  Forecast,
+  GameStatus,
+  MarketSpread,
+  Stadium,
+  Team,
+} from "../types";
+import {
+  ApiGame,
+  fetchWeekGames,
+  getGameCoverResult,
+  toTeam,
+} from "./weekGames";
 
 const POLL_INTERVAL_MS = 5 * 60_000;
 
@@ -108,8 +121,10 @@ const joinGameWithOdds = (
     forecast: game.forecast,
     home_score: game.home_score,
     away_score: game.away_score,
-    coveringTeamId: getGameCoverResult({ ...game, cbs_spread: effectiveCbsSpread })
-      .coveringTeamId,
+    coveringTeamId: getGameCoverResult({
+      ...game,
+      cbs_spread: effectiveCbsSpread,
+    }).coveringTeamId,
     cbs_spread: effectiveCbsSpread,
     market_spread: odds?.market_spread
       ? {

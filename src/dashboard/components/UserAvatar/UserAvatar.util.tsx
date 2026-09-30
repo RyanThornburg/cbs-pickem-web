@@ -22,6 +22,9 @@ export const createAvatarProps = (
   // against something in both themes.
   sx: (theme: Theme) => ({
     ...(props as object),
-    bgcolor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+    bgcolor:
+      theme.palette.mode === "dark"
+        ? "rgba(255,255,255,0.08)"
+        : "rgba(0,0,0,0.06)",
   }),
 });

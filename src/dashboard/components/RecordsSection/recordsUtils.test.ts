@@ -1,4 +1,8 @@
-import { HistoricalCareer, HistoricalRecords, HistoricalStanding } from "../../types";
+import {
+  HistoricalCareer,
+  HistoricalRecords,
+  HistoricalStanding,
+} from "../../types";
 import {
   buildCareerRows,
   buildRecordTiles,
@@ -8,7 +12,11 @@ import {
   isUnknownChampion,
 } from "./recordsUtils";
 
-const standing = (user_id: number, rank: number, score = 50): HistoricalStanding => ({
+const standing = (
+  user_id: number,
+  rank: number,
+  score = 50
+): HistoricalStanding => ({
   user_id,
   name: `User ${user_id}`,
   rank,
@@ -67,7 +75,12 @@ describe("champions", () => {
   const champions = [
     { year: 2023, names: ["A"], score: 55 },
     { year: 2024, names: ["B", "C"], score: 61 },
-    { year: 2025, names: ["??? unknown/missing user"], score: null, incomplete: true },
+    {
+      year: 2025,
+      names: ["??? unknown/missing user"],
+      score: null,
+      incomplete: true,
+    },
   ];
 
   it("spots the unknown-champion placeholder", () => {
@@ -82,7 +95,12 @@ describe("champions", () => {
 describe("buildSeasonRows", () => {
   it("labels ties and counts the players missing before each row", () => {
     // Ranks 1, T3, T3, 6: rank 2 and rank 5 are players not on file.
-    const rows = buildSeasonRows([standing(4, 6), standing(1, 1), standing(2, 3), standing(3, 3)]);
+    const rows = buildSeasonRows([
+      standing(4, 6),
+      standing(1, 1),
+      standing(2, 3),
+      standing(3, 3),
+    ]);
     expect(rows.map((r) => [r.user_id, r.rankLabel, r.missingBefore])).toEqual([
       [1, "1", 0],
       [2, "T3", 1],
@@ -113,20 +131,33 @@ describe("buildSeasonRows", () => {
 
 describe("buildCareerRows", () => {
   it("counts top finishes and averages", () => {
-    const [row] = buildCareerRows(records([career(1, { 2023: 1, 2024: 4, 2025: 7 })]));
-    expect(row).toMatchObject({ seasons: 3, titles: 1, top3: 1, top5: 2, best: 1, avgFinish: 4 });
+    const [row] = buildCareerRows(
+      records([career(1, { 2023: 1, 2024: 4, 2025: 7 })])
+    );
+    expect(row).toMatchObject({
+      seasons: 3,
+      titles: 1,
+      top3: 1,
+      top5: 2,
+      best: 1,
+      avgFinish: 4,
+    });
     expect(row.byYear.get(2024)).toEqual({ rank: 4, score: 46 });
   });
 
   it("leaves best finish undefined when the data has 0", () => {
-    const [row] = buildCareerRows(records([career(1, { 2025: 9 }, { best_finish: 0 })]));
+    const [row] = buildCareerRows(
+      records([career(1, { 2025: 9 }, { best_finish: 0 })])
+    );
     expect(row.best).toBeUndefined();
   });
 });
 
 describe("buildRecordTiles", () => {
   const tile = (data: HistoricalRecords, label: string) =>
-    buildRecordTiles(data, buildCareerRows(data), 2026).find((t) => t.label === label);
+    buildRecordTiles(data, buildCareerRows(data), 2026).find(
+      (t) => t.label === label
+    );
 
   it("requires being in this season's pool to have never missed a season", () => {
     const data = records([
@@ -154,7 +185,9 @@ describe("buildRecordTiles", () => {
       career(1, { 2023: 1 }),
       career(2, { 2019: 4, 2020: 4, 2021: 4, 2022: 4, 2023: 4 }),
     ]);
-    expect(tile(data, "Best average finish")?.holders.map((h) => h.userId)).toEqual([2]);
+    expect(
+      tile(data, "Best average finish")?.holders.map((h) => h.userId)
+    ).toEqual([2]);
   });
 
   it("finds the longest top-10 streak", () => {
@@ -175,6 +208,8 @@ describe("buildRecordTiles", () => {
 
 describe("finishTier", () => {
   it("buckets ranks", () => {
-    expect([1, 2, 3, 4, 5, 6, 10, 11, 30].map(finishTier)).toEqual([1, 2, 2, 3, 3, 4, 4, 5, 5]);
+    expect([1, 2, 3, 4, 5, 6, 10, 11, 30].map(finishTier)).toEqual([
+      1, 2, 2, 3, 3, 4, 4, 5, 5,
+    ]);
   });
 });

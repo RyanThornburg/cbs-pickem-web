@@ -33,7 +33,13 @@ const PriceSub = ({
 export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
   if (!books.length) {
     return (
-      <p style={{ margin: "8px 0", fontSize: "0.82rem", color: "var(--gc-text-muted)" }}>
+      <p
+        style={{
+          margin: "8px 0",
+          fontSize: "0.82rem",
+          color: "var(--gc-text-muted)",
+        }}
+      >
         No per-book data available for this game.
       </p>
     );
@@ -57,7 +63,12 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
   const maxTotal = totalVals.length ? Math.max(...totalVals) : null;
   const minTotal = totalVals.length ? Math.min(...totalVals) : null;
   const totalTrend = (val: number | null | undefined) => {
-    if (val == null || maxTotal == null || minTotal == null || maxTotal === minTotal) {
+    if (
+      val == null ||
+      maxTotal == null ||
+      minTotal == null ||
+      maxTotal === minTotal
+    ) {
       return null;
     }
     if (Math.abs(val - maxTotal) < 0.001) return "high";
@@ -83,25 +94,67 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
           return (
             <tr key={book.bookmaker}>
               <td style={{ textTransform: "capitalize" }}>{book.bookmaker}</td>
-              <td className={isBest(book.moneyline?.away_price, bestMlAway) ? "gc-bestval" : undefined}>
+              <td
+                className={
+                  isBest(book.moneyline?.away_price, bestMlAway)
+                    ? "gc-bestval"
+                    : undefined
+                }
+              >
                 {fmtMoney(book.moneyline?.away_price)}
               </td>
-              <td className={isBest(book.moneyline?.home_price, bestMlHome) ? "gc-bestval" : undefined}>
+              <td
+                className={
+                  isBest(book.moneyline?.home_price, bestMlHome)
+                    ? "gc-bestval"
+                    : undefined
+                }
+              >
                 {fmtMoney(book.moneyline?.home_price)}
               </td>
-              <td className={isBest(book.spread?.away_point, bestAwaySpread) ? "gc-bestval" : undefined}>
+              <td
+                className={
+                  isBest(book.spread?.away_point, bestAwaySpread)
+                    ? "gc-bestval"
+                    : undefined
+                }
+              >
                 {book.spread ? fmtSpread(book.spread.away_point) : "—"}
-                <PriceSub value={book.spread?.away_price} best={bestAwayPrice} />
+                <PriceSub
+                  value={book.spread?.away_price}
+                  best={bestAwayPrice}
+                />
               </td>
-              <td className={isBest(book.spread?.home_point, bestHomeSpread) ? "gc-bestval" : undefined}>
+              <td
+                className={
+                  isBest(book.spread?.home_point, bestHomeSpread)
+                    ? "gc-bestval"
+                    : undefined
+                }
+              >
                 {book.spread ? fmtSpread(book.spread.home_point) : "—"}
-                <PriceSub value={book.spread?.home_price} best={bestHomePrice} />
+                <PriceSub
+                  value={book.spread?.home_price}
+                  best={bestHomePrice}
+                />
               </td>
               <td>
                 {book.total ? book.total.home_point : "—"}
-                {trend && <span className={`gc-totalarrow ${trend}`}>{trend === "high" ? "▲" : "▼"}</span>}
-                <PriceSub value={book.total?.home_price} best={bestOverPrice} prefix="o " />
-                <PriceSub value={book.total?.away_price} best={bestUnderPrice} prefix="u " />
+                {trend && (
+                  <span className={`gc-totalarrow ${trend}`}>
+                    {trend === "high" ? "▲" : "▼"}
+                  </span>
+                )}
+                <PriceSub
+                  value={book.total?.home_price}
+                  best={bestOverPrice}
+                  prefix="o "
+                />
+                <PriceSub
+                  value={book.total?.away_price}
+                  best={bestUnderPrice}
+                  prefix="u "
+                />
               </td>
             </tr>
           );

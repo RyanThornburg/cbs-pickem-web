@@ -26,7 +26,12 @@ export type CardGroup =
 
 const ALWAYS: CardGroup[] = ["chaos", "accuracy"];
 const FALLBACK: CardGroup[] = ["splits"];
-const SHOWN_ELSEWHERE: CardGroup[] = ["upset", "movers", "spreadWeek", "streaks"];
+const SHOWN_ELSEWHERE: CardGroup[] = [
+  "upset",
+  "movers",
+  "spreadWeek",
+  "streaks",
+];
 
 export const cardGroupOf = (t: RecapItem): CardGroup => {
   switch (t.kind) {
@@ -86,7 +91,9 @@ export const selectWeekCards = (items: RecapItem[]): WeekCard[] => {
   const cards = groupIntoCards(items);
   const always = ALWAYS.flatMap((g) => cards.filter((c) => c.group === g));
   const low = [...FALLBACK, ...SHOWN_ELSEWHERE];
-  const rest = cards.filter((c) => !ALWAYS.includes(c.group) && !low.includes(c.group));
+  const rest = cards.filter(
+    (c) => !ALWAYS.includes(c.group) && !low.includes(c.group)
+  );
   const fallback = cards.filter((c) => FALLBACK.includes(c.group));
   const fillers = cards.filter((c) => SHOWN_ELSEWHERE.includes(c.group));
   return [...always, ...rest, ...fallback, ...fillers].slice(0, MAX_CARDS);

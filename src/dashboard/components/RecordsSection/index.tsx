@@ -16,7 +16,12 @@ import ChampionsRow from "./ChampionsRow";
 import FinishesGrid from "./FinishesGrid";
 import RecordTiles from "./RecordTiles";
 import SeasonTable from "./SeasonTable";
-import { buildCareerRows, buildRecordTiles, closedSeasons, HALVES_FROM_SEASON } from "./recordsUtils";
+import {
+  buildCareerRows,
+  buildRecordTiles,
+  closedSeasons,
+  HALVES_FROM_SEASON,
+} from "./recordsUtils";
 
 type TableTab = "all-time" | "season" | "finishes";
 
@@ -35,7 +40,9 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 export default function RecordsSection({ season, userId }: Props) {
   const [data, setData] = useState<HistoricalRecords | undefined>(undefined);
   const [tab, setTab] = useState<TableTab>("all-time");
-  const [selectedYear, setSelectedYear] = useState<number | undefined>(undefined);
+  const [selectedYear, setSelectedYear] = useState<number | undefined>(
+    undefined
+  );
 
   useEffect(() => GetHistorical(setData), []);
 
@@ -56,7 +63,9 @@ export default function RecordsSection({ season, userId }: Props) {
 
   const years = closedSeasons(data);
   const year = selectedYear ?? years[years.length - 1];
-  const incompleteYears = years.filter((y) => data.years[String(y)]?.incomplete);
+  const incompleteYears = years.filter(
+    (y) => data.years[String(y)]?.incomplete
+  );
 
   return (
     // App.css centers text app-wide; this page reads as tables and tiles.
@@ -91,8 +100,8 @@ export default function RecordsSection({ season, userId }: Props) {
               <>
                 <AllTimeTable table={allTimeTable} userId={userId} />
                 <Typography variant="caption" color="text.secondary">
-                  Avg finish and avg score count every season a player has on record. Click a
-                  column to sort.
+                  Avg finish and avg score count every season a player has on
+                  record. Click a column to sort.
                 </Typography>
               </>
             )}
@@ -107,7 +116,9 @@ export default function RecordsSection({ season, userId }: Props) {
             {tab === "finishes" && (
               <FinishesGrid
                 data={data}
-                rows={allTimeTable.getRowModel().rows.map((row) => row.original)}
+                rows={allTimeTable
+                  .getRowModel()
+                  .rows.map((row) => row.original)}
                 userId={userId}
               />
             )}
@@ -116,8 +127,15 @@ export default function RecordsSection({ season, userId }: Props) {
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ bgcolor: "background.default", borderRadius: 1, px: 1.5, py: 1 }}
-          >* Records before {HALVES_FROM_SEASON} are incomplete. First and second-half results start in {HALVES_FROM_SEASON}.
+            sx={{
+              bgcolor: "background.default",
+              borderRadius: 1,
+              px: 1.5,
+              py: 1,
+            }}
+          >
+            * Records before {HALVES_FROM_SEASON} are incomplete. First and
+            second-half results start in {HALVES_FROM_SEASON}.
             {incompleteYears.length > 0 &&
               ` ${incompleteYears.join(" and ")} ${incompleteYears.length === 1 ? "is" : "are"} missing some players, including the champion.`}{" "}
           </Typography>

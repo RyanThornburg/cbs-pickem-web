@@ -92,7 +92,9 @@ export default function TrendsSection({ season, week, recap }: Props) {
         .then(({ games }) => {
           if (cancelled) return;
           setGameResults(
-            new Map(games.map((game) => [game.game_id, getGameCoverResult(game)]))
+            new Map(
+              games.map((game) => [game.game_id, getGameCoverResult(game)])
+            )
           );
         })
         .catch((error) => console.error("Failed to fetch week games", error));
@@ -118,7 +120,10 @@ export default function TrendsSection({ season, week, recap }: Props) {
 
     Promise.all(
       weeks.map((wk) =>
-        fetchWeekGames(season, wk).then((res) => ({ week: wk, games: res.games }))
+        fetchWeekGames(season, wk).then((res) => ({
+          week: wk,
+          games: res.games,
+        }))
       )
     )
       .then((results) => {
@@ -140,7 +145,10 @@ export default function TrendsSection({ season, week, recap }: Props) {
     };
   }, [season, seasonTrends.all_alone_picks_season]);
 
-  const handleTabChange = (_event: SyntheticEvent, value: "week" | "season") => {
+  const handleTabChange = (
+    _event: SyntheticEvent,
+    value: "week" | "season"
+  ) => {
     setTab(value);
   };
 
@@ -171,7 +179,6 @@ export default function TrendsSection({ season, week, recap }: Props) {
 
   const seasonSections: Section[] = [
     {
-      
       // Full width until lg, then shares the row with the All Alone Log so
       // the log isn't pushed below a 32-row table.
       size: { xs: 12, lg: 8 },
@@ -211,11 +218,7 @@ export default function TrendsSection({ season, week, recap }: Props) {
           }}
         >
           <Typography sx={{ color: "text.secondary" }}>Trends</Typography>
-          <Tabs
-            value={tab}
-            onChange={handleTabChange}
-            sx={{ minHeight: 32 }}
-          >
+          <Tabs value={tab} onChange={handleTabChange} sx={{ minHeight: 32 }}>
             <Tab
               value="week"
               label={`Week ${week}`}
@@ -225,17 +228,28 @@ export default function TrendsSection({ season, week, recap }: Props) {
           </Tabs>
         </Box>
         <Box sx={{ mt: 2 }}>
-          {tab === "week" ? <WeekRecapSection recap={recap} /> : <SeasonRecapCharts recap={recap} />}
+          {tab === "week" ? (
+            <WeekRecapSection recap={recap} />
+          ) : (
+            <SeasonRecapCharts recap={recap} />
+          )}
         </Box>
         <Grid container spacing={2} sx={{ mt: 0.5 }}>
           {sections.map((section, i) => (
-            <Grid key={section.title ?? i} size={section.size ?? DEFAULT_SECTION_SIZE}>
-              {section.title ? (<Typography
-                variant="subtitle2"
-                sx={{ mb: 1, color: "text.secondary" }}
-              >
-                {section.title}
-              </Typography>) : ""}
+            <Grid
+              key={section.title ?? i}
+              size={section.size ?? DEFAULT_SECTION_SIZE}
+            >
+              {section.title ? (
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 1, color: "text.secondary" }}
+                >
+                  {section.title}
+                </Typography>
+              ) : (
+                ""
+              )}
               {section.content}
             </Grid>
           ))}

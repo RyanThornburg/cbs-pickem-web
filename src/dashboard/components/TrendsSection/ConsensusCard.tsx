@@ -45,7 +45,13 @@ const buildGameConsensus = (trends: WeekTrends): GameConsensus[] => {
   trends.cold_teams.forEach((c) => {
     const sides = byGame.get(c.game_id) ?? [];
     if (!sides.some((s) => s.id === c.id)) {
-      sides.push({ id: c.id, abbr: c.abbr, name: c.name, pick_count: 0, pct: 0 });
+      sides.push({
+        id: c.id,
+        abbr: c.abbr,
+        name: c.name,
+        pick_count: 0,
+        pct: 0,
+      });
     }
     byGame.set(c.game_id, sides);
   });
@@ -60,14 +66,20 @@ const buildGameConsensus = (trends: WeekTrends): GameConsensus[] => {
       const [leader, trailer] = [...sides].sort(
         (a, b) => b.pick_count - a.pick_count
       );
-      return { game_id, leader, trailer, oneSided: oneSidedByGame.get(game_id) };
+      return {
+        game_id,
+        leader,
+        trailer,
+        oneSided: oneSidedByGame.get(game_id),
+      };
     })
     .sort((a, b) => {
       if (b.leader.pick_count !== a.leader.pick_count) {
         return b.leader.pick_count - a.leader.pick_count;
       }
       return (
-        b.leader.pick_count + b.trailer.pick_count -
+        b.leader.pick_count +
+        b.trailer.pick_count -
         (a.leader.pick_count + a.trailer.pick_count)
       );
     });
@@ -88,105 +100,147 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
     <Stack spacing={1.5}>
       {games.map(({ game_id, leader, trailer, oneSided }) => {
         const cover = gameResults.get(game_id);
-        const trailerCovered = cover?.isFinal && cover.coveringTeamId === trailer.id;
-        const leaderCovered = cover?.isFinal && cover.coveringTeamId === leader.id;
+        const trailerCovered =
+          cover?.isFinal && cover.coveringTeamId === trailer.id;
+        const leaderCovered =
+          cover?.isFinal && cover.coveringTeamId === leader.id;
         const leaderCurrentlyCovering = cover?.coveringTeamId === leader.id;
         // Bold tracks the live cover (and stays on once final); the checkmark
         // and fade only apply once the result is locked in.
         const trailerCurrentlyCovering = cover?.coveringTeamId === trailer.id;
 
         return (
-        <Box key={game_id}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <TeamLogo abbr={trailer.abbr} size={22} />
-            <Box sx={{ width: 38, lineHeight: 1.1, opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1 }}>
-              <Stack direction="row" alignItems="center" spacing={0.25}>
-                <Typography variant="caption" component="div" fontWeight={trailerCurrentlyCovering ? 700 : undefined}>
-                  {trailer.abbr}
-                </Typography>
-                {trailerCovered && (
-                  <CheckCircleOutlineIcon sx={{ fontSize: 12 }} color="success" />
-                )}
-              </Stack>
-              <Typography
-                variant="caption"
-                component="div"
-                color={trailerCurrentlyCovering ? "text.primary" : "text.secondary"}
-                fontWeight={trailerCurrentlyCovering ? 700 : undefined}
+          <Box key={game_id}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <TeamLogo abbr={trailer.abbr} size={22} />
+              <Box
+                sx={{
+                  width: 38,
+                  lineHeight: 1.1,
+                  opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1,
+                }}
               >
-                {trailer.pick_count}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                height: 10,
-                borderRadius: 5,
-                overflow: "hidden",
-                bgcolor: "action.hover",
-              }}
-            >
-              {trailer.pick_count > 0 && (
-                <Tooltip title={`${trailer.name}: ${trailer.pick_count} picks`}>
+                <Stack direction="row" alignItems="center" spacing={0.25}>
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    fontWeight={trailerCurrentlyCovering ? 700 : undefined}
+                  >
+                    {trailer.abbr}
+                  </Typography>
+                  {trailerCovered && (
+                    <CheckCircleOutlineIcon
+                      sx={{ fontSize: 12 }}
+                      color="success"
+                    />
+                  )}
+                </Stack>
+                <Typography
+                  variant="caption"
+                  component="div"
+                  color={
+                    trailerCurrentlyCovering ? "text.primary" : "text.secondary"
+                  }
+                  fontWeight={trailerCurrentlyCovering ? 700 : undefined}
+                >
+                  {trailer.pick_count}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: "flex",
+                  height: 10,
+                  borderRadius: 5,
+                  overflow: "hidden",
+                  bgcolor: "action.hover",
+                }}
+              >
+                {trailer.pick_count > 0 && (
+                  <Tooltip
+                    title={`${trailer.name}: ${trailer.pick_count} picks`}
+                  >
+                    <Box
+                      sx={{
+                        flexGrow: Math.max(trailer.pct, 0.02),
+                        bgcolor: `#${getTeamData(trailer.abbr).color}`,
+                        opacity: 0.55,
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <Tooltip title={`${leader.name}: ${leader.pick_count} picks`}>
                   <Box
                     sx={{
-                      flexGrow: Math.max(trailer.pct, 0.02),
-                      bgcolor: `#${getTeamData(trailer.abbr).color}`,
-                      opacity: 0.55,
+                      flexGrow: Math.max(leader.pct, 0.02),
+                      bgcolor: `#${getTeamData(leader.abbr).color}`,
                     }}
                   />
                 </Tooltip>
-              )}
-              <Tooltip title={`${leader.name}: ${leader.pick_count} picks`}>
-                <Box
-                  sx={{
-                    flexGrow: Math.max(leader.pct, 0.02),
-                    bgcolor: `#${getTeamData(leader.abbr).color}`,
-                  }}
-                />
-              </Tooltip>
-            </Box>
-            <Box sx={{ width: 38, lineHeight: 1.1, textAlign: "right", opacity: cover?.isFinal && !leaderCovered ? 0.5 : 1 }}>
-              <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={0.25}>
-                {leaderCovered && (
-                  <CheckCircleOutlineIcon sx={{ fontSize: 12 }} color="success" />
-                )}
-                <Typography variant="caption" component="div" fontWeight={leaderCurrentlyCovering ? 700 : undefined}>
-                  {leader.abbr}
-                </Typography>
-              </Stack>
-              <Typography
-                variant="caption"
-                component="div"
-                color={leaderCurrentlyCovering ? "text.primary" : "text.secondary"}
-                fontWeight={leaderCurrentlyCovering ? 700 : undefined}
+              </Box>
+              <Box
+                sx={{
+                  width: 38,
+                  lineHeight: 1.1,
+                  textAlign: "right",
+                  opacity: cover?.isFinal && !leaderCovered ? 0.5 : 1,
+                }}
               >
-                {leader.pick_count}
-              </Typography>
-            </Box>
-            <TeamLogo abbr={leader.abbr} size={22} />
-            <Box sx={{ width: 64, display: "flex", justifyContent: "flex-end" }}>
-              {oneSided ? (
-                <Tooltip
-                  title={`${Math.round(oneSided.consensus_pct * 100)}% consensus`}
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  spacing={0.25}
                 >
-                  <Chip
-                    size="small"
-                    color={leaderCurrentlyCovering ? "success" : "error"}
-                    variant="outlined"
-                    icon={<WhatshotIcon />}
-                    label={`${Math.round(leader.pct * 100)}%`}
-                  />
-                </Tooltip>
-              ) : (
-                <Typography variant="caption" color="text.secondary">
-                  {Math.round(leader.pct * 100)}%
+                  {leaderCovered && (
+                    <CheckCircleOutlineIcon
+                      sx={{ fontSize: 12 }}
+                      color="success"
+                    />
+                  )}
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    fontWeight={leaderCurrentlyCovering ? 700 : undefined}
+                  >
+                    {leader.abbr}
+                  </Typography>
+                </Stack>
+                <Typography
+                  variant="caption"
+                  component="div"
+                  color={
+                    leaderCurrentlyCovering ? "text.primary" : "text.secondary"
+                  }
+                  fontWeight={leaderCurrentlyCovering ? 700 : undefined}
+                >
+                  {leader.pick_count}
                 </Typography>
-              )}
-            </Box>
-          </Stack>
-        </Box>
+              </Box>
+              <TeamLogo abbr={leader.abbr} size={22} />
+              <Box
+                sx={{ width: 64, display: "flex", justifyContent: "flex-end" }}
+              >
+                {oneSided ? (
+                  <Tooltip
+                    title={`${Math.round(oneSided.consensus_pct * 100)}% consensus`}
+                  >
+                    <Chip
+                      size="small"
+                      color={leaderCurrentlyCovering ? "success" : "error"}
+                      variant="outlined"
+                      icon={<WhatshotIcon />}
+                      label={`${Math.round(leader.pct * 100)}%`}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Typography variant="caption" color="text.secondary">
+                    {Math.round(leader.pct * 100)}%
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+          </Box>
         );
       })}
     </Stack>

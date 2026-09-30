@@ -13,13 +13,20 @@ import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfi
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import { PickBias, SpotTeam, UserSeasonTrends, VolumeWeightedTeam } from "../../types";
+import {
+  PickBias,
+  SpotTeam,
+  UserSeasonTrends,
+  VolumeWeightedTeam,
+} from "../../types";
 import { ordinal } from "../../helper";
 import { PICK_BIAS_MIN_PCT, PICK_BIAS_MIN_PICKS } from "./usersTableUtils";
 
 const trendIcon = (direction: string) => {
-  if (direction === "improving") return <TrendingUpIcon fontSize="small" color="success" />;
-  if (direction === "declining") return <TrendingDownIcon fontSize="small" color="error" />;
+  if (direction === "improving")
+    return <TrendingUpIcon fontSize="small" color="success" />;
+  if (direction === "declining")
+    return <TrendingDownIcon fontSize="small" color="error" />;
   return <TrendingFlatIcon fontSize="small" color="disabled" />;
 };
 
@@ -74,7 +81,10 @@ export const bestFinishSummary = (
 
   const value = Array.from(yearsByRank.entries())
     .sort(([rankA], [rankB]) => rankA - rankB)
-    .map(([rank, years]) => `${ordinal(rank)} (${years.sort((a, b) => b - a).join(", ")})`)
+    .map(
+      ([rank, years]) =>
+        `${ordinal(rank)} (${years.sort((a, b) => b - a).join(", ")})`
+    )
     .join(", ");
 
   return { label: "Top finishes", value };
@@ -92,7 +102,9 @@ const PICK_BIAS_LABELS: Record<keyof PickBias, string> = {
 // pick'em games, so not exactly). Report whichever axis has the more
 // lopsided season-wide split, using pct rather than current_streak so there's
 // no implied ordering.
-export const strongestPickLean = (bias: PickBias): { label: string; pct: number } | null => {
+export const strongestPickLean = (
+  bias: PickBias
+): { label: string; pct: number } | null => {
   const axes: Array<[keyof PickBias, keyof PickBias]> = [
     ["home", "away"],
     ["favorite", "underdog"],
@@ -100,11 +112,18 @@ export const strongestPickLean = (bias: PickBias): { label: string; pct: number 
 
   const leans = axes.map(([a, b]) => {
     const side = bias[a].pct >= bias[b].pct ? a : b;
-    return { key: side, pct: Math.max(bias[a].pct, bias[b].pct), picks: bias[a].picks };
+    return {
+      key: side,
+      pct: Math.max(bias[a].pct, bias[b].pct),
+      picks: bias[a].picks,
+    };
   });
 
   const best = leans
-    .filter((lean) => lean.picks >= PICK_BIAS_MIN_PICKS && lean.pct >= PICK_BIAS_MIN_PCT)
+    .filter(
+      (lean) =>
+        lean.picks >= PICK_BIAS_MIN_PICKS && lean.pct >= PICK_BIAS_MIN_PCT
+    )
     .sort((a, b) => b.pct - a.pct)[0];
 
   if (!best) return null;
@@ -137,8 +156,14 @@ export const spotTeamText = (entry: SpotTeam): string => {
 // only tally -- same team, same pick count -- so the spot card would just
 // repeat the trap/lucky card's numbers. Drop the redundant spot card in
 // that case rather than show the same data twice.
-export const isRedundantSpot = (bad: VolumeWeightedTeam | null, spot: SpotTeam | null): boolean =>
-  !!bad && !!spot && bad.team.id === spot.team.id && bad.wins + bad.losses === spot.picks;
+export const isRedundantSpot = (
+  bad: VolumeWeightedTeam | null,
+  spot: SpotTeam | null
+): boolean =>
+  !!bad &&
+  !!spot &&
+  bad.team.id === spot.team.id &&
+  bad.wins + bad.losses === spot.picks;
 
 interface TrendCardProps {
   icon: ReactNode;
@@ -150,13 +175,24 @@ function TrendCard({ icon, label, value }: TrendCardProps) {
   return (
     <Paper
       variant="outlined"
-      sx={{ p: 1.5, display: "flex", gap: 1.25, alignItems: "flex-start", height: "100%" }}
+      sx={{
+        p: 1.5,
+        display: "flex",
+        gap: 1.25,
+        alignItems: "flex-start",
+        height: "100%",
+      }}
     >
       <Box sx={{ mt: 0.25 }}>{icon}</Box>
       <Box sx={{ minWidth: 0 }}>
         <Typography
           variant="caption"
-          sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4, color: "text.secondary" }}
+          sx={{
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: 0.4,
+            color: "text.secondary",
+          }}
         >
           {label}
         </Typography>
@@ -186,10 +222,13 @@ export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   // actually holds), so a given user might show none, one, a matching pair,
   // or all four -- render only whichever are populated rather than padding
   // the panel with "no data" placeholders.
-  const { trap_team, lucky_team, blind_spot_team, sweet_spot_team } = trends.current_season;
+  const { trap_team, lucky_team, blind_spot_team, sweet_spot_team } =
+    trends.current_season;
 
-  const showBlindSpot = blind_spot_team && !isRedundantSpot(trap_team, blind_spot_team);
-  const showSweetSpot = sweet_spot_team && !isRedundantSpot(lucky_team, sweet_spot_team);
+  const showBlindSpot =
+    blind_spot_team && !isRedundantSpot(trap_team, blind_spot_team);
+  const showSweetSpot =
+    sweet_spot_team && !isRedundantSpot(lucky_team, sweet_spot_team);
 
   const matchupCards: TrendCardProps[] = [];
   if (trap_team) {

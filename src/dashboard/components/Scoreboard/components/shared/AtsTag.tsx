@@ -18,8 +18,8 @@ export const AtsTag = ({ game, side }: { game: Game; side: Side }) => {
         push
           ? "Exactly on the spread"
           : final
-          ? "Covered the spread"
-          : "Covering the spread right now"
+            ? "Covered the spread"
+            : "Covering the spread right now"
       }
       sx={{
         fontSize: "0.66rem",
@@ -30,10 +30,18 @@ export const AtsTag = ({ game, side }: { game: Game; side: Side }) => {
         borderRadius: "3px",
         whiteSpace: "nowrap",
         color: (t) =>
-          push ? t.palette.warning.main : final ? t.palette.text.secondary : t.palette.success.main,
+          push
+            ? t.palette.warning.main
+            : final
+              ? t.palette.text.secondary
+              : t.palette.success.main,
         bgcolor: (t) =>
           alpha(
-            push ? t.palette.warning.main : final ? t.palette.text.secondary : t.palette.success.main,
+            push
+              ? t.palette.warning.main
+              : final
+                ? t.palette.text.secondary
+                : t.palette.success.main,
             0.14
           ),
       }}

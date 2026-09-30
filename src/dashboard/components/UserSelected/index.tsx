@@ -10,17 +10,32 @@ type Props = {
   showStreak: boolean;
 };
 
-export default function UserSelectedSizes({ userList, userId, userTrends, showStreak }: Props) {
+export default function UserSelectedSizes({
+  userList,
+  userId,
+  userTrends,
+  showStreak,
+}: Props) {
   return (
     <>
       <Grid
         size={{ sm: 12 }}
         sx={{ display: { xs: "none", md: "block", lg: "none" } }}
       >
-        <UserSelectedMain userId={userId} userList={userList} userTrends={userTrends} showStreak={showStreak} />
+        <UserSelectedMain
+          userId={userId}
+          userList={userList}
+          userTrends={userTrends}
+          showStreak={showStreak}
+        />
       </Grid>
       <Grid size={{ xs: 12 }} sx={{ display: { xs: "block", md: "none" } }}>
-        <UserSelectedMobile userId={userId} userList={userList} userTrends={userTrends} showStreak={showStreak} />
+        <UserSelectedMobile
+          userId={userId}
+          userList={userList}
+          userTrends={userTrends}
+          showStreak={showStreak}
+        />
       </Grid>
     </>
   );

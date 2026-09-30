@@ -25,7 +25,8 @@ export default function AllAloneCard({ allAlonePicks, gameResults }: Props) {
     <Stack spacing={1}>
       {allAlonePicks.map((pick) => {
         const cover = gameResults.get(pick.game_id);
-        const covered = cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
+        const covered =
+          cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
 
         return (
           <Stack

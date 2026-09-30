@@ -33,11 +33,19 @@ type Props = {
 
 const dash = "–";
 
-export default function SeasonTable({ data, year, onYearChange, userId }: Props) {
+export default function SeasonTable({
+  data,
+  year,
+  onYearChange,
+  userId,
+}: Props) {
   const theme = useTheme();
   const years = closedSeasons(data);
   const season = data.years[String(year)];
-  const rows = useMemo(() => (season ? buildSeasonRows(season.standings) : []), [season]);
+  const rows = useMemo(
+    () => (season ? buildSeasonRows(season.standings) : []),
+    [season]
+  );
   const champion = data.champions.find((c) => c.year === year);
   const halves = year >= HALVES_FROM_SEASON;
   const maxRank = Math.max(0, ...rows.map((r) => r.rank));
@@ -56,12 +64,19 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
             color={y === year ? "primary" : "default"}
             variant={y === year ? "filled" : "outlined"}
             onClick={() => onYearChange(y)}
-            sx={data.years[String(y)]?.incomplete ? { borderStyle: "dashed" } : undefined}
+            sx={
+              data.years[String(y)]?.incomplete
+                ? { borderStyle: "dashed" }
+                : undefined
+            }
           />
         ))}
       </Box>
 
-      <Stack direction="row" sx={{ flexWrap: "wrap", columnGap: 2.5, rowGap: 0.5 }}>
+      <Stack
+        direction="row"
+        sx={{ flexWrap: "wrap", columnGap: 2.5, rowGap: 0.5 }}
+      >
         <Typography variant="body2" sx={{ fontWeight: 700 }}>
           {year}
         </Typography>
@@ -84,7 +99,8 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
           <Box component="b" sx={{ color: "text.primary" }}>
             {rows.length}
           </Box>{" "}
-          players on record{rows.length < maxRank ? `, ranks go to ${maxRank}` : ""}
+          players on record
+          {rows.length < maxRank ? `, ranks go to ${maxRank}` : ""}
         </Typography>
       </Stack>
 
@@ -95,15 +111,27 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
       ) : (
         hasGaps && (
           <Typography variant="caption" color="text.secondary">
-            Some {year} players aren't on file, so ranks skip where they would be.
+            Some {year} players aren't on file, so ranks skip where they would
+            be.
           </Typography>
         )
       )}
 
       <TableContainer>
-        <Table size="small" sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}>
+        <Table
+          size="small"
+          sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+        >
           <TableHead>
-            <TableRow sx={{ "& th": { fontSize: "0.75rem", fontWeight: "bold", whiteSpace: "nowrap" } }}>
+            <TableRow
+              sx={{
+                "& th": {
+                  fontSize: "0.75rem",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
+                },
+              }}
+            >
               <TableCell>Place</TableCell>
               <TableCell>Player</TableCell>
               <TableCell align="center">Score</TableCell>
@@ -122,9 +150,16 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
                       <TableCell
                         colSpan={columnCount}
                         align="center"
-                        sx={{ py: 0.25, bgcolor: "background.default", color: "text.disabled", fontSize: "0.7rem" }}
+                        sx={{
+                          py: 0.25,
+                          bgcolor: "background.default",
+                          color: "text.disabled",
+                          fontSize: "0.7rem",
+                        }}
                       >
-                        {row.missingBefore} {row.missingBefore === 1 ? "player" : "players"} not on file
+                        {row.missingBefore}{" "}
+                        {row.missingBefore === 1 ? "player" : "players"} not on
+                        file
                       </TableCell>
                     </TableRow>
                   )}
@@ -133,19 +168,35 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
                       sx={{
                         ...youSx,
                         whiteSpace: "nowrap",
-                        ...(isYou && { boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}` }),
+                        ...(isYou && {
+                          boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
+                        }),
                       }}
                     >
                       {row.rank === 1 ? (
-                        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, fontWeight: 600 }}>
-                          <EmojiEventsIcon sx={{ fontSize: "1rem" }} htmlColor={GOLD} />
+                        <Box
+                          sx={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            fontWeight: 600,
+                          }}
+                        >
+                          <EmojiEventsIcon
+                            sx={{ fontSize: "1rem" }}
+                            htmlColor={GOLD}
+                          />
                           {row.rankLabel}
                         </Box>
                       ) : (
                         row.rankLabel
                       )}
                     </TableCell>
-                    <TableCell sx={{ ...youSx, fontWeight: 500, whiteSpace: "nowrap" }}>{row.name}</TableCell>
+                    <TableCell
+                      sx={{ ...youSx, fontWeight: 500, whiteSpace: "nowrap" }}
+                    >
+                      {row.name}
+                    </TableCell>
                     <TableCell align="center" sx={youSx}>
                       {row.score}
                     </TableCell>
@@ -153,7 +204,11 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
                       <TableCell align="center" sx={youSx}>
                         {row.firstHalfLabel ?? dash}
                         {row.first_half_score != null && (
-                          <Typography component="span" variant="caption" color="text.secondary">
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            color="text.secondary"
+                          >
                             {" "}
                             ({row.first_half_score})
                           </Typography>
@@ -164,7 +219,11 @@ export default function SeasonTable({ data, year, onYearChange, userId }: Props)
                       <TableCell align="center" sx={youSx}>
                         {row.secondHalfLabel ?? dash}
                         {row.second_half_score != null && (
-                          <Typography component="span" variant="caption" color="text.secondary">
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            color="text.secondary"
+                          >
                             {" "}
                             ({row.second_half_score})
                           </Typography>

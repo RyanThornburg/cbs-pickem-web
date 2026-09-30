@@ -1,7 +1,13 @@
 import Box from "@mui/material/Box";
 import { GameHighlight } from "../../utils/scoreboardUtils";
 
-const Flag = ({ label, kind }: { label: string; kind: "close" | "redZone" }) => (
+const Flag = ({
+  label,
+  kind,
+}: {
+  label: string;
+  kind: "close" | "redZone";
+}) => (
   <Box
     component="span"
     sx={{

@@ -23,7 +23,7 @@ const toMs = (iso: string | null): number | null =>
 
 export const isFailing = (
   lastAt: string | null,
-  lastSuccessAt: string | null,
+  lastSuccessAt: string | null
 ): boolean => {
   const attempt = toMs(lastAt);
   if (attempt === null) return false;
@@ -40,7 +40,7 @@ export const taskHealth = (
   lastAt: string | null,
   lastSuccessAt: string | null,
   stale: boolean | undefined,
-  tracksFailures = true,
+  tracksFailures = true
 ): TaskHealth => {
   if (lastAt === null && lastSuccessAt === null) return "never";
   if (tracksFailures && isFailing(lastAt, lastSuccessAt)) return "failing";
@@ -115,10 +115,10 @@ const ET_PARTS = new Intl.DateTimeFormat("en-US", {
 // once it's past 1:05 PM on a Sunday, otherwise the Sunday before.
 export const dueDeadlineSunday = (now: number): string => {
   const parts = Object.fromEntries(
-    ET_PARTS.formatToParts(new Date(now)).map((p) => [p.type, p.value]),
+    ET_PARTS.formatToParts(new Date(now)).map((p) => [p.type, p.value])
   );
   const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
-    parts.weekday,
+    parts.weekday
   );
   const minutes = Number(parts.hour) * 60 + Number(parts.minute);
   const daysBack =
@@ -127,8 +127,8 @@ export const dueDeadlineSunday = (now: number): string => {
     Date.UTC(
       Number(parts.year),
       Number(parts.month) - 1,
-      Number(parts.day) - daysBack,
-    ),
+      Number(parts.day) - daysBack
+    )
   )
     .toISOString()
     .slice(0, 10);
@@ -137,7 +137,7 @@ export const dueDeadlineSunday = (now: number): string => {
 // `lastSunday` is a bare "YYYY-MM-DD", so plain string comparison orders it.
 export const deadlineSweepHealth = (
   lastSunday: string | null,
-  now: number,
+  now: number
 ): TaskHealth => {
   if (!lastSunday) return "never";
   return lastSunday < dueDeadlineSunday(now) ? "missed" : "done";

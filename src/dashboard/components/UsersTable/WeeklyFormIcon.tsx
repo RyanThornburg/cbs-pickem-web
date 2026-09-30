@@ -9,7 +9,12 @@ import { getWeeklyForm, WeeklyFormResult } from "./usersTableUtils";
 const FORM_STYLES = {
   hot: {
     bg: "rgba(255,112,67,0.18)",
-    icon: <LocalFireDepartmentIcon sx={{ fontSize: "0.8125rem" }} htmlColor="#ff7043" />,
+    icon: (
+      <LocalFireDepartmentIcon
+        sx={{ fontSize: "0.8125rem" }}
+        htmlColor="#ff7043"
+      />
+    ),
     label: "hot",
   },
   cold: {
@@ -19,7 +24,9 @@ const FORM_STYLES = {
   },
   neutral: {
     bg: "rgba(154,164,178,0.14)",
-    icon: <FiberManualRecordIcon sx={{ fontSize: "0.5rem" }} htmlColor="#9aa4b2" />,
+    icon: (
+      <FiberManualRecordIcon sx={{ fontSize: "0.5rem" }} htmlColor="#9aa4b2" />
+    ),
     label: "even",
   },
 } as const;

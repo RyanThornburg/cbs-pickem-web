@@ -22,13 +22,18 @@ describe("getVenueBadge", () => {
 
   it("flags an international stadium even without the neutral-site flag", () => {
     expect(
-      getVenueBadge(stadium({ city: "London", state: undefined, country: "England" }))
+      getVenueBadge(
+        stadium({ city: "London", state: undefined, country: "England" })
+      )
     ).toEqual({ kind: "international", label: "London, England" });
   });
 
   it("prefers international over neutral when both apply", () => {
     expect(
-      getVenueBadge(stadium({ city: "Rio de Janeiro", country: "Brazil" }), true)
+      getVenueBadge(
+        stadium({ city: "Rio de Janeiro", country: "Brazil" }),
+        true
+      )
     ).toEqual({ kind: "international", label: "Rio de Janeiro, Brazil" });
   });
 

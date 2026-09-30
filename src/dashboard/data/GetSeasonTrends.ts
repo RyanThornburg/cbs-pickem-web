@@ -59,7 +59,10 @@ export const GetSeasonTrends = (
   }
 
   return pollAsync(
-    () => fetchJson<ApiSeasonTrends>(`/api/season/${season}/trends`).then(toSeasonTrends),
+    () =>
+      fetchJson<ApiSeasonTrends>(`/api/season/${season}/trends`).then(
+        toSeasonTrends
+      ),
     POLL_INTERVAL_MS,
     callback,
     (error) => console.error("Failed to fetch season trends", error)

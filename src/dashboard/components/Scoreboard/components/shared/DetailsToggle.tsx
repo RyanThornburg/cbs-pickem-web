@@ -14,9 +14,17 @@ export const DetailsToggle = ({ open, onToggle, sx }: Props) => (
     onClick={onToggle}
     aria-expanded={open}
     endIcon={
-      <ExpandMoreIcon sx={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+      <ExpandMoreIcon
+        sx={{
+          transform: open ? "rotate(180deg)" : "none",
+          transition: "transform 0.2s",
+        }}
+      />
     }
-    sx={[{ px: 0.5, color: "text.secondary", whiteSpace: "nowrap" }, ...(Array.isArray(sx) ? sx : [sx])]}
+    sx={[
+      { px: 0.5, color: "text.secondary", whiteSpace: "nowrap" },
+      ...(Array.isArray(sx) ? sx : [sx]),
+    ]}
   >
     Box score and leaders
   </Button>

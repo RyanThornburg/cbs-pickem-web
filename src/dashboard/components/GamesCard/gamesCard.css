@@ -19,7 +19,11 @@
   --gc-danger-soft: #f7dedb;
   --gc-good: #2f7a3d;
 
-  font-family: "Public Sans", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Public Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--gc-text);
   font-variant-numeric: tabular-nums;
   /* App.css's leftover CRA boilerplate sets .App{text-align:center} on the
@@ -46,10 +50,23 @@
   font-size: 0.76rem;
   color: var(--gc-text-muted);
 }
-.games-card .gc-legend-item { display: flex; align-items: center; gap: 6px; }
-.games-card .gc-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
-.games-card .gc-swatch.danger { background: var(--gc-danger); }
-.games-card .gc-swatch.move { background: var(--gc-weather); }
+.games-card .gc-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.games-card .gc-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+.games-card .gc-swatch.danger {
+  background: var(--gc-danger);
+}
+.games-card .gc-swatch.move {
+  background: var(--gc-weather);
+}
 
 .games-card .gc-tablewrap {
   border: 1px solid var(--gc-border);
@@ -81,14 +98,34 @@
   vertical-align: middle;
   font-size: 0.88rem;
 }
-.games-card tbody tr:last-child td { border-bottom: none; }
-.games-card tbody tr.gc-row:hover { background: var(--gc-surface-2); }
+.games-card tbody tr:last-child td {
+  border-bottom: none;
+}
+.games-card tbody tr.gc-row:hover {
+  background: var(--gc-surface-2);
+}
 
-.games-card .gc-matchup { display: flex; flex-direction: column; gap: 5px; }
-.games-card .gc-mrow { display: flex; align-items: center; gap: 8px; }
-.games-card .gc-mrow .gc-rec { color: var(--gc-text-muted); font-size: 0.78rem; }
+.games-card .gc-matchup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.games-card .gc-mrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.games-card .gc-mrow .gc-rec {
+  color: var(--gc-text-muted);
+  font-size: 0.78rem;
+}
 /* Active cover/miss streak of 3+ (from the week's recap). */
-.games-card .gc-streaks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.games-card .gc-streaks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
 .games-card .gc-streak {
   font-size: 0.66rem;
   font-weight: 700;
@@ -98,8 +135,14 @@
   white-space: nowrap;
   flex: none;
 }
-.games-card .gc-streak.cover { background: #dcefdf; color: var(--gc-good); }
-.games-card .gc-streak.miss { background: var(--gc-danger-soft); color: var(--gc-danger); }
+.games-card .gc-streak.cover {
+  background: #dcefdf;
+  color: var(--gc-good);
+}
+.games-card .gc-streak.miss {
+  background: var(--gc-danger-soft);
+  color: var(--gc-danger);
+}
 
 .games-card .gc-final-score {
   margin-left: auto;
@@ -107,7 +150,9 @@
   display: inline-flex;
   align-items: center;
 }
-.games-card .gc-final-score.covered { color: var(--gc-good); }
+.games-card .gc-final-score.covered {
+  color: var(--gc-good);
+}
 .games-card .gc-final-score .gc-score-num {
   font-weight: 700;
   min-width: 2ch;
@@ -124,8 +169,12 @@
 
 /* Home-perspective spread/CBS-line numbers, colored once a game is final to
    show which side of that number the actual result landed on. */
-.games-card .gc-num.good { color: var(--gc-good); }
-.games-card .gc-num.bad { color: var(--gc-danger); }
+.games-card .gc-num.good {
+  color: var(--gc-good);
+}
+.games-card .gc-num.bad {
+  color: var(--gc-danger);
+}
 
 .games-card .gc-total-hit {
   color: var(--gc-good);
@@ -144,11 +193,22 @@
   font-size: 0.78rem;
   letter-spacing: 0.02em;
   border-left: 3px solid var(--gc-chip-color, var(--gc-accent));
-  background: color-mix(in srgb, var(--gc-chip-color, var(--gc-accent)) 14%, var(--gc-surface));
+  background: color-mix(
+    in srgb,
+    var(--gc-chip-color, var(--gc-accent)) 14%,
+    var(--gc-surface)
+  );
 }
 
-.games-card .gc-kickoff { display: flex; flex-direction: column; gap: 2px; }
-.games-card .gc-kickoff .gc-time { font-weight: 500; white-space: nowrap; }
+.games-card .gc-kickoff {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.games-card .gc-kickoff .gc-time {
+  font-weight: 500;
+  white-space: nowrap;
+}
 .games-card .gc-kickoff .gc-tv {
   color: var(--gc-text-muted);
   font-size: 0.76rem;
@@ -169,12 +229,25 @@
   color: var(--gc-accent);
 }
 /* Mobile's kickoff block is right-aligned, so the badge follows it there. */
-.games-card .gc-gamecard-top .gc-venuebadge { align-self: flex-end; }
+.games-card .gc-gamecard-top .gc-venuebadge {
+  align-self: flex-end;
+}
 /* Streak line spans the card under both teams and the kickoff. */
-.games-card .gc-gamecard-top .gc-streaks { grid-column: 1 / -1; margin-top: 2px; }
+.games-card .gc-gamecard-top .gc-streaks {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
 
-.games-card .gc-line { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; max-width: 100%; }
-.games-card .gc-line .gc-num { font-weight: 600; }
+.games-card .gc-line {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  max-width: 100%;
+}
+.games-card .gc-line .gc-num {
+  font-weight: 600;
+}
 .games-card .gc-line .gc-linesub {
   display: inline-flex;
   align-items: center;
@@ -183,8 +256,14 @@
   font-size: 0.74rem;
   color: var(--gc-text-muted);
 }
-.games-card .gc-line .gc-ou { font-size: 0.8rem; color: var(--gc-text-muted); }
-.games-card .gc-line .gc-ou-num { font-weight: 600; color: var(--gc-text); }
+.games-card .gc-line .gc-ou {
+  font-size: 0.8rem;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-line .gc-ou-num {
+  font-weight: 600;
+  color: var(--gc-text);
+}
 
 .games-card .gc-movebadge {
   display: inline-flex;
@@ -211,8 +290,12 @@
   font-weight: 700;
   white-space: nowrap;
 }
-.games-card .gc-valuearrow.good { color: var(--gc-good); }
-.games-card .gc-valuearrow.bad { color: var(--gc-accent); }
+.games-card .gc-valuearrow.good {
+  color: var(--gc-good);
+}
+.games-card .gc-valuearrow.bad {
+  color: var(--gc-accent);
+}
 
 .games-card .gc-wx {
   display: flex;
@@ -220,14 +303,47 @@
   justify-content: space-between;
   gap: 12px;
 }
-.games-card .gc-wx .gc-wxmain { display: flex; align-items: flex-start; gap: 8px; flex: 1 1 auto; min-width: 0; }
-.games-card .gc-wx svg { flex: none; color: var(--gc-weather); margin-top: 1px; }
-.games-card .gc-wx .gc-wxtext { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.games-card .gc-wx .gc-temp { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
-.games-card .gc-wx .gc-cond { color: var(--gc-text-muted); font-size: 0.76rem; }
-.games-card .gc-wx .gc-trend { font-size: 0.74rem; font-weight: 600; color: var(--gc-text-muted); }
-.games-card .gc-wx .gc-trend.worse { color: var(--gc-accent); }
-.games-card .gc-wx .gc-hours { display: flex; gap: 2px; flex: 0 1 auto; }
+.games-card .gc-wx .gc-wxmain {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.games-card .gc-wx svg {
+  flex: none;
+  color: var(--gc-weather);
+  margin-top: 1px;
+}
+.games-card .gc-wx .gc-wxtext {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.games-card .gc-wx .gc-temp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.games-card .gc-wx .gc-cond {
+  color: var(--gc-text-muted);
+  font-size: 0.76rem;
+}
+.games-card .gc-wx .gc-trend {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-wx .gc-trend.worse {
+  color: var(--gc-accent);
+}
+.games-card .gc-wx .gc-hours {
+  display: flex;
+  gap: 2px;
+  flex: 0 1 auto;
+}
 .games-card .gc-wx .gc-hour {
   flex: 0 1 44px;
   min-width: 30px;
@@ -239,21 +355,52 @@
   border-radius: 6px;
   background: var(--gc-surface-2);
 }
-.games-card .gc-wx .gc-hour.peak { background: var(--gc-weather-soft); }
-.games-card .gc-wx .gc-hour svg { width: 16px; height: 16px; margin-top: 0; }
-.games-card .gc-wx .gc-hour-time { font-size: 0.62rem; color: var(--gc-text-muted); white-space: nowrap; }
-.games-card .gc-wx .gc-hour-pct { font-size: 0.68rem; font-weight: 700; color: var(--gc-text-muted); }
-.games-card .gc-wx .gc-hour-pct.wet { color: var(--gc-weather); }
-.games-card .gc-wx .gc-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
-.games-card .gc-dome { display: inline-flex; align-items: center; gap: 6px; color: var(--gc-text-muted); font-size: 0.8rem; }
-.games-card .gc-dome svg { color: var(--gc-text-muted); }
+.games-card .gc-wx .gc-hour.peak {
+  background: var(--gc-weather-soft);
+}
+.games-card .gc-wx .gc-hour svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+}
+.games-card .gc-wx .gc-hour-time {
+  font-size: 0.62rem;
+  color: var(--gc-text-muted);
+  white-space: nowrap;
+}
+.games-card .gc-wx .gc-hour-pct {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-wx .gc-hour-pct.wet {
+  color: var(--gc-weather);
+}
+.games-card .gc-wx .gc-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.games-card .gc-dome {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gc-text-muted);
+  font-size: 0.8rem;
+}
+.games-card .gc-dome svg {
+  color: var(--gc-text-muted);
+}
 
 a.gc-wx-link,
 a.gc-wx-link:visited {
   color: inherit;
   text-decoration: none;
 }
-.games-card svg.gc-linkicon { color: var(--gc-text-muted); }
+.games-card svg.gc-linkicon {
+  color: var(--gc-text-muted);
+}
 a.gc-wx-link:hover .gc-temp,
 a.gc-wx-link:hover.gc-dome {
   text-decoration: underline;
@@ -273,8 +420,14 @@ a.gc-wx-link:hover.gc-dome {
   text-transform: uppercase;
   width: fit-content;
 }
-.games-card .gc-flag.danger { background: var(--gc-danger-soft); color: var(--gc-danger); }
-.games-card .gc-flag.warn { background: var(--gc-accent-soft); color: var(--gc-accent); }
+.games-card .gc-flag.danger {
+  background: var(--gc-danger-soft);
+  color: var(--gc-danger);
+}
+.games-card .gc-flag.warn {
+  background: var(--gc-accent-soft);
+  color: var(--gc-accent);
+}
 
 .games-card .gc-expandbtn {
   appearance: none;
@@ -293,13 +446,28 @@ a.gc-wx-link:hover.gc-dome {
   justify-content: center;
   gap: 5px;
 }
-.games-card .gc-expandbtn:hover { background: var(--gc-surface-3); }
-.games-card .gc-expandbtn .gc-arrow { transition: transform 0.15s ease; display: inline-flex; }
-.games-card .gc-expandbtn[aria-expanded="true"] .gc-arrow { transform: rotate(180deg); }
+.games-card .gc-expandbtn:hover {
+  background: var(--gc-surface-3);
+}
+.games-card .gc-expandbtn .gc-arrow {
+  transition: transform 0.15s ease;
+  display: inline-flex;
+}
+.games-card .gc-expandbtn[aria-expanded="true"] .gc-arrow {
+  transform: rotate(180deg);
+}
 
-.games-card tr.gc-bookdetail td { padding: 0 12px 14px; background: var(--gc-surface-2); }
+.games-card tr.gc-bookdetail td {
+  padding: 0 12px 14px;
+  background: var(--gc-surface-2);
+}
 
-.games-card .gc-booktable { width: 100%; border-collapse: collapse; margin-top: 8px; min-width: 0; }
+.games-card .gc-booktable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  min-width: 0;
+}
 .games-card .gc-booktable th {
   text-align: left;
   font-size: 0.68rem;
@@ -310,24 +478,62 @@ a.gc-wx-link:hover.gc-dome {
   padding: 5px 8px;
   border-bottom: 1px solid var(--gc-border);
 }
-.games-card .gc-booktable td { padding: 5px 8px; font-size: 0.82rem; border-bottom: 1px solid var(--gc-border); }
-.games-card .gc-booktable tr:last-child td { border-bottom: none; }
-.games-card .gc-booktable td.gc-bestval { font-weight: 700; color: var(--gc-accent); }
-.games-card .gc-booktable td.gc-bestval::after { content: " \2713"; font-size: 0.7em; }
-.games-card .gc-totalarrow { margin-left: 5px; font-size: 0.72rem; font-weight: 700; }
-.games-card .gc-totalarrow.high { color: var(--gc-weather); }
-.games-card .gc-totalarrow.low { color: var(--gc-accent); }
-.games-card .gc-pricesub { display: block; font-size: 0.7rem; color: var(--gc-text-muted); margin-top: 1px; }
-.games-card .gc-pricesub.cheapest { color: var(--gc-good); font-weight: 700; }
-
-/* ---- responsive: table on desktop, cards on narrow viewports ---- */
-.games-card .gc-mobile-view { display: none; }
-@media (max-width: 780px) {
-  .games-card .gc-desktop-view { display: none; }
-  .games-card .gc-mobile-view { display: block; }
+.games-card .gc-booktable td {
+  padding: 5px 8px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--gc-border);
+}
+.games-card .gc-booktable tr:last-child td {
+  border-bottom: none;
+}
+.games-card .gc-booktable td.gc-bestval {
+  font-weight: 700;
+  color: var(--gc-accent);
+}
+.games-card .gc-booktable td.gc-bestval::after {
+  content: " \2713";
+  font-size: 0.7em;
+}
+.games-card .gc-totalarrow {
+  margin-left: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.games-card .gc-totalarrow.high {
+  color: var(--gc-weather);
+}
+.games-card .gc-totalarrow.low {
+  color: var(--gc-accent);
+}
+.games-card .gc-pricesub {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--gc-text-muted);
+  margin-top: 1px;
+}
+.games-card .gc-pricesub.cheapest {
+  color: var(--gc-good);
+  font-weight: 700;
 }
 
-.games-card .gc-cardlist { display: flex; flex-direction: column; gap: 12px; }
+/* ---- responsive: table on desktop, cards on narrow viewports ---- */
+.games-card .gc-mobile-view {
+  display: none;
+}
+@media (max-width: 780px) {
+  .games-card .gc-desktop-view {
+    display: none;
+  }
+  .games-card .gc-mobile-view {
+    display: block;
+  }
+}
+
+.games-card .gc-cardlist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .games-card .gc-gamecard {
   border: 1px solid var(--gc-border);
   border-radius: 12px;
@@ -360,10 +566,19 @@ a.gc-wx-link:hover.gc-dome {
   padding-bottom: 10px;
   border-bottom: 1px solid var(--gc-border);
 }
-.games-card .gc-gamecard .gc-mrow { min-width: 0; gap: 6px; }
-.games-card .gc-gamecard .gc-chip { min-width: 36px; padding: 2px 5px; }
+.games-card .gc-gamecard .gc-mrow {
+  min-width: 0;
+  gap: 6px;
+}
+.games-card .gc-gamecard .gc-chip {
+  min-width: 36px;
+  padding: 2px 5px;
+}
 .games-card .gc-gamecard .gc-chip,
-.games-card .gc-gamecard .gc-rec { flex: none; white-space: nowrap; }
+.games-card .gc-gamecard .gc-rec {
+  flex: none;
+  white-space: nowrap;
+}
 /* Safety net for very narrow phones -- with the full row to themselves the
    names fit at normal phone widths. */
 .games-card .gc-gamecard .gc-mname {
@@ -378,7 +593,11 @@ a.gc-wx-link:hover.gc-dome {
   gap: 10px 16px;
   margin-bottom: 12px;
 }
-.games-card .gc-oddsgrid .gc-cell { display: flex; flex-direction: column; gap: 3px; }
+.games-card .gc-oddsgrid .gc-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
 .games-card .gc-oddsgrid .gc-lbl {
   font-size: 0.66rem;
   text-transform: uppercase;
@@ -393,6 +612,13 @@ a.gc-wx-link:hover.gc-dome {
   gap: 6px;
   flex-wrap: wrap;
 }
-.games-card .gc-gamecard .gc-expandbtn { width: 100%; }
-.games-card .gc-bookdetail-mobile { margin-top: 12px; overflow-x: auto; }
-.games-card .gc-bookdetail-mobile .gc-booktable { min-width: 480px; }
+.games-card .gc-gamecard .gc-expandbtn {
+  width: 100%;
+}
+.games-card .gc-bookdetail-mobile {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+.games-card .gc-bookdetail-mobile .gc-booktable {
+  min-width: 480px;
+}

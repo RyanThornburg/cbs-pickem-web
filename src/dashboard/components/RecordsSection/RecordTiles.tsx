@@ -51,12 +51,13 @@ export default function RecordTiles({ tiles, userId }: Props) {
               <Fragment key={`${holder.text}-${i}`}>
                 {i > 0 && ", "}
                 {holder.text}
-                {holder.userId !== undefined && String(holder.userId) === userId && (
-                  <Box component="span" sx={{ color: "primary.main" }}>
-                    {" "}
-                    (you)
-                  </Box>
-                )}
+                {holder.userId !== undefined &&
+                  String(holder.userId) === userId && (
+                    <Box component="span" sx={{ color: "primary.main" }}>
+                      {" "}
+                      (you)
+                    </Box>
+                  )}
               </Fragment>
             ))}
           </Typography>

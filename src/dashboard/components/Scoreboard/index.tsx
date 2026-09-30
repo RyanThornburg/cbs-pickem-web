@@ -47,7 +47,10 @@ interface Props {
 }
 
 const GroupHeader = ({ children }: { children: string }) => (
-  <Typography variant="overline" sx={{ fontWeight: 700, color: "text.secondary", letterSpacing: "0.08em" }}>
+  <Typography
+    variant="overline"
+    sx={{ fontWeight: 700, color: "text.secondary", letterSpacing: "0.08em" }}
+  >
     {children}
   </Typography>
 );
@@ -84,7 +87,17 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const groups = groupGames(games, picksFirst ? userId : undefined);
 
   const controls = (
-    <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap", columnGap: 2, rowGap: 1, ml: "auto" }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        flexWrap: "wrap",
+        columnGap: 2,
+        rowGap: 1,
+        ml: "auto",
+      }}
+    >
       <FormControlLabel
         control={
           <Switch
@@ -120,18 +133,42 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   // there's no empty row above the games. Compact keeps its headers inside
   // the list box, so the controls sit just above it.
   return (
-    <Box id={`gameWeek-${week}`} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: layout === "full" ? 2 : 1, textAlign: "left" }}>
+    <Box
+      id={`gameWeek-${week}`}
+      sx={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: layout === "full" ? 2 : 1,
+        textAlign: "left",
+      }}
+    >
       {layout === "full" ? (
         groups.map(({ group, games }, i) => (
-          <Box key={group} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+          <Box
+            key={group}
+            sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 1,
+              }}
+            >
               <GroupHeader>{group}</GroupHeader>
               {i === 0 && controls}
             </Box>
             <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
               {games.map((game) => (
                 <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
-                  <GameCard game={game} userId={userId} totalUsers={totalUsers} tags={gameTags.get(game.game_id)} />
+                  <GameCard
+                    game={game}
+                    userId={userId}
+                    totalUsers={totalUsers}
+                    tags={gameTags.get(game.game_id)}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -143,11 +180,24 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
           <Paper variant="outlined" sx={{ overflow: "hidden" }}>
             {groups.map(({ group, games }) => (
               <Box key={group}>
-                <Box sx={{ px: 1.75, py: 0.5, bgcolor: "action.hover", borderBottom: 1, borderColor: "divider" }}>
+                <Box
+                  sx={{
+                    px: 1.75,
+                    py: 0.5,
+                    bgcolor: "action.hover",
+                    borderBottom: 1,
+                    borderColor: "divider",
+                  }}
+                >
                   <GroupHeader>{group}</GroupHeader>
                 </Box>
                 {games.map((game) => (
-                  <GameRow key={game.game_id} game={game} userId={userId} tags={gameTags.get(game.game_id)} />
+                  <GameRow
+                    key={game.game_id}
+                    game={game}
+                    userId={userId}
+                    tags={gameTags.get(game.game_id)}
+                  />
                 ))}
               </Box>
             ))}

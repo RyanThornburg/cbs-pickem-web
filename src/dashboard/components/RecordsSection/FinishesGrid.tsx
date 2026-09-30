@@ -13,7 +13,12 @@ import {
 } from "@mui/material";
 import { HistoricalRecords } from "../../types";
 import { ordinal } from "../../helper";
-import { CareerRow, closedSeasons, FinishTier, finishTier } from "./recordsUtils";
+import {
+  CareerRow,
+  closedSeasons,
+  FinishTier,
+  finishTier,
+} from "./recordsUtils";
 import {
   FINISH_TIER_COLORS,
   FINISH_TIER_LABELS,
@@ -30,7 +35,13 @@ type Props = {
 
 const TIERS: FinishTier[] = [1, 2, 3, 4, 5];
 
-const Swatch = ({ background, border }: { background: string; border?: boolean }) => (
+const Swatch = ({
+  background,
+  border,
+}: {
+  background: string;
+  border?: boolean;
+}) => (
   <Box
     component="i"
     sx={{
@@ -44,7 +55,12 @@ const Swatch = ({ background, border }: { background: string; border?: boolean }
   />
 );
 
-const stickySx = { position: "sticky", left: 0, zIndex: 1, bgcolor: "background.paper" } as const;
+const stickySx = {
+  position: "sticky",
+  left: 0,
+  zIndex: 1,
+  bgcolor: "background.paper",
+} as const;
 
 export default function FinishesGrid({ data, rows, userId }: Props) {
   const theme = useTheme();
@@ -55,7 +71,12 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
     <Stack spacing={1.5}>
       <Stack
         direction="row"
-        sx={{ flexWrap: "wrap", columnGap: 1.75, rowGap: 0.75, alignItems: "center" }}
+        sx={{
+          flexWrap: "wrap",
+          columnGap: 1.75,
+          rowGap: 0.75,
+          alignItems: "center",
+        }}
       >
         {TIERS.map((tier) => (
           <Stack key={tier} direction="row" spacing={0.6} alignItems="center">
@@ -77,17 +98,32 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
         <Table
           size="small"
           sx={{
-            "& td, & th": { px: 0.4, py: 0.4, borderBottom: 0, textAlign: "center" },
-            "& td:first-of-type, & th:first-of-type": { textAlign: "left", pr: 1.25, pl: 1 },
+            "& td, & th": {
+              px: 0.4,
+              py: 0.4,
+              borderBottom: 0,
+              textAlign: "center",
+            },
+            "& td:first-of-type, & th:first-of-type": {
+              textAlign: "left",
+              pr: 1.25,
+              pl: 1,
+            },
           }}
         >
           <TableHead>
-            <TableRow sx={{ "& th": { fontSize: "0.7rem", fontWeight: "bold" } }}>
+            <TableRow
+              sx={{ "& th": { fontSize: "0.7rem", fontWeight: "bold" } }}
+            >
               <TableCell sx={{ ...stickySx, zIndex: 3 }}>Player</TableCell>
               {years.map((year) => (
                 <TableCell
                   key={year}
-                  sx={incomplete(year) ? { backgroundImage: INCOMPLETE_HATCH } : undefined}
+                  sx={
+                    incomplete(year)
+                      ? { backgroundImage: INCOMPLETE_HATCH }
+                      : undefined
+                  }
                 >
                   '{String(year).slice(2)}
                 </TableCell>
@@ -108,23 +144,31 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                       }),
                     }}
                   >
-                    <Typography variant="body2" sx={{ fontWeight: 500, whiteSpace: "nowrap" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
+                    >
                       {row.name}
                     </Typography>
                   </TableCell>
                   {years.map((year) => {
                     const finish = row.byYear.get(year);
-                    const colors = finish && FINISH_TIER_COLORS[finishTier(finish.rank)];
+                    const colors =
+                      finish && FINISH_TIER_COLORS[finishTier(finish.rank)];
                     return (
                       <TableCell
                         key={year}
                         sx={{
                           ...(isYou && youRowSx),
-                          ...(incomplete(year) && { backgroundImage: INCOMPLETE_HATCH }),
+                          ...(incomplete(year) && {
+                            backgroundImage: INCOMPLETE_HATCH,
+                          }),
                         }}
                       >
                         {finish && colors ? (
-                          <Tooltip title={`${year}: ${ordinal(finish.rank)}, ${finish.score} pts`}>
+                          <Tooltip
+                            title={`${year}: ${ordinal(finish.rank)}, ${finish.score} pts`}
+                          >
                             <Box
                               sx={{
                                 width: 34,
@@ -145,7 +189,10 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                             </Box>
                           </Tooltip>
                         ) : (
-                          <Typography variant="caption" sx={{ color: "divider" }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "divider" }}
+                          >
                             ·
                           </Typography>
                         )}

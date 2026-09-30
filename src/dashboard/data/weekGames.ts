@@ -154,13 +154,10 @@ export const fetchWeekGames = (
 ): Promise<ApiWeekGamesResponse> =>
   fetchJson<ApiWeekGamesResponse>(weekGamesUrl(season, week));
 
-export const buildGamesById = (
-  games: ApiGame[]
-): Map<number, ApiGame> => new Map(games.map((game) => [game.game_id, game]));
+export const buildGamesById = (games: ApiGame[]): Map<number, ApiGame> =>
+  new Map(games.map((game) => [game.game_id, game]));
 
-export const findEarliestGame = (
-  games: ApiGame[]
-): ApiGame | undefined => {
+export const findEarliestGame = (games: ApiGame[]): ApiGame | undefined => {
   if (games.length === 0) return undefined;
   return games.reduce((earliest, game) => {
     const gameTime = Date.parse(game.game_time);
@@ -194,10 +191,6 @@ export const getGameCoverResult = (game: ApiGame): GameCoverResult => {
   return {
     isFinal,
     coveringTeamId:
-      margin > 0
-        ? game.home_team.id
-        : margin < 0
-        ? game.away_team.id
-        : null,
+      margin > 0 ? game.home_team.id : margin < 0 ? game.away_team.id : null,
   };
 };

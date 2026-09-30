@@ -6,9 +6,15 @@ export const STRIP_SIZE = 8;
 
 // Unseen items first, then ones this viewer has already seen, each group
 // keeping the data's rank order.
-export const orderForRotation = (items: RecapItem[], seen: Set<string>): RecapItem[] => {
+export const orderForRotation = (
+  items: RecapItem[],
+  seen: Set<string>
+): RecapItem[] => {
   const top = items.slice(0, STRIP_SIZE);
-  return [...top.filter((t) => !seen.has(t.id)), ...top.filter((t) => seen.has(t.id))];
+  return [
+    ...top.filter((t) => !seen.has(t.id)),
+    ...top.filter((t) => seen.has(t.id)),
+  ];
 };
 
 // Seen ids are kept per week: a season item like
@@ -20,7 +26,8 @@ const SEEN_WEEKS_KEPT = 4;
 
 type SeenStore = Record<string, string[]>;
 
-const weekKey = (season: number, week: number) => `${season}:${String(week).padStart(2, "0")}`;
+const weekKey = (season: number, week: number) =>
+  `${season}:${String(week).padStart(2, "0")}`;
 
 const readStore = (): SeenStore => {
   try {
@@ -35,7 +42,11 @@ const readStore = (): SeenStore => {
 export const getSeenItems = (season: number, week: number): Set<string> =>
   new Set(readStore()[weekKey(season, week)] ?? []);
 
-export const markItemSeen = (season: number, week: number, id: string): void => {
+export const markItemSeen = (
+  season: number,
+  week: number,
+  id: string
+): void => {
   const store = readStore();
   const key = weekKey(season, week);
   const ids = new Set(store[key] ?? []);

@@ -63,10 +63,10 @@ export const getWeeklyForm = (picks: UserPick[]): WeeklyFormResult => {
   const form: WeeklyForm = tooEarly
     ? "neutral"
     : pct >= WEEKLY_FORM_HOT_PCT
-    ? "hot"
-    : pct <= WEEKLY_FORM_COLD_PCT
-    ? "cold"
-    : "neutral";
+      ? "hot"
+      : pct <= WEEKLY_FORM_COLD_PCT
+        ? "cold"
+        : "neutral";
 
   return {
     form,

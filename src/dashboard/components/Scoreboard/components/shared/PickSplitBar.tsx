@@ -17,14 +17,33 @@ interface Props {
 
 const byName = (a: UserId, b: UserId) => a.name.localeCompare(b.name);
 
-const PickerList = ({ abbr, users, userId }: { abbr: string; users: UserId[]; userId?: string }) => (
+const PickerList = ({
+  abbr,
+  users,
+  userId,
+}: {
+  abbr: string;
+  users: UserId[];
+  userId?: string;
+}) => (
   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, fontWeight: 700, fontSize: "0.85rem" }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.75,
+        fontWeight: 700,
+        fontSize: "0.85rem",
+      }}
+    >
       <TeamLogo abbr={abbr} size={18} />
       {abbr} · {users.length}
     </Box>
     {users.length === 0 ? (
-      <Typography variant="caption" sx={{ fontStyle: "italic", color: "text.secondary" }}>
+      <Typography
+        variant="caption"
+        sx={{ fontStyle: "italic", color: "text.secondary" }}
+      >
         Nobody
       </Typography>
     ) : (
@@ -36,7 +55,12 @@ const PickerList = ({ abbr, users, userId }: { abbr: string; users: UserId[]; us
             color: user.id === userId ? "primary.main" : "text.primary",
           }}
         >
-          <UserAvatar userId={user.id} userName={user.name} size={18} fontSize="0.78rem" />
+          <UserAvatar
+            userId={user.id}
+            userName={user.name}
+            size={18}
+            fontSize="0.78rem"
+          />
         </Box>
       ))
     )}
@@ -64,18 +88,33 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
     !cover || cover.side === null
       ? "text.disabled"
       : cover.side === side
-      ? "success.main"
-      : "error.main";
+        ? "success.main"
+        : "error.main";
   // Each side's label takes the same green/red as its half of the bar:
   // winning (or won) the pick vs. losing (or lost) it.
   const labelColor = (side: Side) =>
     !cover || cover.side === null
       ? "text.secondary"
       : cover.side === side
-      ? "success.main"
-      : "error.main";
-  const count = (side: Side, abbr: string, n: number, align: "left" | "right") => (
-    <Box component="span" sx={{ display: "inline-flex", gap: 0.5, alignItems: "center", flexDirection: align === "right" ? "row-reverse" : "row", color: labelColor(side), fontWeight: cover?.side ? 600 : 400 }}>
+        ? "success.main"
+        : "error.main";
+  const count = (
+    side: Side,
+    abbr: string,
+    n: number,
+    align: "left" | "right"
+  ) => (
+    <Box
+      component="span"
+      sx={{
+        display: "inline-flex",
+        gap: 0.5,
+        alignItems: "center",
+        flexDirection: align === "right" ? "row-reverse" : "row",
+        color: labelColor(side),
+        fontWeight: cover?.side ? 600 : 400,
+      }}
+    >
       <span>
         {align === "left" ? (
           <>
@@ -99,11 +138,33 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
           onClose={() => setOpen(false)}
           placement="top"
           arrow
-          slotProps={{ tooltip: { sx: { bgcolor: "background.paper", color: "text.primary", border: 1, borderColor: "divider", boxShadow: 6, p: 1.5, maxWidth: 440 } } }}
+          slotProps={{
+            tooltip: {
+              sx: {
+                bgcolor: "background.paper",
+                color: "text.primary",
+                border: 1,
+                borderColor: "divider",
+                boxShadow: 6,
+                p: 1.5,
+                maxWidth: 440,
+              },
+            },
+          }}
           title={
-            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-              <PickerList abbr={game.away_team.abbr} users={away} userId={userId} />
-              <PickerList abbr={game.home_team.abbr} users={home} userId={userId} />
+            <Box
+              sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}
+            >
+              <PickerList
+                abbr={game.away_team.abbr}
+                users={away}
+                userId={userId}
+              />
+              <PickerList
+                abbr={game.home_team.abbr}
+                users={home}
+                userId={userId}
+              />
             </Box>
           }
         >
@@ -112,7 +173,9 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
             tabIndex={0}
             aria-label={`${away.length} picked ${game.away_team.abbr}, ${home.length} picked ${game.home_team.abbr}. Show names.`}
             onClick={() => setOpen((o) => !o)}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpen((o) => !o)}
+            onKeyDown={(e) =>
+              (e.key === "Enter" || e.key === " ") && setOpen((o) => !o)
+            }
             sx={{
               cursor: "pointer",
               display: "flex",
@@ -123,14 +186,45 @@ export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
               "&:focus-visible": { outline: 2, outlineColor: "primary.main" },
             }}
           >
-            <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, fontSize: "0.8rem", color: "text.secondary" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 1,
+                fontSize: "0.8rem",
+                color: "text.secondary",
+              }}
+            >
               {count("away", game.away_team.abbr, away.length, "left")}
-              {!compact && totalUsers ? <span>{total} of {totalUsers} picked this game</span> : null}
+              {!compact && totalUsers ? (
+                <span>
+                  {total} of {totalUsers} picked this game
+                </span>
+              ) : null}
               {count("home", game.home_team.abbr, home.length, "right")}
             </Box>
-            <Box sx={{ display: "flex", height: 6, borderRadius: 3, overflow: "hidden", bgcolor: "action.hover" }}>
-              <Box sx={{ width: `${(away.length / total) * 100}%`, bgcolor: colorFor("away") }} />
-              <Box sx={{ width: `${(home.length / total) * 100}%`, bgcolor: colorFor("home"), opacity: 0.85 }} />
+            <Box
+              sx={{
+                display: "flex",
+                height: 6,
+                borderRadius: 3,
+                overflow: "hidden",
+                bgcolor: "action.hover",
+              }}
+            >
+              <Box
+                sx={{
+                  width: `${(away.length / total) * 100}%`,
+                  bgcolor: colorFor("away"),
+                }}
+              />
+              <Box
+                sx={{
+                  width: `${(home.length / total) * 100}%`,
+                  bgcolor: colorFor("home"),
+                  opacity: 0.85,
+                }}
+              />
             </Box>
           </Box>
         </Tooltip>

@@ -1,6 +1,11 @@
 export type PrimaryTab = "picks" | "games" | "scoreboard" | "trends";
 
-export const VALID_TABS: PrimaryTab[] = ["picks", "games", "scoreboard", "trends"];
+export const VALID_TABS: PrimaryTab[] = [
+  "picks",
+  "games",
+  "scoreboard",
+  "trends",
+];
 
 export const isPrimaryTab = (value: string | undefined): value is PrimaryTab =>
   !!value && (VALID_TABS as string[]).includes(value);

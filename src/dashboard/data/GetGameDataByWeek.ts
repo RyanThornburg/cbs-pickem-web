@@ -1,6 +1,11 @@
 import { fetchJson } from "../../api/pickemApi";
 import { Game, GameStatus } from "../types";
-import { ApiGame, ApiWeekGamesResponse, toGame, weekGamesUrl } from "./weekGames";
+import {
+  ApiGame,
+  ApiWeekGamesResponse,
+  toGame,
+  weekGamesUrl,
+} from "./weekGames";
 
 // Poll faster while a game is live. The Worker caches the games key at the
 // edge for 30s, so polling much faster than that mostly re-reads the same data.

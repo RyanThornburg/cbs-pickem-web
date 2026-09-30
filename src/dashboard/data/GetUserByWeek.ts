@@ -56,7 +56,10 @@ const rankByScore = (
 ): Map<number, number | null> => {
   const ranked = users
     .map((user) => ({ user_id: user.user_id, score: scoreOf(user) }))
-    .filter((entry): entry is { user_id: number; score: number } => entry.score !== null)
+    .filter(
+      (entry): entry is { user_id: number; score: number } =>
+        entry.score !== null
+    )
     .sort((a, b) => b.score - a.score);
 
   const ranks = new Map<number, number | null>();
@@ -107,8 +110,8 @@ const joinPick = (
     homeTeam?.id === pick.team_id
       ? homeTeam.abbr
       : awayTeam?.id === pick.team_id
-      ? awayTeam.abbr
-      : "";
+        ? awayTeam.abbr
+        : "";
   const game_status = (game?.status as GameStatus) ?? GameStatus.Scheduled;
 
   return {

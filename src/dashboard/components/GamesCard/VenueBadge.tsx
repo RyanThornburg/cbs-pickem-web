@@ -18,7 +18,11 @@ export default function VenueBadge({ stadium, neutralSite }: Props) {
       className="gc-venuebadge"
       title={`${isInternational ? "International" : "Neutral-site"} game${stadium?.name ? ` at ${stadium.name}` : ""}`}
     >
-      {isInternational ? <PublicIcon fontSize="inherit" /> : <PlaceIcon fontSize="inherit" />}
+      {isInternational ? (
+        <PublicIcon fontSize="inherit" />
+      ) : (
+        <PlaceIcon fontSize="inherit" />
+      )}
       {badge.label}
     </span>
   );

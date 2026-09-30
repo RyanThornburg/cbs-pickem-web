@@ -51,4 +51,5 @@ export const pollJson = <T>(
   intervalMs: number,
   onData: (data: T) => void,
   onError?: (error: Error) => void
-): (() => void) => pollAsync(() => fetchJson<T>(path), intervalMs, onData, onError);
+): (() => void) =>
+  pollAsync(() => fetchJson<T>(path), intervalMs, onData, onError);

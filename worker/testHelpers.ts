@@ -11,7 +11,16 @@ const KID = "test-key";
 // stubbing fetch. A second key with the same kid stands in for a forgery.
 const signing = await generateKeyPair("RS256");
 const forger = await generateKeyPair("RS256");
-const jwks = { keys: [{ ...(await exportJWK(signing.publicKey)), kid: KID, alg: "RS256", use: "sig" }] };
+const jwks = {
+  keys: [
+    {
+      ...(await exportJWK(signing.publicKey)),
+      kid: KID,
+      alg: "RS256",
+      use: "sig",
+    },
+  ],
+};
 
 export const CERTS_URL = `https://${TEAM_DOMAIN}/cdn-cgi/access/certs`;
 let certsFetches = 0;
@@ -21,7 +30,9 @@ globalThis.fetch = (async (input: RequestInfo | URL) => {
   const url = input instanceof Request ? input.url : String(input);
   if (url === CERTS_URL) {
     certsFetches += 1;
-    return new Response(JSON.stringify(jwks), { headers: { "content-type": "application/json" } });
+    return new Response(JSON.stringify(jwks), {
+      headers: { "content-type": "application/json" },
+    });
   }
   throw new Error(`unexpected fetch in test: ${url}`);
 }) as typeof fetch;
@@ -53,7 +64,8 @@ export const accessToken = async ({
 
 // An unsigned token ("alg": "none") with otherwise-valid claims.
 export const unsignedToken = (): string => {
-  const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  const b64 = (o: object) =>
+    Buffer.from(JSON.stringify(o)).toString("base64url");
   const now = Math.floor(Date.now() / 1000);
   return `${b64({ alg: "none", kid: KID })}.${b64({
     email: ADMIN_EMAIL,
@@ -64,7 +76,9 @@ export const unsignedToken = (): string => {
   })}.`;
 };
 
-export const testEnv = (overrides: Partial<Record<keyof Env, unknown>> = {}): Env =>
+export const testEnv = (
+  overrides: Partial<Record<keyof Env, unknown>> = {}
+): Env =>
   ({
     ACCESS_TEAM_DOMAIN: TEAM_DOMAIN,
     ACCESS_AUD: AUD,

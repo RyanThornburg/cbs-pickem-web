@@ -30,7 +30,11 @@ const pair = (made?: number, att?: number) =>
   made == null || att == null ? undefined : `${made}-${att}`;
 
 export const TEAM_STAT_DEFS: StatDef[] = [
-  { label: "1st Downs", main: (b) => b.first_downs_total, weight: (b) => b.first_downs_total },
+  {
+    label: "1st Downs",
+    main: (b) => b.first_downs_total,
+    weight: (b) => b.first_downs_total,
+  },
   {
     label: "3rd Down Efficiency",
     main: (b) => pair(b.third_down_conversions, b.third_down_attempts),
@@ -46,9 +50,21 @@ export const TEAM_STAT_DEFS: StatDef[] = [
     main: (b) => pair(b.redzone_made, b.redzone_attempts),
     weight: (b) => rate(b.redzone_made, b.redzone_attempts),
   },
-  { label: "Rushing Yards", main: (b) => b.rushing_yards, weight: (b) => b.rushing_yards },
-  { label: "Passing Yards", main: (b) => b.passing_yards, weight: (b) => b.passing_yards },
-  { label: "Total Yards", main: (b) => b.yards_total, weight: (b) => b.yards_total },
+  {
+    label: "Rushing Yards",
+    main: (b) => b.rushing_yards,
+    weight: (b) => b.rushing_yards,
+  },
+  {
+    label: "Passing Yards",
+    main: (b) => b.passing_yards,
+    weight: (b) => b.passing_yards,
+  },
+  {
+    label: "Total Yards",
+    main: (b) => b.yards_total,
+    weight: (b) => b.yards_total,
+  },
   {
     label: "Sacks Allowed (Yards)",
     main: (b) => b.sacks_given_up,
@@ -85,7 +101,10 @@ export const TEAM_STAT_DEFS: StatDef[] = [
   },
   {
     label: "Possession",
-    main: (b) => (b.time_of_possession_sec == null ? undefined : formatSeconds(b.time_of_possession_sec)),
+    main: (b) =>
+      b.time_of_possession_sec == null
+        ? undefined
+        : formatSeconds(b.time_of_possession_sec),
     weight: (b) => b.time_of_possession_sec,
   },
 ];
@@ -100,15 +119,29 @@ export interface TeamStatRow {
 
 // Bar split for one stat. Lower-is-better stats compare the other way round,
 // so fewer giveaways = longer bar. Both zero = an even split.
-export const barShare = (away: number, home: number, lowerIsBetter = false): number => {
-  const [a, h] = lowerIsBetter ? [Math.max(0, home), Math.max(0, away)] : [Math.max(0, away), Math.max(0, home)];
+export const barShare = (
+  away: number,
+  home: number,
+  lowerIsBetter = false
+): number => {
+  const [a, h] = lowerIsBetter
+    ? [Math.max(0, home), Math.max(0, away)]
+    : [Math.max(0, away), Math.max(0, home)];
   return a + h === 0 ? 0.5 : a / (a + h);
 };
 
 // Rows with a value for both teams, in display order.
-export const teamStatRows = (away: TeamBoxScore, home: TeamBoxScore): TeamStatRow[] =>
+export const teamStatRows = (
+  away: TeamBoxScore,
+  home: TeamBoxScore
+): TeamStatRow[] =>
   TEAM_STAT_DEFS.flatMap((def) => {
-    const [am, hm, aw, hw] = [def.main(away), def.main(home), def.weight(away), def.weight(home)];
+    const [am, hm, aw, hw] = [
+      def.main(away),
+      def.main(home),
+      def.weight(away),
+      def.weight(home),
+    ];
     if (am == null || hm == null || aw == null || hw == null) return [];
     return [
       {

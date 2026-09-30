@@ -29,8 +29,10 @@ export default function LineMoversCard({ lineMovers, gameResults }: Props) {
         const Arrow = mover.movement < 0 ? ArrowDownwardIcon : ArrowUpwardIcon;
         const arrowColor = mover.movement < 0 ? "error.main" : "success.main";
         const cover = gameResults.get(mover.game_id);
-        const homeCovered = cover?.isFinal && cover.coveringTeamId === mover.home_team.id;
-        const awayCovered = cover?.isFinal && cover.coveringTeamId === mover.away_team.id;
+        const homeCovered =
+          cover?.isFinal && cover.coveringTeamId === mover.home_team.id;
+        const awayCovered =
+          cover?.isFinal && cover.coveringTeamId === mover.away_team.id;
 
         return (
           <Stack

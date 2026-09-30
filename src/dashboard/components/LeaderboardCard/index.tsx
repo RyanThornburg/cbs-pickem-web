@@ -81,11 +81,11 @@ const StatsLeaderboard = ({
       )
       .sort((a, b) => {
         const aRank = isSecondHalf
-          ? a?.second_half_place ?? 99
-          : a?.place ?? 99;
+          ? (a?.second_half_place ?? 99)
+          : (a?.place ?? 99);
         const bRank = isSecondHalf
-          ? b?.second_half_place ?? 99
-          : b?.place ?? 99;
+          ? (b?.second_half_place ?? 99)
+          : (b?.place ?? 99);
 
         if (aRank !== bRank) {
           return aRank - bRank;
@@ -97,7 +97,7 @@ const StatsLeaderboard = ({
   const getScore = useCallback(
     (user: RankedUser) => {
       return (
-        (isSecondHalf ? user.second_half_score ?? 0 : user.cumulative_score) +
+        (isSecondHalf ? (user.second_half_score ?? 0) : user.cumulative_score) +
         user.trending_score
       );
     },

@@ -30,7 +30,11 @@ export interface UsersTableRow {
 export const toUsersTableRow = (
   user: RankedUser,
   trends: Record<string, UserSeasonTrends>,
-  weekBadges: { move?: RecapMove; perfectWeek?: boolean; showStreak?: boolean } = {}
+  weekBadges: {
+    move?: RecapMove;
+    perfectWeek?: boolean;
+    showStreak?: boolean;
+  } = {}
 ): UsersTableRow => {
   const lastSeason = trends[user.id]?.career.trend?.last_season;
 
@@ -43,8 +47,12 @@ export const toUsersTableRow = (
     second_half_score: (user.second_half_score ?? 0) + user.trending_score,
     weekly_score: user.weekly_score + user.trending_score,
     picks: user.picks,
-    streakWeeks: weekBadges.showStreak === false ? 0 : trends[user.id]?.current_season.hot_streak.current_streak ?? 0,
-    streakThresholdPct: trends[user.id]?.current_season.hot_streak.threshold_pct,
+    streakWeeks:
+      weekBadges.showStreak === false
+        ? 0
+        : (trends[user.id]?.current_season.hot_streak.current_streak ?? 0),
+    streakThresholdPct:
+      trends[user.id]?.current_season.hot_streak.threshold_pct,
     defendingChampionSeason: lastSeason?.rank === 1 ? lastSeason.season : null,
     move: weekBadges.move,
     perfectWeek: weekBadges.perfectWeek ?? false,
@@ -90,19 +98,40 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
       return (
         // On phones the badges wrap to a line under the name (indented past
         // the avatar) so they don't squeeze the name down to a letter.
-        <Stack direction="row" alignItems="center" sx={{ flexWrap: { xs: "wrap", sm: "nowrap" }, columnGap: 1, rowGap: 0.25 }}>
-          <UserAvatar userName={info.getValue()} userId={row.id} fontSize="0.8125rem" size={26} />
+        <Stack
+          direction="row"
+          alignItems="center"
+          sx={{
+            flexWrap: { xs: "wrap", sm: "nowrap" },
+            columnGap: 1,
+            rowGap: 0.25,
+          }}
+        >
+          <UserAvatar
+            userName={info.getValue()}
+            userId={row.id}
+            fontSize="0.8125rem"
+            size={26}
+          />
           {hasBadges && (
             <Stack
               direction="row"
               alignItems="center"
               // gap, not spacing: spacing's margins break when the row wraps.
               // Phones fit about two badges a line, so a full set wraps.
-              sx={{ width: { xs: "100%", sm: "auto" }, pl: { xs: "32px", sm: 0 }, flexWrap: { xs: "wrap", sm: "nowrap" }, gap: 0.75 }}
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                pl: { xs: "32px", sm: 0 },
+                flexWrap: { xs: "wrap", sm: "nowrap" },
+                gap: 0.75,
+              }}
             >
               {/* Most common first, so each badge lands in a predictable spot. */}
               <MoverBadge move={row.move} />
-              <StreakBadge weeks={row.streakWeeks} thresholdPct={row.streakThresholdPct} />
+              <StreakBadge
+                weeks={row.streakWeeks}
+                thresholdPct={row.streakThresholdPct}
+              />
               <PerfectWeekBadge perfect={row.perfectWeek} />
               <DefendingChampionBadge season={row.defendingChampionSeason} />
             </Stack>
@@ -123,7 +152,12 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
   columnHelper.accessor("weekly_score", {
     header: "Week",
     cell: (info) => (
-      <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.75}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        spacing={0.75}
+      >
         <span>{info.getValue()}</span>
         <WeeklyFormIcon picks={info.row.original.picks} />
       </Stack>

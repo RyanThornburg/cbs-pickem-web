@@ -14,7 +14,10 @@ import {
   weatherTrends,
 } from "./gamesCardUtils";
 
-const hour = (time: string, overrides: Partial<HourlyForecast> = {}): HourlyForecast => ({
+const hour = (
+  time: string,
+  overrides: Partial<HourlyForecast> = {}
+): HourlyForecast => ({
   time,
   temp_f: 60,
   feels_like_f: 60,
@@ -26,7 +29,10 @@ const hour = (time: string, overrides: Partial<HourlyForecast> = {}): HourlyFore
   ...overrides,
 });
 
-const forecast = (overrides: Partial<Forecast> = {}, hours: HourlyForecast[] = []): Forecast => ({
+const forecast = (
+  overrides: Partial<Forecast> = {},
+  hours: HourlyForecast[] = []
+): Forecast => ({
   temp_f: 60,
   feels_like_f: 60,
   condition: "Cloudy",
@@ -37,7 +43,9 @@ const forecast = (overrides: Partial<Forecast> = {}, hours: HourlyForecast[] = [
   visibility_mi: 10,
   weather_alerts: [],
   during_game: {
-    precipitation_pct_max: hours.length ? Math.max(...hours.map((h) => h.precipitation_pct)) : null,
+    precipitation_pct_max: hours.length
+      ? Math.max(...hours.map((h) => h.precipitation_pct))
+      : null,
     precip_type: hours.length ? "rain" : null,
     wind_gust_mph_max: null,
     temp_f_low: null,
@@ -94,14 +102,21 @@ describe("weatherTrends", () => {
   });
 
   it("calls out a notable rise that stays under 50%", () => {
-    const hrs = [hour(H1, { precipitation_pct: 10 }), hour(H2, { precipitation_pct: 35 })];
+    const hrs = [
+      hour(H1, { precipitation_pct: 10 }),
+      hour(H2, { precipitation_pct: 35 }),
+    ];
     expect(weatherTrends(forecast({ precipitation_pct: 10 }, hrs))).toEqual([
       { direction: "up", worsening: true, label: `Rain 35% by ${at(H2)}` },
     ]);
   });
 
   it("reports the wettest hour, not the first to qualify", () => {
-    const hrs = [hour(H1, { precipitation_pct: 10 }), hour(H2, { precipitation_pct: 35 }), hour(H3, { precipitation_pct: 70 })];
+    const hrs = [
+      hour(H1, { precipitation_pct: 10 }),
+      hour(H2, { precipitation_pct: 35 }),
+      hour(H3, { precipitation_pct: 70 }),
+    ];
     expect(weatherTrends(forecast({ precipitation_pct: 10 }, hrs))).toEqual([
       { direction: "up", worsening: true, label: `Rain 70% by ${at(H3)}` },
     ]);
@@ -113,10 +128,17 @@ describe("weatherTrends", () => {
   });
 
   it("uses Snow when the condition is snowy", () => {
-    const hrs = [hour(H1), hour(H2, { condition: "Light Snow", precipitation_pct: 60, temp_f: 30 })];
+    const hrs = [
+      hour(H1),
+      hour(H2, { condition: "Light Snow", precipitation_pct: 60, temp_f: 30 }),
+    ];
     expect(weatherTrends(forecast({ temp_f: 34 }, hrs))).toEqual([
       { direction: "up", worsening: true, label: `Snow 60% by ${at(H2)}` },
-      { direction: "down", worsening: true, label: `Freezing by ${at(H2)} (30°F)` },
+      {
+        direction: "down",
+        worsening: true,
+        label: `Freezing by ${at(H2)} (30°F)`,
+      },
     ]);
   });
 
@@ -135,17 +157,26 @@ describe("weatherTrends", () => {
 
 describe("weatherFlags", () => {
   it("flags the during-game peak, not just kickoff", () => {
-    const hrs = [hour(H1, { precipitation_pct: 38 }), hour(H2, { precipitation_pct: 68, wind_gust_mph: 24 })];
-    const labels = weatherFlags(forecast({ precipitation_pct: 38 }, hrs)).map((f) => f.label);
+    const hrs = [
+      hour(H1, { precipitation_pct: 38 }),
+      hour(H2, { precipitation_pct: 68, wind_gust_mph: 24 }),
+    ];
+    const labels = weatherFlags(forecast({ precipitation_pct: 38 }, hrs)).map(
+      (f) => f.label
+    );
     expect(labels).toEqual(["Gusts to 24mph", "68% Precip"]);
   });
 
   it("falls back to kickoff values without hourly data", () => {
-    expect(weatherFlags(forecast({ precipitation_pct: 55 })).map((f) => f.label)).toEqual(["55% Precip"]);
+    expect(
+      weatherFlags(forecast({ precipitation_pct: 55 })).map((f) => f.label)
+    ).toEqual(["55% Precip"]);
   });
 
   it("flags snow accumulation over precip %", () => {
-    const f = forecast({}, [hour(H1, { precipitation_pct: 80, condition: "Snow" })]);
+    const f = forecast({}, [
+      hour(H1, { precipitation_pct: 80, condition: "Snow" }),
+    ]);
     f.during_game!.snow_accumulation_in = 1.24;
     expect(weatherFlags(f).map((x) => x.label)).toEqual(["Snow 1.2in"]);
   });
@@ -160,19 +191,35 @@ describe("weatherFlags", () => {
   it("flags each distinct alert title once", () => {
     const f = forecast({
       precipitation_pct: 60,
-      weather_alerts: [alert("Flood Watch"), alert("Flood Watch"), alert("Wind Advisory")],
+      weather_alerts: [
+        alert("Flood Watch"),
+        alert("Flood Watch"),
+        alert("Wind Advisory"),
+      ],
     });
-    expect(weatherFlags(f).map((x) => x.label)).toEqual(["Flood Watch", "Wind Advisory", "60% Precip"]);
+    expect(weatherFlags(f).map((x) => x.label)).toEqual([
+      "Flood Watch",
+      "Wind Advisory",
+      "60% Precip",
+    ]);
   });
 
   it("hides a flood alert on a dry forecast (MIN @ CHI, week 2)", () => {
-    const f = forecast({ condition: "Overcast", precip_type: "none", weather_alerts: [alert("Flood Watch")] });
+    const f = forecast({
+      condition: "Overcast",
+      precip_type: "none",
+      weather_alerts: [alert("Flood Watch")],
+    });
     expect(weatherFlags(f)).toEqual([]);
   });
 
   it("keeps a flood alert when rain shows up during the game", () => {
     const f = forecast(
-      { condition: "Overcast", precip_type: "none", weather_alerts: [alert("Flood Watch")] },
+      {
+        condition: "Overcast",
+        precip_type: "none",
+        weather_alerts: [alert("Flood Watch")],
+      },
       [hour(H1), hour(H2, { precipitation_pct: 20 })]
     );
     expect(weatherFlags(f).map((x) => x.label)).toEqual(["Flood Watch"]);
@@ -181,40 +228,81 @@ describe("weatherFlags", () => {
 
 const oddsGame = (overrides: Partial<GameWithOdds> = {}): GameWithOdds =>
   ({ market_spread: null, books: [], ...overrides }) as GameWithOdds;
-const market = (open: number, close: number) => ({ book_count: 5, open, open_agreement: 1, close, close_agreement: 1 });
+const market = (open: number, close: number) => ({
+  book_count: 5,
+  open,
+  open_agreement: 1,
+  close,
+  close_agreement: 1,
+});
 
 describe("odds helpers", () => {
   it("getValueSide: the side CBS undercharges, once the market is 1+ point off", () => {
     // Market gives home more points than CBS: market rates home weaker, so away is the value.
-    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -2) }))).toBe("away");
-    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -4.5) }))).toBe("home");
-    expect(getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -3.5) }))).toBeNull();
-    expect(getValueSide(oddsGame({ cbs_spread: undefined, market_spread: market(-3, -6) }))).toBeNull();
+    expect(
+      getValueSide(oddsGame({ cbs_spread: -3, market_spread: market(-3, -2) }))
+    ).toBe("away");
+    expect(
+      getValueSide(
+        oddsGame({ cbs_spread: -3, market_spread: market(-3, -4.5) })
+      )
+    ).toBe("home");
+    expect(
+      getValueSide(
+        oddsGame({ cbs_spread: -3, market_spread: market(-3, -3.5) })
+      )
+    ).toBeNull();
+    expect(
+      getValueSide(
+        oddsGame({ cbs_spread: undefined, market_spread: market(-3, -6) })
+      )
+    ).toBeNull();
     expect(getValueSide(oddsGame({ cbs_spread: -3 }))).toBeNull();
   });
 
   it("getMoveDelta: open-to-close moves of 2+ points only", () => {
     expect(getMoveDelta(oddsGame({ market_spread: market(-3, -5) }))).toBe(-2);
     expect(getMoveDelta(oddsGame({ market_spread: market(1, 4.5) }))).toBe(3.5);
-    expect(getMoveDelta(oddsGame({ market_spread: market(-3, -4.5) }))).toBeNull();
+    expect(
+      getMoveDelta(oddsGame({ market_spread: market(-3, -4.5) }))
+    ).toBeNull();
     expect(getMoveDelta(oddsGame())).toBeNull();
   });
 
   it("getTotalResult: over, under, or null on a push or with no score", () => {
-    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), 44.5)).toBe("over");
-    expect(getTotalResult(oddsGame({ home_score: 20, away_score: 21 }), 44.5)).toBe("under");
-    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 20 }), 44)).toBeNull();
-    expect(getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), null)).toBeNull();
+    expect(
+      getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), 44.5)
+    ).toBe("over");
+    expect(
+      getTotalResult(oddsGame({ home_score: 20, away_score: 21 }), 44.5)
+    ).toBe("under");
+    expect(
+      getTotalResult(oddsGame({ home_score: 24, away_score: 20 }), 44)
+    ).toBeNull();
+    expect(
+      getTotalResult(oddsGame({ home_score: 24, away_score: 21 }), null)
+    ).toBeNull();
     expect(getTotalResult(oddsGame(), 44.5)).toBeNull();
   });
 
   it("modeTotal: the most common book total (the Over line), not an average", () => {
     const book = (total?: number | null): Book => ({
       bookmaker: "b",
-      total: total === undefined ? undefined : { home_point: total, home_price: -110, away_point: total, away_price: -110, captured_at: "" },
+      total:
+        total === undefined
+          ? undefined
+          : {
+              home_point: total,
+              home_price: -110,
+              away_point: total,
+              away_price: -110,
+              captured_at: "",
+            },
     });
     expect(modeTotal([54.5, 54.5, 54.5, 55, 55].map(book))).toBe(54.5);
-    expect(modeTotal([book(47), book(undefined), book(null), book(47.5), book(47.5)])).toBe(47.5);
+    expect(
+      modeTotal([book(47), book(undefined), book(null), book(47.5), book(47.5)])
+    ).toBe(47.5);
     // A tie goes to the value seen first.
     expect(modeTotal([book(44), book(44.5)])).toBe(44);
     expect(modeTotal([book(undefined)])).toBeNull();

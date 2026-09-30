@@ -1,6 +1,12 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Box, IconButton, Link, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Link,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { WeekRecap } from "../../types";
@@ -27,13 +33,16 @@ export default function RecapStrip({ recap }: Props) {
   // poll, so the strip doesn't jump around under the viewer.
   const idsKey = recap?.items.map((t) => t.id).join("|") ?? "";
   const items = useMemo(
-    () => (recap ? orderForRotation(recap.items, getSeenItems(season, week)) : []),
+    () =>
+      recap ? orderForRotation(recap.items, getSeenItems(season, week)) : [],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [idsKey, season, week]
   );
   // Same order, but the latest poll's text (numbers change during the week).
   const byId = new Map(recap?.items.map((t) => [t.id, t]) ?? []);
-  const current = items.length ? byId.get(items[index % items.length].id) : undefined;
+  const current = items.length
+    ? byId.get(items[index % items.length].id)
+    : undefined;
 
   useEffect(() => setIndex(0), [idsKey, season, week]);
 
@@ -43,13 +52,17 @@ export default function RecapStrip({ recap }: Props) {
 
   useEffect(() => {
     if (reduceMotion || paused || items.length < 2) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % items.length), ROTATE_MS);
+    const id = setInterval(
+      () => setIndex((i) => (i + 1) % items.length),
+      ROTATE_MS
+    );
     return () => clearInterval(id);
   }, [reduceMotion, paused, items.length]);
 
   if (!current) return null;
 
-  const step = (delta: number) => setIndex((i) => (i + delta + items.length) % items.length);
+  const step = (delta: number) =>
+    setIndex((i) => (i + delta + items.length) % items.length);
 
   return (
     <Box
@@ -59,7 +72,10 @@ export default function RecapStrip({ recap }: Props) {
       onBlur={() => setPaused(false)}
       sx={{
         display: "grid",
-        gridTemplateColumns: { xs: "auto minmax(0, 1fr)", sm: "auto minmax(0, 1fr) auto" },
+        gridTemplateColumns: {
+          xs: "auto minmax(0, 1fr)",
+          sm: "auto minmax(0, 1fr) auto",
+        },
         columnGap: 1.5,
         rowGap: 1,
         alignItems: "center",
@@ -70,18 +86,26 @@ export default function RecapStrip({ recap }: Props) {
         py: 1.25,
         mb: 2,
         textAlign: "left",
-        background: "linear-gradient(90deg, hsl(210, 100%, 97%), transparent 45%)",
+        background:
+          "linear-gradient(90deg, hsl(210, 100%, 97%), transparent 45%)",
       }}
     >
       <CategoryMark category={current.category} />
       <Box sx={{ minWidth: 0 }}>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 0.25 }}>
           <ScopeTag scope={current.scope} />
-          <Typography variant="caption" color="text.secondary" sx={{ fontVariantNumeric: "tabular-nums" }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontVariantNumeric: "tabular-nums" }}
+          >
             {(index % items.length) + 1} of {items.length}
           </Typography>
         </Box>
-        <Typography aria-live="polite" sx={{ fontSize: "0.9rem", fontWeight: 500 }}>
+        <Typography
+          aria-live="polite"
+          sx={{ fontSize: "0.9rem", fontWeight: 500 }}
+        >
           {/* The full sentence has room on desktop; phones get the
               80-character version so the strip doesn't change height. */}
           <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
@@ -101,7 +125,11 @@ export default function RecapStrip({ recap }: Props) {
           gap: 0.75,
         }}
       >
-        <IconButton size="small" aria-label="Previous item" onClick={() => step(-1)}>
+        <IconButton
+          size="small"
+          aria-label="Previous item"
+          onClick={() => step(-1)}
+        >
           <ChevronLeftIcon fontSize="small" />
         </IconButton>
         <Box sx={{ display: "flex", gap: 0.5 }}>
@@ -135,7 +163,13 @@ export default function RecapStrip({ recap }: Props) {
           component={RouterLink}
           to="/trends"
           underline="hover"
-          sx={{ fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap", ml: 0.5, display: { xs: "none", sm: "inline" } }}
+          sx={{
+            fontSize: "0.78rem",
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+            ml: 0.5,
+            display: { xs: "none", sm: "inline" },
+          }}
         >
           Full recap →
         </Link>

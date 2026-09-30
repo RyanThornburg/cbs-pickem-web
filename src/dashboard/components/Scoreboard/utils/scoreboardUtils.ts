@@ -87,12 +87,7 @@ export const highlightBorder = (h: GameHighlight): HighlightBorder =>
   h.ending ? "ending" : h.close ? "close" : h.redZone ? "redZone" : null;
 
 export type PickState =
-  | "notStarted"
-  | "covering"
-  | "notCovering"
-  | "push"
-  | "won"
-  | "lost";
+  "notStarted" | "covering" | "notCovering" | "push" | "won" | "lost";
 
 // Which side of this game a user picked, if any.
 export const userPickSide = (game: Game, userId?: string): Side | null => {
@@ -231,6 +226,9 @@ export const groupGames = (
     },
   ];
   return groups
-    .map(({ group, games }) => ({ group, games: [...games].sort(byStatusThenKickoff) }))
+    .map(({ group, games }) => ({
+      group,
+      games: [...games].sort(byStatusThenKickoff),
+    }))
     .filter(({ games }) => games.length > 0);
 };

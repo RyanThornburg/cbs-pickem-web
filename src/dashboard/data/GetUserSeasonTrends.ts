@@ -23,7 +23,9 @@ export const GetUserSeasonTrends = (
 
   const load = async (): Promise<Record<string, UserSeasonTrends>> => {
     const results = await Promise.allSettled(
-      userIds.map((id) => fetchJson<UserSeasonTrends>(`/api/users/${id}/season/${season}`))
+      userIds.map((id) =>
+        fetchJson<UserSeasonTrends>(`/api/users/${id}/season/${season}`)
+      )
     );
     const trends: Record<string, UserSeasonTrends> = {};
     results.forEach((result, index) => {

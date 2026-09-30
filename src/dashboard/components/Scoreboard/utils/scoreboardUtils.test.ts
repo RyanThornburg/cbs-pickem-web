@@ -50,7 +50,11 @@ describe("getCover / swingToFlip", () => {
 });
 
 describe("getGameHighlight / highlightBorder", () => {
-  const live = (quarter: number, time_remaining: string, is_red_zone = false) => ({
+  const live = (
+    quarter: number,
+    time_remaining: string,
+    is_red_zone = false
+  ) => ({
     quarter,
     time_remaining,
     is_red_zone,
@@ -112,8 +116,12 @@ describe("pick state", () => {
     const g = { home_score: 7, away_score: 0 };
     expect(getPickState(game(g), "home")).toBe("covering");
     expect(getPickState(game(g), "away")).toBe("notCovering");
-    expect(getPickState(game({ ...g, status: GameStatus.Final }), "away")).toBe("lost");
-    expect(getPickState(game({ status: GameStatus.Scheduled }), "home")).toBe("notStarted");
+    expect(getPickState(game({ ...g, status: GameStatus.Final }), "away")).toBe(
+      "lost"
+    );
+    expect(getPickState(game({ status: GameStatus.Scheduled }), "home")).toBe(
+      "notStarted"
+    );
   });
 
   it("formats each side's line", () => {
@@ -160,7 +168,11 @@ describe("getBallSpot", () => {
       })
     );
     // LAR (away, left) drove from its own 37 (37%) to the DEN 5 (95%)
-    expect(spot).toMatchObject({ ballPct: 95, driveStartPct: 37, driveStartLabel: "LAR 37" });
+    expect(spot).toMatchObject({
+      ballPct: 95,
+      driveStartPct: 37,
+      driveStartLabel: "LAR 37",
+    });
   });
 
   it("hides the ball when there's no current spot", () => {
@@ -180,7 +192,12 @@ describe("getBallSpot", () => {
         },
       })
     );
-    expect(spot).toMatchObject({ ballPct: 37, firstDownPct: 44, label: "MIN 37", driveStartPct: null });
+    expect(spot).toMatchObject({
+      ballPct: 37,
+      firstDownPct: 44,
+      label: "MIN 37",
+      driveStartPct: null,
+    });
   });
 });
 
@@ -194,7 +211,10 @@ describe("groupGames", () => {
       game({ game_id: 5, status: GameStatus.Scheduled, game_time: 4 }),
     ];
     expect(
-      groupGames(games).map(({ group, games }) => [group, games.map((g) => g.game_id)])
+      groupGames(games).map(({ group, games }) => [
+        group,
+        games.map((g) => g.game_id),
+      ])
     ).toEqual([
       ["Live", [4, 3]],
       ["Upcoming", [5, 2]],
@@ -205,14 +225,32 @@ describe("groupGames", () => {
   it("pins the user's games on top in the same order, without repeating them", () => {
     const mine = () => ({ home: [{ id: "7", name: "Me" }], away: [] });
     const games = [
-      game({ game_id: 1, status: GameStatus.Final, game_time: 1, picks: mine() }),
+      game({
+        game_id: 1,
+        status: GameStatus.Final,
+        game_time: 1,
+        picks: mine(),
+      }),
       game({ game_id: 2, status: GameStatus.Scheduled, game_time: 5 }),
       game({ game_id: 3, status: GameStatus.Halftime, game_time: 3 }),
-      game({ game_id: 4, status: GameStatus.Inprogress, game_time: 2, picks: mine() }),
-      game({ game_id: 5, status: GameStatus.Scheduled, game_time: 4, picks: mine() }),
+      game({
+        game_id: 4,
+        status: GameStatus.Inprogress,
+        game_time: 2,
+        picks: mine(),
+      }),
+      game({
+        game_id: 5,
+        status: GameStatus.Scheduled,
+        game_time: 4,
+        picks: mine(),
+      }),
     ];
     expect(
-      groupGames(games, "7").map(({ group, games }) => [group, games.map((g) => g.game_id)])
+      groupGames(games, "7").map(({ group, games }) => [
+        group,
+        games.map((g) => g.game_id),
+      ])
     ).toEqual([
       ["Your picks", [4, 5, 1]],
       ["Live", [3]],
@@ -221,7 +259,13 @@ describe("groupGames", () => {
   });
 
   it("leaves the standard order alone when the user has no picks", () => {
-    const games = [game({ game_id: 1, status: GameStatus.Final, picks: { home: [], away: [] } })];
+    const games = [
+      game({
+        game_id: 1,
+        status: GameStatus.Final,
+        picks: { home: [], away: [] },
+      }),
+    ];
     expect(groupGames(games, "7").map(({ group }) => group)).toEqual(["Final"]);
   });
 });

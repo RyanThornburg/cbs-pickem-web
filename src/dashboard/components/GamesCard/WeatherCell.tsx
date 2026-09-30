@@ -7,7 +7,13 @@ import {
   weatherFlags,
   weatherTrends,
 } from "./gamesCardUtils";
-import { AlertFlagIcon, DomeIcon, ExternalLinkIcon, wxIcon, wxIconFor } from "./weatherIcons";
+import {
+  AlertFlagIcon,
+  DomeIcon,
+  ExternalLinkIcon,
+  wxIcon,
+  wxIconFor,
+} from "./weatherIcons";
 
 type Props = {
   forecast?: Forecast | null;
@@ -45,10 +51,14 @@ export default function WeatherCell({ forecast, stadium }: Props) {
             {forecastUrl && <ExternalLinkIcon />}
           </span>
           <span className="gc-cond">
-            {forecast.condition} · {forecast.wind_speed_mph}mph {forecast.wind_direction ?? ""}
+            {forecast.condition} · {forecast.wind_speed_mph}mph{" "}
+            {forecast.wind_direction ?? ""}
           </span>
           {trends.map((trend) => (
-            <span key={trend.label} className={`gc-trend${trend.worsening ? " worse" : ""}`}>
+            <span
+              key={trend.label}
+              className={`gc-trend${trend.worsening ? " worse" : ""}`}
+            >
               {trend.direction === "up" ? "↑" : "↓"} {trend.label}
             </span>
           ))}
@@ -80,7 +90,8 @@ function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
     <div className="gc-hours">
       {hours.map((h) => {
         const time = dayjs(h.time).format("hA");
-        const isPeak = notable(h.precipitation_pct) && h.precipitation_pct === peak;
+        const isPeak =
+          notable(h.precipitation_pct) && h.precipitation_pct === peak;
         return (
           <div
             key={h.time}
@@ -89,7 +100,9 @@ function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
           >
             <span className="gc-hour-time">{time}</span>
             {wxIconFor(h.icon, h.condition)}
-            <span className={`gc-hour-pct${notable(h.precipitation_pct) ? " wet" : ""}`}>
+            <span
+              className={`gc-hour-pct${notable(h.precipitation_pct) ? " wet" : ""}`}
+            >
               {h.precipitation_pct}%
             </span>
           </div>

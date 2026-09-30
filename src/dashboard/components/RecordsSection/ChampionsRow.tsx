@@ -63,7 +63,10 @@ function Tile({
           background: `linear-gradient(180deg, hsl(45, 100%, 92%), transparent 70%)`,
         }),
         ...(variant === "muted" && { bgcolor: "background.default" }),
-        ...(variant === "live" && { bgcolor: "background.default", borderStyle: "dashed" }),
+        ...(variant === "live" && {
+          bgcolor: "background.default",
+          borderStyle: "dashed",
+        }),
       }}
     >
       {children}
@@ -72,7 +75,9 @@ function Tile({
 }
 
 const Year = ({ year }: { year: number }) => (
-  <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, lineHeight: 1.1 }}>{year}</Typography>
+  <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, lineHeight: 1.1 }}>
+    {year}
+  </Typography>
 );
 
 type Props = {
@@ -87,8 +92,11 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
   const topScore = highestWinningScore(data);
   // Champions are listed by name only, so the "you" match goes through the
   // career list's names.
-  const idByName = new Map(data.career.map((c) => [cleanName(c.name).toLowerCase(), c.user_id]));
-  const halfByYear = (list: HistoricalChampion[]) => new Map(list.map((c) => [c.year, c]));
+  const idByName = new Map(
+    data.career.map((c) => [cleanName(c.name).toLowerCase(), c.user_id])
+  );
+  const halfByYear = (list: HistoricalChampion[]) =>
+    new Map(list.map((c) => [c.year, c]));
   const firstHalf = halfByYear(data.first_half_champions);
   const secondHalf = halfByYear(data.second_half_champions);
 
@@ -131,7 +139,9 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
           !unknown &&
           names.some((n) => String(idByName.get(n.toLowerCase())) === userId);
         const halves = champ.year >= HALVES_FROM_SEASON && (
-          <Stack sx={{ mt: 0.75, pt: 0.75, borderTop: 1, borderColor: "divider" }}>
+          <Stack
+            sx={{ mt: 0.75, pt: 0.75, borderTop: 1, borderColor: "divider" }}
+          >
             {halfLine("1st half", firstHalf.get(champ.year))}
             {halfLine("2nd half", secondHalf.get(champ.year))}
           </Stack>
@@ -140,7 +150,13 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
         return (
           <Tile
             key={champ.year}
-            variant={champ.year === defendingYear ? "defending" : unknown ? "muted" : "plain"}
+            variant={
+              champ.year === defendingYear
+                ? "defending"
+                : unknown
+                  ? "muted"
+                  : "plain"
+            }
           >
             <Year year={champ.year} />
             {unknown ? (
@@ -154,7 +170,12 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
                     mt: 0.5,
                     fontWeight: 600,
                     fontSize: names.length > 1 ? "0.8rem" : "0.875rem",
-                    ...(isYou && { bgcolor: YOU_TINT, mx: -0.5, px: 0.5, borderRadius: 0.5 }),
+                    ...(isYou && {
+                      bgcolor: YOU_TINT,
+                      mx: -0.5,
+                      px: 0.5,
+                      borderRadius: 0.5,
+                    }),
                   }}
                 >
                   {names.map((name) => (
@@ -167,11 +188,15 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
               </>
             )}
             <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
-              {champ.year === defendingYear && !unknown && <Tag tone="gold">Defending</Tag>}
-              {topScore !== undefined && champ.score === topScore && !unknown && (
-                <Tag tone="high">▲ Highest score</Tag>
+              {champ.year === defendingYear && !unknown && (
+                <Tag tone="gold">Defending</Tag>
               )}
-              {names.length > 1 && <Tag tone="grey">{names.length}-way tie</Tag>}
+              {topScore !== undefined &&
+                champ.score === topScore &&
+                !unknown && <Tag tone="high">▲ Highest score</Tag>}
+              {names.length > 1 && (
+                <Tag tone="grey">{names.length}-way tie</Tag>
+              )}
               {unknown && <Tag tone="grey">Incomplete</Tag>}
             </Stack>
             {halves}

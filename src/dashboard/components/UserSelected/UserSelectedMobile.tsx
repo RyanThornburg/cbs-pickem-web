@@ -14,7 +14,12 @@ export type Props = {
   showStreak: boolean;
 };
 
-export default function UserSelected({ userList, userId, userTrends, showStreak }: Props) {
+export default function UserSelected({
+  userList,
+  userId,
+  userTrends,
+  showStreak,
+}: Props) {
   const [user, setUser] = useState<RankedUser | undefined>(undefined);
 
   useEffect(() => {
@@ -63,9 +68,13 @@ export default function UserSelected({ userList, userId, userTrends, showStreak 
               }}
             />
             <StreakBadge
-          weeks={showStreak ? userTrends?.current_season.hot_streak.current_streak ?? 0 : 0}
-          thresholdPct={userTrends?.current_season.hot_streak.threshold_pct}
-        />
+              weeks={
+                showStreak
+                  ? (userTrends?.current_season.hot_streak.current_streak ?? 0)
+                  : 0
+              }
+              thresholdPct={userTrends?.current_season.hot_streak.threshold_pct}
+            />
           </Stack>
 
           <Box sx={commonBoxStyles}>

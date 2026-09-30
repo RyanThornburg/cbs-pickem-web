@@ -26,8 +26,13 @@ import { ordinal } from "../../helper";
 import { CareerRow } from "./recordsUtils";
 import { GOLD, youRowSx } from "./recordsTheme";
 
-const dash = <Typography variant="body2" color="text.secondary">–</Typography>;
-const oneDecimal = (n: number | undefined) => (n === undefined ? dash : n.toFixed(1));
+const dash = (
+  <Typography variant="body2" color="text.secondary">
+    –
+  </Typography>
+);
+const oneDecimal = (n: number | undefined) =>
+  n === undefined ? dash : n.toFixed(1);
 
 const columnHelper = createColumnHelper<CareerRow>();
 
@@ -36,9 +41,14 @@ const columns = [
     header: "Player",
     meta: { mobileHeader: "Player" },
     sortingFn: (a, b) =>
-      a.original.name.localeCompare(b.original.name, undefined, { sensitivity: "base" }),
+      a.original.name.localeCompare(b.original.name, undefined, {
+        sensitivity: "base",
+      }),
     cell: ({ getValue }) => (
-      <Typography variant="body2" sx={{ fontWeight: 500, whiteSpace: "nowrap" }}>
+      <Typography
+        variant="body2"
+        sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
+      >
         {getValue()}
       </Typography>
     ),
@@ -53,7 +63,11 @@ const columns = [
           {getValue()}
           <Box sx={{ display: "inline-flex" }}>
             {Array.from({ length: getValue() }, (_, i) => (
-              <EmojiEventsIcon key={i} sx={{ fontSize: "0.9rem" }} htmlColor={GOLD} />
+              <EmojiEventsIcon
+                key={i}
+                sx={{ fontSize: "0.9rem" }}
+                htmlColor={GOLD}
+              />
             ))}
           </Box>
         </Box>
@@ -127,7 +141,12 @@ export const useAllTimeTable = (rows: CareerRow[]) => {
   });
 };
 
-const stickySx = { position: "sticky", left: 0, zIndex: 1, bgcolor: "background.paper" } as const;
+const stickySx = {
+  position: "sticky",
+  left: 0,
+  zIndex: 1,
+  bgcolor: "background.paper",
+} as const;
 
 type Props = {
   table: TanstackTable<CareerRow>;
@@ -140,7 +159,10 @@ export default function AllTimeTable({ table, userId }: Props) {
 
   return (
     <TableContainer>
-      <Table size="small" sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}>
+      <Table
+        size="small"
+        sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+      >
         <TableHead>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -162,7 +184,10 @@ export default function AllTimeTable({ table, userId }: Props) {
                   >
                     {isMobile
                       ? header.column.columnDef.meta?.mobileHeader
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableSortLabel>
                 </TableCell>
               ))}
@@ -182,7 +207,9 @@ export default function AllTimeTable({ table, userId }: Props) {
                       ...(i === 0 ? stickySx : {}),
                       ...(isYou ? youRowSx : {}),
                       ...(isYou && i === 0
-                        ? { boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}` }
+                        ? {
+                            boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
+                          }
                         : {}),
                     }}
                   >

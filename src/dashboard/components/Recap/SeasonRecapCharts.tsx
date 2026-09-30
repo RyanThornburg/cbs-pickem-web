@@ -1,6 +1,10 @@
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { RecapChaosPoint, RecapPoolAccuracyPoint, WeekRecap } from "../../types";
+import {
+  RecapChaosPoint,
+  RecapPoolAccuracyPoint,
+  WeekRecap,
+} from "../../types";
 
 // Week-over-week charts for Trends › Season, from the recap key's `series`
 // (every week through the selected one). Hand-drawn SVG: two single-series
@@ -43,7 +47,8 @@ const geom = (W: number, n: number): Geom => {
     plotW,
     band,
     x: (i) => PAD.left + (i + 0.5) * band,
-    labelled: (i) => i === n - 1 || ((n - 1 - i) % every === 0 && n - 1 - i >= every),
+    labelled: (i) =>
+      i === n - 1 || ((n - 1 - i) % every === 0 && n - 1 - i >= every),
   };
 };
 
@@ -54,7 +59,8 @@ const useWidth = (fallback: number) => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const update = () => setWidth(Math.max(240, Math.round(el.getBoundingClientRect().width)));
+    const update = () =>
+      setWidth(Math.max(240, Math.round(el.getBoundingClientRect().width)));
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -64,7 +70,17 @@ const useWidth = (fallback: number) => {
 };
 
 // Tooltip anchored over a column (x/y in chart pixels).
-function ChartTooltip({ x, y, W, children }: { x: number; y: number; W: number; children: React.ReactNode }) {
+function ChartTooltip({
+  x,
+  y,
+  W,
+  children,
+}: {
+  x: number;
+  y: number;
+  W: number;
+  children: React.ReactNode;
+}) {
   const left = (x / W) * 100;
   return (
     <Box
@@ -104,8 +120,20 @@ function ChartCard({
   plotRef: React.Ref<HTMLDivElement>;
 }) {
   return (
-    <Paper variant="outlined" sx={{ p: 1.5, textAlign: "left", display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
-      <Typography sx={{ fontSize: "0.85rem", fontWeight: 700 }}>{title}</Typography>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 1.5,
+        textAlign: "left",
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        minWidth: 0,
+      }}
+    >
+      <Typography sx={{ fontSize: "0.85rem", fontWeight: 700 }}>
+        {title}
+      </Typography>
       <Box ref={plotRef} sx={{ position: "relative" }}>
         {children}
       </Box>
@@ -114,10 +142,25 @@ function ChartCard({
   );
 }
 
-const LegendDot = ({ color, hollow, label }: { color: string; hollow?: boolean; label: string }) => (
+const LegendDot = ({
+  color,
+  hollow,
+  label,
+}: {
+  color: string;
+  hollow?: boolean;
+  label: string;
+}) => (
   <Stack direction="row" spacing={0.6} alignItems="center">
     <svg width="10" height="10" aria-hidden="true">
-      <circle cx="5" cy="5" r="4" fill={hollow ? "none" : color} stroke={color} strokeWidth={hollow ? 2 : 0} />
+      <circle
+        cx="5"
+        cy="5"
+        r="4"
+        fill={hollow ? "none" : color}
+        stroke={color}
+        strokeWidth={hollow ? 2 : 0}
+      />
     </svg>
     <span>{label}</span>
   </Stack>
@@ -157,7 +200,13 @@ function HitColumns({
   );
 }
 
-function PoolAccuracyChart({ series, inProgressWeek }: { series: RecapPoolAccuracyPoint[]; inProgressWeek: number | null }) {
+function PoolAccuracyChart({
+  series,
+  inProgressWeek,
+}: {
+  series: RecapPoolAccuracyPoint[];
+  inProgressWeek: number | null;
+}) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
@@ -169,7 +218,8 @@ function PoolAccuracyChart({ series, inProgressWeek }: { series: RecapPoolAccura
   const hi = Math.max(0.6, Math.ceil((Math.max(...accs) + 0.02) * 10) / 10);
   const y = (v: number) => PAD.top + ((hi - v) / (hi - lo)) * PLOT_H;
   const ticks: number[] = [];
-  for (let v = lo; v <= hi + 1e-9; v += 0.1) ticks.push(Math.round(v * 10) / 10);
+  for (let v = lo; v <= hi + 1e-9; v += 0.1)
+    ticks.push(Math.round(v * 10) / 10);
   const pts = series.map((p, i) => ({ x: g.x(i), y: y(p.accuracy), p }));
   const last = pts[pts.length - 1];
   const markY = H - 14;
@@ -181,33 +231,84 @@ function PoolAccuracyChart({ series, inProgressWeek }: { series: RecapPoolAccura
       title="Pool accuracy by week"
       plotRef={plotRef}
       legend={
-        <Stack direction="row" sx={{ flexWrap: "wrap", columnGap: 2, rowGap: 0.5, fontSize: "0.75rem", color: "text.secondary" }}>
+        <Stack
+          direction="row"
+          sx={{
+            flexWrap: "wrap",
+            columnGap: 2,
+            rowGap: 0.5,
+            fontSize: "0.75rem",
+            color: "text.secondary",
+          }}
+        >
           {/* In the legend rather than on the line, where it collided with
               the latest week's value on narrow screens. */}
           <Stack direction="row" spacing={0.6} alignItems="center">
             <svg width="16" height="10" aria-hidden="true">
-              <line x1="0" x2="16" y1="5" y2="5" stroke={GOLD} strokeWidth="1.5" strokeDasharray="4 3" />
+              <line
+                x1="0"
+                x2="16"
+                y1="5"
+                y2="5"
+                stroke={GOLD}
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+              />
             </svg>
             <span>50%, a coin flip</span>
           </Stack>
           <LegendDot color={GOLD} label="Someone went 5-0" />
           <LegendDot color={WINLESS} label="Someone went 0-5" />
-          {inProgressWeek != null && <LegendDot color={line} hollow label="Week in progress" />}
+          {inProgressWeek != null && (
+            <LegendDot color={line} hollow label="Week in progress" />
+          )}
           <span>Hover or tap a week for names</span>
         </Stack>
       }
     >
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Pool accuracy by week: ${series.map((p) => `week ${p.week} ${pct(p.accuracy)}`).join(", ")}`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        width="100%"
+        role="img"
+        aria-label={`Pool accuracy by week: ${series.map((p) => `week ${p.week} ${pct(p.accuracy)}`).join(", ")}`}
+      >
         {ticks.map((v) => (
           <g key={v}>
-            <line x1={PAD.left} x2={W - PAD.right} y1={y(v)} y2={y(v)} stroke={theme.palette.divider} strokeWidth={1} />
-            <text x={PAD.left - 6} y={y(v) + 4} textAnchor="end" fontSize="11" fill={text}>
+            <line
+              x1={PAD.left}
+              x2={W - PAD.right}
+              y1={y(v)}
+              y2={y(v)}
+              stroke={theme.palette.divider}
+              strokeWidth={1}
+            />
+            <text
+              x={PAD.left - 6}
+              y={y(v) + 4}
+              textAnchor="end"
+              fontSize="11"
+              fill={text}
+            >
               {Math.round(v * 100)}%
             </text>
           </g>
         ))}
-        <line x1={PAD.left} x2={W - PAD.right} y1={y(0.5)} y2={y(0.5)} stroke={GOLD} strokeDasharray="4 4" strokeWidth={1.5} />
-        <polyline points={pts.map((q) => `${q.x},${q.y}`).join(" ")} fill="none" stroke={line} strokeWidth={2} strokeLinejoin="round" />
+        <line
+          x1={PAD.left}
+          x2={W - PAD.right}
+          y1={y(0.5)}
+          y2={y(0.5)}
+          stroke={GOLD}
+          strokeDasharray="4 4"
+          strokeWidth={1.5}
+        />
+        <polyline
+          points={pts.map((q) => `${q.x},${q.y}`).join(" ")}
+          fill="none"
+          stroke={line}
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
         {pts.map(({ x, y: py, p }, i) => {
           const hollow = p.week === inProgressWeek;
           return (
@@ -223,36 +324,77 @@ function PoolAccuracyChart({ series, inProgressWeek }: { series: RecapPoolAccura
           );
         })}
         {last && (
-          <text x={last.x} y={last.y - 11} textAnchor="middle" fontSize="12" fontWeight={700} fill={theme.palette.text.primary}>
+          <text
+            x={last.x}
+            y={last.y - 11}
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight={700}
+            fill={theme.palette.text.primary}
+          >
             {pct(last.p.accuracy)}
           </text>
         )}
         {pts.map(({ x, p }, i) =>
           g.labelled(i) ? (
-            <text key={p.week} x={x} y={H - 28} textAnchor="middle" fontSize="11" fill={text}>
+            <text
+              key={p.week}
+              x={x}
+              y={H - 28}
+              textAnchor="middle"
+              fontSize="11"
+              fill={text}
+            >
               Wk {p.week}
             </text>
           ) : null
         )}
         {pts.map(({ x, p }) => (
           <g key={`m${p.week}`}>
-            {p.perfect.length > 0 && <circle cx={p.winless.length ? x - 6 : x} cy={markY} r={4} fill={GOLD} />}
-            {p.winless.length > 0 && <circle cx={p.perfect.length ? x + 6 : x} cy={markY} r={4} fill={WINLESS} />}
+            {p.perfect.length > 0 && (
+              <circle
+                cx={p.winless.length ? x - 6 : x}
+                cy={markY}
+                r={4}
+                fill={GOLD}
+              />
+            )}
+            {p.winless.length > 0 && (
+              <circle
+                cx={p.perfect.length ? x + 6 : x}
+                cy={markY}
+                r={4}
+                fill={WINLESS}
+              />
+            )}
           </g>
         ))}
-        <HitColumns g={g} labels={series.map((p) => `Week ${p.week}: ${pct(p.accuracy)}`)} onActive={setActive} />
+        <HitColumns
+          g={g}
+          labels={series.map((p) => `Week ${p.week}: ${pct(p.accuracy)}`)}
+          onActive={setActive}
+        />
       </svg>
       {active != null && pts[active] && (
         <ChartTooltip x={pts[active].x} y={pts[active].y} W={W}>
           <b>
             Week {pts[active].p.week}
-            {pts[active].p.week === inProgressWeek ? " (so far)" : ""}: {pct(pts[active].p.accuracy)}
+            {pts[active].p.week === inProgressWeek ? " (so far)" : ""}:{" "}
+            {pct(pts[active].p.accuracy)}
           </b>
           <Box sx={{ color: "text.secondary" }}>
             {pts[active].p.correct} of {pts[active].p.graded} picks
           </Box>
-          {pts[active].p.perfect.length > 0 && <Box>5-0: {pts[active].p.perfect.map((u) => u.name).join(", ")}</Box>}
-          {pts[active].p.winless.length > 0 && <Box>0-5: {pts[active].p.winless.map((u) => u.name).join(", ")}</Box>}
+          {pts[active].p.perfect.length > 0 && (
+            <Box>
+              5-0: {pts[active].p.perfect.map((u) => u.name).join(", ")}
+            </Box>
+          )}
+          {pts[active].p.winless.length > 0 && (
+            <Box>
+              0-5: {pts[active].p.winless.map((u) => u.name).join(", ")}
+            </Box>
+          )}
         </ChartTooltip>
       )}
     </ChartCard>
@@ -276,17 +418,46 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
       title="Chaos index by week"
       plotRef={plotRef}
       legend={
-        <Stack direction="row" sx={{ flexWrap: "wrap", columnGap: 2, rowGap: 0.5, fontSize: "0.75rem", color: "text.secondary" }}>
+        <Stack
+          direction="row"
+          sx={{
+            flexWrap: "wrap",
+            columnGap: 2,
+            rowGap: 0.5,
+            fontSize: "0.75rem",
+            color: "text.secondary",
+          }}
+        >
           <span>0 = chalk, 10 = chaos</span>
-          {series.some((p) => p.partial) && <span>Dashed = week still in progress</span>}
+          {series.some((p) => p.partial) && (
+            <span>Dashed = week still in progress</span>
+          )}
         </Stack>
       }
     >
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Chaos index by week: ${series.map((p) => `week ${p.week} ${p.index.toFixed(1)}${p.partial ? " so far" : ""}`).join(", ")}`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        width="100%"
+        role="img"
+        aria-label={`Chaos index by week: ${series.map((p) => `week ${p.week} ${p.index.toFixed(1)}${p.partial ? " so far" : ""}`).join(", ")}`}
+      >
         {[0, 5, 10].map((v) => (
           <g key={v}>
-            <line x1={PAD.left} x2={W - PAD.right} y1={y(v)} y2={y(v)} stroke={theme.palette.divider} strokeWidth={1} />
-            <text x={PAD.left - 6} y={y(v) + 4} textAnchor="end" fontSize="11" fill={text}>
+            <line
+              x1={PAD.left}
+              x2={W - PAD.right}
+              y1={y(v)}
+              y2={y(v)}
+              stroke={theme.palette.divider}
+              strokeWidth={1}
+            />
+            <text
+              x={PAD.left - 6}
+              y={y(v) + 4}
+              textAnchor="end"
+              fontSize="11"
+              fill={text}
+            >
               {v}
             </text>
           </g>
@@ -311,27 +482,49 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
           );
         })}
         {last && (
-          <text x={g.x(n - 1)} y={y(last.index) - 7} textAnchor="middle" fontSize="12" fontWeight={700} fill={theme.palette.text.primary}>
+          <text
+            x={g.x(n - 1)}
+            y={y(last.index) - 7}
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight={700}
+            fill={theme.palette.text.primary}
+          >
             {last.index.toFixed(1)}
           </text>
         )}
         {series.map((p, i) =>
           g.labelled(i) ? (
-            <text key={p.week} x={g.x(i)} y={H - 28} textAnchor="middle" fontSize="11" fill={text}>
+            <text
+              key={p.week}
+              x={g.x(i)}
+              y={H - 28}
+              textAnchor="middle"
+              fontSize="11"
+              fill={text}
+            >
               Wk {p.week}
             </text>
           ) : null
         )}
-        <HitColumns g={g} labels={series.map((p) => `Week ${p.week}: ${p.index.toFixed(1)}`)} onActive={setActive} />
+        <HitColumns
+          g={g}
+          labels={series.map((p) => `Week ${p.week}: ${p.index.toFixed(1)}`)}
+          onActive={setActive}
+        />
       </svg>
       {active != null && series[active] && (
         <ChartTooltip x={g.x(active)} y={y(series[active].index)} W={W}>
           <b>
             Week {series[active].week}: {series[active].index.toFixed(1)}
-            {series[active].partial ? ` so far (${series[active].games_final} of ${series[active].games_total} final)` : ""}
+            {series[active].partial
+              ? ` so far (${series[active].games_final} of ${series[active].games_total} final)`
+              : ""}
           </b>
           <Box sx={{ color: "text.secondary" }}>
-            Underdogs covered {series[active].underdog_covers} of {series[active].ats_decided} · {series[active].outright_upsets} outright upsets
+            Underdogs covered {series[active].underdog_covers} of{" "}
+            {series[active].ats_decided} · {series[active].outright_upsets}{" "}
+            outright upsets
           </Box>
         </ChartTooltip>
       )}
@@ -339,14 +532,30 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
   );
 }
 
-export default function SeasonRecapCharts({ recap }: { recap: WeekRecap | undefined }) {
+export default function SeasonRecapCharts({
+  recap,
+}: {
+  recap: WeekRecap | undefined;
+}) {
   const accuracy = recap?.series.pool_accuracy ?? [];
   const chaos = recap?.series.chaos ?? [];
   if (accuracy.length === 0 && chaos.length === 0) return null;
   const inProgressWeek = recap && !recap.week_complete ? recap.week : null;
   return (
-    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(2, minmax(0, 1fr))" }, gap: 1.5, mb: 3 }}>
-      {accuracy.length > 0 && <PoolAccuracyChart series={accuracy} inProgressWeek={inProgressWeek} />}
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "minmax(0, 1fr)",
+          md: "repeat(2, minmax(0, 1fr))",
+        },
+        gap: 1.5,
+        mb: 3,
+      }}
+    >
+      {accuracy.length > 0 && (
+        <PoolAccuracyChart series={accuracy} inProgressWeek={inProgressWeek} />
+      )}
       {chaos.length > 0 && <ChaosChart series={chaos} />}
     </Box>
   );

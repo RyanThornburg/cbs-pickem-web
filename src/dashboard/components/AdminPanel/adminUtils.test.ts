@@ -8,7 +8,8 @@ import {
 } from "./adminUtils";
 
 const T = "2026-09-27T17:00:00.000Z";
-const plus = (iso: string, ms: number) => new Date(Date.parse(iso) + ms).toISOString();
+const plus = (iso: string, ms: number) =>
+  new Date(Date.parse(iso) + ms).toISOString();
 
 describe("isFailing", () => {
   it("is false when the last attempt succeeded, even stamped a second later", () => {
@@ -71,25 +72,43 @@ describe("formatAgo", () => {
 describe("dueDeadlineSunday", () => {
   // Sunday 2026-09-27; Eastern is UTC-4 (EDT), so 1:05 PM ET is 17:05Z.
   it("is today once it's past 1:05 PM ET on a Sunday", () => {
-    expect(dueDeadlineSunday(Date.parse("2026-09-27T17:05:00Z"))).toBe("2026-09-27");
-    expect(dueDeadlineSunday(Date.parse("2026-09-28T03:59:00Z"))).toBe("2026-09-27"); // 11:59 PM Sun ET
+    expect(dueDeadlineSunday(Date.parse("2026-09-27T17:05:00Z"))).toBe(
+      "2026-09-27"
+    );
+    expect(dueDeadlineSunday(Date.parse("2026-09-28T03:59:00Z"))).toBe(
+      "2026-09-27"
+    ); // 11:59 PM Sun ET
   });
 
   it("is the Sunday before until then", () => {
-    expect(dueDeadlineSunday(Date.parse("2026-09-27T17:04:00Z"))).toBe("2026-09-20");
-    expect(dueDeadlineSunday(Date.parse("2026-09-27T03:00:00Z"))).toBe("2026-09-20"); // 11 PM Sat ET
+    expect(dueDeadlineSunday(Date.parse("2026-09-27T17:04:00Z"))).toBe(
+      "2026-09-20"
+    );
+    expect(dueDeadlineSunday(Date.parse("2026-09-27T03:00:00Z"))).toBe(
+      "2026-09-20"
+    ); // 11 PM Sat ET
   });
 
   it("goes back to the latest Sunday midweek", () => {
-    expect(dueDeadlineSunday(Date.parse("2026-09-30T16:00:00Z"))).toBe("2026-09-27"); // Wednesday
-    expect(dueDeadlineSunday(Date.parse("2026-10-03T23:00:00Z"))).toBe("2026-09-27"); // Saturday
+    expect(dueDeadlineSunday(Date.parse("2026-09-30T16:00:00Z"))).toBe(
+      "2026-09-27"
+    ); // Wednesday
+    expect(dueDeadlineSunday(Date.parse("2026-10-03T23:00:00Z"))).toBe(
+      "2026-09-27"
+    ); // Saturday
   });
 
   it("uses Eastern standard time in winter and crosses month and year ends", () => {
     // Sunday 2027-01-03; EST is UTC-5, so 1:05 PM ET is 18:05Z.
-    expect(dueDeadlineSunday(Date.parse("2027-01-03T18:04:00Z"))).toBe("2026-12-27");
-    expect(dueDeadlineSunday(Date.parse("2027-01-03T18:05:00Z"))).toBe("2027-01-03");
-    expect(dueDeadlineSunday(Date.parse("2026-10-01T12:00:00Z"))).toBe("2026-09-27"); // Thursday
+    expect(dueDeadlineSunday(Date.parse("2027-01-03T18:04:00Z"))).toBe(
+      "2026-12-27"
+    );
+    expect(dueDeadlineSunday(Date.parse("2027-01-03T18:05:00Z"))).toBe(
+      "2027-01-03"
+    );
+    expect(dueDeadlineSunday(Date.parse("2026-10-01T12:00:00Z"))).toBe(
+      "2026-09-27"
+    ); // Thursday
   });
 });
 
@@ -105,7 +124,9 @@ describe("deadlineSweepHealth", () => {
   });
 
   it("isn't missed before this Sunday's sweep is due", () => {
-    expect(deadlineSweepHealth("2026-09-20", Date.parse("2026-09-27T16:00:00Z"))).toBe("done");
+    expect(
+      deadlineSweepHealth("2026-09-20", Date.parse("2026-09-27T16:00:00Z"))
+    ).toBe("done");
   });
 
   it("is never without a sweep on record", () => {

@@ -10,12 +10,20 @@ import { SEASON_STREAK_MIN_WEEKS } from "./usersTableUtils";
 // when that share of the 5 picks is right, i.e. 4 or more.
 const PICKS_PER_WEEK = 5;
 
-export function StreakBadge({ weeks, thresholdPct = 0.8 }: { weeks: number; thresholdPct?: number }) {
+export function StreakBadge({
+  weeks,
+  thresholdPct = 0.8,
+}: {
+  weeks: number;
+  thresholdPct?: number;
+}) {
   if (weeks < SEASON_STREAK_MIN_WEEKS) return null;
   const minCorrect = Math.ceil(thresholdPct * PICKS_PER_WEEK - 1e-9);
 
   return (
-    <Tooltip title={`Hot streak: ${weeks} straight weeks going ${minCorrect}+ or better`}>
+    <Tooltip
+      title={`Hot streak: ${weeks} straight weeks going ${minCorrect}+ or better`}
+    >
       <Box
         sx={{
           display: "inline-flex",

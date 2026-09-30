@@ -202,14 +202,23 @@ const buildColumns = (maxPicks: number) => [
     cell: ({ getValue }) => {
       const gap = getValue();
       if (gap === undefined) {
-        return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+          <Typography variant="body2" color="text.secondary">
+            —
+          </Typography>
+        );
       }
       const pts = Math.round(gap * 100);
       return (
         <Typography
           variant="body2"
           sx={{
-            color: pts > 0 ? "success.main" : pts < 0 ? "error.main" : "text.primary",
+            color:
+              pts > 0
+                ? "success.main"
+                : pts < 0
+                  ? "error.main"
+                  : "text.primary",
           }}
         >
           {pts > 0 ? `+${pts}` : pts} pts
@@ -242,14 +251,24 @@ const buildColumns = (maxPicks: number) => [
 export default function SeasonTeamTable(props: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [sorting, setSorting] = useState<SortingState>([{ id: "picks", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "picks", desc: true },
+  ]);
 
   const data = useMemo(
     () => buildRows(props),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.teamPickTotals, props.coldTeamsSeason, props.teamAtsRecord, props.teamBelieversFaders]
+    [
+      props.teamPickTotals,
+      props.coldTeamsSeason,
+      props.teamAtsRecord,
+      props.teamBelieversFaders,
+    ]
   );
-  const maxPicks = useMemo(() => Math.max(0, ...data.map((r) => r.picks)), [data]);
+  const maxPicks = useMemo(
+    () => Math.max(0, ...data.map((r) => r.picks)),
+    [data]
+  );
   const columns = useMemo(() => buildColumns(maxPicks), [maxPicks]);
 
   const table = useReactTable({
@@ -263,7 +282,9 @@ export default function SeasonTeamTable(props: Props) {
   });
 
   if (data.length === 0) {
-    return <Typography color="text.secondary">No season pick data yet.</Typography>;
+    return (
+      <Typography color="text.secondary">No season pick data yet.</Typography>
+    );
   }
 
   // Full height, no vertical scroll -- 32 rows is short enough to just let the
@@ -300,7 +321,10 @@ export default function SeasonTeamTable(props: Props) {
                   >
                     {isMobile
                       ? header.column.columnDef.meta?.mobileHeader
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableSortLabel>
                 </TableCell>
               ))}

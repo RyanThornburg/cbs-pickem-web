@@ -1,5 +1,10 @@
 import { RecapItem } from "../../types";
-import { getSeenItems, markItemSeen, orderForRotation, STRIP_SIZE } from "./recapUtils";
+import {
+  getSeenItems,
+  markItemSeen,
+  orderForRotation,
+  STRIP_SIZE,
+} from "./recapUtils";
 
 const item = (id: string): RecapItem => ({
   id,
@@ -17,13 +22,18 @@ describe("orderForRotation", () => {
   const list = ["a", "b", "c", "d"].map(item);
 
   it("keeps rank order when nothing has been seen", () => {
-    expect(orderForRotation(list, new Set()).map((t) => t.id)).toEqual(["a", "b", "c", "d"]);
+    expect(orderForRotation(list, new Set()).map((t) => t.id)).toEqual([
+      "a",
+      "b",
+      "c",
+      "d",
+    ]);
   });
 
   it("moves seen items to the back, keeping rank order in each group", () => {
-    expect(orderForRotation(list, new Set(["a", "c"])).map((t) => t.id)).toEqual([
-      "b", "d", "a", "c",
-    ]);
+    expect(
+      orderForRotation(list, new Set(["a", "c"])).map((t) => t.id)
+    ).toEqual(["b", "d", "a", "c"]);
   });
 
   it("only takes the top of the list", () => {

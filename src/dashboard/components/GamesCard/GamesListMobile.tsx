@@ -3,7 +3,10 @@ import { GameWithOdds } from "../../data/GetGamesTabData";
 import { GameStatus, RecapCoverStreak } from "../../types";
 import CoverStreaks from "./CoverStreaks";
 import { getTeamData } from "../../utils/teamAssets";
-import { formatGameDate, formatGameTime } from "../Scoreboard/utils/dateFormatters";
+import {
+  formatGameDate,
+  formatGameTime,
+} from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
 import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
@@ -55,7 +58,13 @@ function TeamRow({
 // Teams stack tight on the left with kickoff beside them (spanning both
 // rows); weather gets its own full-width row below, so neither squeezes the
 // other -- the teams no longer share a column with the weather block.
-function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["streaks"] }) {
+function GameCardItem({
+  game,
+  streaks,
+}: {
+  game: GameWithOdds;
+  streaks: Props["streaks"];
+}) {
   const [open, setOpen] = useState(false);
   const total = modeTotal(game.books);
   const vSide = getValueSide(game);
@@ -86,11 +95,20 @@ function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["s
           <span className="gc-time">{formatGameTime(game.game_time)}</span>
           <span className="gc-tv">
             {formatGameDate(game.game_time)}
-            {isFinal ? " · Final" : game.tv_network ? ` · ${game.tv_network}` : ""}
+            {isFinal
+              ? " · Final"
+              : game.tv_network
+                ? ` · ${game.tv_network}`
+                : ""}
           </span>
           <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
         </div>
-        <CoverStreaks streaks={[streaks.get(game.away_team.id), streaks.get(game.home_team.id)]} />
+        <CoverStreaks
+          streaks={[
+            streaks.get(game.away_team.id),
+            streaks.get(game.home_team.id),
+          ]}
+        />
       </div>
 
       <div className="gc-gamecard-wx">
@@ -124,7 +142,11 @@ function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["s
             {totalResult && (
               <span
                 className="gc-total-hit"
-                title={totalResult === "over" ? "Total went over" : "Total went under"}
+                title={
+                  totalResult === "over"
+                    ? "Total went over"
+                    : "Total went under"
+                }
               >
                 {totalResult === "over" ? "▲" : "▼"}
               </span>
@@ -136,7 +158,9 @@ function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["s
           <span className="gc-val">
             {fmtSpread(game.cbs_spread)}
             {vSide && (
-              <span className={`gc-valuearrow ${vSide === "home" ? "good" : "bad"}`}>
+              <span
+                className={`gc-valuearrow ${vSide === "home" ? "good" : "bad"}`}
+              >
                 {vSide === "home" ? "▲" : "▼"}{" "}
                 {vSide === "home" ? game.home_team.abbr : game.away_team.abbr}
               </span>
@@ -145,7 +169,11 @@ function GameCardItem({ game, streaks }: { game: GameWithOdds; streaks: Props["s
         </div>
       </div>
 
-      <button className="gc-expandbtn" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+      <button
+        className="gc-expandbtn"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
         Books <span className="gc-arrow">▾</span>
       </button>
       {open && (

@@ -51,10 +51,16 @@ const UserDataGrid = ({
                       direction={header.column.getIsSorted() || "asc"}
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                     </TableSortLabel>
                   ) : (
-                    flexRender(header.column.columnDef.header, header.getContext())
+                    flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )
                   )}
                 </TableCell>
               ))}
@@ -78,7 +84,10 @@ const UserDataGrid = ({
                       key={cell.id}
                       align={cell.column.columnDef.meta?.align ?? "left"}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>

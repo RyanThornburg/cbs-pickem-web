@@ -1,4 +1,9 @@
-import { RecapCoverStreak, RecapMove, RecapPerson, WeekRecap } from "../../types";
+import {
+  RecapCoverStreak,
+  RecapMove,
+  RecapPerson,
+  WeekRecap,
+} from "../../types";
 
 // Lookups for items shown in context: next to a player on User Picks, on a
 // game on the Scoreboard, or next to a team on Games. Everything matches on
@@ -9,12 +14,17 @@ const findItem = (recap: WeekRecap | undefined, kind: string) =>
 
 // Every leaderboard move of 3+ places vs last week, by user id (as the
 // string ids RankedUser uses).
-export const moversByUserId = (recap: WeekRecap | undefined): Map<string, RecapMove> =>
+export const moversByUserId = (
+  recap: WeekRecap | undefined
+): Map<string, RecapMove> =>
   new Map((recap?.movers ?? []).map((m) => [String(m.user_id), m]));
 
 // Players who went 5-0 this week.
-export const perfectWeekUserIds = (recap: WeekRecap | undefined): Set<string> => {
-  const users = (findItem(recap, "perfect_week")?.data.users ?? []) as RecapPerson[];
+export const perfectWeekUserIds = (
+  recap: WeekRecap | undefined
+): Set<string> => {
+  const users = (findItem(recap, "perfect_week")?.data.users ??
+    []) as RecapPerson[];
   return new Set(users.map((u) => String(u.user_id)));
 };
 
@@ -56,16 +66,24 @@ const fmtPoints = (n: number) => String(Math.abs(n));
 
 // Game-level tags, by game id: the upset of the week, and games where the
 // straight-up winner didn't cover.
-export const gameTagsById = (recap: WeekRecap | undefined): Map<number, GameTag[]> => {
+export const gameTagsById = (
+  recap: WeekRecap | undefined
+): Map<number, GameTag[]> => {
   const tags = new Map<number, GameTag[]>();
-  const add = (gameId: number, tag: GameTag) => tags.set(gameId, [...(tags.get(gameId) ?? []), tag]);
+  const add = (gameId: number, tag: GameTag) =>
+    tags.set(gameId, [...(tags.get(gameId) ?? []), tag]);
 
   const upset = findItem(recap, "upset_of_week");
   if (upset && typeof upset.data.game_id === "number") {
-    add(upset.data.game_id, { kind: "upset", label: "Upset of the week", detail: upset.headline });
+    add(upset.data.game_id, {
+      kind: "upset",
+      label: "Upset of the week",
+      detail: upset.headline,
+    });
   }
 
-  const flipped = (findItem(recap, "spread_mattered")?.data.flipped_games ?? []) as (RecapGame & {
+  const flipped = (findItem(recap, "spread_mattered")?.data.flipped_games ??
+    []) as (RecapGame & {
     winner: RecapGameTeam;
   })[];
   flipped.forEach((game) => {

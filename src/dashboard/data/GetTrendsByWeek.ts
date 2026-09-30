@@ -52,7 +52,10 @@ export const GetTrendsByWeek = (
   }
 
   return pollAsync(
-    () => fetchJson<ApiWeekTrends>(`/api/weeks/${season}/${week}/trends`).then(toWeekTrends),
+    () =>
+      fetchJson<ApiWeekTrends>(`/api/weeks/${season}/${week}/trends`).then(
+        toWeekTrends
+      ),
     POLL_INTERVAL_MS,
     callback,
     (error) => console.error("Failed to fetch week trends", error)

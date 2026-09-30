@@ -12,21 +12,47 @@ import { SvgIconComponent } from "@mui/icons-material";
 
 // One icon + color per item category. An unknown category (the data repo
 // can add one) falls back to a neutral lightbulb.
-const CATEGORY_STYLES: Record<string, { Icon: SvgIconComponent; color: string; label: string }> = {
+const CATEGORY_STYLES: Record<
+  string,
+  { Icon: SvgIconComponent; color: string; label: string }
+> = {
   pool: { Icon: GroupsIcon, color: "hsl(210, 90%, 45%)", label: "The pool" },
-  spread: { Icon: ShowChartIcon, color: "hsl(265, 55%, 50%)", label: "The spread" },
-  crowd: { Icon: Diversity3Icon, color: "hsl(185, 65%, 34%)", label: "The crowd" },
+  spread: {
+    Icon: ShowChartIcon,
+    color: "hsl(265, 55%, 50%)",
+    label: "The spread",
+  },
+  crowd: {
+    Icon: Diversity3Icon,
+    color: "hsl(185, 65%, 34%)",
+    label: "The crowd",
+  },
   chaos: { Icon: BoltIcon, color: "hsl(12, 80%, 50%)", label: "Chaos" },
   users: { Icon: PersonIcon, color: "hsl(145, 55%, 35%)", label: "Players" },
   teams: { Icon: ShieldIcon, color: "hsl(35, 85%, 40%)", label: "Teams" },
   league: { Icon: PublicIcon, color: "hsl(200, 30%, 40%)", label: "League" },
-  splits: { Icon: PieChartIcon, color: "hsl(220, 25%, 45%)", label: "Pool splits" },
+  splits: {
+    Icon: PieChartIcon,
+    color: "hsl(220, 25%, 45%)",
+    label: "Pool splits",
+  },
 };
-const FALLBACK = { Icon: LightbulbIcon, color: "hsl(220, 20%, 55%)", label: "Recap" };
+const FALLBACK = {
+  Icon: LightbulbIcon,
+  color: "hsl(220, 20%, 55%)",
+  label: "Recap",
+};
 
-export const categoryStyle = (category: string) => CATEGORY_STYLES[category] ?? FALLBACK;
+export const categoryStyle = (category: string) =>
+  CATEGORY_STYLES[category] ?? FALLBACK;
 
-export function CategoryMark({ category, size = 22 }: { category: string; size?: number }) {
+export function CategoryMark({
+  category,
+  size = 22,
+}: {
+  category: string;
+  size?: number;
+}) {
   const { Icon, color, label } = categoryStyle(category);
   return (
     <Box

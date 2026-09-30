@@ -18,7 +18,10 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/:tab" element={<Dashboard />} />
-            <Route path="/" element={<Navigate to={`/${getInitialTab()}`} replace />} />
+            <Route
+              path="/"
+              element={<Navigate to={`/${getInitialTab()}`} replace />}
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

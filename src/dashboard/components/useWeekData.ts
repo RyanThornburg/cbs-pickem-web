@@ -37,7 +37,9 @@ export function useWeekData(season: number, week: number) {
   useEffect(() => {
     if (season > 0 && week > 0) {
       return GetGameDataByWeek(season, week, (games) => {
-        setHasLiveGame(games.some((game) => LIVE_STATUSES.includes(game.status)));
+        setHasLiveGame(
+          games.some((game) => LIVE_STATUSES.includes(game.status))
+        );
       });
     }
   }, [season, week]);

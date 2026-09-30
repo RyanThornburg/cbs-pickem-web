@@ -32,10 +32,14 @@ export default function SeasonAllAloneCard({
   }
 
   return (
-    <Stack spacing={1} sx={{ maxHeight: { xs: 260, lg: 560 }, overflowY: "auto" }}>
+    <Stack
+      spacing={1}
+      sx={{ maxHeight: { xs: 260, lg: 560 }, overflowY: "auto" }}
+    >
       {sorted.map((pick) => {
         const cover = gameResults.get(`${pick.week_number}:${pick.game_id}`);
-        const covered = cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
+        const covered =
+          cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
 
         return (
           <Stack
@@ -44,7 +48,11 @@ export default function SeasonAllAloneCard({
             alignItems="center"
             spacing={1.5}
           >
-            <Chip size="small" label={`Wk ${pick.week_number}`} sx={{ width: 56 }} />
+            <Chip
+              size="small"
+              label={`Wk ${pick.week_number}`}
+              sx={{ width: 56 }}
+            />
             <UserAvatar
               userName={pick.name}
               userId={String(pick.user_id)}

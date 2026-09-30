@@ -9,19 +9,25 @@ const setup = (kv: Record<string, unknown> = {}, { kvThrows = false } = {}) => {
   const reads: { key: string; cacheTtl?: number }[] = [];
   const env = testEnv({
     PICKEM_KV: {
-      get: async (key: string, options: { type: string; cacheTtl?: number }) => {
+      get: async (
+        key: string,
+        options: { type: string; cacheTtl?: number }
+      ) => {
         reads.push({ key, cacheTtl: options.cacheTtl });
         if (kvThrows) throw new Error("KV down");
         return key in kv ? kv[key] : null;
       },
     },
     ASSETS: {
-      fetch: async (request: Request) => new Response(`asset:${new URL(request.url).pathname}`),
+      fetch: async (request: Request) =>
+        new Response(`asset:${new URL(request.url).pathname}`),
     },
   });
   const get = (path: string, headers: Record<string, string> = {}) =>
     worker.fetch(
-      new Request(`https://morlocked.test${path}`, { headers }) as Parameters<typeof worker.fetch>[0],
+      new Request(`https://morlocked.test${path}`, { headers }) as Parameters<
+        typeof worker.fetch
+      >[0],
       env,
       {} as ExecutionContext
     );
@@ -48,7 +54,11 @@ describe("worker routes", () => {
       assert.equal(response.status, 200, path);
       assert.deepEqual(await response.json(), { key }, path);
       assert.equal(response.headers.get("content-type"), "application/json");
-      assert.deepEqual(reads.map((r) => r.key), [key], path);
+      assert.deepEqual(
+        reads.map((r) => r.key),
+        [key],
+        path
+      );
     }
   });
 
@@ -68,7 +78,13 @@ describe("worker routes", () => {
   });
 
   it("404s unknown API paths without reading KV, including the old tidbits route", async () => {
-    for (const path of ["/api/weeks/2026/3/tidbits", "/api/weeks/2026/3", "/api/weeks/x/3/games", "/api/nope", "/api/meta/extra"]) {
+    for (const path of [
+      "/api/weeks/2026/3/tidbits",
+      "/api/weeks/2026/3",
+      "/api/weeks/x/3/games",
+      "/api/nope",
+      "/api/meta/extra",
+    ]) {
       const { get, reads } = setup();
       assert.equal((await get(path)).status, 404, path);
       assert.equal(reads.length, 0, path);
@@ -99,13 +115,21 @@ describe("worker routes", () => {
     const { get } = setup();
     const response = await get("/logout");
     assert.equal(response.status, 302);
-    assert.equal(response.headers.get("location"), "https://morlocked.test/cdn-cgi/access/logout");
+    assert.equal(
+      response.headers.get("location"),
+      "https://morlocked.test/cdn-cgi/access/logout"
+    );
   });
 });
 
 describe("admin routes", () => {
   it("401s every admin path without a valid token, before reading KV", async () => {
-    for (const path of ["/api/admin", "/api/admin/me", "/api/admin/status", "/api/admin/nope"]) {
+    for (const path of [
+      "/api/admin",
+      "/api/admin/me",
+      "/api/admin/status",
+      "/api/admin/nope",
+    ]) {
       const { get, reads } = setup({ "meta:admin": { secret: true } });
       const response = await get(path);
       assert.equal(response.status, 401, path);
@@ -117,7 +141,11 @@ describe("admin routes", () => {
   it("401s a valid token for someone else", async () => {
     const { get } = setup({ "meta:admin": { secret: true } });
     const token = await accessToken({ email: "someone@example.com" });
-    assert.equal((await get("/api/admin/status", { "cf-access-jwt-assertion": token })).status, 401);
+    assert.equal(
+      (await get("/api/admin/status", { "cf-access-jwt-assertion": token }))
+        .status,
+      401
+    );
   });
 
   it("serves the admin check and meta:admin to the admin, never cached", async () => {

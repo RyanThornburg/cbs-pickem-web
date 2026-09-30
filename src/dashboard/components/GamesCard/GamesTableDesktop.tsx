@@ -78,7 +78,10 @@ function SpreadCell({ game }: { game: GameWithOdds }) {
       <span className="gc-linesub">
         Open {fmtSpread(game.market_spread?.open)}
         {move != null && (
-          <span className="gc-movebadge" title={`${Math.abs(move)} pt move since open`}>
+          <span
+            className="gc-movebadge"
+            title={`${Math.abs(move)} pt move since open`}
+          >
             {move > 0 ? "▲" : "▼"} {Math.abs(move)}
           </span>
         )}
@@ -88,7 +91,9 @@ function SpreadCell({ game }: { game: GameWithOdds }) {
         {totalResult && (
           <span
             className="gc-total-hit"
-            title={totalResult === "over" ? "Total went over" : "Total went under"}
+            title={
+              totalResult === "over" ? "Total went over" : "Total went under"
+            }
           >
             {totalResult === "over" ? "▲" : "▼"}
           </span>
@@ -113,7 +118,13 @@ function CbsLineCell({ game }: { game: GameWithOdds }) {
   );
 }
 
-function GameRow({ game, streaks }: { game: GameWithOdds; streaks: Props["streaks"] }) {
+function GameRow({
+  game,
+  streaks,
+}: {
+  game: GameWithOdds;
+  streaks: Props["streaks"];
+}) {
   const [open, setOpen] = useState(false);
   const isFinal = game.status === GameStatus.Final;
 
@@ -132,7 +143,12 @@ function GameRow({ game, streaks }: { game: GameWithOdds; streaks: Props["streak
               score={isFinal ? game.home_score : undefined}
               covered={isFinal && game.coveringTeamId === game.home_team.id}
             />
-            <CoverStreaks streaks={[streaks.get(game.away_team.id), streaks.get(game.home_team.id)]} />
+            <CoverStreaks
+              streaks={[
+                streaks.get(game.away_team.id),
+                streaks.get(game.home_team.id),
+              ]}
+            />
           </div>
         </td>
         <td>
@@ -144,15 +160,24 @@ function GameRow({ game, streaks }: { game: GameWithOdds; streaks: Props["streak
         <td>
           <div className="gc-kickoff">
             <span className="gc-time">{formatGameShort(game.game_time)}</span>
-            <span className="gc-tv">{isFinal ? "Final" : game.tv_network ?? ""}</span>
-            <VenueBadge stadium={game.stadium} neutralSite={game.neutral_site} />
+            <span className="gc-tv">
+              {isFinal ? "Final" : (game.tv_network ?? "")}
+            </span>
+            <VenueBadge
+              stadium={game.stadium}
+              neutralSite={game.neutral_site}
+            />
           </div>
         </td>
         <td>
           <WeatherCell forecast={game.forecast} stadium={game.stadium} />
         </td>
         <td>
-          <button className="gc-expandbtn" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          <button
+            className="gc-expandbtn"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
             Books <span className="gc-arrow">▾</span>
           </button>
         </td>

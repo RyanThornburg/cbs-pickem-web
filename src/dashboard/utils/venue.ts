@@ -20,12 +20,17 @@ export const getVenueBadge = (
   if (stadium?.country && stadium.country !== "USA") {
     return {
       kind: "international",
-      label: stadium.city ? `${stadium.city}, ${stadium.country}` : stadium.country,
+      label: stadium.city
+        ? `${stadium.city}, ${stadium.country}`
+        : stadium.country,
     };
   }
   if (neutralSite === true) {
     const place = [stadium?.city, stadium?.state].filter(Boolean).join(", ");
-    return { kind: "neutral", label: place ? `Neutral site · ${place}` : "Neutral site" };
+    return {
+      kind: "neutral",
+      label: place ? `Neutral site · ${place}` : "Neutral site",
+    };
   }
   return null;
 };

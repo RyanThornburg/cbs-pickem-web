@@ -2,11 +2,18 @@ import { WeekRecap } from "../types";
 import { GetRecapByWeek, RECAP_VERSION } from "./GetRecapByWeek";
 
 // Serves one response for the recap route and resolves with the callback's value.
-const load = (status: number, body: unknown): Promise<{ recap: WeekRecap | undefined; path: string }> => {
+const load = (
+  status: number,
+  body: unknown
+): Promise<{ recap: WeekRecap | undefined; path: string }> => {
   let path = "";
   global.fetch = jest.fn((p: string) => {
     path = p;
-    return Promise.resolve({ ok: status < 400, status, json: () => Promise.resolve(body) });
+    return Promise.resolve({
+      ok: status < 400,
+      status,
+      json: () => Promise.resolve(body),
+    });
   }) as unknown as typeof fetch;
 
   return new Promise((resolve) => {
@@ -36,8 +43,12 @@ describe("GetRecapByWeek", () => {
   });
 
   it("treats any other version, or none, as no data", async () => {
-    expect((await load(200, { version: RECAP_VERSION + 1, items: [] })).recap).toBeUndefined();
-    expect((await load(200, { version: RECAP_VERSION - 1, tidbits: [] })).recap).toBeUndefined();
+    expect(
+      (await load(200, { version: RECAP_VERSION + 1, items: [] })).recap
+    ).toBeUndefined();
+    expect(
+      (await load(200, { version: RECAP_VERSION - 1, tidbits: [] })).recap
+    ).toBeUndefined();
     expect((await load(200, { items: [] })).recap).toBeUndefined();
     expect(console.warn).toHaveBeenCalledTimes(3);
   });

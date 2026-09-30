@@ -22,7 +22,12 @@ const PlaceSuffix = ({ place }: { place: number | null | undefined }) =>
     </Box>
   ) : null;
 
-export default function UserSelectedMain({ userList, userId, userTrends, showStreak }: Props) {
+export default function UserSelectedMain({
+  userList,
+  userId,
+  userTrends,
+  showStreak,
+}: Props) {
   const [user, setUser] = useState<RankedUser | undefined>(undefined);
 
   useEffect(() => {
@@ -57,7 +62,11 @@ export default function UserSelectedMain({ userList, userId, userTrends, showStr
           fontSize={"0.875rem"}
         />
         <StreakBadge
-          weeks={showStreak ? userTrends?.current_season.hot_streak.current_streak ?? 0 : 0}
+          weeks={
+            showStreak
+              ? (userTrends?.current_season.hot_streak.current_streak ?? 0)
+              : 0
+          }
           thresholdPct={userTrends?.current_season.hot_streak.threshold_pct}
         />
       </Stack>
@@ -70,8 +79,7 @@ export default function UserSelectedMain({ userList, userId, userTrends, showStr
       </Box>
       {user.second_half_score !== null && (
         <Box sx={{ whiteSpace: "nowrap" }}>
-          2nd Half:{" "}
-          {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
+          2nd Half: {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
           <PlaceSuffix place={user.second_half_place} />
         </Box>
       )}

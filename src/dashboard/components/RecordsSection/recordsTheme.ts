@@ -13,7 +13,10 @@ export const youRowSx = {
 } as const;
 
 // Finishes grid: gold for a title, then brand blues fading with rank.
-export const FINISH_TIER_COLORS: Record<FinishTier, { bg: string; fg: string }> = {
+export const FINISH_TIER_COLORS: Record<
+  FinishTier,
+  { bg: string; fg: string }
+> = {
   1: { bg: "hsl(43, 92%, 55%)", fg: "hsl(35, 80%, 15%)" },
   2: { bg: "hsl(210, 98%, 38%)", fg: "#fff" },
   3: { bg: "hsl(210, 90%, 58%)", fg: "#fff" },

@@ -33,10 +33,15 @@ export default function GamesCard({ week, recap }: Props) {
           Line movement — open → spread delta
         </span>
         <span className="gc-legend-item">
-          <span className="gc-valuearrow good" style={{ fontSize: "0.78rem" }}>▲</span>/
-          <span className="gc-valuearrow bad" style={{ fontSize: "0.78rem" }}>▼</span>
-          Value arrow on CBS Line — green up = home is the value side, amber down = value moved
-          to the away team
+          <span className="gc-valuearrow good" style={{ fontSize: "0.78rem" }}>
+            ▲
+          </span>
+          /
+          <span className="gc-valuearrow bad" style={{ fontSize: "0.78rem" }}>
+            ▼
+          </span>
+          Value arrow on CBS Line — green up = home is the value side, amber
+          down = value moved to the away team
         </span>
       </div>
 

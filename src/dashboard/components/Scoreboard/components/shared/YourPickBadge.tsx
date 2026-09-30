@@ -15,10 +15,26 @@ const STATE: Record<
   { word: string; color: (t: Theme) => string; Icon?: typeof CloseIcon }
 > = {
   notStarted: { word: "Not started", color: (t) => t.palette.primary.main },
-  covering: { word: "Covering", color: (t) => t.palette.success.main, Icon: TrendingUpIcon },
-  notCovering: { word: "Not covering", color: (t) => t.palette.error.main, Icon: TrendingDownIcon },
-  push: { word: "Push", color: (t) => t.palette.warning.main, Icon: RemoveIcon },
-  won: { word: "Won", color: (t) => t.palette.success.main, Icon: CheckCircleOutlineIcon },
+  covering: {
+    word: "Covering",
+    color: (t) => t.palette.success.main,
+    Icon: TrendingUpIcon,
+  },
+  notCovering: {
+    word: "Not covering",
+    color: (t) => t.palette.error.main,
+    Icon: TrendingDownIcon,
+  },
+  push: {
+    word: "Push",
+    color: (t) => t.palette.warning.main,
+    Icon: RemoveIcon,
+  },
+  won: {
+    word: "Won",
+    color: (t) => t.palette.success.main,
+    Icon: CheckCircleOutlineIcon,
+  },
   lost: { word: "Lost", color: (t) => t.palette.error.main, Icon: CloseIcon },
 };
 
@@ -53,7 +69,8 @@ export const YourPickBadge = ({ game, side, compact }: Props) => {
         whiteSpace: "nowrap",
         color,
         bgcolor: (t) => alpha(color(t), 0.12),
-        boxShadow: (t) => (Icon ? `inset 0 0 0 1px ${alpha(color(t), 0.6)}` : "none"),
+        boxShadow: (t) =>
+          Icon ? `inset 0 0 0 1px ${alpha(color(t), 0.6)}` : "none",
       }}
     >
       {label}

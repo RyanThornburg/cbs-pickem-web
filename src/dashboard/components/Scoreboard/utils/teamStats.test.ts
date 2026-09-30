@@ -26,7 +26,11 @@ describe("teamStatRows", () => {
       box({ third_down_conversions: 6, third_down_attempts: 12 }),
       box({ third_down_conversions: 7, third_down_attempts: 12 })
     );
-    expect(row).toMatchObject({ label: "3rd Down Efficiency", away: { main: "6-12" }, home: { main: "7-12" } });
+    expect(row).toMatchObject({
+      label: "3rd Down Efficiency",
+      away: { main: "6-12" },
+      home: { main: "7-12" },
+    });
     expect(row.awayShare).toBeCloseTo(6 / 13);
   });
 
@@ -46,7 +50,11 @@ describe("punts", () => {
       { punts: 2, punt_average: 42 } as TeamBoxScore,
       { punts: 1, punt_average: 51 } as TeamBoxScore
     );
-    expect(row).toMatchObject({ label: "Punts (Avg)", away: { main: 2, sub: "42.0" }, home: { main: 1, sub: "51.0" } });
+    expect(row).toMatchObject({
+      label: "Punts (Avg)",
+      away: { main: 2, sub: "42.0" },
+      home: { main: 1, sub: "51.0" },
+    });
     expect(row.awayShare).toBeCloseTo(1 / 3);
   });
 });

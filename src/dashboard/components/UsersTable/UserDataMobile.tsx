@@ -73,11 +73,17 @@ export default function UserDataMobile({
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {header.column.columnDef.meta?.mobileHeader ??
-                          flexRender(header.column.columnDef.header, header.getContext())}
+                          flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableSortLabel>
                     ) : (
-                      header.column.columnDef.meta?.mobileHeader ??
-                      flexRender(header.column.columnDef.header, header.getContext())
+                      (header.column.columnDef.meta?.mobileHeader ??
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      ))
                     )}
                   </StyledTableCellHeader>
                 ))}
@@ -88,7 +94,9 @@ export default function UserDataMobile({
           {table.getRowModel().rows.map((row) => {
             const cells = row.getVisibleCells();
             const picksCell = cells.find((cell) => cell.column.id === "picks");
-            const mainCells = cells.filter((cell) => cell.column.id !== "picks");
+            const mainCells = cells.filter(
+              (cell) => cell.column.id !== "picks"
+            );
             const isExpanded = expandedId === row.id;
             const isSelected = row.id === userId;
 
@@ -96,7 +104,10 @@ export default function UserDataMobile({
               <Fragment key={row.id}>
                 <TableRow
                   onClick={() => toggleExpanded(row.id)}
-                  sx={[{ borderTop: `2px solid ${grey[300]}`, cursor: "pointer" }, isSelected && selectedRowSx]}
+                  sx={[
+                    { borderTop: `2px solid ${grey[300]}`, cursor: "pointer" },
+                    isSelected && selectedRowSx,
+                  ]}
                 >
                   {mainCells.map((cell) => (
                     <StyledTableCell
@@ -111,7 +122,10 @@ export default function UserDataMobile({
                           : undefined
                       }
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </StyledTableCell>
                   ))}
                 </TableRow>
@@ -121,7 +135,10 @@ export default function UserDataMobile({
                       style={{ paddingBottom: "10px", paddingTop: "4px" }}
                       colSpan={mainCells.length}
                     >
-                      {flexRender(picksCell.column.columnDef.cell, picksCell.getContext())}
+                      {flexRender(
+                        picksCell.column.columnDef.cell,
+                        picksCell.getContext()
+                      )}
                     </StyledTableCell>
                   </TableRow>
                 )}

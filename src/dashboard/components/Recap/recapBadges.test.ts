@@ -7,7 +7,11 @@ import {
   perfectWeekUserIds,
 } from "./recapBadges";
 
-const item = (kind: string, data: Record<string, unknown>, headline = kind): RecapItem => ({
+const item = (
+  kind: string,
+  data: Record<string, unknown>,
+  headline = kind
+): RecapItem => ({
   id: kind,
   kind,
   category: "pool",
@@ -47,8 +51,20 @@ describe("recap badge lookups", () => {
   it("maps movers by string user id", () => {
     const t = week({
       movers: [
-        { user_id: 26, name: "Nick Elliott", rank_before: 26, rank_after: 16, change: 10 },
-        { user_id: 4, name: "Antonio Torres", rank_before: 11, rank_after: 23, change: -12 },
+        {
+          user_id: 26,
+          name: "Nick Elliott",
+          rank_before: 26,
+          rank_after: 16,
+          change: 10,
+        },
+        {
+          user_id: 4,
+          name: "Antonio Torres",
+          rank_before: 11,
+          rank_after: 23,
+          change: -12,
+        },
       ],
     });
     const movers = moversByUserId(t);
@@ -59,9 +75,20 @@ describe("recap badge lookups", () => {
 
   it("finds perfect weeks, including the empty 'nobody went 5-0' case", () => {
     expect(
-      perfectWeekUserIds(week({ items: [item("perfect_week", { users: [{ user_id: 35, name: "Scott Miller" }] })] }))
+      perfectWeekUserIds(
+        week({
+          items: [
+            item("perfect_week", {
+              users: [{ user_id: 35, name: "Scott Miller" }],
+            }),
+          ],
+        })
+      )
     ).toEqual(new Set(["35"]));
-    expect(perfectWeekUserIds(week({ items: [item("perfect_week", { users: [] })] })).size).toBe(0);
+    expect(
+      perfectWeekUserIds(week({ items: [item("perfect_week", { users: [] })] }))
+        .size
+    ).toBe(0);
   });
 
   it("maps cover streaks by team id and labels them", () => {
@@ -81,7 +108,11 @@ describe("recap badge lookups", () => {
     const tags = gameTagsById(
       week({
         items: [
-          item("upset_of_week", { game_id: 41 }, "Upset of the week: WAS (+7.5) beat SEA outright."),
+          item(
+            "upset_of_week",
+            { game_id: 41 },
+            "Upset of the week: WAS (+7.5) beat SEA outright."
+          ),
           item("spread_mattered", {
             flipped_games: [
               {
@@ -99,10 +130,18 @@ describe("recap badge lookups", () => {
       })
     );
     expect(tags.get(41)).toEqual([
-      { kind: "upset", label: "Upset of the week", detail: "Upset of the week: WAS (+7.5) beat SEA outright." },
+      {
+        kind: "upset",
+        label: "Upset of the week",
+        detail: "Upset of the week: WAS (+7.5) beat SEA outright.",
+      },
     ]);
     expect(tags.get(43)).toEqual([
-      { kind: "flipped", label: "Won, didn't cover", detail: "SF won by 6 but was favored by 8.5" },
+      {
+        kind: "flipped",
+        label: "Won, didn't cover",
+        detail: "SF won by 6 but was favored by 8.5",
+      },
     ]);
   });
 });

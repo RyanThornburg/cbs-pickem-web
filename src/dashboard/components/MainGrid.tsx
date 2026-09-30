@@ -123,7 +123,13 @@ export default function MainGrid() {
                 >
                   Morlocked Pick'em
                 </Typography>
-                <Box sx={{ display: { xs: "none", lg: "block" }, ml: "auto", mr: 1 }}>
+                <Box
+                  sx={{
+                    display: { xs: "none", lg: "block" },
+                    ml: "auto",
+                    mr: 1,
+                  }}
+                >
                   <UserSelectedMain
                     userId={user}
                     userList={userList}
@@ -208,7 +214,10 @@ export default function MainGrid() {
                 // "User" and "Picks" as siblings would stack.
                 label={
                   <span>
-                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                    <Box
+                      component="span"
+                      sx={{ display: { xs: "none", sm: "inline" } }}
+                    >
                       User{" "}
                     </Box>
                     Picks
@@ -234,7 +243,10 @@ export default function MainGrid() {
                   Icon-only on phones so the row still fits at 360px. */}
               <Tab
                 label={
-                  <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                  <Box
+                    component="span"
+                    sx={{ display: { xs: "none", sm: "inline" } }}
+                  >
                     Records
                   </Box>
                 }
@@ -339,7 +351,11 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "trends" ? "block" : "none" }}
             >
-              <TrendsSection season={season} week={selectedWeek} recap={recap} />
+              <TrendsSection
+                season={season}
+                week={selectedWeek}
+                recap={recap}
+              />
             </Grid>
             {activeTab === RECORDS_TAB && (
               <Grid size={{ xs: 12, lg: 12 }}>

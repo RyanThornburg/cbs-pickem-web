@@ -23,15 +23,27 @@ interface UseUsersTableArgs {
 // Row expansion (for UserTrendPanel) is plain local state rather than
 // tanstack's row-expansion feature, since only one row is ever open at a
 // time -- a Set/tree model would be more than this needs.
-export const useUsersTable = ({ userList, trends, showSecondHalf, recap, showStreak }: UseUsersTableArgs) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "place", desc: false }]);
+export const useUsersTable = ({
+  userList,
+  trends,
+  showSecondHalf,
+  recap,
+  showStreak,
+}: UseUsersTableArgs) => {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "place", desc: false },
+  ]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const data = useMemo(() => {
     const movers = moversByUserId(recap);
     const perfect = perfectWeekUserIds(recap);
     return userList.map((user) =>
-      toUsersTableRow(user, trends, { move: movers.get(user.id), perfectWeek: perfect.has(user.id), showStreak })
+      toUsersTableRow(user, trends, {
+        move: movers.get(user.id),
+        perfectWeek: perfect.has(user.id),
+        showStreak,
+      })
     );
   }, [userList, trends, recap, showStreak]);
   const columns = useMemo(() => buildUsersTableColumns(), []);

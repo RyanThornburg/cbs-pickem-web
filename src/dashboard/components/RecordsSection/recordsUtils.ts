@@ -13,18 +13,22 @@ export const HALVES_FROM_SEASON = 2025;
 export const BEST_AVG_MIN_SEASONS = 5;
 
 // A few names in the data carry double spaces ("Omar  Selim").
-export const cleanName = (name: string): string => name.replace(/\s+/g, " ").trim();
+export const cleanName = (name: string): string =>
+  name.replace(/\s+/g, " ").trim();
 
 // 2015 and 2016 champions come through as "??? unknown/missing user".
 export const isUnknownChampion = (champion: HistoricalChampion): boolean =>
-  champion.names.length === 0 || champion.names.some((name) => name.startsWith("???"));
+  champion.names.length === 0 ||
+  champion.names.some((name) => name.startsWith("???"));
 
 export const closedSeasons = (data: HistoricalRecords): number[] =>
   Object.keys(data.years)
     .map(Number)
     .sort((a, b) => a - b);
 
-export const highestWinningScore = (data: HistoricalRecords): number | undefined => {
+export const highestWinningScore = (
+  data: HistoricalRecords
+): number | undefined => {
   const scores = data.champions
     .filter((c) => !isUnknownChampion(c) && c.score != null)
     .map((c) => c.score as number);
@@ -65,7 +69,9 @@ export const buildCareerRows = (data: HistoricalRecords): CareerRow[] =>
       best: career.best_finish > 0 ? career.best_finish : undefined,
       avgFinish: average(ranks),
       avgScore: average(history.map((s) => s.score)),
-      byYear: new Map(history.map((s) => [s.season, { rank: s.rank, score: s.score }])),
+      byYear: new Map(
+        history.map((s) => [s.season, { rank: s.rank, score: s.score }])
+      ),
     };
   });
 
@@ -98,7 +104,9 @@ export const buildRecordTiles = (
   const years = closedSeasons(data);
   const tiles: RecordTile[] = [];
 
-  const scored = data.champions.filter((c) => !isUnknownChampion(c) && c.score != null);
+  const scored = data.champions.filter(
+    (c) => !isUnknownChampion(c) && c.score != null
+  );
   if (scored.length) {
     const hi = Math.max(...scored.map((c) => c.score as number));
     const lo = Math.min(...scored.map((c) => c.score as number));
@@ -108,7 +116,9 @@ export const buildRecordTiles = (
       label: "Highest winning score",
       value: String(hi),
       unit: "pts",
-      holders: his.map((c) => ({ text: `${c.names.map(cleanName).join(", ")} (${c.year})` })),
+      holders: his.map((c) => ({
+        text: `${c.names.map(cleanName).join(", ")} (${c.year})`,
+      })),
     });
     tiles.push({
       label: "Lowest winning score",
@@ -119,7 +129,11 @@ export const buildRecordTiles = (
     });
   }
 
-  const pushMax = (label: string, unit: (n: number) => string, pick: (r: CareerRow) => number) => {
+  const pushMax = (
+    label: string,
+    unit: (n: number) => string,
+    pick: (r: CareerRow) => number
+  ) => {
     const max = Math.max(0, ...rows.map(pick));
     if (max === 0) return;
     const holders = rows.filter((r) => pick(r) === max);
@@ -131,11 +145,22 @@ export const buildRecordTiles = (
       detail: tieDetail(holders.length),
     });
   };
-  pushMax("Most titles", (n) => (n === 1 ? "title" : "titles"), (r) => r.titles);
-  pushMax("Most top-5 finishes", () => "", (r) => r.top5);
+  pushMax(
+    "Most titles",
+    (n) => (n === 1 ? "title" : "titles"),
+    (r) => r.titles
+  );
+  pushMax(
+    "Most top-5 finishes",
+    () => "",
+    (r) => r.top5
+  );
 
   // Longest run of consecutive seasons finishing top 10.
-  let streak: { length: number; holders: { row: CareerRow; start: number; end: number }[] } = {
+  let streak: {
+    length: number;
+    holders: { row: CareerRow; start: number; end: number }[];
+  } = {
     length: 0,
     holders: [],
   };
@@ -147,8 +172,10 @@ export const buildRecordTiles = (
       if (finish && finish.rank <= 10) {
         if (run === 0) start = year;
         run += 1;
-        if (run > streak.length) streak = { length: run, holders: [{ row, start, end: year }] };
-        else if (run === streak.length) streak.holders.push({ row, start, end: year });
+        if (run > streak.length)
+          streak = { length: run, holders: [{ row, start, end: year }] };
+        else if (run === streak.length)
+          streak.holders.push({ row, start, end: year });
       } else {
         run = 0;
       }
@@ -165,7 +192,10 @@ export const buildRecordTiles = (
   }
 
   // Biggest rank improvement between back-to-back seasons.
-  let climb: { places: number; holders: { row: CareerRow; year: number; from: number; to: number }[] } = {
+  let climb: {
+    places: number;
+    holders: { row: CareerRow; year: number; from: number; to: number }[];
+  } = {
     places: 0,
     holders: [],
   };
@@ -175,8 +205,10 @@ export const buildRecordTiles = (
       const b = row.byYear.get(year + 1);
       if (!a || !b) return;
       const places = a.rank - b.rank;
-      if (places > climb.places) climb = { places, holders: [{ row, year, from: a.rank, to: b.rank }] };
-      else if (places > 0 && places === climb.places) climb.holders.push({ row, year, from: a.rank, to: b.rank });
+      if (places > climb.places)
+        climb = { places, holders: [{ row, year, from: a.rank, to: b.rank }] };
+      else if (places > 0 && places === climb.places)
+        climb.holders.push({ row, year, from: a.rank, to: b.rank });
     });
   });
   if (climb.places > 0) {
@@ -186,7 +218,10 @@ export const buildRecordTiles = (
       unit: "places",
       holders: holdersOf(climb.holders.map((h) => h.row)),
       detail: climb.holders
-        .map((h) => `${ordinal(h.from)} in ${h.year} → ${ordinal(h.to)} in ${h.year + 1}`)
+        .map(
+          (h) =>
+            `${ordinal(h.from)} in ${h.year} → ${ordinal(h.to)} in ${h.year + 1}`
+        )
         .join(" · "),
     });
   }
@@ -209,7 +244,9 @@ export const buildRecordTiles = (
   // Every closed season on record, and in the pool this season too
   // (is_active). Without the second check, someone who played every past
   // season but sat this one out would still qualify.
-  const everySeason = rows.filter((r) => r.active && years.every((y) => r.byYear.has(y)));
+  const everySeason = rows.filter(
+    (r) => r.active && years.every((y) => r.byYear.has(y))
+  );
   if (years.length && everySeason.length) {
     tiles.push({
       label: "Never missed a season",
@@ -234,7 +271,10 @@ export interface SeasonRow extends HistoricalStanding {
   missingBefore: number;
 }
 
-const tieLabel = (rank: number | null, counts: Map<number, number>): string | undefined =>
+const tieLabel = (
+  rank: number | null,
+  counts: Map<number, number>
+): string | undefined =>
   rank == null ? undefined : `${(counts.get(rank) ?? 0) > 1 ? "T" : ""}${rank}`;
 
 const countBy = (values: (number | null)[]): Map<number, number> => {
@@ -245,7 +285,9 @@ const countBy = (values: (number | null)[]): Map<number, number> => {
   return counts;
 };
 
-export const buildSeasonRows = (standings: HistoricalStanding[]): SeasonRow[] => {
+export const buildSeasonRows = (
+  standings: HistoricalStanding[]
+): SeasonRow[] => {
   const sorted = [...standings].sort((a, b) => a.rank - b.rank);
   const rankCounts = countBy(sorted.map((s) => s.rank));
   const firstCounts = countBy(sorted.map((s) => s.first_half_rank));

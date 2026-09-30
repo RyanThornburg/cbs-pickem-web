@@ -1,26 +1,49 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { verifyAdmin } from "./access.ts";
-import { ADMIN_EMAIL, accessToken, certsFetchCount, testEnv, unsignedToken } from "./testHelpers.ts";
+import {
+  ADMIN_EMAIL,
+  accessToken,
+  certsFetchCount,
+  testEnv,
+  unsignedToken,
+} from "./testHelpers.ts";
 
 const withHeader = (token: string) =>
-  new Request("https://morlocked.test/api/admin/me", { headers: { "cf-access-jwt-assertion": token } });
+  new Request("https://morlocked.test/api/admin/me", {
+    headers: { "cf-access-jwt-assertion": token },
+  });
 const withCookie = (cookie: string) =>
   new Request("https://morlocked.test/api/admin/me", { headers: { cookie } });
 
 describe("verifyAdmin", () => {
   it("accepts a valid Access token for the admin, from the header", async () => {
-    assert.equal(await verifyAdmin(withHeader(await accessToken()), testEnv()), ADMIN_EMAIL);
+    assert.equal(
+      await verifyAdmin(withHeader(await accessToken()), testEnv()),
+      ADMIN_EMAIL
+    );
   });
 
   it("accepts the token from the CF_Authorization cookie", async () => {
     const token = await accessToken();
-    assert.equal(await verifyAdmin(withCookie(`theme=light; CF_Authorization=${token}; other=1`), testEnv()), ADMIN_EMAIL);
+    assert.equal(
+      await verifyAdmin(
+        withCookie(`theme=light; CF_Authorization=${token}; other=1`),
+        testEnv()
+      ),
+      ADMIN_EMAIL
+    );
   });
 
   it("compares emails ignoring case and surrounding space in the secret", async () => {
     const token = await accessToken({ email: "Admin@Example.com" });
-    assert.equal(await verifyAdmin(withHeader(token), testEnv({ ADMIN_EMAIL: "  ADMIN@example.com " })), ADMIN_EMAIL);
+    assert.equal(
+      await verifyAdmin(
+        withHeader(token),
+        testEnv({ ADMIN_EMAIL: "  ADMIN@example.com " })
+      ),
+      ADMIN_EMAIL
+    );
   });
 
   it("fetches the signing keys once and reuses them", async () => {
@@ -31,7 +54,8 @@ describe("verifyAdmin", () => {
   });
 
   describe("fails closed", () => {
-    const rejects = async (request: Request, env = testEnv()) => assert.equal(await verifyAdmin(request, env), null);
+    const rejects = async (request: Request, env = testEnv()) =>
+      assert.equal(await verifyAdmin(request, env), null);
 
     it("with no token", async () => {
       await rejects(new Request("https://morlocked.test/api/admin/me"));
@@ -39,7 +63,9 @@ describe("verifyAdmin", () => {
     });
 
     it("for someone other than the admin", async () => {
-      await rejects(withHeader(await accessToken({ email: "someone@example.com" })));
+      await rejects(
+        withHeader(await accessToken({ email: "someone@example.com" }))
+      );
     });
 
     it("for a token with no email claim", async () => {
@@ -48,11 +74,19 @@ describe("verifyAdmin", () => {
 
     it("for the wrong audience or issuer", async () => {
       await rejects(withHeader(await accessToken({ aud: "another-app" })));
-      await rejects(withHeader(await accessToken({ iss: "https://other-team.cloudflareaccess.com" })));
+      await rejects(
+        withHeader(
+          await accessToken({ iss: "https://other-team.cloudflareaccess.com" })
+        )
+      );
     });
 
     it("for an expired token", async () => {
-      await rejects(withHeader(await accessToken({ expiresIn: Math.floor(Date.now() / 1000) - 60 })));
+      await rejects(
+        withHeader(
+          await accessToken({ expiresIn: Math.floor(Date.now() / 1000) - 60 })
+        )
+      );
     });
 
     it("for a token signed with another key", async () => {

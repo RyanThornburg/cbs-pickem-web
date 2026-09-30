@@ -42,11 +42,28 @@ const Middle = ({ game }: { game: Game }) => {
     const down =
       live?.down != null && live.down <= 0
         ? "Try / kickoff"
-        : live?.down_distance_text ?? "";
+        : (live?.down_distance_text ?? "");
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1, fontSize: "0.8rem", minHeight: 20 }}>
-          <Box component="span" sx={{ fontWeight: 700, color: live?.down === 4 ? "error.main" : "text.primary" }}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1,
+            fontSize: "0.8rem",
+            minHeight: 20,
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              fontWeight: 700,
+              color: live?.down === 4 ? "error.main" : "text.primary",
+            }}
+          >
             {down}
           </Box>
           <Box sx={{ display: "flex", gap: 0.5 }}>
@@ -57,7 +74,10 @@ const Middle = ({ game }: { game: Game }) => {
       </Box>
     );
   }
-  if (game.status === GameStatus.Halftime || game.status === GameStatus.Delayed) {
+  if (
+    game.status === GameStatus.Halftime ||
+    game.status === GameStatus.Delayed
+  ) {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
@@ -71,9 +91,13 @@ const Middle = ({ game }: { game: Game }) => {
   const text =
     f && game.stadium?.roof_type === "Open"
       ? `${Math.round(f.temp_f)}° · ${f.condition}`
-      : game.stadium?.name ?? "";
+      : (game.stadium?.name ?? "");
   return (
-    <Typography variant="body2" noWrap sx={{ color: "text.secondary", fontSize: "0.82rem" }}>
+    <Typography
+      variant="body2"
+      noWrap
+      sx={{ color: "text.secondary", fontSize: "0.82rem" }}
+    >
       {text}
     </Typography>
   );
@@ -91,13 +115,33 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
     const score = side === "home" ? game.home_score : game.away_score;
     const other = side === "home" ? game.away_score : game.home_score;
     return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: { xs: 0.5, md: 1 },
+          minWidth: 0,
+        }}
+      >
         <TeamLogo abbr={team.abbr} size={22} />
-        <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>{team.abbr}</Typography>
-        <Box component="span" sx={{ fontSize: "0.75rem", color: "text.secondary", width: 36, flexShrink: 0 }}>
+        <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>
+          {team.abbr}
+        </Typography>
+        <Box
+          component="span"
+          sx={{
+            fontSize: "0.75rem",
+            color: "text.secondary",
+            width: 36,
+            flexShrink: 0,
+          }}
+        >
           {sideLine(game, side)}
         </Box>
-        <Box component="span" sx={{ width: 16, display: "inline-flex", flexShrink: 0 }}>
+        <Box
+          component="span"
+          sx={{ width: 16, display: "inline-flex", flexShrink: 0 }}
+        >
           {hasBall(game, side) && <BallIcon />}
         </Box>
         <AtsTag game={game} side={side} />
@@ -145,7 +189,8 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
       sx={[
         (t) => ({
           display: "grid",
-          gridTemplateColumns: "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 96px",
+          gridTemplateColumns:
+            "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 96px",
           gridTemplateAreas: desktopAreas,
           columnGap: 2,
           rowGap: 1,
@@ -166,12 +211,30 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
         highlightSx(border, true),
       ]}
     >
-      <Box sx={{ gridArea: "status", display: "flex", flexDirection: "column", gap: 0.25, minWidth: 0 }}>
+      <Box
+        sx={{
+          gridArea: "status",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.25,
+          minWidth: 0,
+        }}
+      >
         <StatusText game={game} />
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>{tvName(game.tv_network)}</Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          {tvName(game.tv_network)}
+        </Typography>
         <GameRecapTags tags={tags} wrap />
       </Box>
-      <Box sx={{ gridArea: "teams", display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
+      <Box
+        sx={{
+          gridArea: "teams",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.5,
+          minWidth: 0,
+        }}
+      >
         {teamLine("away")}
         {teamLine("home")}
       </Box>
@@ -181,11 +244,22 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
         </Box>
       )}
       {hasDetails && (
-        <Box sx={{ gridArea: "toggle", minWidth: 0, borderTop: { xs: 1, md: 0 }, borderColor: "divider", mt: { md: final ? 0 : -0.5 } }}>
+        <Box
+          sx={{
+            gridArea: "toggle",
+            minWidth: 0,
+            borderTop: { xs: 1, md: 0 },
+            borderColor: "divider",
+            mt: { md: final ? 0 : -0.5 },
+          }}
+        >
           <DetailsToggle
             open={open}
             onToggle={() => setOpen((o) => !o)}
-            sx={{ width: { xs: "100%", md: "auto" }, justifyContent: { xs: "center", md: "flex-start" } }}
+            sx={{
+              width: { xs: "100%", md: "auto" },
+              justifyContent: { xs: "center", md: "flex-start" },
+            }}
           />
         </Box>
       )}
@@ -195,12 +269,25 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
       {/* Only rendered with a pick: the phone layout has no "you" area otherwise,
           and an unplaced area name makes the grid add phantom columns. */}
       {pickSide && (
-        <Box sx={{ gridArea: "you", display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
+        <Box
+          sx={{
+            gridArea: "you",
+            display: "flex",
+            justifyContent: { xs: "flex-start", md: "flex-end" },
+          }}
+        >
           <YourPickBadge game={game} side={pickSide} compact />
         </Box>
       )}
       {open && (
-        <Box sx={{ gridArea: "details", minWidth: 0, borderTop: 1, borderColor: "divider" }}>
+        <Box
+          sx={{
+            gridArea: "details",
+            minWidth: 0,
+            borderTop: 1,
+            borderColor: "divider",
+          }}
+        >
           <GameDetails game={game} columns />
         </Box>
       )}

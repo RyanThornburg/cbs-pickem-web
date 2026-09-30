@@ -33,10 +33,22 @@ function CardShell({
   children: React.ReactNode;
 }) {
   return (
-    <Paper variant="outlined" sx={{ p: 1.5, display: "flex", flexDirection: "column", gap: 1, minWidth: 0, textAlign: "left" }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 1.5,
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        minWidth: 0,
+        textAlign: "left",
+      }}
+    >
       <Stack direction="row" alignItems="center" spacing={1}>
         <CategoryMark category={category} />
-        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, flex: 1 }}>{title}</Typography>
+        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, flex: 1 }}>
+          {title}
+        </Typography>
         {scope && <ScopeTag scope={scope} />}
       </Stack>
       {children}
@@ -46,7 +58,14 @@ function CardShell({
 
 function Big({ value, suffix }: { value: string; suffix?: string }) {
   return (
-    <Typography sx={{ fontSize: "1.75rem", fontWeight: 800, lineHeight: 1.05, fontVariantNumeric: "tabular-nums" }}>
+    <Typography
+      sx={{
+        fontSize: "1.75rem",
+        fontWeight: 800,
+        lineHeight: 1.05,
+        fontVariantNumeric: "tabular-nums",
+      }}
+    >
       {value}{" "}
       {suffix && (
         <Typography component="span" variant="body2" color="text.secondary">
@@ -58,7 +77,11 @@ function Big({ value, suffix }: { value: string; suffix?: string }) {
 }
 
 const Sub = ({ children }: { children: React.ReactNode }) => (
-  <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ fontSize: "0.8rem" }}
+  >
     {children}
   </Typography>
 );
@@ -66,11 +89,24 @@ const Sub = ({ children }: { children: React.ReactNode }) => (
 // Label/value pairs, e.g. the chaos index parts.
 function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
   return (
-    <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: 1.5, rowGap: 0.25, fontSize: "0.78rem", color: "text.secondary", fontVariantNumeric: "tabular-nums" }}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "1fr auto",
+        columnGap: 1.5,
+        rowGap: 0.25,
+        fontSize: "0.78rem",
+        color: "text.secondary",
+        fontVariantNumeric: "tabular-nums",
+      }}
+    >
       {rows.map(([label, value], i) => (
         <Box key={i} sx={{ display: "contents" }}>
           <span>{label}</span>
-          <Box component="span" sx={{ color: "text.primary", fontWeight: 600, textAlign: "right" }}>
+          <Box
+            component="span"
+            sx={{ color: "text.primary", fontWeight: 600, textAlign: "right" }}
+          >
             {value}
           </Box>
         </Box>
@@ -79,7 +115,13 @@ function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
   );
 }
 
-function PersonChips({ people, tone }: { people: RecapPerson[]; tone: "good" | "bad" }) {
+function PersonChips({
+  people,
+  tone,
+}: {
+  people: RecapPerson[];
+  tone: "good" | "bad";
+}) {
   return (
     <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
       {people.map((p) => (
@@ -92,7 +134,8 @@ function PersonChips({ people, tone }: { people: RecapPerson[]; tone: "good" | "
             borderRadius: 0.5,
             px: 0.75,
             py: "1px",
-            bgcolor: tone === "good" ? "hsl(45, 100%, 90%)" : "hsl(0, 80%, 95%)",
+            bgcolor:
+              tone === "good" ? "hsl(45, 100%, 90%)" : "hsl(0, 80%, 95%)",
             color: tone === "good" ? "hsl(35, 80%, 28%)" : "hsl(0, 65%, 42%)",
           }}
         >
@@ -113,17 +156,40 @@ function ChaosCard({ item }: { item: RecapItem }) {
       <Big
         value={index.toFixed(1)}
         suffix={`/ 10${partial ? ` · so far, ${d.games_final} of ${d.games_total} final` : ""}${
-          rank && !partial ? ` · ${rank === 1 ? "most chaotic" : `${ordinal(rank)} of ${d.weeks_ranked}`}` : ""
+          rank && !partial
+            ? ` · ${rank === 1 ? "most chaotic" : `${ordinal(rank)} of ${d.weeks_ranked}`}`
+            : ""
         }`}
       />
       <Box
         role="img"
         aria-label={`Chaos index ${index.toFixed(1)} out of 10`}
-        sx={{ position: "relative", height: 8, borderRadius: 1, background: "linear-gradient(90deg, hsl(145, 45%, 75%), hsl(45, 90%, 65%), hsl(12, 80%, 55%))" }}
+        sx={{
+          position: "relative",
+          height: 8,
+          borderRadius: 1,
+          background:
+            "linear-gradient(90deg, hsl(145, 45%, 75%), hsl(45, 90%, 65%), hsl(12, 80%, 55%))",
+        }}
       >
-        <Box sx={{ position: "absolute", top: -4, left: `${Math.min(100, Math.max(0, index * 10))}%`, width: 4, height: 16, ml: "-2px", borderRadius: 0.5, bgcolor: "text.primary" }} />
+        <Box
+          sx={{
+            position: "absolute",
+            top: -4,
+            left: `${Math.min(100, Math.max(0, index * 10))}%`,
+            width: 4,
+            height: 16,
+            ml: "-2px",
+            borderRadius: 0.5,
+            bgcolor: "text.primary",
+          }}
+        />
       </Box>
-      <Stack direction="row" justifyContent="space-between" sx={{ fontSize: "0.68rem", color: "text.disabled", mt: -0.5 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        sx={{ fontSize: "0.68rem", color: "text.disabled", mt: -0.5 }}
+      >
         <span>Chalk</span>
         <span>Chaos</span>
       </Stack>
@@ -131,7 +197,10 @@ function ChaosCard({ item }: { item: RecapItem }) {
         rows={[
           ["Underdogs covered", `${d.underdog_covers} of ${d.ats_decided}`],
           ["Outright upsets", String(d.outright_upsets)],
-          ["Favorites of 7+ that lost", `${d.big_favorite_losses} of ${d.big_favorites}`],
+          [
+            "Favorites of 7+ that lost",
+            `${d.big_favorite_losses} of ${d.big_favorites}`,
+          ],
           ["Pool accuracy", pct(d.pool_accuracy as number)],
         ]}
       />
@@ -143,9 +212,15 @@ function AccuracyCard({ card }: { card: WeekCard }) {
   const acc = byKind(card, "pool_accuracy");
   const perfectItem = byKind(card, "perfect_week");
   const perfect = (perfectItem?.data.users ?? []) as RecapPerson[];
-  const winless = (byKind(card, "winless_week")?.data.users ?? []) as RecapPerson[];
+  const winless = (byKind(card, "winless_week")?.data.users ??
+    []) as RecapPerson[];
   const d = (acc?.data ?? {}) as Record<string, number | string | null>;
-  const note = d.season_rank_note === "worst" ? "Worst week this season" : d.season_rank_note === "best" ? "Best week this season" : null;
+  const note =
+    d.season_rank_note === "worst"
+      ? "Worst week this season"
+      : d.season_rank_note === "best"
+        ? "Best week this season"
+        : null;
   return (
     <CardShell title="Pool accuracy" category="pool" scope="week">
       {acc && <Big value={pct(d.accuracy as number)} suffix="of picks right" />}
@@ -154,7 +229,11 @@ function AccuracyCard({ card }: { card: WeekCard }) {
           the week is complete with nobody at 5-0. */}
       {perfectItem && (
         <PeopleLine label="5-0">
-          {perfect.length ? <PersonChips people={perfect} tone="good" /> : <Sub>nobody</Sub>}
+          {perfect.length ? (
+            <PersonChips people={perfect} tone="good" />
+          ) : (
+            <Sub>nobody</Sub>
+          )}
         </PeopleLine>
       )}
       {winless.length > 0 && (
@@ -166,10 +245,24 @@ function AccuracyCard({ card }: { card: WeekCard }) {
   );
 }
 
-function PeopleLine({ label, children }: { label: string; children: React.ReactNode }) {
+function PeopleLine({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <Stack direction="row" spacing={1} alignItems="flex-start">
-      <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "text.secondary", minWidth: 26, lineHeight: "20px" }}>
+      <Typography
+        sx={{
+          fontSize: "0.8rem",
+          fontWeight: 700,
+          color: "text.secondary",
+          minWidth: 26,
+          lineHeight: "20px",
+        }}
+      >
         {label}
       </Typography>
       <Box sx={{ minWidth: 0 }}>{children}</Box>
@@ -184,15 +277,38 @@ interface CrowdGame {
 }
 
 // Two records under one label, big enough to read at a glance.
-function RecordRows({ label, rows }: { label: string; rows: [string, string][] }) {
+function RecordRows({
+  label,
+  rows,
+}: {
+  label: string;
+  rows: [string, string][];
+}) {
   return (
     <Box>
-      <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mb: 0.5 }}>{label}</Typography>
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: 2, rowGap: 0.25, alignItems: "baseline" }}>
+      <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mb: 0.5 }}>
+        {label}
+      </Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          columnGap: 2,
+          rowGap: 0.25,
+          alignItems: "baseline",
+        }}
+      >
         {rows.map(([name, value]) => (
           <Box key={name} sx={{ display: "contents" }}>
             <Typography variant="body2">{name}</Typography>
-            <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+            <Typography
+              sx={{
+                fontWeight: 800,
+                fontSize: "1.25rem",
+                textAlign: "right",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
               {value}
             </Typography>
           </Box>
@@ -213,7 +329,10 @@ function CrowdCard({ card }: { card: WeekCard }) {
   const season = byKind(card, "crowd_record", "season");
   // The week's cutoff (30% of the pool, rounded up); falls back to the
   // season's latest week when there's no weekly item.
-  const byWeek = (popularSeason?.data.min_picks_by_week ?? {}) as Record<string, number>;
+  const byWeek = (popularSeason?.data.min_picks_by_week ?? {}) as Record<
+    string,
+    number
+  >;
   const minPicks =
     (popular?.data.min_picks as number | undefined) ??
     byWeek[Object.keys(byWeek).sort((a, b) => Number(b) - Number(a))[0]] ??
@@ -224,19 +343,34 @@ function CrowdCard({ card }: { card: WeekCard }) {
   ];
   const usePopular = !!(popular || popularSeason);
   const top = ((popular?.data.games ?? []) as CrowdGame[])[0];
-  const resultColor = { win: "success.main", loss: "error.main", push: "text.secondary" };
+  const resultColor = {
+    win: "success.main",
+    loss: "error.main",
+    push: "text.secondary",
+  };
   const resultText = { win: "covered", loss: "didn't cover", push: "pushed" };
   return (
     <CardShell title="Popular picks" category="crowd">
       {usePopular ? (
         <>
-          <RecordRows label={`Teams ${minPicks}+ of you picked`} rows={rows(popular, popularSeason)} />
+          <RecordRows
+            label={`Teams ${minPicks}+ of you picked`}
+            rows={rows(popular, popularSeason)}
+          />
           {top && (
-            <Stack direction="row" alignItems="center" spacing={0.75} sx={{ fontSize: "0.8rem", color: "text.secondary" }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.75}
+              sx={{ fontSize: "0.8rem", color: "text.secondary" }}
+            >
               <TeamLogo abbr={top.crowd_team.abbr} size={16} />
               <span>
                 Most picked: {top.crowd_team.abbr} ({top.pick_count}){" "}
-                <Box component="span" sx={{ color: resultColor[top.result], fontWeight: 600 }}>
+                <Box
+                  component="span"
+                  sx={{ color: resultColor[top.result], fontWeight: 600 }}
+                >
                   {resultText[top.result]}
                 </Box>
               </span>
@@ -244,7 +378,10 @@ function CrowdCard({ card }: { card: WeekCard }) {
           )}
         </>
       ) : (
-        <RecordRows label="The side more of you took" rows={rows(week, season)} />
+        <RecordRows
+          label="The side more of you took"
+          rows={rows(week, season)}
+        />
       )}
     </CardShell>
   );
@@ -274,17 +411,55 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
           const label = typeof d.label === "string" ? d.label : t.short;
           return (
             <Box key={t.id} title={t.headline}>
-              <Stack direction="row" justifyContent="space-between" spacing={1} sx={{ fontSize: "0.78rem" }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={1}
+                sx={{ fontSize: "0.78rem" }}
+              >
                 <Box component="span" sx={{ minWidth: 0 }}>
                   {label.charAt(0).toUpperCase() + label.slice(1)}
                 </Box>
-                <Box component="span" sx={{ fontWeight: 600, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+                <Box
+                  component="span"
+                  sx={{
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
                   {d.successes}-{Number(d.n) - Number(d.successes)} · {pct(p)}
                 </Box>
               </Stack>
-              <Box sx={{ position: "relative", height: 6, mt: 0.25, borderRadius: 1, bgcolor: "action.hover", overflow: "hidden" }}>
-                <Box sx={{ position: "absolute", inset: 0, width: `${p * 100}%`, borderRadius: 1, bgcolor: p < 0.5 ? "error.main" : "success.main" }} />
-                <Box sx={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: "1px", bgcolor: "text.secondary" }} />
+              <Box
+                sx={{
+                  position: "relative",
+                  height: 6,
+                  mt: 0.25,
+                  borderRadius: 1,
+                  bgcolor: "action.hover",
+                  overflow: "hidden",
+                }}
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    width: `${p * 100}%`,
+                    borderRadius: 1,
+                    bgcolor: p < 0.5 ? "error.main" : "success.main",
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    left: "50%",
+                    top: 0,
+                    bottom: 0,
+                    width: "1px",
+                    bgcolor: "text.secondary",
+                  }}
+                />
               </Box>
             </Box>
           );
@@ -309,22 +484,38 @@ function UpsetCard({ item }: { item: RecapItem }) {
           [fav, `−${d.points}`, favScore, false],
           [dog, `+${d.points}`, dogScore, true],
         ].map(([team, line, score, won]) => (
-          <Stack key={(team as TeamRef).id} direction="row" alignItems="center" spacing={1}>
+          <Stack
+            key={(team as TeamRef).id}
+            direction="row"
+            alignItems="center"
+            spacing={1}
+          >
             <TeamLogo abbr={(team as TeamRef).abbr} size={22} />
             <Typography sx={{ fontWeight: 700, flex: 1 }}>
               {(team as TeamRef).abbr}{" "}
-              <Typography component="span" variant="body2" color="text.secondary">
+              <Typography
+                component="span"
+                variant="body2"
+                color="text.secondary"
+              >
                 {line as string}
               </Typography>
             </Typography>
-            <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: won ? "text.primary" : "text.disabled" }}>
+            <Typography
+              sx={{
+                fontWeight: 800,
+                fontSize: "1.1rem",
+                color: won ? "text.primary" : "text.disabled",
+              }}
+            >
               {score as number}
             </Typography>
           </Stack>
         ))}
       </Stack>
       <Sub>
-        {believers.length} of the {String(d.pool_picks)} who picked this game had {dog.abbr}.
+        {believers.length} of the {String(d.pool_picks)} who picked this game
+        had {dog.abbr}.
       </Sub>
       {believers.length > 0 && <PersonChips people={believers} tone="good" />}
     </CardShell>
@@ -337,8 +528,25 @@ function MoversCard({ card }: { card: WeekCard }) {
     <CardShell title="Biggest movers" category="users" scope="week">
       <Stack spacing={0.5}>
         {moves.map((m) => (
-          <Stack key={m.user_id} direction="row" alignItems="center" spacing={1} sx={{ fontSize: "0.82rem" }}>
-            <Box component="span" sx={{ fontWeight: 800, fontSize: "0.72rem", borderRadius: 0.5, px: 0.5, bgcolor: m.change > 0 ? "hsl(145, 55%, 92%)" : "hsl(0, 80%, 95%)", color: m.change > 0 ? "hsl(145, 60%, 28%)" : "hsl(0, 65%, 42%)" }}>
+          <Stack
+            key={m.user_id}
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ fontSize: "0.82rem" }}
+          >
+            <Box
+              component="span"
+              sx={{
+                fontWeight: 800,
+                fontSize: "0.72rem",
+                borderRadius: 0.5,
+                px: 0.5,
+                bgcolor:
+                  m.change > 0 ? "hsl(145, 55%, 92%)" : "hsl(0, 80%, 95%)",
+                color: m.change > 0 ? "hsl(145, 60%, 28%)" : "hsl(0, 65%, 42%)",
+              }}
+            >
               {m.change > 0 ? "▲" : "▼"}
               {Math.abs(m.change)}
             </Box>
@@ -359,7 +567,11 @@ function MoversCard({ card }: { card: WeekCard }) {
 function HeadlineCard({ card }: { card: WeekCard }) {
   const first = card.items[0];
   return (
-    <CardShell title={first.short} category={first.category} scope={first.scope}>
+    <CardShell
+      title={first.short}
+      category={first.category}
+      scope={first.scope}
+    >
       {card.items.map((t) => (
         <Sub key={t.id}>{t.headline}</Sub>
       ))}

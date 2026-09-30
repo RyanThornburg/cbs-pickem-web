@@ -141,7 +141,7 @@ export default function AdminPanel() {
         setStatus(data);
         setError(null);
       }, setError),
-    [],
+    []
   );
 
   // Keeps the "Nm ago" labels and heartbeat check current between polls.
@@ -273,7 +273,7 @@ export default function AdminPanel() {
                 name="Sunday deadline sweep"
                 health={deadlineSweepHealth(
                   status.last_run.deadline_last_synced_sunday,
-                  now,
+                  now
                 )}
                 now={now}
                 runs={[]}

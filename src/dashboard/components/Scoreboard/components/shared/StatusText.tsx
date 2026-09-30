@@ -5,14 +5,15 @@ import { formatGameShort } from "../../utils/dateFormatters";
 
 export const StatusText = ({ game }: { game: Game }) => {
   const live = game.status === GameStatus.Inprogress;
-  const color =
-    live
-      ? "error.main"
-      : game.status === GameStatus.Halftime || game.status === GameStatus.Delayed
+  const color = live
+    ? "error.main"
+    : game.status === GameStatus.Halftime || game.status === GameStatus.Delayed
       ? "warning.main"
       : "text.secondary";
   const label =
-    game.status === GameStatus.Scheduled ? formatGameShort(game.game_time) : statusLabel(game);
+    game.status === GameStatus.Scheduled
+      ? formatGameShort(game.game_time)
+      : statusLabel(game);
 
   return (
     <Box
@@ -48,4 +49,4 @@ export const StatusText = ({ game }: { game: Game }) => {
 };
 
 const TV_NAMES: Record<string, string> = { ESPD: "ESPN", AMZN: "Prime" };
-export const tvName = (tv?: string) => (tv ? TV_NAMES[tv] ?? tv : "");
+export const tvName = (tv?: string) => (tv ? (TV_NAMES[tv] ?? tv) : "");

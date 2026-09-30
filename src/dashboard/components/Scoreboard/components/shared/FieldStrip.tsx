@@ -85,9 +85,27 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
                 }}
               />
             )}
-            <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, left: `${spot.ballPct}%`, bgcolor: "#4aa3ff" }} />
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                width: 2,
+                left: `${spot.ballPct}%`,
+                bgcolor: "#4aa3ff",
+              }}
+            />
             {spot.firstDownPct != null && (
-              <Box sx={{ position: "absolute", top: 0, bottom: 0, width: 2, left: `${spot.firstDownPct}%`, bgcolor: "#ffd23f" }} />
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  width: 2,
+                  left: `${spot.firstDownPct}%`,
+                  bgcolor: "#ffd23f",
+                }}
+              />
             )}
             <Tooltip
               title={ballTooltip}
@@ -112,7 +130,10 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
                   placeItems: "center",
                   cursor: "default",
                   zIndex: 1,
-                  "&:focus-visible": { outline: "2px solid #fff", borderRadius: "50%" },
+                  "&:focus-visible": {
+                    outline: "2px solid #fff",
+                    borderRadius: "50%",
+                  },
                 }}
               >
                 <Box

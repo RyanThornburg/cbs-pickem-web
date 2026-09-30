@@ -1,6 +1,12 @@
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import dayjs from "dayjs";
-import { Book, Forecast, HourlyForecast, Stadium, TeamRecord } from "../../types";
+import {
+  Book,
+  Forecast,
+  HourlyForecast,
+  Stadium,
+  TeamRecord,
+} from "../../types";
 
 // Thresholds live here (frontend), not the data pipeline -- the data repo
 // only captures raw measurements (temp, wind, precip%, visibility, official
@@ -149,7 +155,8 @@ const hasRainSignal = (forecast: Forecast): boolean =>
   forecast.precipitation_pct > 0 ||
   /rain|drizzle|shower|storm/i.test(forecast.condition) ||
   duringGameHours(forecast).some(
-    (h) => h.precipitation_pct > 0 || /rain|drizzle|shower|storm/i.test(h.condition)
+    (h) =>
+      h.precipitation_pct > 0 || /rain|drizzle|shower|storm/i.test(h.condition)
   );
 
 // Worst case across kickoff + every during-game hour, so a game that's dry
@@ -158,12 +165,21 @@ const gameExtremes = (forecast: Forecast) => {
   const hours = duringGameHours(forecast);
   const dg = forecast.during_game;
   return {
-    windMph: Math.max(forecast.wind_speed_mph, ...hours.map((h) => h.wind_speed_mph)),
-    gustMph: Math.max(forecast.wind_gust_mph, ...hours.map((h) => h.wind_gust_mph)),
+    windMph: Math.max(
+      forecast.wind_speed_mph,
+      ...hours.map((h) => h.wind_speed_mph)
+    ),
+    gustMph: Math.max(
+      forecast.wind_gust_mph,
+      ...hours.map((h) => h.wind_gust_mph)
+    ),
     tempLow: Math.min(forecast.temp_f, ...hours.map((h) => h.temp_f)),
     tempHigh: Math.max(forecast.temp_f, ...hours.map((h) => h.temp_f)),
-    precipPct: Math.max(forecast.precipitation_pct, ...hours.map((h) => h.precipitation_pct)),
-    snowIn: hours.length ? dg?.snow_accumulation_in ?? 0 : 0,
+    precipPct: Math.max(
+      forecast.precipitation_pct,
+      ...hours.map((h) => h.precipitation_pct)
+    ),
+    snowIn: hours.length ? (dg?.snow_accumulation_in ?? 0) : 0,
   };
 };
 
@@ -174,7 +190,9 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
   const x = gameExtremes(forecast);
   // A game can carry several alerts; dedupe by title so two overlapping
   // "Flood Watch" entries don't render as two identical flags.
-  const alertTitles = new Set((forecast.weather_alerts ?? []).map((a) => a.title).filter(Boolean));
+  const alertTitles = new Set(
+    (forecast.weather_alerts ?? []).map((a) => a.title).filter(Boolean)
+  );
   alertTitles.forEach((title) => {
     if (!isFloodAlert(title) || hasRainSignal(forecast)) {
       flags.push({ label: title, tier: "danger" });
@@ -191,7 +209,10 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
     flags.push({ label: `Hot ${x.tempHigh}°F`, tier: "warn" });
   }
   if (x.snowIn >= WEATHER_THRESHOLDS.snowAccumIn) {
-    flags.push({ label: `Snow ${Math.round(x.snowIn * 10) / 10}in`, tier: "warn" });
+    flags.push({
+      label: `Snow ${Math.round(x.snowIn * 10) / 10}in`,
+      tier: "warn",
+    });
   } else if (x.precipPct >= WEATHER_THRESHOLDS.heavyPrecipPct) {
     flags.push({ label: `${x.precipPct}% Precip`, tier: "warn" });
   }
@@ -199,7 +220,10 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
     forecast.visibility_mi != null &&
     forecast.visibility_mi < WEATHER_THRESHOLDS.lowVisibilityMi
   ) {
-    flags.push({ label: `${forecast.visibility_mi}mi Visibility`, tier: "warn" });
+    flags.push({
+      label: `${forecast.visibility_mi}mi Visibility`,
+      tier: "warn",
+    });
   }
   return flags;
 };
@@ -234,10 +258,15 @@ export const weatherTrends = (forecast: Forecast): WeatherTrend[] => {
   // hour rather than the first one to qualify, so 10% -> 35% -> 70% reads
   // "70%", not "35%". The % carries how likely it is, so crossing into
   // "likely" and a smaller notable rise share one label.
-  const wettest = hours.reduce((a, h) => (h.precipitation_pct > a.precipitation_pct ? h : a));
-  const driest = hours.reduce((a, h) => (h.precipitation_pct < a.precipitation_pct ? h : a));
+  const wettest = hours.reduce((a, h) =>
+    h.precipitation_pct > a.precipitation_pct ? h : a
+  );
+  const driest = hours.reduce((a, h) =>
+    h.precipitation_pct < a.precipitation_pct ? h : a
+  );
   const rising =
-    ((kickPct < heavyPrecipPct && wettest.precipitation_pct >= heavyPrecipPct) ||
+    ((kickPct < heavyPrecipPct &&
+      wettest.precipitation_pct >= heavyPrecipPct) ||
       (wettest.precipitation_pct - kickPct >= PRECIP_TREND.shiftPts &&
         wettest.precipitation_pct >= PRECIP_TREND.minNotablePct)) &&
     wettest;
@@ -266,13 +295,21 @@ export const weatherTrends = (forecast: Forecast): WeatherTrend[] => {
   if (forecast.temp_f > freezingF) {
     const freeze = hours.find((h) => h.temp_f <= freezingF);
     if (freeze) {
-      trends.push({ direction: "down", worsening: true, label: `Freezing by ${fmtHour(freeze.time)} (${freeze.temp_f}°F)` });
+      trends.push({
+        direction: "down",
+        worsening: true,
+        label: `Freezing by ${fmtHour(freeze.time)} (${freeze.temp_f}°F)`,
+      });
     }
   }
   if (forecast.temp_f < hotF) {
     const heat = hours.find((h) => h.temp_f >= hotF);
     if (heat) {
-      trends.push({ direction: "up", worsening: true, label: `${heat.temp_f}°F by ${fmtHour(heat.time)}` });
+      trends.push({
+        direction: "up",
+        worsening: true,
+        label: `${heat.temp_f}°F by ${fmtHour(heat.time)}`,
+      });
     }
   }
   return trends;
