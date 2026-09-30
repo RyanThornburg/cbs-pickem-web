@@ -13,6 +13,9 @@ interface Props {
   userId?: string;
   totalUsers?: number;
   compact?: boolean;
+  // False when an empty pick list only means picks aren't public yet (see
+  // picksRevealed in scoreboardUtils) -- then nothing is shown.
+  picksRevealed?: boolean;
 }
 
 const byName = (a: UserId, b: UserId) => a.name.localeCompare(b.name);
@@ -69,13 +72,20 @@ const PickerList = ({
 
 // Who picked each side, colored by who's winning the pick right now. Every
 // picker's name is in the tooltip -- hover on desktop, tap on mobile.
-export const PickSplitBar = ({ game, userId, totalUsers, compact }: Props) => {
+export const PickSplitBar = ({
+  game,
+  userId,
+  totalUsers,
+  compact,
+  picksRevealed = true,
+}: Props) => {
   const [open, setOpen] = useState(false);
   const away = game.picks.away;
   const home = game.picks.home;
   const total = away.length + home.length;
 
   if (total === 0) {
+    if (!picksRevealed) return null;
     return (
       <Typography variant="caption" sx={{ color: "text.secondary" }}>
         Nobody picked this game

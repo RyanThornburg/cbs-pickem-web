@@ -31,6 +31,8 @@ export interface GameRowProps {
   userId?: string;
   // Recap tags for this game ("Upset of the week", "Won, didn't cover").
   tags?: GameTag[];
+  // See GameCardProps.picksRevealed.
+  picksRevealed?: boolean;
 }
 
 // The middle column: where the ball is while a game is live, otherwise the
@@ -103,7 +105,8 @@ const Middle = ({ game }: { game: Game }) => {
   );
 };
 
-export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
+export const GameRow = memo((props: GameRowProps) => {
+  const { game, userId, tags, picksRevealed = true } = props;
   const [open, setOpen] = useState(false);
   const border = highlightBorder(getGameHighlight(game));
   const pickSide = userPickSide(game, userId);
@@ -264,7 +267,12 @@ export const GameRow = memo(({ game, userId, tags }: GameRowProps) => {
         </Box>
       )}
       <Box sx={{ gridArea: "picks", minWidth: 0 }}>
-        <PickSplitBar game={game} userId={userId} compact />
+        <PickSplitBar
+          game={game}
+          userId={userId}
+          picksRevealed={picksRevealed}
+          compact
+        />
       </Box>
       {/* Only rendered with a pick: the phone layout has no "you" area otherwise,
           and an unplaced area name makes the grid add phantom columns. */}

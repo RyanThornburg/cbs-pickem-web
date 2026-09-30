@@ -38,6 +38,9 @@ export interface GameCardProps {
   totalUsers?: number;
   // Recap tags for this game ("Upset of the week", "Won, didn't cover").
   tags?: GameTag[];
+  // False before the Sunday deadline on a game that hasn't started, when an
+  // empty pick list means the picks aren't public yet.
+  picksRevealed?: boolean;
 }
 
 const QUARTERS: (keyof LinescoreSide)[] = ["q1", "q2", "q3", "q4"];
@@ -168,7 +171,7 @@ const PregameLine = ({ game }: { game: Game }) => {
 };
 
 export const GameCard = memo(
-  ({ game, userId, totalUsers, tags }: GameCardProps) => {
+  ({ game, userId, totalUsers, tags, picksRevealed = true }: GameCardProps) => {
     const [open, setOpen] = useState(false);
     const highlight = getGameHighlight(game);
     const border = highlightBorder(highlight);
@@ -368,7 +371,12 @@ export const GameCard = memo(
         <Situation game={game} />
         {game.status === GameStatus.Scheduled && <PregameLine game={game} />}
 
-        <PickSplitBar game={game} userId={userId} totalUsers={totalUsers} />
+        <PickSplitBar
+          game={game}
+          userId={userId}
+          totalUsers={totalUsers}
+          picksRevealed={picksRevealed}
+        />
 
         {(final || isLiveStatus(game.status)) && (
           <Box sx={{ borderTop: 1, borderColor: "divider", pt: 0.5 }}>

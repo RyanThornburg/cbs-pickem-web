@@ -11,7 +11,11 @@ import Switch from "@mui/material/Switch";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useGameData } from "./hooks/useGameData";
-import { groupGames } from "./utils/scoreboardUtils";
+import {
+  groupGames,
+  pickDeadline,
+  picksRevealed,
+} from "./utils/scoreboardUtils";
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
 import { WeekRecap } from "../../types";
@@ -58,6 +62,7 @@ const GroupHeader = ({ children }: { children: string }) => (
 const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
   const { games, loading, error } = useGameData(week);
+  const deadline = useMemo(() => pickDeadline(games), [games]);
   const [layout, setLayout] = useState<Layout>(readLayout);
   const [picksFirst, setPicksFirst] = useState(readPicksFirst);
 
@@ -85,6 +90,9 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   if (!games.length) return <Box>No games scheduled for week {week}</Box>;
 
   const groups = groupGames(games, picksFirst ? userId : undefined);
+  // Re-checked on every games poll (once a minute), which is plenty for a
+  // kickoff or the Sunday deadline.
+  const now = Date.now();
 
   const controls = (
     <Box
@@ -168,6 +176,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
                     userId={userId}
                     totalUsers={totalUsers}
                     tags={gameTags.get(game.game_id)}
+                    picksRevealed={picksRevealed(game, deadline, now)}
                   />
                 </Grid>
               ))}
@@ -197,6 +206,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
                     game={game}
                     userId={userId}
                     tags={gameTags.get(game.game_id)}
+                    picksRevealed={picksRevealed(game, deadline, now)}
                   />
                 ))}
               </Box>

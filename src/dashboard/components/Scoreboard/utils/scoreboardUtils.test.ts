@@ -6,6 +6,8 @@ import {
   getPickState,
   groupGames,
   highlightBorder,
+  pickDeadline,
+  picksRevealed,
   sideLine,
   swingToFlip,
   userPickSide,
@@ -267,5 +269,62 @@ describe("groupGames", () => {
       }),
     ];
     expect(groupGames(games, "7").map(({ group }) => group)).toEqual(["Final"]);
+  });
+});
+
+describe("pickDeadline / picksRevealed", () => {
+  // Week 4 of 2026 (EDT): TNF Thu Oct 1, 8:15 PM ET = 00:15 UTC Fri.
+  const tnf = game({
+    status: GameStatus.Scheduled,
+    game_time: Date.parse("2026-10-02T00:15:00Z"),
+  });
+  const sunday = game({
+    game_id: 2,
+    status: GameStatus.Scheduled,
+    game_time: Date.parse("2026-10-04T17:00:00Z"),
+  });
+  const deadline = Date.parse("2026-10-04T17:00:00Z"); // Sun 1 PM EDT
+
+  it("is 1 PM ET on the Sunday after the first kickoff", () => {
+    expect(pickDeadline([sunday, tnf])).toBe(deadline);
+  });
+
+  it("uses the EST offset once daylight saving ends", () => {
+    // Thu Nov 5, 2026 8:15 PM EST -> Sun Nov 8 1 PM EST = 18:00 UTC.
+    const lateTnf = game({ game_time: Date.parse("2026-11-06T01:15:00Z") });
+    expect(pickDeadline([lateTnf])).toBe(Date.parse("2026-11-08T18:00:00Z"));
+  });
+
+  it("stays on the same day when the first game is on Sunday", () => {
+    expect(pickDeadline([sunday])).toBe(deadline);
+  });
+
+  it("is null for an empty week", () => {
+    expect(pickDeadline([])).toBeNull();
+  });
+
+  it("hides an unstarted game's picks before the deadline", () => {
+    const wed = Date.parse("2026-09-30T16:00:00Z");
+    expect(picksRevealed(tnf, deadline, wed)).toBe(false);
+    expect(picksRevealed(sunday, deadline, wed)).toBe(false);
+  });
+
+  it("reveals a game once it starts, even before the deadline", () => {
+    const friday = Date.parse("2026-10-02T15:00:00Z");
+    expect(
+      picksRevealed({ ...tnf, status: GameStatus.Final }, deadline, friday)
+    ).toBe(true);
+    // Past kickoff but the feed hasn't flipped the status yet.
+    expect(picksRevealed(tnf, deadline, friday)).toBe(true);
+    expect(picksRevealed(sunday, deadline, friday)).toBe(false);
+  });
+
+  it("reveals every game after the deadline", () => {
+    const late = game({
+      game_id: 3,
+      status: GameStatus.Scheduled,
+      game_time: Date.parse("2026-10-06T00:15:00Z"), // MNF
+    });
+    expect(picksRevealed(late, deadline, deadline)).toBe(true);
   });
 });

@@ -23,6 +23,67 @@ export const isLiveStatus = (status: GameStatus): boolean =>
 export const hasStarted = (game: Game): boolean =>
   game.status !== GameStatus.Scheduled;
 
+// Picks lock at 1 PM ET on the week's Sunday. Before that, a game's picks
+// only show once it kicks off (Thursday, and later Friday/Saturday games),
+// so an empty pick list on an unstarted game means "not revealed yet", not
+// "nobody picked it".
+export const PICK_DEADLINE_ET_HOUR = 13;
+
+const ET_PARTS = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/New_York",
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  hour: "numeric",
+  weekday: "short",
+  hourCycle: "h23",
+});
+
+const etParts = (ms: number) => {
+  const parts = Object.fromEntries(
+    ET_PARTS.formatToParts(new Date(ms)).map((p) => [p.type, p.value])
+  );
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    hour: Number(parts.hour),
+    weekday: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
+      parts.weekday
+    ),
+  };
+};
+
+// 1 PM ET on the first Sunday on or after the week's earliest kickoff, as
+// epoch ms. Null for an empty week.
+export const pickDeadline = (games: Game[]): number | null => {
+  if (!games.length) return null;
+  const first = etParts(Math.min(...games.map((g) => g.game_time)));
+  const daysToSunday = (7 - first.weekday) % 7;
+  // Guess EST (UTC-5), then pull back an hour if that lands at 2 PM (EDT).
+  const guess = Date.UTC(
+    first.year,
+    first.month - 1,
+    first.day + daysToSunday,
+    PICK_DEADLINE_ET_HOUR + 5
+  );
+  return etParts(guess).hour === PICK_DEADLINE_ET_HOUR
+    ? guess
+    : guess - 60 * 60 * 1000;
+};
+
+// Whether "Nobody picked this game" is true yet: picks have locked, or this
+// game has started (or reached kickoff while the feed still says scheduled).
+export const picksRevealed = (
+  game: Game,
+  deadline: number | null,
+  now: number
+): boolean =>
+  hasStarted(game) ||
+  now >= game.game_time ||
+  deadline === null ||
+  now >= deadline;
+
 export interface CoverState {
   // home_score + cbs_spread - away_score: > 0 home covering, < 0 away
   margin: number;
