@@ -20,12 +20,6 @@ import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
-import { GetIsAdmin } from "../data/GetAdminStatus";
-import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
-import { GetUserByWeek } from "../data/GetUserByWeek";
-import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
-import { GetRecapByWeek } from "../data/GetRecapByWeek";
-import { GameStatus, RankedUser, UserSeasonTrends, WeekRecap } from "../types";
 import {
   ADMIN_TAB,
   AppTab,
@@ -38,6 +32,12 @@ import UsersTable from "./UsersTable";
 import RecapStrip from "./Recap/RecapStrip";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
+import {
+  useIsAdmin,
+  useSelectedUser,
+  useSelectedUserTrends,
+  useWeekData,
+} from "./useWeekData";
 
 export default function MainGrid() {
   const { currentWeek, season, secondHalfStartWeek, cbsPoolUrl } =
@@ -48,15 +48,10 @@ export default function MainGrid() {
   // The hot streak badge is season data as of now, with no week-by-week
   // history, so it only shows while browsing the current week.
   const isCurrentWeek = selectedWeek === currentWeek;
-  const [user, setUser] = useState<string>("");
-  const [userList, setUserList] = useState<RankedUser[]>([]);
-  const [hasLiveGame, setHasLiveGame] = useState(false);
-  const [selectedUserTrends, setSelectedUserTrends] = useState<
-    UserSeasonTrends | undefined
-  >(undefined);
-
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [recap, setRecap] = useState<WeekRecap | undefined>(undefined);
+  const { userList, recap, hasLiveGame } = useWeekData(season, selectedWeek);
+  const [user, onUserChange] = useSelectedUser(userList);
+  const selectedUserTrends = useSelectedUserTrends(season, user);
+  const isAdmin = useIsAdmin();
 
   const activeTab: AppTab | null = isPrimaryTab(tab)
     ? tab
@@ -81,34 +76,8 @@ export default function MainGrid() {
     navigate(`/${value}`);
   };
 
-  // Only decides whether the Admin tab is shown -- the Worker enforces access
-  // on every /api/admin/* request regardless of what the UI renders.
-  useEffect(() => {
-    let cancelled = false;
-    GetIsAdmin().then((admin) => {
-      if (!cancelled) setIsAdmin(admin);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // If loading from localStorage, make sure the value exists in options first
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser && userList.some((user) => user.id === storedUser)) {
-      setUser(storedUser);
-    } else {
-      setUser(""); // Reset to empty if stored value is invalid
-    }
-  }, [userList]); // Add userList as dependency
   const onWeekChange = (week: number): void => {
     setSelectedWeek(week);
-  };
-
-  const onUserChange = (userId: string) => {
-    localStorage.setItem("user", userId);
-    setUser(userId);
   };
 
   // Handle selectedWeek initialization
@@ -117,72 +86,6 @@ export default function MainGrid() {
       setSelectedWeek(currentWeek);
     }
   }, [selectedWeek, currentWeek]);
-
-  useEffect(() => {
-    if (season > 0 && selectedWeek > 0) {
-      const unsubscribe = GetUserByWeek(season, selectedWeek, (users) => {
-        setUserList(users as RankedUser[]);
-      });
-
-      // Cleanup subscription when component unmounts
-      return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      };
-    }
-  }, [season, selectedWeek]);
-
-  // The browsed week's recap: the strip on User Picks, plus the badges on
-  // User Picks rows, Scoreboard games and Games teams.
-  useEffect(() => {
-    setRecap(undefined);
-    if (season > 0 && selectedWeek > 0) {
-      const unsubscribe = GetRecapByWeek(season, selectedWeek, setRecap);
-      return () => unsubscribe?.();
-    }
-  }, [season, selectedWeek]);
-
-  // Drives the Scoreboard tab's live-dot badge -- independent of the
-  // day/time default-tab rule, since a Thursday/Saturday game running long
-  // (or short) should still get flagged correctly.
-  useEffect(() => {
-    if (season > 0 && selectedWeek > 0) {
-      const unsubscribe = GetGameDataByWeek(season, selectedWeek, (games) => {
-        setHasLiveGame(
-          games.some(
-            (game) =>
-              game.status === GameStatus.Inprogress ||
-              game.status === GameStatus.Halftime ||
-              game.status === GameStatus.Delayed
-          )
-        );
-      });
-
-      return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      };
-    }
-  }, [season, selectedWeek]);
-
-  // Season streak badge + weekly hot/cold icon on the selected-user header --
-  // just the one user, not the whole roster like UsersTable's fetch.
-  useEffect(() => {
-    if (season > 0 && user) {
-      const unsubscribe = GetUserSeasonTrends([user], season, (trends) => {
-        setSelectedUserTrends(trends[user]);
-      });
-
-      return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      };
-    }
-    setSelectedUserTrends(undefined);
-  }, [season, user]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
