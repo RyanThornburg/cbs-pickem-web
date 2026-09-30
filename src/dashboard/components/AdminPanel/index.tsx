@@ -105,10 +105,20 @@ const TaskSection = ({
   children: ReactNode;
 }) => (
   <section>
-    <Typography variant="subtitle1" fontWeight={600}>
+    <Typography
+      variant="subtitle1"
+      sx={{
+        fontWeight: 600,
+      }}
+    >
       {title}
     </Typography>
-    <Typography variant="caption" color="text.secondary">
+    <Typography
+      variant="caption"
+      sx={{
+        color: "text.secondary",
+      }}
+    >
       {caption}
     </Typography>
     <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -159,9 +169,11 @@ export default function AdminPanel() {
     <Stack spacing={3} sx={{ textAlign: "left" }}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
         spacing={2}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
         <Typography variant="h6">Pipeline status</Typography>
         {/* Full navigation, not a router link: /logout is a Worker redirect
@@ -212,8 +224,10 @@ export default function AdminPanel() {
               {formatEt(status.updated_at)}).
               <Typography
                 variant="caption"
-                display="block"
-                color="text.secondary"
+                sx={{
+                  display: "block",
+                  color: "text.secondary",
+                }}
               >
                 Rewritten every minute. If this goes stale, the orchestrator is
                 crashing or not running -- most task failures abort the tick and
@@ -285,7 +299,12 @@ export default function AdminPanel() {
                       Ran for Sun{" "}
                       {status.last_run.deadline_last_synced_sunday ?? "never"}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
                       Once per week, first tick after Sun 1 PM ET
                     </Typography>
                   </>
@@ -421,7 +440,12 @@ export default function AdminPanel() {
                         >
                           {row.raw_value}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                          }}
+                        >
                           {row.context}
                         </Typography>
                       </>

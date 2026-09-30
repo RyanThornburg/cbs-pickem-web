@@ -30,21 +30,32 @@ export default function WeekRecapSection({
     <Box id="week-recap" sx={{ mb: { xs: 3, md: 1 }, textAlign: "left" }}>
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 1, flexWrap: "wrap", columnGap: 1.5 }}
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 1,
+          flexWrap: "wrap",
+          columnGap: 1.5,
+        }}
       >
         <Stack
           direction="row"
-          alignItems="baseline"
           spacing={1.5}
-          sx={{ flexWrap: "wrap" }}
+          sx={{
+            alignItems: "baseline",
+            flexWrap: "wrap",
+          }}
         >
           <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
             Week {recap.week} recap
           </Typography>
           {!recap.week_complete && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               So far: {recap.games_final} of {recap.games_total} games final
             </Typography>
           )}
@@ -69,7 +80,14 @@ export default function WeekRecapSection({
       <Collapse in={showAll} unmountOnExit>
         <Stack spacing={1} sx={{ mb: 2, pl: 0.5 }}>
           {recap.items.map((t) => (
-            <Stack key={t.id} direction="row" spacing={1} alignItems="center">
+            <Stack
+              key={t.id}
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+              }}
+            >
               <CategoryMark category={t.category} size={20} />
               <ScopeTag scope={t.scope} />
               <Typography variant="body2">{t.headline}</Typography>

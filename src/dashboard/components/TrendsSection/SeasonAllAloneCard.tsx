@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Chip, Stack, Tooltip, Typography } from "@mui/material";
 import ExploreOffIcon from "@mui/icons-material/ExploreOff";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import { GameCoverResult } from "../../data/weekGames";
 import { SeasonAllAlonePick } from "../../types";
@@ -25,7 +25,11 @@ export default function SeasonAllAloneCard({
 
   if (sorted.length === 0) {
     return (
-      <Typography color="text.secondary">
+      <Typography
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         No all-alone picks logged this season yet.
       </Typography>
     );
@@ -45,8 +49,10 @@ export default function SeasonAllAloneCard({
           <Stack
             key={`${pick.week_number}-${pick.game_id}-${pick.user_id}`}
             direction="row"
-            alignItems="center"
             spacing={1.5}
+            sx={{
+              alignItems: "center",
+            }}
           >
             <Chip
               size="small"

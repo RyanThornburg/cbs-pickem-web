@@ -123,7 +123,13 @@ const buildColumns = (maxPicks: number) => [
     header: "Team",
     meta: { mobileHeader: "Team" },
     cell: ({ getValue }) => (
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <TeamLogo abbr={getValue()} size={20} />
         <Typography variant="body2">{getValue()}</Typography>
       </Stack>
@@ -137,7 +143,13 @@ const buildColumns = (maxPicks: number) => [
       <Box>
         <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>
           {row.original.picks}
-          <Typography component="span" variant="caption" color="text.secondary">
+          <Typography
+            component="span"
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             {" "}
             · {pct(row.original.pctOfAllPicks)}
           </Typography>
@@ -203,7 +215,12 @@ const buildColumns = (maxPicks: number) => [
       const gap = getValue();
       if (gap === undefined) {
         return (
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             —
           </Typography>
         );
@@ -283,7 +300,13 @@ export default function SeasonTeamTable(props: Props) {
 
   if (data.length === 0) {
     return (
-      <Typography color="text.secondary">No season pick data yet.</Typography>
+      <Typography
+        sx={{
+          color: "text.secondary",
+        }}
+      >
+        No season pick data yet.
+      </Typography>
     );
   }
 

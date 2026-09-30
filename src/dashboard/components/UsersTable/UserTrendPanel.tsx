@@ -209,7 +209,13 @@ interface UserTrendPanelProps {
 export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   if (!trends) {
     return (
-      <Typography variant="body2" color="text.secondary" sx={{ p: 1.5 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "text.secondary",
+          p: 1.5,
+        }}
+      >
         Season trends aren't available for this user yet.
       </Typography>
     );

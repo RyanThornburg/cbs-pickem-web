@@ -1,7 +1,7 @@
 import { Stack, Tooltip, Typography } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import { GameCoverResult } from "../../data/weekGames";
 import { LineMover } from "../../types";
 import TeamLogo from "./TeamLogo";
@@ -17,7 +17,11 @@ const formatSpread = (spread: number): string =>
 export default function LineMoversCard({ lineMovers, gameResults }: Props) {
   if (lineMovers.length === 0) {
     return (
-      <Typography color="text.secondary">
+      <Typography
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         No line movement to report this week.
       </Typography>
     );
@@ -38,8 +42,10 @@ export default function LineMoversCard({ lineMovers, gameResults }: Props) {
           <Stack
             key={mover.game_id}
             direction="row"
-            alignItems="center"
             spacing={1}
+            sx={{
+              alignItems: "center",
+            }}
           >
             <TeamLogo abbr={mover.away_team.abbr} size={20} />
             <Typography
@@ -48,7 +54,12 @@ export default function LineMoversCard({ lineMovers, gameResults }: Props) {
             >
               {mover.away_team.abbr}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               @
             </Typography>
             <Typography
@@ -67,14 +78,23 @@ export default function LineMoversCard({ lineMovers, gameResults }: Props) {
             <TeamLogo abbr={mover.home_team.abbr} size={20} />
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ flexGrow: 1, textAlign: "right" }}
+              sx={{
+                color: "text.secondary",
+                flexGrow: 1,
+                textAlign: "right",
+              }}
             >
               {formatSpread(mover.open)} → {formatSpread(mover.close)}
               {` (${mover.home_team.abbr})`}
             </Typography>
             <Tooltip title={`${mover.book_count} books tracked`}>
-              <Stack direction="row" alignItems="center" spacing={0.25}>
+              <Stack
+                direction="row"
+                spacing={0.25}
+                sx={{
+                  alignItems: "center",
+                }}
+              >
                 <Arrow sx={{ fontSize: 16, color: arrowColor }} />
                 <Typography variant="body2" sx={{ color: arrowColor }}>
                   {Math.abs(mover.movement).toFixed(1)}

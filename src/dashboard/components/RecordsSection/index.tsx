@@ -99,7 +99,12 @@ export default function RecordsSection({ season, userId }: Props) {
             {tab === "all-time" && (
               <>
                 <AllTimeTable table={allTimeTable} userId={userId} />
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   Avg finish and avg score count every season a player has on
                   record. Click a column to sort.
                 </Typography>
@@ -126,8 +131,8 @@ export default function RecordsSection({ season, userId }: Props) {
 
           <Typography
             variant="caption"
-            color="text.secondary"
             sx={{
+              color: "text.secondary",
               bgcolor: "background.default",
               borderRadius: 1,
               px: 1.5,

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Chip, Stack, Tooltip, Typography } from "@mui/material";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
 import { getTeamData } from "../../utils/teamAssets";
@@ -90,7 +90,11 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
 
   if (games.length === 0) {
     return (
-      <Typography color="text.secondary">
+      <Typography
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         No picks revealed for this week yet.
       </Typography>
     );
@@ -111,7 +115,13 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
 
         return (
           <Box key={game_id}>
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+              }}
+            >
               <TeamLogo abbr={trailer.abbr} size={22} />
               <Box
                 sx={{
@@ -120,11 +130,19 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                   opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1,
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={0.25}>
+                <Stack
+                  direction="row"
+                  spacing={0.25}
+                  sx={{
+                    alignItems: "center",
+                  }}
+                >
                   <Typography
                     variant="caption"
                     component="div"
-                    fontWeight={trailerCurrentlyCovering ? 700 : undefined}
+                    sx={{
+                      fontWeight: trailerCurrentlyCovering ? 700 : undefined,
+                    }}
                   >
                     {trailer.abbr}
                   </Typography>
@@ -141,7 +159,9 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                   color={
                     trailerCurrentlyCovering ? "text.primary" : "text.secondary"
                   }
-                  fontWeight={trailerCurrentlyCovering ? 700 : undefined}
+                  sx={{
+                    fontWeight: trailerCurrentlyCovering ? 700 : undefined,
+                  }}
                 >
                   {trailer.pick_count}
                 </Typography>
@@ -188,9 +208,11 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
               >
                 <Stack
                   direction="row"
-                  alignItems="center"
-                  justifyContent="flex-end"
                   spacing={0.25}
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
                 >
                   {leaderCovered && (
                     <CheckCircleOutlineIcon
@@ -201,7 +223,9 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                   <Typography
                     variant="caption"
                     component="div"
-                    fontWeight={leaderCurrentlyCovering ? 700 : undefined}
+                    sx={{
+                      fontWeight: leaderCurrentlyCovering ? 700 : undefined,
+                    }}
                   >
                     {leader.abbr}
                   </Typography>
@@ -212,7 +236,9 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                   color={
                     leaderCurrentlyCovering ? "text.primary" : "text.secondary"
                   }
-                  fontWeight={leaderCurrentlyCovering ? 700 : undefined}
+                  sx={{
+                    fontWeight: leaderCurrentlyCovering ? 700 : undefined,
+                  }}
                 >
                   {leader.pick_count}
                 </Typography>
@@ -234,7 +260,12 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                     />
                   </Tooltip>
                 ) : (
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                    }}
+                  >
                     {Math.round(leader.pct * 100)}%
                   </Typography>
                 )}

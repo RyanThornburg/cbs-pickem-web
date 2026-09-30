@@ -42,7 +42,13 @@ export default function RecordTiles({ tiles, userId }: Props) {
             }}
           >
             {tile.value}{" "}
-            <Typography component="span" variant="body2" color="text.secondary">
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               {tile.unit}
             </Typography>
           </Typography>
@@ -62,7 +68,12 @@ export default function RecordTiles({ tiles, userId }: Props) {
             ))}
           </Typography>
           {tile.detail && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               {tile.detail}
             </Typography>
           )}

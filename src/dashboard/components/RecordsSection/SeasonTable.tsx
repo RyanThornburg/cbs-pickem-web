@@ -80,7 +80,12 @@ export default function SeasonTable({
         <Typography variant="body2" sx={{ fontWeight: 700 }}>
           {year}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           Champion{" "}
           {champion && !isUnknownChampion(champion) ? (
             <>
@@ -95,7 +100,12 @@ export default function SeasonTable({
             </Box>
           )}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           <Box component="b" sx={{ color: "text.primary" }}>
             {rows.length}
           </Box>{" "}
@@ -110,7 +120,12 @@ export default function SeasonTable({
         </Alert>
       ) : (
         hasGaps && (
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Some {year} players aren't on file, so ranks skip where they would
             be.
           </Typography>
@@ -207,7 +222,9 @@ export default function SeasonTable({
                           <Typography
                             component="span"
                             variant="caption"
-                            color="text.secondary"
+                            sx={{
+                              color: "text.secondary",
+                            }}
                           >
                             {" "}
                             ({row.first_half_score})
@@ -222,7 +239,9 @@ export default function SeasonTable({
                           <Typography
                             component="span"
                             variant="caption"
-                            color="text.secondary"
+                            sx={{
+                              color: "text.secondary",
+                            }}
                           >
                             {" "}
                             ({row.second_half_score})

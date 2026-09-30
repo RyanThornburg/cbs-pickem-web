@@ -151,7 +151,13 @@ const LegendDot = ({
   hollow?: boolean;
   label: string;
 }) => (
-  <Stack direction="row" spacing={0.6} alignItems="center">
+  <Stack
+    direction="row"
+    spacing={0.6}
+    sx={{
+      alignItems: "center",
+    }}
+  >
     <svg width="10" height="10" aria-hidden="true">
       <circle
         cx="5"
@@ -243,7 +249,13 @@ function PoolAccuracyChart({
         >
           {/* In the legend rather than on the line, where it collided with
               the latest week's value on narrow screens. */}
-          <Stack direction="row" spacing={0.6} alignItems="center">
+          <Stack
+            direction="row"
+            spacing={0.6}
+            sx={{
+              alignItems: "center",
+            }}
+          >
             <svg width="16" height="10" aria-hidden="true">
               <line
                 x1="0"

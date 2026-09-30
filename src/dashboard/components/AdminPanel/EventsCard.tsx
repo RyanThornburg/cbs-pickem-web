@@ -47,11 +47,22 @@ export function LastSeenCell({
     activeWithinMs !== undefined &&
     now - new Date(iso).getTime() <= activeWithinMs;
   return (
-    <Stack spacing={0.25} alignItems="flex-start">
+    <Stack
+      spacing={0.25}
+      sx={{
+        alignItems: "flex-start",
+      }}
+    >
       <Typography variant="body2" noWrap>
         {formatAgo(iso, now)}
       </Typography>
-      <Typography variant="caption" color="text.secondary" noWrap>
+      <Typography
+        variant="caption"
+        noWrap
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         {formatEt(iso)}
       </Typography>
       {active && <Chip size="small" color="error" label="Active" />}
@@ -74,23 +85,46 @@ export default function EventsCard<T>({
       <CardContent>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="baseline"
           spacing={2}
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "baseline",
+          }}
         >
-          <Typography variant="subtitle1" fontWeight={600}>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+            }}
+          >
             {title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             {distinctCount} distinct · {totalOccurrences} total
           </Typography>
         </Stack>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           {description}
         </Typography>
 
         {rows.length === 0 ? (
-          <Typography color="text.secondary" sx={{ mt: 2 }}>
+          <Typography
+            sx={{
+              color: "text.secondary",
+              mt: 2,
+            }}
+          >
             {emptyText}
           </Typography>
         ) : (

@@ -29,12 +29,13 @@ export default function UsersTable(props: UserGridProps) {
     <>
       <Grid
         id="gridUser"
-        width={"fit-content"}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        sx={{ display: { xs: "none", sm: "block" } }}
         size={{ xs: 12, sm: 12, xl: 7 }}
+        sx={{
+          width: "fit-content",
+          justifyContent: "center",
+          alignItems: "center",
+          display: { xs: "none", sm: "block" },
+        }}
       >
         <UserDataGrid {...gridProps} />
       </Grid>

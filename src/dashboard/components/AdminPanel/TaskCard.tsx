@@ -42,10 +42,12 @@ export default function TaskCard({
       <CardContent sx={{ "&:last-child": { pb: 2 } }}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
           spacing={1}
-          sx={{ mb: 1 }}
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+          }}
         >
           <Typography variant="subtitle2">{name}</Typography>
           <Chip
@@ -74,7 +76,9 @@ export default function TaskCard({
                     <Typography
                       component="span"
                       variant="body2"
-                      color="text.secondary"
+                      sx={{
+                        color: "text.secondary",
+                      }}
                     >
                       {run.label}:{" "}
                     </Typography>
@@ -82,7 +86,12 @@ export default function TaskCard({
                   {tracksFailures ? "ok" : "ran"}{" "}
                   {formatAgo(run.lastSuccessAt, now)}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {formatEt(run.lastSuccessAt)}
                 </Typography>
                 {/* Attempted more recently than it succeeded -- the matching
@@ -90,8 +99,10 @@ export default function TaskCard({
                 {tracksFailures && isFailing(run.lastAt, run.lastSuccessAt) && (
                   <Typography
                     variant="caption"
-                    color="error.main"
-                    display="block"
+                    sx={{
+                      color: "error.main",
+                      display: "block",
+                    }}
                   >
                     last attempt {formatAgo(run.lastAt, now)}
                   </Typography>

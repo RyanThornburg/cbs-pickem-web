@@ -79,16 +79,39 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
         }}
       >
         {TIERS.map((tier) => (
-          <Stack key={tier} direction="row" spacing={0.6} alignItems="center">
+          <Stack
+            key={tier}
+            direction="row"
+            spacing={0.6}
+            sx={{
+              alignItems: "center",
+            }}
+          >
             <Swatch background={FINISH_TIER_COLORS[tier].bg} />
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               {FINISH_TIER_LABELS[tier]}
             </Typography>
           </Stack>
         ))}
-        <Stack direction="row" spacing={0.6} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={0.6}
+          sx={{
+            alignItems: "center",
+          }}
+        >
           <Swatch background={INCOMPLETE_HATCH} border />
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Incomplete year
           </Typography>
         </Stack>
@@ -205,7 +228,12 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         Players are in the same order as the All-time tab's current sort.
       </Typography>
     </Stack>

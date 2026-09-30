@@ -96,8 +96,10 @@ export default function RecapStrip({ recap }: Props) {
           <ScopeTag scope={current.scope} />
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ fontVariantNumeric: "tabular-nums" }}
+            sx={{
+              color: "text.secondary",
+              fontVariantNumeric: "tabular-nums",
+            }}
           >
             {(index % items.length) + 1} of {items.length}
           </Typography>

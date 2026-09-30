@@ -102,7 +102,13 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
 
   const halfLine = (label: string, champ: HistoricalChampion | undefined) =>
     champ && (
-      <Typography variant="caption" color="text.secondary" component="span">
+      <Typography
+        variant="caption"
+        component="span"
+        sx={{
+          color: "text.secondary",
+        }}
+      >
         {label}:{" "}
         <Box component="b" sx={{ color: "text.primary", fontWeight: 600 }}>
           {champ.names.map(cleanName).join(", ")}
@@ -126,7 +132,12 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
       {currentSeason > defendingYear && (
         <Tile variant="live">
           <Year year={currentSeason} />
-          <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography
+            sx={{
+              color: "text.secondary",
+              mt: 0.5,
+            }}
+          >
             In progress
           </Typography>
           <Tag tone="grey">This season</Tag>
@@ -160,7 +171,12 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
           >
             <Year year={champ.year} />
             {unknown ? (
-              <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                  mt: 0.5,
+                }}
+              >
                 Champion unknown
               </Typography>
             ) : (
@@ -182,7 +198,12 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
                     <span key={name}>{name}</span>
                   ))}
                 </Stack>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {champ.score} pts
                 </Typography>
               </>

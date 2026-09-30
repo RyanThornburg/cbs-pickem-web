@@ -103,8 +103,8 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
         // the avatar) so they don't squeeze the name down to a letter.
         <Stack
           direction="row"
-          alignItems="center"
           sx={{
+            alignItems: "center",
             flexWrap: { xs: "wrap", sm: "nowrap" },
             columnGap: 1,
             rowGap: 0.25,
@@ -119,10 +119,8 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
           {hasBadges && (
             <Stack
               direction="row"
-              alignItems="center"
-              // gap, not spacing: spacing's margins break when the row wraps.
-              // Phones fit about two badges a line, so a full set wraps.
               sx={{
+                alignItems: "center",
                 width: { xs: "100%", sm: "auto" },
                 pl: { xs: "32px", sm: 0 },
                 flexWrap: { xs: "wrap", sm: "nowrap" },
@@ -157,9 +155,11 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
     cell: (info) => (
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="center"
         spacing={0.75}
+        sx={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         <span>{info.getValue()}</span>
         <WeeklyFormIcon picks={info.row.original.picks} />

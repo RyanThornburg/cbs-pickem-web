@@ -44,7 +44,13 @@ function CardShell({
         textAlign: "left",
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <CategoryMark category={category} />
         <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, flex: 1 }}>
           {title}
@@ -68,7 +74,13 @@ function Big({ value, suffix }: { value: string; suffix?: string }) {
     >
       {value}{" "}
       {suffix && (
-        <Typography component="span" variant="body2" color="text.secondary">
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           {suffix}
         </Typography>
       )}
@@ -79,8 +91,10 @@ function Big({ value, suffix }: { value: string; suffix?: string }) {
 const Sub = ({ children }: { children: React.ReactNode }) => (
   <Typography
     variant="body2"
-    color="text.secondary"
-    sx={{ fontSize: "0.8rem" }}
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.8rem",
+    }}
   >
     {children}
   </Typography>
@@ -187,8 +201,12 @@ function ChaosCard({ item }: { item: RecapItem }) {
       </Box>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        sx={{ fontSize: "0.68rem", color: "text.disabled", mt: -0.5 }}
+        sx={{
+          justifyContent: "space-between",
+          fontSize: "0.68rem",
+          color: "text.disabled",
+          mt: -0.5,
+        }}
       >
         <span>Chalk</span>
         <span>Chaos</span>
@@ -253,7 +271,13 @@ function PeopleLine({
   children: React.ReactNode;
 }) {
   return (
-    <Stack direction="row" spacing={1} alignItems="flex-start">
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        alignItems: "flex-start",
+      }}
+    >
       <Typography
         sx={{
           fontSize: "0.8rem",
@@ -360,9 +384,12 @@ function CrowdCard({ card }: { card: WeekCard }) {
           {top && (
             <Stack
               direction="row"
-              alignItems="center"
               spacing={0.75}
-              sx={{ fontSize: "0.8rem", color: "text.secondary" }}
+              sx={{
+                alignItems: "center",
+                fontSize: "0.8rem",
+                color: "text.secondary",
+              }}
             >
               <TeamLogo abbr={top.crowd_team.abbr} size={16} />
               <span>
@@ -413,9 +440,11 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
             <Box key={t.id} title={t.headline}>
               <Stack
                 direction="row"
-                justifyContent="space-between"
                 spacing={1}
-                sx={{ fontSize: "0.78rem" }}
+                sx={{
+                  justifyContent: "space-between",
+                  fontSize: "0.78rem",
+                }}
               >
                 <Box component="span" sx={{ minWidth: 0 }}>
                   {label.charAt(0).toUpperCase() + label.slice(1)}
@@ -487,8 +516,10 @@ function UpsetCard({ item }: { item: RecapItem }) {
           <Stack
             key={(team as TeamRef).id}
             direction="row"
-            alignItems="center"
             spacing={1}
+            sx={{
+              alignItems: "center",
+            }}
           >
             <TeamLogo abbr={(team as TeamRef).abbr} size={22} />
             <Typography sx={{ fontWeight: 700, flex: 1 }}>
@@ -496,7 +527,9 @@ function UpsetCard({ item }: { item: RecapItem }) {
               <Typography
                 component="span"
                 variant="body2"
-                color="text.secondary"
+                sx={{
+                  color: "text.secondary",
+                }}
               >
                 {line as string}
               </Typography>
@@ -531,9 +564,11 @@ function MoversCard({ card }: { card: WeekCard }) {
           <Stack
             key={m.user_id}
             direction="row"
-            alignItems="center"
             spacing={1}
-            sx={{ fontSize: "0.82rem" }}
+            sx={{
+              alignItems: "center",
+              fontSize: "0.82rem",
+            }}
           >
             <Box
               component="span"

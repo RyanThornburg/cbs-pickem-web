@@ -142,7 +142,9 @@ export default function MainGrid() {
 
             <Grid
               size={{ xs: 12, sm: "auto" }}
-              alignItems={{ xs: "center", sm: "flex-end" }}
+              sx={{
+                alignItems: { xs: "center", sm: "flex-end" },
+              }}
             >
               <Stack
                 sx={{
