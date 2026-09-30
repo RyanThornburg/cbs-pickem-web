@@ -11,8 +11,6 @@ export interface LeaderRow {
   // Graded score without the live bonus, then picks covering right now.
   score: number;
   covering: number;
-  // Behind 1st on score + covering; 0 for the leader(s).
-  gap: number;
 }
 
 export interface LeaderList {
@@ -42,10 +40,6 @@ export const leaderList = (
     const p = placeOf(u, board)!;
     placeCounts.set(p, (placeCounts.get(p) ?? 0) + 1);
   });
-  const top = Math.max(
-    0,
-    ...ranked.map((u) => scoreOf(u, board) + u.trending_score)
-  );
 
   const toRow = (u: RankedUser): LeaderRow => {
     const place = placeOf(u, board)!;
@@ -57,7 +51,6 @@ export const leaderList = (
       placeLabel: (placeCounts.get(place) ?? 0) > 1 ? `T${place}` : `${place}`,
       score,
       covering: u.trending_score,
-      gap: top - (score + u.trending_score),
     };
   };
 

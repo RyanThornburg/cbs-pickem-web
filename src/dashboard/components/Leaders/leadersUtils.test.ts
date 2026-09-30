@@ -44,12 +44,12 @@ describe("leaderList", () => {
     ]);
   });
 
-  it("splits score from picks covering now, and measures the gap on both", () => {
+  it("splits score from picks covering now", () => {
     const { rows } = leaderList(users, "overall", 5);
     const b = rows.find((r) => r.id === "b")!;
-    expect([b.score, b.covering, b.gap]).toEqual([45, 2, 0]);
+    expect([b.score, b.covering]).toEqual([45, 2]);
     const d = rows.find((r) => r.id === "d")!;
-    expect([d.score, d.covering, d.gap]).toEqual([44, 1, 2]);
+    expect([d.score, d.covering]).toEqual([44, 1]);
   });
 
   it("ranks the second half on its own score", () => {

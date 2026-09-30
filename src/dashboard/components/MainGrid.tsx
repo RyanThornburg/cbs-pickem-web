@@ -31,7 +31,6 @@ import {
 import UsersTable from "./UsersTable";
 import RecapStrip from "./Recap/RecapStrip";
 import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
-import FirstHalfLeaders from "./Leaders/FirstHalfLeaders";
 import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
 import {
@@ -330,14 +329,8 @@ export default function MainGrid() {
               size={{ xs: 12, lg: 12 }}
               sx={{ display: activeTab === "picks" ? "block" : "none" }}
             >
-              {selectedWeek >= secondHalfStartWeek ? (
+              {selectedWeek >= secondHalfStartWeek && (
                 <SecondHalfLeaders
-                  userList={userList}
-                  userId={user}
-                  week={selectedWeek}
-                />
-              ) : (
-                <FirstHalfLeaders
                   userList={userList}
                   userId={user}
                   week={selectedWeek}

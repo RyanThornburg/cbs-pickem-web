@@ -3,14 +3,13 @@ import Paper from "@mui/material/Paper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { UserAvatar } from "../UserAvatar";
 import { selectedRowSx } from "../UsersTable/selectedRowSx";
 import { LeaderBoard, LeaderList, LeaderRow, leaderList } from "./leadersUtils";
 import { MEDAL } from "./medals";
-import { PaidLineRule } from "../UsersTable/PaidLineRule";
 
 type Props = {
   userList: RankedUser[];
@@ -25,7 +24,7 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
       sx={[
         {
           display: "grid",
-          gridTemplateColumns: "28px minmax(0, 1fr) auto 40px",
+          gridTemplateColumns: "28px minmax(0, 1fr) auto",
           gap: 1,
           alignItems: "center",
           px: 0.5,
@@ -80,40 +79,15 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
           </Box>
         )}
       </Typography>
-      <Typography
-        component="span"
-        sx={{
-          textAlign: "right",
-          fontSize: "0.8rem",
-          color: "text.secondary",
-        }}
-      >
-        {row.gap === 0 ? "–" : `−${row.gap}`}
-      </Typography>
     </Box>
   );
 };
 
-export const Rows = ({
-  list,
-  userId,
-  linesAfter,
-  endLine,
-}: {
-  list: LeaderList;
-  userId?: string;
-  // Paid lines under the row at an index, and one after the last row.
-  linesAfter?: Map<number, string>;
-  endLine?: string;
-}) => (
+const Rows = ({ list, userId }: { list: LeaderList; userId?: string }) => (
   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
-    {list.rows.map((row, i) => (
-      <Fragment key={row.id}>
-        <Row row={row} selected={row.id === userId} />
-        {linesAfter?.get(i) && <PaidLineRule label={linesAfter.get(i)!} />}
-      </Fragment>
+    {list.rows.map((row) => (
+      <Row key={row.id} row={row} selected={row.id === userId} />
     ))}
-    {endLine && <PaidLineRule label={endLine} />}
     {list.youRow && (
       <>
         <Typography
@@ -138,7 +112,7 @@ export const Rows = ({
   </Box>
 );
 
-export const CardHead = ({ title, sub }: { title: string; sub: string }) => (
+const CardHead = ({ title, sub }: { title: string; sub: string }) => (
   <Box
     sx={{
       display: "flex",
