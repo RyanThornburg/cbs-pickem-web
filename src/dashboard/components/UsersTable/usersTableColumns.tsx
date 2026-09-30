@@ -131,14 +131,18 @@ const ExpandButton = ({
 // with `any` for the value.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
+  // Ranks sort 1st-first on the first click (TanStack starts number
+  // columns descending), which is also the order the paid lines need.
   columnHelper.accessor("place", {
     header: "#",
+    sortDescFirst: false,
     cell: (info) => <PlaceCell place={info.getValue()} />,
     meta: { align: "center" },
   }),
   columnHelper.accessor("second_half_place", {
     id: "second_half_place",
     header: "2nd Half Place",
+    sortDescFirst: false,
     cell: (info) => <PlaceCell place={info.getValue()} />,
     meta: { mobileHeader: "2H Plc", align: "center" },
   }),
