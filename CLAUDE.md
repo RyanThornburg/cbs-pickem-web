@@ -21,6 +21,8 @@ A Create React App (react-scripts) + TypeScript dashboard for the "Morlocked" NF
 - `npm run test:all` — both suites once, app then Worker (what `predeploy` runs).
 - `npm run test:worker` — run the Worker's tests (`worker/*.test.ts`) with Node's built-in test runner. CRA's Jest only sees `src/`, so these run separately, straight from TypeScript with no build step. That needs Node 22.18+ (type stripping), and it's why Worker imports name the `.ts` file (`./access.ts`; `allowImportingTsExtensions` in `worker/tsconfig.json`). `worker/testHelpers.ts` signs real RS256 Access tokens and stubs the team's certs URL, so `access.ts` is tested end to end.
 
+- `npm run format` — Prettier over `src/` and `worker/` (`.prettierrc.json`: double quotes, ES5 trailing commas). `npm run format:check` reports without writing. The one-time reformat commit is in `.git-blame-ignore-revs`.
+
 There is no separate lint script; `react-scripts` ESLint config (`eslintConfig` in package.json) runs as part of `npm start`/`npm run build`.
 
 ## Architecture
