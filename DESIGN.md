@@ -277,7 +277,7 @@ Quiet and tactile. Ripples are off everywhere; transitions are 100ms.
 
 ### Chips and badges
 - **Theme chips:** pills with a 1px border and 600-weight 12px labels, 20px tall. Default is slate; success and error are pale green and pale red with dark text.
-- **Name badges:** the tiny inline marks next to a player's name. Mover arrows (▲3 green, ▼4 red), the flame streak pill, the gold trophy, the gold 5-0. They're friendly and small, and never louder than the name itself.
+- **Name badges:** the tiny inline marks next to a player's name. Mover arrows (▲3 green, ▼4 red), the flame streak pill ("🔥 2 wks": the unit keeps it apart from the Week column's this-week flame), the gold trophy, the gold 5-0. They're friendly and small, and never louder than the name itself.
 - **Your-pick badge (Scoreboard):** a pill colored by result, with an icon. Covering or won is green with a trend-up or check; not covering or lost is red with a trend-down or ✕; a push is amber with a dash; not started is plain blue.
 
 ### Pick tiles

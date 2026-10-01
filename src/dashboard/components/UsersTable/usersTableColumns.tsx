@@ -1,4 +1,5 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
 import Stack from "@mui/material/Stack";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -7,10 +8,11 @@ import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import UserAvatar from "../UserAvatar";
 import { PlaceCell } from "./PlaceCell";
 import { StreakBadge } from "./StreakBadge";
+import { ScoreWithCovering } from "./ScoreWithCovering";
 import { WeeklyFormIcon } from "./WeeklyFormIcon";
 import { DefendingChampionBadge } from "./DefendingChampionBadge";
 import { UserGamePicksStack } from "./UserPickStack";
-import { SEASON_STREAK_MIN_WEEKS } from "./usersTableUtils";
+import { getWeeklyForm, SEASON_STREAK_MIN_WEEKS } from "./usersTableUtils";
 
 export interface UsersTableRow {
   id: string;
@@ -20,7 +22,10 @@ export interface UsersTableRow {
   score: number;
   second_half_score: number;
   weekly_score: number;
+  // Picks covering right now; already included in the three scores above.
+  covering: number;
   picks: RankedUser["picks"];
+  submitted: boolean | undefined;
   streakWeeks: number;
   streakThresholdPct: number | undefined;
   defendingChampionSeason: number | null;
@@ -48,6 +53,8 @@ export const toUsersTableRow = (
     score: user.cumulative_score + user.trending_score,
     second_half_score: (user.second_half_score ?? 0) + user.trending_score,
     weekly_score: user.weekly_score + user.trending_score,
+    covering: user.trending_score,
+    submitted: user.has_submitted_picks,
     picks: user.picks,
     streakWeeks:
       weekBadges.showStreak === false
@@ -203,33 +210,64 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
   }),
   columnHelper.accessor("score", {
     header: "Score",
+    cell: (info) => (
+      <ScoreWithCovering
+        total={info.getValue()}
+        covering={info.row.original.covering}
+      />
+    ),
     meta: { align: "center" },
   }),
   columnHelper.accessor("second_half_score", {
     id: "second_half_score",
     header: "2nd Half",
+    cell: (info) => (
+      <ScoreWithCovering
+        total={info.getValue()}
+        covering={info.row.original.covering}
+        hideCoveringOnPhone
+      />
+    ),
     meta: { mobileHeader: "2H", align: "center" },
   }),
   columnHelper.accessor("weekly_score", {
     header: "Week",
-    cell: (info) => (
-      <Stack
-        direction="row"
-        spacing={0.75}
-        sx={{
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span>{info.getValue()}</span>
-        <WeeklyFormIcon picks={info.row.original.picks} />
-      </Stack>
-    ),
+    cell: (info) => {
+      const { picks, covering } = info.row.original;
+      // Before any of this week's picks is decided or live, a "0" and a
+      // grey dot on every row said nothing; a muted dash does.
+      const f = getWeeklyForm(picks);
+      if (f.won + f.lost + f.covering + f.notCovering === 0) {
+        return (
+          <Box component="span" sx={{ color: "text.disabled" }}>
+            –
+          </Box>
+        );
+      }
+      return (
+        <Stack
+          direction="row"
+          spacing={0.75}
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ScoreWithCovering
+            total={info.getValue()}
+            covering={covering}
+            hideCoveringOnPhone
+          />
+          <WeeklyFormIcon picks={picks} />
+        </Stack>
+      );
+    },
     meta: { mobileHeader: "Wk", align: "center" },
   }),
   columnHelper.accessor("picks", {
     header: "Picks",
-    cell: (info) => UserGamePicksStack(info.getValue()),
+    cell: (info) =>
+      UserGamePicksStack(info.getValue(), false, info.row.original.submitted),
     enableSorting: false,
   }),
 ];

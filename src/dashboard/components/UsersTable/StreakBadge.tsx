@@ -42,7 +42,9 @@ export function StreakBadge({
         }}
       >
         <LocalFireDepartmentIcon sx={{ fontSize: "0.8125rem" }} />
-        {weeks}
+        {/* The unit tells it apart from the Week column's flame, which is
+            this week only. */}
+        {weeks} wks
       </Box>
     </Tooltip>
   );

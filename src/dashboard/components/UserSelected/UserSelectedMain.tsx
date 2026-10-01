@@ -5,6 +5,7 @@ import { ordinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import UserAvatar from "../UserAvatar";
 import { StreakBadge } from "../UsersTable/StreakBadge";
+import { ScoreWithCovering } from "../UsersTable/ScoreWithCovering";
 
 export type Props = {
   userList: RankedUser[];
@@ -74,17 +75,25 @@ export default function UserSelectedMain({
       {/* Score and place share one item ("Score: 7 · 13th") to keep the
           header on one row at 1200px+. */}
       <Box sx={{ whiteSpace: "nowrap" }}>
-        Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
+        Score:{" "}
+        <ScoreWithCovering
+          total={(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
+          covering={user.trending_score ?? 0}
+        />
         <PlaceSuffix place={user.place} />
       </Box>
       {user.second_half_score !== null && (
         <Box sx={{ whiteSpace: "nowrap" }}>
-          2nd Half: {(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
+          2nd Half:{" "}
+          <ScoreWithCovering
+            total={(user.second_half_score ?? 0) + (user.trending_score ?? 0)}
+            covering={user.trending_score ?? 0}
+          />
           <PlaceSuffix place={user.second_half_place} />
         </Box>
       )}
 
-      {UserGamePicksStack(user.picks, true)}
+      {UserGamePicksStack(user.picks, true, user.has_submitted_picks)}
     </Stack>
   );
 }

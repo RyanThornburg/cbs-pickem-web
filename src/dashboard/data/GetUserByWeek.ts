@@ -182,6 +182,7 @@ const toRankedUser = (
     place: overallRanks.get(user.user_id) ?? user.place,
     second_half_place: secondHalfRanks.get(user.user_id) ?? null,
     picks: withTbdPlaceholders(visiblePicks, user.has_submitted_picks),
+    has_submitted_picks: user.has_submitted_picks,
   };
 };
 

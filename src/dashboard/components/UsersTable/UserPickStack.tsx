@@ -3,7 +3,7 @@ import { GameStatus, UserPick } from "../../types";
 import { StatusColor } from "../../helper";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-import { Divider, Stack } from "@mui/material";
+import { Divider, Stack, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -140,9 +140,22 @@ const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
 // no further filtering/sorting needed here.
 export const UserGamePicksStack = (
   picks: Array<UserPick>,
-  header: boolean = false
+  header: boolean = false,
+  // RankedUser.has_submitted_picks; undefined when the feed didn't say.
+  submitted?: boolean
 ) => {
   const spacingSize = header ? 0.5 : 1;
+
+  // The feed says this player hasn't submitted, as opposed to "TBD" tiles
+  // (submitted, hidden until kickoff). If it doesn't say, show nothing.
+  if (picks.length === 0) {
+    if (submitted !== false) return null;
+    return (
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        No picks yet
+      </Typography>
+    );
+  }
 
   return (
     <Stack

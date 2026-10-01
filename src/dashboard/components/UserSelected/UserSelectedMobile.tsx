@@ -5,6 +5,7 @@ import { ordinal } from "../../helper";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import UserAvatar from "../UserAvatar";
 import { StreakBadge } from "../UsersTable/StreakBadge";
+import { ScoreWithCovering } from "../UsersTable/ScoreWithCovering";
 
 export type Props = {
   userList: RankedUser[];
@@ -53,11 +54,20 @@ export default function UserSelected({
   return (
     <Grid container>
       <Grid size={{ xs: 12, sm: 6 }} sx={gridStyle}>
+        {/* Wraps instead of running off both edges at 360px when the
+            streak pill, a "+N" and the 2nd-half score all show. */}
         <Stack
           direction="row"
           divider={<Divider orientation="vertical" flexItem />}
           spacing={{ xs: 1, md: 1, xl: 2 }}
-          sx={{ alignItems: "center", mb: { md: "8px", xl: "0px" } }}
+          useFlexGap
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            rowGap: 0.5,
+            mb: { md: "8px", xl: "0px" },
+          }}
         >
           <Stack sx={{ alignItems: "center" }} direction="row" spacing={1}>
             <UserAvatar
@@ -78,21 +88,31 @@ export default function UserSelected({
           </Stack>
 
           <Box sx={commonBoxStyles}>
-            Score: {(user.cumulative_score ?? 0) + (user.trending_score ?? 0)} (
-            {ordinal(user.place)})
+            Score:{" "}
+            <ScoreWithCovering
+              total={(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
+              covering={user.trending_score ?? 0}
+            />{" "}
+            ({ordinal(user.place)})
           </Box>
 
           {user.second_half_score !== null && (
             <Box sx={commonBoxStyles}>
               2nd Half:{" "}
-              {(user.second_half_score ?? 0) + (user.trending_score ?? 0)} (
-              {ordinal(user.second_half_place ?? 99)})
+              <ScoreWithCovering
+                total={
+                  (user.second_half_score ?? 0) + (user.trending_score ?? 0)
+                }
+                covering={user.trending_score ?? 0}
+              />
+              {user.second_half_place != null &&
+                ` (${ordinal(user.second_half_place)})`}
             </Box>
           )}
         </Stack>
       </Grid>
       <Grid sx={gridStyle} size={{ xs: 12, sm: 6 }}>
-        {UserGamePicksStack(user.picks, true)}
+        {UserGamePicksStack(user.picks, true, user.has_submitted_picks)}
       </Grid>
     </Grid>
   );

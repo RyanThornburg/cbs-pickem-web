@@ -22,6 +22,9 @@ export interface RankedUser {
   place: number;
   second_half_place: number | null;
   picks: UserPick[];
+  // From the leaderboard feed; can be missing early in a week, which means
+  // unknown, not "hasn't submitted".
+  has_submitted_picks?: boolean;
 }
 
 export enum GameStatus {
