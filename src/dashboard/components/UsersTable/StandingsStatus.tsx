@@ -81,8 +81,14 @@ export function StandingsPlaceholder({
     );
   }
 
+  return <StandingsSkeleton label={`Loading the week ${week} standings`} />;
+}
+
+// Placeholder standings rows, also the app's body while meta first loads
+// (AppShellStatus), so User Picks looks the same through both loads.
+export function StandingsSkeleton({ label }: { label: string }) {
   return (
-    <Box aria-busy="true" aria-label={`Loading the week ${week} standings`}>
+    <Box aria-busy="true" aria-label={label}>
       {Array.from({ length: 8 }, (_, i) => (
         <Box
           key={i}

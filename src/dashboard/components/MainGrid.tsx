@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
+import Skeleton from "@mui/material/Skeleton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
@@ -15,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import AdminPanel from "./AdminPanel";
+import AppShellStatus from "./AppShellStatus";
 import GamesCard from "./GamesCard";
 import RecordsSection from "./RecordsSection";
 import Scoreboard from "./Scoreboard";
@@ -51,8 +53,17 @@ const TAB_TITLES: Record<AppTab, string> = {
 };
 
 export default function MainGrid() {
-  const { currentWeek, season, secondHalfStartWeek, cbsPoolUrl } =
-    useCurrentWeek();
+  const {
+    metaStatus,
+    retryMeta,
+    currentWeek,
+    season,
+    secondHalfStartWeek,
+    cbsPoolUrl,
+  } = useCurrentWeek();
+  // Until meta first loads there's no season or week, so the header and
+  // tabs render around placeholders instead of the page staying blank.
+  const metaReady = metaStatus === "ready";
   const { tab } = useParams<{ tab: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -198,8 +209,7 @@ export default function MainGrid() {
         pb: { xs: PHONE_TAB_BAR_OFFSET, md: 0 },
       }}
     >
-      {/* cards */}
-      {currentWeek !== 0 && activeTab !== null && (
+      {activeTab !== null && (
         <>
           {/* Desktop: a small site name, then the week's picks, the Week
               pill and the player card (place, score, money lines). Phones
@@ -252,7 +262,28 @@ export default function MainGrid() {
                 )}
               </Box>
             )}
-            {showPlayerControls && activeTab !== RECORDS_TAB && (
+            {showPlayerControls && !metaReady && (
+              // The Week pill and player picker, sized like the real ones.
+              <>
+                {activeTab !== RECORDS_TAB && (
+                  <Skeleton
+                    variant="rounded"
+                    height={40}
+                    sx={{ width: { xs: 72, md: 88 }, borderRadius: "999px" }}
+                  />
+                )}
+                <Skeleton
+                  variant="rounded"
+                  sx={{
+                    height: { xs: 40, md: 59 },
+                    width: { md: 300 },
+                    flex: { xs: 1, md: "none" },
+                    borderRadius: { xs: 1, md: "10px" },
+                  }}
+                />
+              </>
+            )}
+            {metaReady && showPlayerControls && activeTab !== RECORDS_TAB && (
               // Records isn't weekly data, so there's no week to pick.
               <WeekDropdown
                 currentWeek={currentWeek}
@@ -260,7 +291,7 @@ export default function MainGrid() {
                 onWeekChange={onWeekChange}
               />
             )}
-            {showPlayerControls && (
+            {metaReady && showPlayerControls && (
               <UserSelectDropdown
                 userList={userList}
                 user={user}
@@ -392,14 +423,16 @@ export default function MainGrid() {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {activeTab !== RECORDS_TAB && activeTab !== ADMIN_TAB && (
-                  <>
-                    Week{" "}
-                    <Box component="span" sx={{ color: "text.primary" }}>
-                      {selectedWeek}
-                    </Box>
-                  </>
-                )}
+                {metaReady &&
+                  activeTab !== RECORDS_TAB &&
+                  activeTab !== ADMIN_TAB && (
+                    <>
+                      Week{" "}
+                      <Box component="span" sx={{ color: "text.primary" }}>
+                        {selectedWeek}
+                      </Box>
+                    </>
+                  )}
                 {selectedUser &&
                   activeTab !== ADMIN_TAB &&
                   `${activeTab !== RECORDS_TAB ? " · " : ""}${selectedUser.name}`}
@@ -441,76 +474,81 @@ export default function MainGrid() {
               />
             )}
 
-          <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
-            <Grid
-              size={{ xs: 12, lg: 12 }}
-              sx={{ display: activeTab === "picks" ? "block" : "none" }}
-            >
-              {!user && userList.length > 0 && (
-                <PickYourselfHint onChoose={openUserMenu} />
-              )}
-              {selectedWeek >= secondHalfStartWeek && (
-                <SecondHalfLeaders
+          {!metaReady && (
+            <AppShellStatus metaStatus={metaStatus} onRetry={retryMeta} />
+          )}
+          {metaReady && (
+            <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
+              <Grid
+                size={{ xs: 12, lg: 12 }}
+                sx={{ display: activeTab === "picks" ? "block" : "none" }}
+              >
+                {!user && userList.length > 0 && (
+                  <PickYourselfHint onChoose={openUserMenu} />
+                )}
+                {selectedWeek >= secondHalfStartWeek && (
+                  <SecondHalfLeaders
+                    userList={userList}
+                    userId={user}
+                    week={selectedWeek}
+                  />
+                )}
+                <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
+                <UsersTable
+                  userList={userList}
+                  leaderboardStatus={leaderboardStatus}
+                  userId={user}
+                  showSecondHalf={selectedWeek >= secondHalfStartWeek}
+                  week={selectedWeek}
+                  season={season}
+                  recap={recap}
+                  showStreak={isCurrentWeek}
+                  moneyStandings={moneyStandings}
+                />
+              </Grid>
+              <Grid
+                size={{ xs: 12, lg: 12 }}
+                sx={{ display: activeTab === "games" ? "block" : "none" }}
+              >
+                <GamesCard week={selectedWeek} recap={recap} />
+              </Grid>
+              <Grid
+                size={{ xs: 12, lg: 12 }}
+                sx={{ display: activeTab === "scoreboard" ? "block" : "none" }}
+              >
+                <Scoreboard
+                  week={selectedWeek}
+                  userId={user}
+                  totalUsers={userList.length}
+                  recap={recap}
+                />
+              </Grid>
+              <Grid
+                size={{ xs: 12, lg: 12 }}
+                sx={{ display: activeTab === "trends" ? "block" : "none" }}
+              >
+                <TrendsSection
+                  season={season}
+                  week={selectedWeek}
+                  recap={recap}
                   userList={userList}
                   userId={user}
-                  week={selectedWeek}
                 />
+              </Grid>
+              {activeTab === RECORDS_TAB && (
+                <Grid size={{ xs: 12, lg: 12 }}>
+                  <RecordsSection season={season} userId={user} />
+                </Grid>
               )}
-              <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
-              <UsersTable
-                userList={userList}
-                leaderboardStatus={leaderboardStatus}
-                userId={user}
-                showSecondHalf={selectedWeek >= secondHalfStartWeek}
-                week={selectedWeek}
-                season={season}
-                recap={recap}
-                showStreak={isCurrentWeek}
-                moneyStandings={moneyStandings}
-              />
-            </Grid>
-            <Grid
-              size={{ xs: 12, lg: 12 }}
-              sx={{ display: activeTab === "games" ? "block" : "none" }}
-            >
-              <GamesCard week={selectedWeek} recap={recap} />
-            </Grid>
-            <Grid
-              size={{ xs: 12, lg: 12 }}
-              sx={{ display: activeTab === "scoreboard" ? "block" : "none" }}
-            >
-              <Scoreboard
-                week={selectedWeek}
-                userId={user}
-                totalUsers={userList.length}
-                recap={recap}
-              />
-            </Grid>
-            <Grid
-              size={{ xs: 12, lg: 12 }}
-              sx={{ display: activeTab === "trends" ? "block" : "none" }}
-            >
-              <TrendsSection
-                season={season}
-                week={selectedWeek}
-                recap={recap}
-                userList={userList}
-                userId={user}
-              />
-            </Grid>
-            {activeTab === RECORDS_TAB && (
-              <Grid size={{ xs: 12, lg: 12 }}>
-                <RecordsSection season={season} userId={user} />
-              </Grid>
-            )}
-            {/* Mounted only while open, so admin data is never polled in the
+              {/* Mounted only while open, so admin data is never polled in the
                 background from the public tabs. */}
-            {activeTab === ADMIN_TAB && (
-              <Grid size={{ xs: 12, lg: 12 }}>
-                <AdminPanel />
-              </Grid>
-            )}
-          </Grid>
+              {activeTab === ADMIN_TAB && (
+                <Grid size={{ xs: 12, lg: 12 }}>
+                  <AdminPanel />
+                </Grid>
+              )}
+            </Grid>
+          )}
           <PhoneTabBar
             activeTab={activeTab}
             onChange={goToTab}
