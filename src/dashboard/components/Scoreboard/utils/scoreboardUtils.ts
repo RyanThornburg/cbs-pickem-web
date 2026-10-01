@@ -55,10 +55,13 @@ const etParts = (ms: number) => {
 };
 
 // 1 PM ET on the first Sunday on or after the week's earliest kickoff, as
-// epoch ms. Null for an empty week.
+// epoch ms. Null for an empty week. A kickoff the feed sent as something
+// unparseable (NaN) is skipped: Intl throws on it, which took the whole page
+// down, since Scoreboard stays mounted behind the other tabs.
 export const pickDeadline = (games: Game[]): number | null => {
-  if (!games.length) return null;
-  const first = etParts(Math.min(...games.map((g) => g.game_time)));
+  const times = games.map((g) => g.game_time).filter(Number.isFinite);
+  if (!times.length) return null;
+  const first = etParts(Math.min(...times));
   const daysToSunday = (7 - first.weekday) % 7;
   // Guess EST (UTC-5), then pull back an hour if that lands at 2 PM (EDT).
   const guess = Date.UTC(

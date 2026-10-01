@@ -288,6 +288,9 @@ describe("pickDeadline / picksRevealed", () => {
 
   it("is 1 PM ET on the Sunday after the first kickoff", () => {
     expect(pickDeadline([sunday, tnf])).toBe(deadline);
+    // An unparseable kickoff (NaN) is skipped instead of throwing.
+    expect(pickDeadline([sunday, { ...tnf, game_time: NaN }])).toBe(deadline);
+    expect(pickDeadline([{ ...tnf, game_time: NaN }])).toBeNull();
   });
 
   it("uses the EST offset once daylight saving ends", () => {
