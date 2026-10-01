@@ -51,7 +51,8 @@ const EMPTY_TRENDS: SeasonTrends = {
 
 export const GetSeasonTrends = (
   season: number,
-  callback: (trends: SeasonTrends) => void
+  callback: (trends: SeasonTrends) => void,
+  onError?: (error: Error) => void
 ) => {
   if (season === 0) {
     callback(EMPTY_TRENDS);
@@ -65,6 +66,9 @@ export const GetSeasonTrends = (
       ),
     POLL_INTERVAL_MS,
     callback,
-    (error) => console.error("Failed to fetch season trends", error)
+    (error) => {
+      console.error("Failed to fetch season trends", error);
+      onError?.(error);
+    }
   );
 };

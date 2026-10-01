@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { Box, Chip, Stack, Tooltip, Typography } from "@mui/material";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
@@ -85,20 +84,15 @@ const buildGameConsensus = (trends: WeekTrends): GameConsensus[] => {
     });
 };
 
+// One row per game: the less-picked side on the left, the more-picked side
+// on the right, a bar in the teams' colors between them, and the bigger
+// side's share of the pool on the far right (bold when the data calls it a
+// one-sided game). Once a game is final the side that covered gets a ✓ and
+// the other fades.
 export default function ConsensusCard({ trends, gameResults }: Props) {
   const games = useMemo(() => buildGameConsensus(trends), [trends]);
 
-  if (games.length === 0) {
-    return (
-      <Typography
-        sx={{
-          color: "text.secondary",
-        }}
-      >
-        No picks revealed for this week yet.
-      </Typography>
-    );
-  }
+  if (games.length === 0) return null;
 
   return (
     <Stack spacing={1.5}>
@@ -150,6 +144,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                     <CheckCircleOutlineIcon
                       sx={{ fontSize: 12 }}
                       color="success"
+                      titleAccess="covered"
                     />
                   )}
                 </Stack>
@@ -167,6 +162,8 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                 </Typography>
               </Box>
               <Box
+                role="img"
+                aria-label={`${trailer.name} ${trailer.pick_count} picks, ${leader.name} ${leader.pick_count} picks`}
                 sx={{
                   flexGrow: 1,
                   display: "flex",
@@ -218,6 +215,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                     <CheckCircleOutlineIcon
                       sx={{ fontSize: 12 }}
                       color="success"
+                      titleAccess="covered"
                     />
                   )}
                   <Typography
@@ -244,32 +242,19 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                 </Typography>
               </Box>
               <TeamLogo abbr={leader.abbr} size={22} />
-              <Box
-                sx={{ width: 64, display: "flex", justifyContent: "flex-end" }}
+              {/* No color here: a lopsided split isn't a win or a loss. */}
+              <Typography
+                variant="caption"
+                sx={{
+                  width: 40,
+                  textAlign: "right",
+                  fontVariantNumeric: "tabular-nums",
+                  color: oneSided ? "text.primary" : "text.secondary",
+                  fontWeight: oneSided ? 700 : undefined,
+                }}
               >
-                {oneSided ? (
-                  <Tooltip
-                    title={`${Math.round(oneSided.consensus_pct * 100)}% consensus`}
-                  >
-                    <Chip
-                      size="small"
-                      color={leaderCurrentlyCovering ? "success" : "error"}
-                      variant="outlined"
-                      icon={<WhatshotIcon />}
-                      label={`${Math.round(leader.pct * 100)}%`}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "text.secondary",
-                    }}
-                  >
-                    {Math.round(leader.pct * 100)}%
-                  </Typography>
-                )}
-              </Box>
+                {Math.round(leader.pct * 100)}%
+              </Typography>
             </Stack>
           </Box>
         );

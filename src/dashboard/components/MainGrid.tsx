@@ -421,6 +421,8 @@ export default function MainGrid() {
                 season={season}
                 week={selectedWeek}
                 recap={recap}
+                userList={userList}
+                userId={user}
               />
             </Grid>
             {activeTab === RECORDS_TAB && (

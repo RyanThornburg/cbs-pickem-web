@@ -2,6 +2,7 @@ import { RecapItem } from "../../types";
 import {
   cardGroupOf,
   groupIntoCards,
+  itemsForScope,
   MAX_CARDS,
   selectWeekCards,
 } from "./weekCards";
@@ -142,5 +143,28 @@ describe("selectWeekCards", () => {
 
   it("handles an empty list", () => {
     expect(selectWeekCards([])).toEqual([]);
+  });
+
+  it("leaves a slot for the You card when asked for fewer", () => {
+    expect(
+      selectWeekCards(itemsForScope(WEEK3, "week"), 3).map((c) => c.key)
+    ).toEqual(["chaos", "accuracy", "crowd"]);
+  });
+});
+
+describe("itemsForScope", () => {
+  it("splits week 3 into this week's cards and the season's", () => {
+    expect(
+      selectWeekCards(itemsForScope(WEEK3, "week")).map((c) => c.key)
+    ).toEqual(["chaos", "accuracy", "crowd", "upset"]);
+    expect(
+      selectWeekCards(itemsForScope(WEEK3, "season")).map((c) => c.key)
+    ).toEqual(["crowd", "spreadSeason", "splits", "streaks"]);
+  });
+
+  it("keeps the season row when the week has no items yet", () => {
+    const preKickoff = WEEK3.filter((x) => x.scope === "season");
+    expect(itemsForScope(preKickoff, "week")).toEqual([]);
+    expect(itemsForScope(preKickoff, "season")).toHaveLength(preKickoff.length);
   });
 });

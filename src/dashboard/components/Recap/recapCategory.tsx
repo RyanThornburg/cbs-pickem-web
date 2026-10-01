@@ -10,36 +10,34 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import Box from "@mui/material/Box";
 import { SvgIconComponent } from "@mui/icons-material";
 
-// One icon + color per item category. An unknown category (the data repo
-// can add one) falls back to a neutral lightbulb.
+// One icon per item category, all on the same neutral tile: a category
+// isn't a result, so it gets no color of its own (DESIGN.md's Earned Color
+// Rule). An unknown category (the data repo can add one) falls back to a
+// lightbulb.
 const CATEGORY_STYLES: Record<
   string,
-  { Icon: SvgIconComponent; color: string; label: string }
+  { Icon: SvgIconComponent; label: string }
 > = {
-  pool: { Icon: GroupsIcon, color: "hsl(210, 90%, 45%)", label: "The pool" },
+  pool: { Icon: GroupsIcon, label: "The pool" },
   spread: {
     Icon: ShowChartIcon,
-    color: "hsl(265, 55%, 50%)",
     label: "The spread",
   },
   crowd: {
     Icon: Diversity3Icon,
-    color: "hsl(185, 65%, 34%)",
     label: "The crowd",
   },
-  chaos: { Icon: BoltIcon, color: "hsl(12, 80%, 50%)", label: "Chaos" },
-  users: { Icon: PersonIcon, color: "hsl(145, 55%, 35%)", label: "Players" },
-  teams: { Icon: ShieldIcon, color: "hsl(35, 85%, 40%)", label: "Teams" },
-  league: { Icon: PublicIcon, color: "hsl(200, 30%, 40%)", label: "League" },
+  chaos: { Icon: BoltIcon, label: "Chaos" },
+  users: { Icon: PersonIcon, label: "Players" },
+  teams: { Icon: ShieldIcon, label: "Teams" },
+  league: { Icon: PublicIcon, label: "League" },
   splits: {
     Icon: PieChartIcon,
-    color: "hsl(220, 25%, 45%)",
     label: "Pool splits",
   },
 };
 const FALLBACK = {
   Icon: LightbulbIcon,
-  color: "hsl(220, 20%, 55%)",
   label: "Recap",
 };
 
@@ -53,7 +51,7 @@ export function CategoryMark({
   category: string;
   size?: number;
 }) {
-  const { Icon, color, label } = categoryStyle(category);
+  const { Icon, label } = categoryStyle(category);
   return (
     <Box
       component="span"
@@ -63,8 +61,9 @@ export function CategoryMark({
         width: size,
         height: size,
         borderRadius: 1.5,
-        bgcolor: color,
-        color: "#fff",
+        // DESIGN.md slate-100 / slate-700.
+        bgcolor: "hsl(220, 30%, 94%)",
+        color: "hsl(220, 20%, 25%)",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -82,9 +81,9 @@ export function ScopeTag({ scope }: { scope: "week" | "season" }) {
     <Box
       component="span"
       sx={{
-        fontSize: "0.65rem",
+        fontSize: "0.75rem",
         fontWeight: 700,
-        letterSpacing: "0.06em",
+        letterSpacing: "0.04em",
         textTransform: "uppercase",
         borderRadius: 0.5,
         px: 0.75,

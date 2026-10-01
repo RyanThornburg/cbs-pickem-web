@@ -1,5 +1,4 @@
-import { Box, Chip, Stack, Tooltip, Typography } from "@mui/material";
-import ExploreOffIcon from "@mui/icons-material/ExploreOff";
+import { Box, Stack, Typography } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import { GameCoverResult } from "../../data/weekGames";
@@ -10,20 +9,32 @@ import TeamLogo from "./TeamLogo";
 export type Props = {
   allAlonePicks: AllAlonePick[];
   gameResults: Map<number, GameCoverResult>;
+  selectedUserId?: string;
 };
 
-export default function AllAloneCard({ allAlonePicks, gameResults }: Props) {
-  if (allAlonePicks.length === 0) {
-    return (
-      <Typography
-        sx={{
-          color: "text.secondary",
-        }}
-      >
-        Nobody's going against the crowd this week.
-      </Typography>
-    );
-  }
+// The selected player's row, as on User Picks (DESIGN.md selected-lime).
+export const selectedRowSx = { bgcolor: "#f0f4c3" } as const;
+
+// Final-game result for a pick: a drawn icon plus its word for screen
+// readers, so it doesn't rest on color alone.
+export function CoverResultIcon({ covered }: { covered: boolean }) {
+  return covered ? (
+    <CheckCircleOutlineIcon
+      fontSize="small"
+      color="success"
+      titleAccess="Covered"
+    />
+  ) : (
+    <CloseIcon fontSize="small" color="error" titleAccess="Didn't cover" />
+  );
+}
+
+export default function AllAloneCard({
+  allAlonePicks,
+  gameResults,
+  selectedUserId,
+}: Props) {
+  if (allAlonePicks.length === 0) return null;
 
   return (
     <Stack spacing={1}>
@@ -31,6 +42,7 @@ export default function AllAloneCard({ allAlonePicks, gameResults }: Props) {
         const cover = gameResults.get(pick.game_id);
         const covered =
           cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
+        const you = String(pick.user_id) === selectedUserId;
 
         return (
           <Stack
@@ -43,6 +55,7 @@ export default function AllAloneCard({ allAlonePicks, gameResults }: Props) {
               borderRadius: 1,
               border: "1px solid",
               borderColor: "divider",
+              ...(you ? selectedRowSx : {}),
             }}
           >
             <UserAvatar
@@ -51,42 +64,24 @@ export default function AllAloneCard({ allAlonePicks, gameResults }: Props) {
               includeName={false}
               size={28}
             />
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="body2">{pick.name}</Typography>
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
+                {pick.name}
+                {you && " (you)"}
+              </Typography>
               <Stack
                 direction="row"
                 spacing={0.5}
-                sx={{
-                  alignItems: "center",
-                }}
+                sx={{ alignItems: "center" }}
               >
                 <TeamLogo abbr={pick.abbr} size={18} />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  alone on {pick.abbr}
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  Only one on {pick.abbr} · {pick.opposing_count} took the other
+                  side
                 </Typography>
               </Stack>
             </Box>
-            {cover?.isFinal && (
-              <Tooltip title={covered ? "Covered" : "Did not cover"}>
-                {covered ? (
-                  <CheckCircleOutlineIcon fontSize="small" color="success" />
-                ) : (
-                  <CloseIcon fontSize="small" color="error" />
-                )}
-              </Tooltip>
-            )}
-            <Chip
-              size="small"
-              variant="outlined"
-              color="secondary"
-              icon={<ExploreOffIcon />}
-              label={`vs ${pick.opposing_count}`}
-            />
+            {cover?.isFinal && <CoverResultIcon covered={!!covered} />}
           </Stack>
         );
       })}

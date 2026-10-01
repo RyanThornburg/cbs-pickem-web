@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import {
   Box,
+  Button,
   Stack,
   Table,
   TableBody,
@@ -17,7 +18,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -38,12 +38,14 @@ export type Props = {
   teamBelieversFaders: TeamBelieversFaders[];
 };
 
-// One row per team, joined by team id across the three season datasets.
-// "Picks" is the believers count -- believers.pick_count always equals
+// One row per team, joined by team id across the season datasets. "Picks"
+// is the believers count -- believers.pick_count always equals
 // team_pick_totals' total_picks (a believer is just anyone who picked the
-// team), so there's no separate believers-count column. Accuracy/gap/cover
-// fields are undefined (not 0) when there's nothing to grade, so they sort
-// last instead of reading as a real 0%.
+// team). Fades, fade accuracy and the pick-vs-fade gap are still built (the
+// data has them) but no longer shown: four plain columns read right on the
+// first try, and the gap was noise on a few games. Accuracy/cover fields are
+// undefined (not 0) when there's nothing to grade, so they sort last instead
+// of reading as a real 0%.
 interface SeasonTeamRow {
   id: number;
   abbr: string;
@@ -109,35 +111,24 @@ const buildRows = ({
 const pct = (n: number | undefined): string =>
   n === undefined ? "—" : `${Math.round(n * 100)}%`;
 
-const accuracyColor = (n: number | undefined): string => {
-  if (n === undefined) return "text.secondary";
-  if (n >= 0.55) return "success.main";
-  if (n <= 0.45) return "error.main";
-  return "text.primary";
-};
-
 const columnHelper = createColumnHelper<SeasonTeamRow>();
 
+// No red/green in this table: a team's numbers aren't the reader's win or
+// loss, and 32 rows of colored cells drowned the one you were looking for.
 const buildColumns = (maxPicks: number) => [
   columnHelper.accessor("abbr", {
     header: "Team",
     meta: { mobileHeader: "Team" },
     cell: ({ getValue }) => (
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center",
-        }}
-      >
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
         <TeamLogo abbr={getValue()} size={20} />
         <Typography variant="body2">{getValue()}</Typography>
       </Stack>
     ),
   }),
   columnHelper.accessor("picks", {
-    header: "Picks",
-    meta: { mobileHeader: "Pk", align: "center" },
+    header: "Times picked",
+    meta: { mobileHeader: "Picked", align: "center" },
     sortDescFirst: true,
     cell: ({ row }) => (
       <Box>
@@ -146,8 +137,11 @@ const buildColumns = (maxPicks: number) => [
           <Typography
             component="span"
             variant="caption"
+            // The share of all picks only fits from sm up; phones keep the
+            // count so all four columns fit at 360px.
             sx={{
               color: "text.secondary",
+              display: { xs: "none", sm: "inline" },
             }}
           >
             {" "}
@@ -176,98 +170,43 @@ const buildColumns = (maxPicks: number) => [
     ),
   }),
   columnHelper.accessor("pickAccuracy", {
-    header: "Pick acc.",
-    meta: { mobileHeader: "Pk%", align: "center" },
+    header: "Picks right",
+    meta: { mobileHeader: "Right", align: "center" },
     sortDescFirst: true,
     sortUndefined: "last",
     cell: ({ getValue }) => (
-      <Typography variant="body2" sx={{ color: accuracyColor(getValue()) }}>
+      <Typography variant="body2" sx={{ fontVariantNumeric: "tabular-nums" }}>
         {pct(getValue())}
       </Typography>
     ),
   }),
-  columnHelper.accessor("fades", {
-    header: "Fades",
-    meta: { mobileHeader: "Fd", align: "center" },
-    sortDescFirst: true,
-  }),
-  columnHelper.accessor("fadeAccuracy", {
-    header: "Fade acc.",
-    meta: { mobileHeader: "Fd%", align: "center" },
+  columnHelper.accessor("coverPct", {
+    header: "Team covered",
+    meta: { mobileHeader: "Covered", align: "center" },
     sortDescFirst: true,
     sortUndefined: "last",
-    cell: ({ getValue }) => (
-      <Typography variant="body2" sx={{ color: accuracyColor(getValue()) }}>
-        {pct(getValue())}
-      </Typography>
-    ),
-  }),
-  columnHelper.accessor("gap", {
-    header: () => (
-      <Tooltip title="Pick accuracy minus fade accuracy, in percentage points. Positive = the people picking this team have been right more than the people fading it.">
-        <span>Gap</span>
-      </Tooltip>
-    ),
-    meta: { mobileHeader: "Gap", align: "center" },
-    sortDescFirst: true,
-    sortUndefined: "last",
-    cell: ({ getValue }) => {
-      const gap = getValue();
-      if (gap === undefined) {
-        return (
-          <Typography
-            variant="body2"
-            sx={{
-              color: "text.secondary",
-            }}
-          >
-            —
-          </Typography>
-        );
-      }
-      const pts = Math.round(gap * 100);
+    cell: ({ row }) => {
+      const { covers, losses, pushes } = row.original;
+      const games = covers + losses + pushes;
       return (
         <Typography
           variant="body2"
-          sx={{
-            color:
-              pts > 0
-                ? "success.main"
-                : pts < 0
-                  ? "error.main"
-                  : "text.primary",
-          }}
+          sx={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}
         >
-          {pts > 0 ? `+${pts}` : pts} pts
+          {games ? `${covers} of ${games}` : "—"}
         </Typography>
       );
     },
   }),
-  columnHelper.accessor("coverPct", {
-    header: "ATS",
-    meta: { mobileHeader: "ATS", align: "center" },
-    sortDescFirst: true,
-    sortUndefined: "last",
-    cell: ({ row, getValue }) => (
-      <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>
-        {row.original.covers}-{row.original.losses}
-        {row.original.pushes > 0 ? `-${row.original.pushes}` : ""}
-        <Typography
-          component="span"
-          variant="caption"
-          sx={{ color: accuracyColor(getValue()) }}
-        >
-          {" "}
-          · {pct(getValue())}
-        </Typography>
-      </Typography>
-    ),
-  }),
 ];
+
+// The top of the current sort; the rest is one tap away.
+const INITIAL_ROWS = 10;
 
 export default function SeasonTeamTable(props: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [showAll, setShowAll] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "picks", desc: true },
   ]);
@@ -300,76 +239,99 @@ export default function SeasonTeamTable(props: Props) {
 
   if (data.length === 0) {
     return (
-      <Typography
-        sx={{
-          color: "text.secondary",
-        }}
-      >
-        No season pick data yet.
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        No picks graded yet this season.
       </Typography>
     );
   }
 
-  // Full height, no vertical scroll -- 32 rows is short enough to just let the
-  // page scroll. Team column stays pinned while the rest scrolls sideways on
-  // narrow screens.
+  // Team column stays pinned if the table ever scrolls sideways. Its solid
+  // background hides cells scrolling under it, so the row hover tint is
+  // painted on top of it as a gradient.
   const stickySx = {
     position: "sticky",
     left: 0,
     zIndex: 1,
     bgcolor: "background.paper",
   } as const;
+  const rows = table.getRowModel().rows;
+  const visibleRows = showAll ? rows : rows.slice(0, INITIAL_ROWS);
 
   return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, i) => (
-                <TableCell
-                  key={header.id}
-                  align={header.column.columnDef.meta?.align ?? "left"}
-                  sx={{
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
-                  }}
-                >
-                  <TableSortLabel
-                    active={header.column.getIsSorted() !== false}
-                    direction={header.column.getIsSorted() || "desc"}
-                    onClick={header.column.getToggleSortingHandler()}
+    <Box>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, i) => (
+                  <TableCell
+                    key={header.id}
+                    align={header.column.columnDef.meta?.align ?? "left"}
+                    sx={{
+                      fontSize: "0.75rem",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      py: 0,
+                      px: { xs: 1, sm: 2 },
+                      height: 44,
+                      ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
+                    }}
                   >
-                    {isMobile
-                      ? header.column.columnDef.meta?.mobileHeader
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} hover>
-              {row.getVisibleCells().map((cell, i) => (
-                <TableCell
-                  key={cell.id}
-                  align={cell.column.columnDef.meta?.align ?? "left"}
-                  sx={i === 0 ? stickySx : undefined}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                    <TableSortLabel
+                      active={header.column.getIsSorted() !== false}
+                      direction={header.column.getIsSorted() || "desc"}
+                      onClick={header.column.getToggleSortingHandler()}
+                      sx={{ minHeight: 44 }}
+                    >
+                      {isMobile
+                        ? header.column.columnDef.meta?.mobileHeader
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {visibleRows.map((row) => (
+              <TableRow
+                key={row.id}
+                hover
+                sx={{
+                  "&:hover > td:first-of-type": {
+                    backgroundImage:
+                      "linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04))",
+                  },
+                }}
+              >
+                {row.getVisibleCells().map((cell, i) => (
+                  <TableCell
+                    key={cell.id}
+                    align={cell.column.columnDef.meta?.align ?? "left"}
+                    sx={{ px: { xs: 1, sm: 2 }, ...(i === 0 ? stickySx : {}) }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {rows.length > INITIAL_ROWS && (
+        <Button
+          size="small"
+          onClick={() => setShowAll((s) => !s)}
+          aria-expanded={showAll}
+          sx={{ mt: 0.5, minHeight: 44 }}
+        >
+          {showAll ? "Show top 10" : `Show all ${rows.length} teams`}
+        </Button>
+      )}
+    </Box>
   );
 }

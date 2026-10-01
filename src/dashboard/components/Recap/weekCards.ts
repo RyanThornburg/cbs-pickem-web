@@ -1,8 +1,9 @@
 import { RecapItem } from "../../types";
 
-// Trends › Week shows at most MAX_CARDS item cards (one row on desktop),
-// chosen by a fixed rule so the section can't get cluttered (every item is
-// still in the "All N items" list):
+// Trends shows at most MAX_CARDS item cards per view (one row on desktop):
+// Week gets the week-scope items, Season the season-scope ones. Cards are
+// chosen by a fixed rule so the row can't get cluttered (every item is still
+// in the "All N notes" list):
 //   1. Always: chaos index (from 8 finals on) and pool accuracy.
 //   2. Then groups not shown anywhere else, in the data's rank order.
 //   3. Only while there are fewer than MAX_CARDS: the pool splits card (a
@@ -87,7 +88,18 @@ export const groupIntoCards = (items: RecapItem[]): WeekCard[] => {
   return cards;
 };
 
-export const selectWeekCards = (items: RecapItem[]): WeekCard[] => {
+// One view's items: Week shows only this week's facts, Season only the
+// season-to-date ones.
+export const itemsForScope = (
+  items: RecapItem[],
+  scope: "week" | "season"
+): RecapItem[] => items.filter((t) => t.scope === scope);
+
+// `max` drops below MAX_CARDS when the "You this week" card takes a slot.
+export const selectWeekCards = (
+  items: RecapItem[],
+  max = MAX_CARDS
+): WeekCard[] => {
   const cards = groupIntoCards(items);
   const always = ALWAYS.flatMap((g) => cards.filter((c) => c.group === g));
   const low = [...FALLBACK, ...SHOWN_ELSEWHERE];
@@ -96,5 +108,5 @@ export const selectWeekCards = (items: RecapItem[]): WeekCard[] => {
   );
   const fallback = cards.filter((c) => FALLBACK.includes(c.group));
   const fillers = cards.filter((c) => SHOWN_ELSEWHERE.includes(c.group));
-  return [...always, ...rest, ...fallback, ...fillers].slice(0, MAX_CARDS);
+  return [...always, ...rest, ...fallback, ...fillers].slice(0, max);
 };

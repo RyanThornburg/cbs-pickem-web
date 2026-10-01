@@ -20,9 +20,13 @@ const PLOT_H = H - PAD.top - PAD.bottom;
 // Narrowest column that still fits a "Wk 18" label.
 const MIN_LABEL_BAND = 34;
 
+// Gold marks a 5-0 week (an honor) and red a 0-5 week (a loss); nothing
+// else in these charts carries a status color. The coin-flip reference line
+// is neutral, and the chaos bars share the accuracy line's blue.
 const GOLD = "#d4a017";
-const WINLESS = "hsl(0, 65%, 45%)";
-const CHAOS = "hsl(18, 85%, 55%)";
+// DESIGN.md streak-pill-end.
+const WINLESS = "#c62828";
+const REFERENCE = "rgba(0, 0, 0, 0.6)";
 
 const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
 
@@ -131,7 +135,7 @@ function ChartCard({
         minWidth: 0,
       }}
     >
-      <Typography sx={{ fontSize: "0.85rem", fontWeight: 700 }}>
+      <Typography component="h3" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
         {title}
       </Typography>
       <Box ref={plotRef} sx={{ position: "relative" }}>
@@ -172,32 +176,47 @@ const LegendDot = ({
   </Stack>
 );
 
-// Transparent full-height column per week: the hover/focus target.
+// Full-height column per week: the hover/focus target. The active column
+// gets a faint band; a keyboard-focused one also gets a brand-blue ring
+// (the app's focus color), since the browser outline doesn't follow SVG
+// shapes well.
 function HitColumns({
   g,
   labels,
+  active,
   onActive,
 }: {
   g: Geom;
   labels: string[];
+  active: number | null;
   onActive: (i: number | null) => void;
 }) {
+  const [focused, setFocused] = useState<number | null>(null);
   return (
     <>
       {labels.map((label, i) => (
         <rect
           key={i}
-          x={g.x(i) - g.band / 2}
+          x={g.x(i) - g.band / 2 + 1}
           y={PAD.top - 10}
-          width={g.band}
+          width={g.band - 2}
           height={PLOT_H + 40}
-          fill="transparent"
+          rx={4}
+          fill={active === i ? "rgba(0, 0, 0, 0.04)" : "transparent"}
+          stroke={focused === i ? "hsl(210, 98%, 42%)" : "none"}
+          strokeWidth={2}
           tabIndex={0}
           aria-label={label}
           onMouseEnter={() => onActive(i)}
           onMouseLeave={() => onActive(null)}
-          onFocus={() => onActive(i)}
-          onBlur={() => onActive(null)}
+          onFocus={() => {
+            setFocused(i);
+            onActive(i);
+          }}
+          onBlur={() => {
+            setFocused(null);
+            onActive(null);
+          }}
           onClick={() => onActive(i)}
           style={{ outline: "none", cursor: "pointer" }}
         />
@@ -206,12 +225,37 @@ function HitColumns({
   );
 }
 
+// A tooltip's list of names, with the selected player bolded and marked.
+function Names({
+  people,
+  selectedUserId,
+}: {
+  people: { user_id: number; name: string }[];
+  selectedUserId?: string;
+}) {
+  return (
+    <>
+      {people.map((u, i) => {
+        const you = String(u.user_id) === selectedUserId;
+        return (
+          <span key={u.user_id}>
+            {i > 0 && ", "}
+            {you ? <b>{u.name} (you)</b> : u.name}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
 function PoolAccuracyChart({
   series,
   inProgressWeek,
+  selectedUserId,
 }: {
   series: RecapPoolAccuracyPoint[];
   inProgressWeek: number | null;
+  selectedUserId?: string;
 }) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
@@ -262,7 +306,7 @@ function PoolAccuracyChart({
                 x2="16"
                 y1="5"
                 y2="5"
-                stroke={GOLD}
+                stroke={REFERENCE}
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
               />
@@ -271,9 +315,10 @@ function PoolAccuracyChart({
           </Stack>
           <LegendDot color={GOLD} label="Someone went 5-0" />
           <LegendDot color={WINLESS} label="Someone went 0-5" />
-          {inProgressWeek != null && (
-            <LegendDot color={line} hollow label="Week in progress" />
-          )}
+          {inProgressWeek != null &&
+            series.some((p) => p.week === inProgressWeek) && (
+              <LegendDot color={line} hollow label="Week in progress" />
+            )}
           <span>Hover or tap a week for names</span>
         </Stack>
       }
@@ -310,7 +355,7 @@ function PoolAccuracyChart({
           x2={W - PAD.right}
           y1={y(0.5)}
           y2={y(0.5)}
-          stroke={GOLD}
+          stroke={REFERENCE}
           strokeDasharray="4 4"
           strokeWidth={1.5}
         />
@@ -384,6 +429,7 @@ function PoolAccuracyChart({
         <HitColumns
           g={g}
           labels={series.map((p) => `Week ${p.week}: ${pct(p.accuracy)}`)}
+          active={active}
           onActive={setActive}
         />
       </svg>
@@ -399,12 +445,20 @@ function PoolAccuracyChart({
           </Box>
           {pts[active].p.perfect.length > 0 && (
             <Box>
-              5-0: {pts[active].p.perfect.map((u) => u.name).join(", ")}
+              5-0:{" "}
+              <Names
+                people={pts[active].p.perfect}
+                selectedUserId={selectedUserId}
+              />
             </Box>
           )}
           {pts[active].p.winless.length > 0 && (
             <Box>
-              0-5: {pts[active].p.winless.map((u) => u.name).join(", ")}
+              0-5:{" "}
+              <Names
+                people={pts[active].p.winless}
+                selectedUserId={selectedUserId}
+              />
             </Box>
           )}
         </ChartTooltip>
@@ -422,6 +476,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
   const y = (v: number) => PAD.top + ((10 - v) / 10) * PLOT_H;
   const barW = Math.min(48, g.band * 0.6);
   const text = theme.palette.text.secondary;
+  const bar = theme.palette.primary.main;
   const base = y(0);
   const last = series[series.length - 1];
 
@@ -440,7 +495,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
             color: "text.secondary",
           }}
         >
-          <span>0 = chalk, 10 = chaos</span>
+          <span>Higher = more underdogs covered and more upsets</span>
           {series.some((p) => p.partial) && (
             <span>Dashed = week still in progress</span>
           )}
@@ -485,8 +540,8 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
             <path
               key={p.week}
               d={d}
-              fill={p.partial ? "none" : CHAOS}
-              stroke={p.partial ? CHAOS : "none"}
+              fill={p.partial ? "none" : bar}
+              stroke={p.partial ? bar : "none"}
               strokeWidth={p.partial ? 2 : 0}
               strokeDasharray={p.partial ? "4 3" : undefined}
               opacity={active == null || active === i ? 1 : 0.55}
@@ -522,6 +577,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
         <HitColumns
           g={g}
           labels={series.map((p) => `Week ${p.week}: ${p.index.toFixed(1)}`)}
+          active={active}
           onActive={setActive}
         />
       </svg>
@@ -546,8 +602,10 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
 
 export default function SeasonRecapCharts({
   recap,
+  selectedUserId,
 }: {
   recap: WeekRecap | undefined;
+  selectedUserId?: string;
 }) {
   const accuracy = recap?.series.pool_accuracy ?? [];
   const chaos = recap?.series.chaos ?? [];
@@ -562,11 +620,14 @@ export default function SeasonRecapCharts({
           md: "repeat(2, minmax(0, 1fr))",
         },
         gap: 1.5,
-        mb: 3,
       }}
     >
       {accuracy.length > 0 && (
-        <PoolAccuracyChart series={accuracy} inProgressWeek={inProgressWeek} />
+        <PoolAccuracyChart
+          series={accuracy}
+          inProgressWeek={inProgressWeek}
+          selectedUserId={selectedUserId}
+        />
       )}
       {chaos.length > 0 && <ChaosChart series={chaos} />}
     </Box>

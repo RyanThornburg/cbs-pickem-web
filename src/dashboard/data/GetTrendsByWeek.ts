@@ -44,7 +44,8 @@ const EMPTY_TRENDS: WeekTrends = {
 export const GetTrendsByWeek = (
   season: number,
   week: number,
-  callback: (trends: WeekTrends) => void
+  callback: (trends: WeekTrends) => void,
+  onError?: (error: Error) => void
 ) => {
   if (season === 0 || week === 0) {
     callback(EMPTY_TRENDS);
@@ -58,6 +59,9 @@ export const GetTrendsByWeek = (
       ),
     POLL_INTERVAL_MS,
     callback,
-    (error) => console.error("Failed to fetch week trends", error)
+    (error) => {
+      console.error("Failed to fetch week trends", error);
+      onError?.(error);
+    }
   );
 };

@@ -1,33 +1,42 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Box,
-  Button,
-  Collapse,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { useMemo, useState } from "react";
-import { WeekRecap } from "../../types";
-import { CategoryMark, ScopeTag } from "./recapCategory";
+import { Box, Button, Collapse, Stack, Typography } from "@mui/material";
+import { useId, useMemo, useState } from "react";
+import { RecapItem } from "../../types";
+import { CategoryMark } from "./recapCategory";
 import { WeekRecapCard } from "./WeekRecapCards";
-import { selectWeekCards } from "./weekCards";
+import { MAX_CARDS, selectWeekCards } from "./weekCards";
 
-// "Week N recap" at the top of Trends › Week: a heading row with the
-// "All N items" toggle on the right (the full list opens under it, above the
-// cards), then up to 4 cards (see weekCards.ts for the rule).
+// The recap row at the top of Trends › Week (this week's items) and
+// Trends › Season (season-to-date items): a heading row with the
+// "All N notes" toggle on the right (the full list opens under it, above the
+// cards), then up to 4 cards (see weekCards.ts for the rule). `lead` is an
+// extra first card (the selected player's "You this week") that takes one
+// of the 4 slots. With no item cards, `empty` shows under the row.
 export default function WeekRecapSection({
-  recap,
+  title,
+  status,
+  items,
+  lead,
+  empty,
+  selectedUserId,
 }: {
-  recap: WeekRecap | undefined;
+  title: string;
+  status?: string;
+  items: RecapItem[];
+  lead?: React.ReactNode;
+  empty?: React.ReactNode;
+  selectedUserId?: string;
 }) {
   const [showAll, setShowAll] = useState(false);
-  const cards = useMemo(() => selectWeekCards(recap?.items ?? []), [recap]);
-
-  if (!recap || recap.items.length === 0) return null;
+  const headingId = useId();
+  const hasLead = !!lead;
+  const cards = useMemo(
+    () => selectWeekCards(items, hasLead ? MAX_CARDS - 1 : MAX_CARDS),
+    [items, hasLead]
+  );
 
   return (
-    <Box id="week-recap" sx={{ mb: { xs: 3, md: 1 }, textAlign: "left" }}>
+    <Box component="section" aria-labelledby={headingId}>
       <Stack
         direction="row"
         sx={{
@@ -36,60 +45,54 @@ export default function WeekRecapSection({
           mb: 1,
           flexWrap: "wrap",
           columnGap: 1.5,
+          minHeight: 44,
         }}
       >
         <Stack
           direction="row"
           spacing={1.5}
-          sx={{
-            alignItems: "baseline",
-            flexWrap: "wrap",
-          }}
+          sx={{ alignItems: "baseline", flexWrap: "wrap" }}
         >
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-            Week {recap.week} recap
+          <Typography id={headingId} variant="h6" component="h2">
+            {title}
           </Typography>
-          {!recap.week_complete && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              So far: {recap.games_final} of {recap.games_total} games final
+          {status && (
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              {status}
             </Typography>
           )}
         </Stack>
-        <Button
-          size="small"
-          onClick={() => setShowAll((s) => !s)}
-          endIcon={
-            <ExpandMoreIcon
-              sx={{
-                transform: showAll ? "rotate(180deg)" : "none",
-                transition: "transform 150ms",
-              }}
-            />
-          }
-          aria-expanded={showAll}
-        >
-          All {recap.items.length} notes this week
-        </Button>
+        {items.length > 0 && (
+          <Button
+            size="small"
+            onClick={() => setShowAll((s) => !s)}
+            endIcon={
+              <ExpandMoreIcon
+                sx={{
+                  transform: showAll ? "rotate(180deg)" : "none",
+                  transition: "transform 150ms",
+                }}
+              />
+            }
+            aria-expanded={showAll}
+            sx={{ minHeight: 44 }}
+          >
+            All {items.length} notes
+          </Button>
+        )}
       </Stack>
 
       <Collapse in={showAll} unmountOnExit>
-        <Stack spacing={1} sx={{ mb: 2, pl: 0.5 }}>
-          {recap.items.map((t) => (
+        <Stack component="ul" spacing={1} sx={{ m: 0, p: 0, pl: 0.5 }}>
+          {items.map((t) => (
             <Stack
+              component="li"
               key={t.id}
               direction="row"
               spacing={1}
-              sx={{
-                alignItems: "center",
-              }}
+              sx={{ alignItems: "center", listStyle: "none" }}
             >
               <CategoryMark category={t.category} size={20} />
-              <ScopeTag scope={t.scope} />
               <Typography variant="body2">{t.headline}</Typography>
             </Stack>
           ))}
@@ -99,18 +102,29 @@ export default function WeekRecapSection({
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          // 1, 2, then 4 across: 4 cards never wrap 3 + 1.
+          gridTemplateColumns: {
+            xs: "minmax(0, 1fr)",
+            sm: "repeat(2, minmax(0, 1fr))",
+            lg: "repeat(4, minmax(0, 1fr))",
+          },
           gap: 1.5,
           alignItems: "start",
+          mt: showAll ? 2 : 0,
         }}
       >
+        {lead}
         {cards.map((card) => (
-          <WeekRecapCard key={card.key} card={card} />
+          <WeekRecapCard
+            key={card.key}
+            card={card}
+            selectedUserId={selectedUserId}
+          />
         ))}
       </Box>
-
-      {/* Desktop only: separates the items from the trend cards below. */}
-      <Divider sx={{ display: { xs: "none", md: "block" }, mt: 3 }} />
+      {items.length === 0 && empty && (
+        <Box sx={{ mt: lead ? 1.5 : 0 }}>{empty}</Box>
+      )}
     </Box>
   );
 }

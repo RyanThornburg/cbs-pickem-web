@@ -2,12 +2,14 @@ import { Box, Paper, Stack, Typography } from "@mui/material";
 import { ordinal } from "../../helper";
 import { RecapItem, RecapMove, RecapPerson } from "../../types";
 import TeamLogo from "../TrendsSection/TeamLogo";
-import { CategoryMark, ScopeTag } from "./recapCategory";
+import { CategoryMark } from "./recapCategory";
 import { WeekCard } from "./weekCards";
 
-// Renderers for the Trends › Week item cards. Each reads its items'
-// `data` (shapes per the data repo's recap reference, version 3); anything
-// without a dedicated card falls back to its headlines.
+// Renderers for the Trends recap cards (Week and Season). Each reads its
+// items' `data` (shapes per the data repo's recap reference, version 3);
+// anything without a dedicated card falls back to its headlines. Week and
+// Season each show one scope only, so cards carry no "This week"/"Season"
+// tag.
 
 interface TeamRef {
   id: number;
@@ -21,16 +23,17 @@ const byKind = (card: WeekCard, kind: string, scope?: "week" | "season") =>
 const record = (d: Record<string, unknown>) =>
   `${d.wins}-${d.losses}${d.pushes ? `-${d.pushes}` : ""}`;
 
-function CardShell({
+export function CardShell({
   title,
   category,
-  scope,
   children,
+  highlight,
 }: {
   title: string;
   category: string;
-  scope?: "week" | "season";
   children: React.ReactNode;
+  // The selected player's own card: tinted like their row on User Picks.
+  highlight?: boolean;
 }) {
   return (
     <Paper
@@ -42,6 +45,8 @@ function CardShell({
         gap: 1,
         minWidth: 0,
         textAlign: "left",
+        // DESIGN.md selected-lime, the selected player's row color.
+        ...(highlight ? { bgcolor: "#f0f4c3", borderColor: "#d4dc8a" } : {}),
       }}
     >
       <Stack
@@ -52,17 +57,19 @@ function CardShell({
         }}
       >
         <CategoryMark category={category} />
-        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, flex: 1 }}>
+        <Typography
+          component="h3"
+          sx={{ fontSize: "0.875rem", fontWeight: 700, flex: 1 }}
+        >
           {title}
         </Typography>
-        {scope && <ScopeTag scope={scope} />}
       </Stack>
       {children}
     </Paper>
   );
 }
 
-function Big({ value, suffix }: { value: string; suffix?: string }) {
+export function Big({ value, suffix }: { value: string; suffix?: string }) {
   return (
     <Typography
       sx={{
@@ -88,12 +95,12 @@ function Big({ value, suffix }: { value: string; suffix?: string }) {
   );
 }
 
-const Sub = ({ children }: { children: React.ReactNode }) => (
+export const Sub = ({ children }: { children: React.ReactNode }) => (
   <Typography
     variant="body2"
     sx={{
       color: "text.secondary",
-      fontSize: "0.8rem",
+      fontSize: "0.8125rem",
     }}
   >
     {children}
@@ -109,7 +116,7 @@ function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
         gridTemplateColumns: "1fr auto",
         columnGap: 1.5,
         rowGap: 0.25,
-        fontSize: "0.78rem",
+        fontSize: "0.8125rem",
         color: "text.secondary",
         fontVariantNumeric: "tabular-nums",
       }}
@@ -129,33 +136,50 @@ function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
   );
 }
 
+// Gold is for honors only (a 5-0 week, same as the 5-0 badge on User
+// Picks); 0-5 is a loss; anything else, like an upset's believers, is plain.
+const CHIP_TONES = {
+  honor: { bgcolor: "hsl(45, 100%, 90%)", color: "hsl(35, 80%, 28%)" },
+  // DESIGN.md streak-pill-end on a pale red: 5.6:1.
+  lost: { bgcolor: "#ffebee", color: "#c62828" },
+  // DESIGN.md slate-100 with ink.
+  plain: { bgcolor: "hsl(220, 30%, 94%)", color: "rgba(0, 0, 0, 0.87)" },
+};
+
 function PersonChips({
   people,
   tone,
+  selectedUserId,
 }: {
   people: RecapPerson[];
-  tone: "good" | "bad";
+  tone: keyof typeof CHIP_TONES;
+  selectedUserId?: string;
 }) {
   return (
     <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
-      {people.map((p) => (
-        <Box
-          key={p.user_id}
-          component="span"
-          sx={{
-            fontSize: "0.72rem",
-            fontWeight: 600,
-            borderRadius: 0.5,
-            px: 0.75,
-            py: "1px",
-            bgcolor:
-              tone === "good" ? "hsl(45, 100%, 90%)" : "hsl(0, 80%, 95%)",
-            color: tone === "good" ? "hsl(35, 80%, 28%)" : "hsl(0, 65%, 42%)",
-          }}
-        >
-          {p.name}
-        </Box>
-      ))}
+      {people.map((p) => {
+        const you = String(p.user_id) === selectedUserId;
+        return (
+          <Box
+            key={p.user_id}
+            component="span"
+            sx={{
+              fontSize: "0.75rem",
+              fontWeight: you ? 800 : 600,
+              borderRadius: 0.5,
+              px: 0.75,
+              py: "1px",
+              ...CHIP_TONES[tone],
+              // The selected player: an ink ring, plus "(you)" for screen
+              // readers and anyone who can't see the ring.
+              ...(you ? { boxShadow: "inset 0 0 0 1.5px currentColor" } : {}),
+            }}
+          >
+            {p.name}
+            {you && " (you)"}
+          </Box>
+        );
+      })}
     </Stack>
   );
 }
@@ -166,7 +190,7 @@ function ChaosCard({ item }: { item: RecapItem }) {
   const partial = !!d.partial;
   const rank = d.season_rank as number | null;
   return (
-    <CardShell title="Chaos index" category="chaos" scope="week">
+    <CardShell title="Chaos index" category="chaos">
       <Big
         value={index.toFixed(1)}
         suffix={`/ 10${partial ? ` · so far, ${d.games_final} of ${d.games_total} final` : ""}${
@@ -175,6 +199,8 @@ function ChaosCard({ item }: { item: RecapItem }) {
             : ""
         }`}
       />
+      {/* Neutral meter: chaos isn't a win or a loss, so no traffic-light
+          gradient. */}
       <Box
         role="img"
         aria-label={`Chaos index ${index.toFixed(1)} out of 10`}
@@ -182,10 +208,19 @@ function ChaosCard({ item }: { item: RecapItem }) {
           position: "relative",
           height: 8,
           borderRadius: 1,
-          background:
-            "linear-gradient(90deg, hsl(145, 45%, 75%), hsl(45, 90%, 65%), hsl(12, 80%, 55%))",
+          bgcolor: "action.hover",
         }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: `${Math.min(100, Math.max(0, index * 10))}%`,
+            borderRadius: 1,
+            // DESIGN.md slate-200.
+            bgcolor: "hsl(220, 20%, 80%)",
+          }}
+        />
         <Box
           sx={{
             position: "absolute",
@@ -203,13 +238,13 @@ function ChaosCard({ item }: { item: RecapItem }) {
         direction="row"
         sx={{
           justifyContent: "space-between",
-          fontSize: "0.68rem",
-          color: "text.disabled",
+          fontSize: "0.75rem",
+          color: "text.secondary",
           mt: -0.5,
         }}
       >
-        <span>Chalk</span>
-        <span>Chaos</span>
+        <span>Favorites held</span>
+        <span>Upsets everywhere</span>
       </Stack>
       <Parts
         rows={[
@@ -219,14 +254,19 @@ function ChaosCard({ item }: { item: RecapItem }) {
             "Favorites of 7+ that lost",
             `${d.big_favorite_losses} of ${d.big_favorites}`,
           ],
-          ["Pool accuracy", pct(d.pool_accuracy as number)],
         ]}
       />
     </CardShell>
   );
 }
 
-function AccuracyCard({ card }: { card: WeekCard }) {
+function AccuracyCard({
+  card,
+  selectedUserId,
+}: {
+  card: WeekCard;
+  selectedUserId?: string;
+}) {
   const acc = byKind(card, "pool_accuracy");
   const perfectItem = byKind(card, "perfect_week");
   const perfect = (perfectItem?.data.users ?? []) as RecapPerson[];
@@ -240,7 +280,7 @@ function AccuracyCard({ card }: { card: WeekCard }) {
         ? "Best week this season"
         : null;
   return (
-    <CardShell title="Pool accuracy" category="pool" scope="week">
+    <CardShell title="Pool accuracy" category="pool">
       {acc && <Big value={pct(d.accuracy as number)} suffix="of picks right" />}
       {note && <Sub>{note}</Sub>}
       {/* The perfect_week item only exists once someone went 5-0, or once
@@ -248,7 +288,11 @@ function AccuracyCard({ card }: { card: WeekCard }) {
       {perfectItem && (
         <PeopleLine label="5-0">
           {perfect.length ? (
-            <PersonChips people={perfect} tone="good" />
+            <PersonChips
+              people={perfect}
+              tone="honor"
+              selectedUserId={selectedUserId}
+            />
           ) : (
             <Sub>nobody</Sub>
           )}
@@ -256,7 +300,11 @@ function AccuracyCard({ card }: { card: WeekCard }) {
       )}
       {winless.length > 0 && (
         <PeopleLine label="0-5">
-          <PersonChips people={winless} tone="bad" />
+          <PersonChips
+            people={winless}
+            tone="lost"
+            selectedUserId={selectedUserId}
+          />
         </PeopleLine>
       )}
     </CardShell>
@@ -310,7 +358,9 @@ function RecordRows({
 }) {
   return (
     <Box>
-      <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mb: 0.5 }}>
+      <Typography
+        sx={{ fontSize: "0.8125rem", color: "text.secondary", mb: 0.5 }}
+      >
         {label}
       </Typography>
       <Box
@@ -387,7 +437,7 @@ function CrowdCard({ card }: { card: WeekCard }) {
               spacing={0.75}
               sx={{
                 alignItems: "center",
-                fontSize: "0.8rem",
+                fontSize: "0.8125rem",
                 color: "text.secondary",
               }}
             >
@@ -418,7 +468,7 @@ function SpreadSeasonCard({ item }: { item: RecapItem }) {
   const d = item.data as Record<string, number>;
   const decided = d.games - (d.pushes ?? 0);
   return (
-    <CardShell title="Just pick the winner?" category="spread" scope="season">
+    <CardShell title="Just pick the winner?" category="spread">
       <Big value={pct(d.winner_covered / Math.max(1, decided))} />
       <Sub>
         of game winners also covered ({d.winner_covered} of {decided} games)
@@ -430,7 +480,7 @@ function SpreadSeasonCard({ item }: { item: RecapItem }) {
 // Pool splits and league-wide cover trends: one bar per item against 50%.
 function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
   return (
-    <CardShell title={title} category={card.items[0].category} scope="season">
+    <CardShell title={title} category={card.items[0].category}>
       <Stack spacing={1}>
         {card.items.map((t) => {
           const d = t.data as Record<string, number | string>;
@@ -443,7 +493,7 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
                 spacing={1}
                 sx={{
                   justifyContent: "space-between",
-                  fontSize: "0.78rem",
+                  fontSize: "0.8125rem",
                 }}
               >
                 <Box component="span" sx={{ minWidth: 0 }}>
@@ -498,7 +548,13 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
   );
 }
 
-function UpsetCard({ item }: { item: RecapItem }) {
+function UpsetCard({
+  item,
+  selectedUserId,
+}: {
+  item: RecapItem;
+  selectedUserId?: string;
+}) {
   const d = item.data as Record<string, unknown>;
   const dog = d.underdog as TeamRef;
   const fav = d.favorite as TeamRef;
@@ -507,7 +563,7 @@ function UpsetCard({ item }: { item: RecapItem }) {
   const favScore = dog.id === home.id ? d.away_score : d.home_score;
   const believers = (d.believers ?? []) as RecapPerson[];
   return (
-    <CardShell title="Upset of the week" category="chaos" scope="week">
+    <CardShell title="Upset of the week" category="chaos">
       <Stack spacing={0.5}>
         {[
           [fav, `−${d.points}`, favScore, false],
@@ -550,7 +606,13 @@ function UpsetCard({ item }: { item: RecapItem }) {
         {believers.length} of the {String(d.pool_picks)} who picked this game
         had {dog.abbr}.
       </Sub>
-      {believers.length > 0 && <PersonChips people={believers} tone="good" />}
+      {believers.length > 0 && (
+        <PersonChips
+          people={believers}
+          tone="plain"
+          selectedUserId={selectedUserId}
+        />
+      )}
     </CardShell>
   );
 }
@@ -558,7 +620,7 @@ function UpsetCard({ item }: { item: RecapItem }) {
 function MoversCard({ card }: { card: WeekCard }) {
   const moves = card.items.flatMap((t) => (t.data.moves ?? []) as RecapMove[]);
   return (
-    <CardShell title="Biggest movers" category="users" scope="week">
+    <CardShell title="Biggest movers" category="users">
       <Stack spacing={0.5}>
         {moves.map((m) => (
           <Stack
@@ -574,12 +636,13 @@ function MoversCard({ card }: { card: WeekCard }) {
               component="span"
               sx={{
                 fontWeight: 800,
-                fontSize: "0.72rem",
+                fontSize: "0.75rem",
                 borderRadius: 0.5,
                 px: 0.5,
-                bgcolor:
-                  m.change > 0 ? "hsl(145, 55%, 92%)" : "hsl(0, 80%, 95%)",
-                color: m.change > 0 ? "hsl(145, 60%, 28%)" : "hsl(0, 65%, 42%)",
+                // DESIGN.md pick-won-fill / covered-green and a pale red /
+                // streak-pill-end; the ▲/▼ carries the direction too.
+                bgcolor: m.change > 0 ? "#e8f5e9" : "#ffebee",
+                color: m.change > 0 ? "#2e7d32" : "#c62828",
               }}
             >
               {m.change > 0 ? "▲" : "▼"}
@@ -598,29 +661,77 @@ function MoversCard({ card }: { card: WeekCard }) {
   );
 }
 
-// Anything without a dedicated card: its headlines as-is.
+// Teams covering (or missing) 3+ straight, one line per streak type.
+function StreaksCard({ card }: { card: WeekCard }) {
+  return (
+    <CardShell title="Cover streaks" category="teams">
+      <Stack spacing={1}>
+        {card.items.map((t) => {
+          const teams = (t.data.teams ?? []) as TeamRef[];
+          const miss = t.data.streak_type === "miss";
+          return (
+            <Box key={t.id}>
+              <Typography
+                sx={{ fontSize: "0.8125rem", color: "text.secondary" }}
+              >
+                {miss ? "Missed" : "Covered"} {String(t.data.length)} straight
+              </Typography>
+              <Stack
+                direction="row"
+                sx={{ flexWrap: "wrap", columnGap: 1.25, rowGap: 0.5, mt: 0.5 }}
+              >
+                {teams.map((team) => (
+                  <Stack
+                    key={team.id}
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ alignItems: "center" }}
+                  >
+                    <TeamLogo abbr={team.abbr} size={18} />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {team.abbr}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            </Box>
+          );
+        })}
+      </Stack>
+    </CardShell>
+  );
+}
+
+// Anything without a dedicated card: its headlines. The first item's short
+// version is the title, so its full headline only shows when it adds
+// something (not when it's the same sentence with a few more words).
 function HeadlineCard({ card }: { card: WeekCard }) {
   const first = card.items[0];
+  const body = card.items.filter(
+    (t, i) => i > 0 || t.headline.length - t.short.length > 20
+  );
   return (
-    <CardShell
-      title={first.short}
-      category={first.category}
-      scope={first.scope}
-    >
-      {card.items.map((t) => (
+    <CardShell title={first.short} category={first.category}>
+      {body.map((t) => (
         <Sub key={t.id}>{t.headline}</Sub>
       ))}
     </CardShell>
   );
 }
 
-export function WeekRecapCard({ card }: { card: WeekCard }) {
+export function WeekRecapCard({
+  card,
+  selectedUserId,
+}: {
+  card: WeekCard;
+  selectedUserId?: string;
+}) {
   const first = card.items[0];
   switch (card.group) {
     case "chaos":
       return <ChaosCard item={first} />;
     case "accuracy":
-      return <AccuracyCard card={card} />;
+      return <AccuracyCard card={card} selectedUserId={selectedUserId} />;
     case "crowd":
       return <CrowdCard card={card} />;
     case "spreadSeason":
@@ -630,9 +741,11 @@ export function WeekRecapCard({ card }: { card: WeekCard }) {
     case "league":
       return <SplitsCard card={card} title="League-wide cover trends" />;
     case "upset":
-      return <UpsetCard item={first} />;
+      return <UpsetCard item={first} selectedUserId={selectedUserId} />;
     case "movers":
       return <MoversCard card={card} />;
+    case "streaks":
+      return <StreaksCard card={card} />;
     default:
       return <HeadlineCard card={card} />;
   }
