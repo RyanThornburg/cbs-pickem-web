@@ -82,6 +82,7 @@ export const getWeeklyForm = (picks: UserPick[]): WeeklyFormResult => {
 
 export interface PaidLine {
   label: string;
+  prize: "1st half" | "2nd half" | "Overall";
 }
 
 interface PaidLineRow {
@@ -107,8 +108,9 @@ export const paidLines = (
   const add = (
     placeOf: (row: PaidLineRow) => number | null,
     cutoff: number,
-    what: string
+    prize: PaidLine["prize"]
   ) => {
+    const what = prize === "Overall" ? " overall" : `, ${prize}`;
     let last = -1;
     rows.forEach((row, i) => {
       const place = placeOf(row);
@@ -120,15 +122,15 @@ export const paidLines = (
     const inMoney = last + 1;
     const tie = inMoney > cutoff ? ` (${inMoney} with the tie)` : "";
     const list = lines.get(last) ?? [];
-    list.push({ label: `Paid · top ${cutoff}${what}${tie}` });
+    list.push({ label: `Paid · top ${cutoff}${what}${tie}`, prize });
     lines.set(last, list);
   };
 
   if (sort.id === "place") {
-    if (!secondHalf) add((r) => r.place, paid.first_half, ", 1st half");
-    add((r) => r.place, paid.overall, " overall");
+    if (!secondHalf) add((r) => r.place, paid.first_half, "1st half");
+    add((r) => r.place, paid.overall, "Overall");
   } else if (sort.id === "second_half_place" && secondHalf) {
-    add((r) => r.second_half_place, paid.second_half, ", 2nd half");
+    add((r) => r.second_half_place, paid.second_half, "2nd half");
   }
   return lines;
 };
@@ -204,3 +206,59 @@ export const moneyStandings = (
   );
   return [half, overall].filter((s): s is MoneyStanding => s !== null);
 };
+
+// The season length isn't in the data, so it's frontend config like the
+// thresholds above. The 1st half ends the week before
+// `second_half_start_week`; the 2nd half and overall run to this week.
+export const REGULAR_SEASON_WEEKS = 18;
+
+// About how many points two players' scores drift apart in a week of five
+// picks. The gap someone can still close grows with the square root of the
+// weeks left, so a money line only shows when the gap is within
+// round(MONEY_REACH_PTS * sqrt(weeks left)): 4 pts with 6 weeks left, 2 with
+// 1. A display judgment, retuned like the thresholds above.
+export const MONEY_REACH_PTS = 1.6;
+
+// Weeks still to be scored for a prize, counting the browsed week until all
+// of its games are final.
+export const prizeWeeksLeft = (
+  prize: MoneyStanding["prize"],
+  week: number,
+  secondHalfStartWeek: number,
+  weekComplete: boolean
+): number => {
+  const lastWeek =
+    prize === "1st half" ? secondHalfStartWeek - 1 : REGULAR_SEASON_WEEKS;
+  return Math.max(0, lastWeek - week + (weekComplete ? 0 : 1));
+};
+
+export const moneyReach = (weeksLeft: number): number =>
+  Math.round(MONEY_REACH_PTS * Math.sqrt(weeksLeft));
+
+export interface ShownMoneyStanding extends MoneyStanding {
+  weeksLeft: number;
+}
+
+// The standings worth showing a player: prizes they're in the money for,
+// or close enough to catch with the weeks left. Prizes out of reach are
+// left out rather than reported as "N pts out".
+export const shownMoneyStandings = (
+  standings: MoneyStanding[],
+  week: number,
+  secondHalfStartWeek: number,
+  weekComplete: boolean
+): ShownMoneyStanding[] =>
+  standings
+    .map((standing) => ({
+      ...standing,
+      weeksLeft: prizeWeeksLeft(
+        standing.prize,
+        week,
+        secondHalfStartWeek,
+        weekComplete
+      ),
+    }))
+    .filter(
+      (standing) =>
+        standing.inMoney || standing.ptsOut <= moneyReach(standing.weeksLeft)
+    );

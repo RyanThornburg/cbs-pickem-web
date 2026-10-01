@@ -16,7 +16,11 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
           sx={(theme) => ({
             flexGrow: 1,
             backgroundColor: alpha(theme.palette.background.default, 1),
-            overflow: "auto",
+            // Clip rather than scroll: a scroll box here (that never
+            // scrolls, since the window does) would break position: sticky
+            // for everything inside, like User Picks' pinned row.
+            minWidth: 0,
+            overflowX: "clip",
           })}
         >
           <Stack

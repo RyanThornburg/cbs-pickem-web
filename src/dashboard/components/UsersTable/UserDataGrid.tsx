@@ -10,7 +10,10 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Collapse from "@mui/material/Collapse";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
+import Box from "@mui/material/Box";
 import { PaidLineRule } from "./PaidLineRule";
+import { timeFormat } from "./StandingsStatus";
+import { paidLineNote } from "./MoneyLines";
 import { UserTrendPanel } from "./UserTrendPanel";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
@@ -22,6 +25,8 @@ const UserDataGrid = ({
   recap,
   showStreak,
   trends,
+  moneyStandings,
+  leaderboardStatus,
 }: UserGridWithTrendsProps) => {
   const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
     userList,
@@ -61,6 +66,23 @@ const UserDataGrid = ({
                     )
                   )}
                   {header.column.id === "name" && <BadgeKey />}
+                  {/* The last refresh, in the header row's spare room. The
+                      phone table has none, so it shows nowhere there. */}
+                  {header.column.id === "picks" &&
+                    leaderboardStatus.updatedAt &&
+                    !leaderboardStatus.failed && (
+                      <Box
+                        component="span"
+                        sx={{
+                          float: "right",
+                          fontWeight: 400,
+                          color: "text.secondary",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Updated {timeFormat.format(leaderboardStatus.updatedAt)}
+                      </Box>
+                    )}
                 </TableCell>
               ))}
             </TableRow>
@@ -107,7 +129,10 @@ const UserDataGrid = ({
                       colSpan={row.getVisibleCells().length}
                       sx={{ py: 0, border: 0 }}
                     >
-                      <PaidLineRule label={line.label} />
+                      <PaidLineRule
+                        label={line.label}
+                        note={paidLineNote(moneyStandings, line.prize)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

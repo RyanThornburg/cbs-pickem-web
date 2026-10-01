@@ -1,8 +1,8 @@
 import { MenuItem } from "@mui/material";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { visuallyHidden } from "../helper";
 
 export type Props = {
   currentWeek: number;
@@ -10,6 +10,7 @@ export type Props = {
   onWeekChange: (week: number) => void;
 };
 
+// A small pill, "Week 3" ("Wk 3" on phones), next to the player picker.
 export default function WeekDropdown({
   currentWeek,
   selectedWeek,
@@ -20,28 +21,53 @@ export default function WeekDropdown({
   };
 
   return (
-    <Box sx={{ minWidth: 75 }}>
-      <FormControl variant="standard" sx={{ minWidth: 75 }}>
-        <InputLabel id="week-select-label">Week</InputLabel>
-        <Select
-          // 40px tall on phones so it's an easy tap target.
-          sx={{ pl: "12px", minHeight: { xs: 40, sm: "auto" } }}
-          labelId="week-select-label"
-          id="week-drop-down"
-          value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
-          onChange={handleChange}
-          label="Week"
-        >
-          {[...Array(currentWeek)].map((_, index) => {
-            const weekNum = currentWeek - index;
-            return (
-              <MenuItem key={weekNum} value={weekNum}>
-                {weekNum}
-              </MenuItem>
-            );
-          })}
-        </Select>
-      </FormControl>
-    </Box>
+    <FormControl variant="standard" sx={{ flex: "none" }}>
+      <Box component="span" id="week-select-label" sx={visuallyHidden}>
+        Week
+      </Box>
+      <Select
+        // 40px tall so it's an easy tap target and matches the picker.
+        sx={{
+          pl: "12px",
+          minHeight: 40,
+          borderRadius: "999px",
+          fontWeight: 600,
+          fontSize: "0.875rem",
+          whiteSpace: "nowrap",
+        }}
+        labelId="week-select-label"
+        id="week-drop-down"
+        value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
+        onChange={handleChange}
+        // One span: the select lays its value out as flex, which would
+        // drop the space between "Week" and the number.
+        renderValue={(value) => (
+          <span>
+            <Box
+              component="span"
+              sx={{ display: { xs: "none", md: "inline" } }}
+            >
+              Week{" "}
+            </Box>
+            <Box
+              component="span"
+              sx={{ display: { xs: "inline", md: "none" } }}
+            >
+              Wk{" "}
+            </Box>
+            {value}
+          </span>
+        )}
+      >
+        {[...Array(currentWeek)].map((_, index) => {
+          const weekNum = currentWeek - index;
+          return (
+            <MenuItem key={weekNum} value={weekNum}>
+              Week {weekNum}
+            </MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
   );
 }

@@ -1,4 +1,9 @@
-import { moneyStandings } from "./usersTableUtils";
+import {
+  moneyStandings,
+  prizeWeeksLeft,
+  shownMoneyStandings,
+} from "./usersTableUtils";
+import { paidLineNote } from "./MoneyLines";
 
 const PAID = { overall: 5, first_half: 3, second_half: 3 };
 const row = (
@@ -67,5 +72,84 @@ describe("moneyStandings", () => {
 
   it("says nothing for a player who isn't in the list", () => {
     expect(moneyStandings(firstHalf, "zz", PAID, false)).toEqual([]);
+  });
+});
+
+describe("prizeWeeksLeft", () => {
+  it("counts the browsed week until its games are final", () => {
+    expect(prizeWeeksLeft("1st half", 4, 10, false)).toBe(6);
+    expect(prizeWeeksLeft("1st half", 4, 10, true)).toBe(5);
+    expect(prizeWeeksLeft("Overall", 4, 10, false)).toBe(15);
+    expect(prizeWeeksLeft("2nd half", 17, 10, true)).toBe(1);
+  });
+
+  it("never goes below zero once a half is over", () => {
+    expect(prizeWeeksLeft("1st half", 12, 10, true)).toBe(0);
+  });
+});
+
+describe("shownMoneyStandings", () => {
+  const out = (prize: "1st half" | "Overall", ptsOut: number) => ({
+    prize,
+    cutoff: prize === "1st half" ? 3 : 5,
+    inMoney: false,
+    ptsOut,
+  });
+
+  it("keeps gaps within reach of the weeks left", () => {
+    // Week 4 before kickoff: 6 weeks left in the half (reach 4), 15 overall
+    // (reach 6).
+    const shown = shownMoneyStandings(
+      [out("1st half", 4), out("Overall", 7)],
+      4,
+      10,
+      false
+    );
+    expect(shown).toEqual([{ ...out("1st half", 4), weeksLeft: 6 }]);
+  });
+
+  it("drops the same gap late in the half", () => {
+    // Week 9 before kickoff: 1 week left in the half (reach 2).
+    expect(shownMoneyStandings([out("1st half", 3)], 9, 10, false)).toEqual([]);
+  });
+
+  it("always keeps a prize you're in the money for", () => {
+    const inMoney = {
+      prize: "1st half" as const,
+      cutoff: 3,
+      inMoney: true,
+      ptsOut: 0,
+    };
+    expect(shownMoneyStandings([inMoney], 9, 10, true)).toEqual([
+      { ...inMoney, weeksLeft: 0 },
+    ]);
+  });
+});
+
+describe("paidLineNote", () => {
+  const standings = [
+    {
+      prize: "1st half" as const,
+      cutoff: 3,
+      inMoney: false,
+      ptsOut: 3,
+      weeksLeft: 6,
+    },
+    {
+      prize: "Overall" as const,
+      cutoff: 5,
+      inMoney: true,
+      ptsOut: 0,
+      weeksLeft: 15,
+    },
+  ];
+
+  it("says how far back on a prize being chased", () => {
+    expect(paidLineNote(standings, "1st half")).toBe("you're 3 pts back");
+  });
+
+  it("says nothing on a prize you're in, or one out of reach", () => {
+    expect(paidLineNote(standings, "Overall")).toBeUndefined();
+    expect(paidLineNote(standings, "2nd half")).toBeUndefined();
   });
 });

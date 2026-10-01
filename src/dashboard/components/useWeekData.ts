@@ -4,8 +4,7 @@ import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetRecapByWeek } from "../data/GetRecapByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
-import { GetUserSeasonTrends } from "../data/GetUserSeasonTrends";
-import { GameStatus, RankedUser, UserSeasonTrends, WeekRecap } from "../types";
+import { GameStatus, RankedUser, WeekRecap } from "../types";
 
 const LIVE_STATUSES = [
   GameStatus.Inprogress,
@@ -21,8 +20,9 @@ export interface LeaderboardStatus {
 }
 
 // Everything MainGrid polls for the browsed week: the leaderboard (shared by
-// every tab), the recap (strip plus in-context badges) and whether any game
-// is live (the Scoreboard tab's dot).
+// every tab), the recap (strip plus in-context badges), whether any game is
+// live (the Scoreboard tab's dot) and whether every game is final (how many
+// weeks are left to catch the money).
 export function useWeekData(season: number, week: number) {
   const [userList, setUserList] = useState<RankedUser[]>([]);
   const [leaderboardStatus, setLeaderboardStatus] = useState<LeaderboardStatus>(
@@ -30,6 +30,7 @@ export function useWeekData(season: number, week: number) {
   );
   const [recap, setRecap] = useState<WeekRecap | undefined>(undefined);
   const [hasLiveGame, setHasLiveGame] = useState(false);
+  const [weekComplete, setWeekComplete] = useState(false);
 
   // Switching weeks clears the old week first, so its standings never sit
   // under the new week's number while the new ones load. A failed poll
@@ -58,16 +59,21 @@ export function useWeekData(season: number, week: number) {
   }, [season, week]);
 
   useEffect(() => {
+    setWeekComplete(false);
     if (season > 0 && week > 0) {
       return GetGameDataByWeek(season, week, (games) => {
         setHasLiveGame(
           games.some((game) => LIVE_STATUSES.includes(game.status))
         );
+        setWeekComplete(
+          games.length > 0 &&
+            games.every((game) => game.status === GameStatus.Final)
+        );
       });
     }
   }, [season, week]);
 
-  return { userList, leaderboardStatus, recap, hasLiveGame };
+  return { userList, leaderboardStatus, recap, hasLiveGame, weekComplete };
 }
 
 // The selected user, persisted to localStorage under "user". Cleared if the
@@ -90,23 +96,6 @@ export function useSelectedUser(userList: RankedUser[]) {
   return [user, onUserChange] as const;
 }
 
-// Season streak badge + weekly hot/cold icon on the selected-user header --
-// just the one user, not the whole roster like UsersTable's fetch.
-export function useSelectedUserTrends(season: number, user: string) {
-  const [trends, setTrends] = useState<UserSeasonTrends | undefined>(undefined);
-
-  useEffect(() => {
-    if (season > 0 && user) {
-      return GetUserSeasonTrends([user], season, (all) => setTrends(all[user]));
-    }
-    setTrends(undefined);
-  }, [season, user]);
-
-  return trends;
-}
-
-// Only decides whether the Admin tab is shown -- the Worker enforces access
-// on every /api/admin/* request regardless of what the UI renders.
 export function useIsAdmin() {
   const [isAdmin, setIsAdmin] = useState(false);
 

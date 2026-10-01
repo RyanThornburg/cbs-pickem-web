@@ -19,6 +19,12 @@ describe("paidLines", () => {
     });
   });
 
+  it("tags each line with its prize, for the selected player's gap note", () => {
+    const lines = paidLines(rows([1, 2, 3, 4, 5, 6, 7]), byPlace, PAID, false);
+    expect(lines.get(2)?.[0].prize).toBe("1st half");
+    expect(lines.get(4)?.[0].prize).toBe("Overall");
+  });
+
   it("keeps everyone tied at a cutoff above the line", () => {
     // Week 3: T2 twice, then five tied at 4th.
     const r = rows([1, 2, 2, 4, 4, 4, 4, 4, 9, 9]);

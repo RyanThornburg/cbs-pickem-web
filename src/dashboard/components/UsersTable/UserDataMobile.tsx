@@ -13,6 +13,7 @@ import { styled } from "@mui/material/styles";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { PaidLineRule } from "./PaidLineRule";
+import { paidLineNote } from "./MoneyLines";
 import { UserTrendPanel } from "./UserTrendPanel";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
@@ -42,6 +43,7 @@ export default function UserDataMobile({
   recap,
   showStreak,
   trends,
+  moneyStandings,
 }: UserGridWithTrendsProps) {
   const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
     userList,
@@ -161,7 +163,10 @@ export default function UserDataMobile({
                       colSpan={mainCells.length}
                       sx={{ py: 0, border: 0 }}
                     >
-                      <PaidLineRule label={line.label} />
+                      <PaidLineRule
+                        label={line.label}
+                        note={paidLineNote(moneyStandings, line.prize)}
+                      />
                     </StyledTableCell>
                   </TableRow>
                 ))}

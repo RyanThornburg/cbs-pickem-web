@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { GameStatus, UserPick } from "../../types";
-import { StatusColor } from "../../helper";
+import { StatusColor, visuallyHidden } from "../../helper";
 import Paper from "@mui/material/Paper";
 import { Divider, Stack, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
@@ -18,19 +18,6 @@ const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
   }
   return "NONE";
 };
-
-// Read by screen readers, not shown.
-const visuallyHidden = {
-  position: "absolute",
-  width: 1,
-  height: 1,
-  margin: "-1px",
-  padding: 0,
-  border: 0,
-  overflow: "hidden",
-  clip: "rect(0 0 0 0)",
-  whiteSpace: "nowrap",
-} as const;
 
 // A second channel besides the tile color (DESIGN.md's "Status Needs A
 // Second Channel" rule): an icon for sighted users, words for screen readers.

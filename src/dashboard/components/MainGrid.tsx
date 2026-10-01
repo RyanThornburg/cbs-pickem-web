@@ -5,10 +5,11 @@ import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -21,7 +22,6 @@ import UserSelectDropdown from "./UserSelectDropdown";
 import PickYourselfHint from "./PickYourselfHint";
 import PastWeekNotice from "./PastWeekNotice";
 import WeekDropdown from "./WeekDropdown";
-import UserSelected from "./UserSelected";
 import {
   ADMIN_TAB,
   AppTab,
@@ -31,16 +31,22 @@ import {
   setStoredTab,
 } from "../utils/defaultTab";
 import UsersTable from "./UsersTable";
+import { UserGamePicksStack } from "./UsersTable/UserPickStack";
+import { useMoneyStandings } from "./UsersTable/useMoneyStandings";
+import { visuallyHidden } from "../helper";
 import RecapStrip from "./Recap/RecapStrip";
 import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
-import UserSelectedMain from "./UserSelected/UserSelectedMain";
 import { useCurrentWeek } from "./CurrentWeekContext";
-import {
-  useIsAdmin,
-  useSelectedUser,
-  useSelectedUserTrends,
-  useWeekData,
-} from "./useWeekData";
+import { useIsAdmin, useSelectedUser, useWeekData } from "./useWeekData";
+
+const TAB_TITLES: Record<AppTab, string> = {
+  picks: "User Picks",
+  games: "Games",
+  scoreboard: "Scoreboard",
+  trends: "Trends",
+  [RECORDS_TAB]: "Records",
+  [ADMIN_TAB]: "Admin",
+};
 
 export default function MainGrid() {
   const { currentWeek, season, secondHalfStartWeek, cbsPoolUrl } =
@@ -59,11 +65,20 @@ export default function MainGrid() {
   // The hot streak badge is season data as of now, with no week-by-week
   // history, so it only shows while browsing the current week.
   const isCurrentWeek = selectedWeek === currentWeek;
-  const { userList, leaderboardStatus, recap, hasLiveGame } = useWeekData(
-    season,
-    selectedWeek
-  );
+  const { userList, leaderboardStatus, recap, hasLiveGame, weekComplete } =
+    useWeekData(season, selectedWeek);
   const [user, onUserChange] = useSelectedUser(userList);
+  const selectedUser = user
+    ? userList.find((entry) => entry.id === user)
+    : undefined;
+  const moneyStandings = useMoneyStandings(
+    userList,
+    user,
+    selectedWeek,
+    weekComplete
+  );
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // After picking someone on User Picks, bring their row into view if it's
@@ -106,7 +121,6 @@ export default function MainGrid() {
       ?.scrollIntoView({ block: "center" });
     setUserMenuOpen(true);
   };
-  const selectedUserTrends = useSelectedUserTrends(season, user);
   const isAdmin = useIsAdmin();
 
   const activeTab: AppTab | null = isPrimaryTab(tab)
@@ -117,6 +131,9 @@ export default function MainGrid() {
   // Pipeline status has nothing to do with a week or a player, so the admin
   // page drops the dropdowns and the selected-player header.
   const showPlayerControls = activeTab !== ADMIN_TAB;
+  // Games is pregame research and Records is all-time, so neither shows
+  // the player's picks or money; the picker keeps name, place and score.
+  const showWeekPicks = activeTab !== "games" && activeTab !== RECORDS_TAB;
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
@@ -127,6 +144,14 @@ export default function MainGrid() {
       navigate(`/${getInitialTab()}`, { replace: true });
     }
   }, [activeTab, navigate]);
+
+  // Phones don't show the site name, so the browser tab carries it, and a
+  // tab change reads as a page change.
+  useEffect(() => {
+    if (activeTab !== null) {
+      document.title = `${TAB_TITLES[activeTab]} · Morlocked Pick'em`;
+    }
+  }, [activeTab]);
 
   // A past week carries over to the next tab; other params (Trends'
   // ?view=) belong to the tab they were set on.
@@ -151,105 +176,82 @@ export default function MainGrid() {
       {/* cards */}
       {currentWeek !== 0 && activeTab !== null && (
         <>
-          <Grid
-            container
-            spacing={{ xs: 4, lg: 2 }}
-            rowSpacing={0.5}
+          {/* Desktop: a small site name, then the week's picks, the Week
+              pill and the player card (place, score, money lines). Phones
+              drop the visible site name (the browser tab carries it) and
+              put the Week pill and player picker on one row, picks below
+              (also below from md to lg, where the row can't fit them). */}
+          <Box
+            component="header"
             sx={{
               mt: 2,
-              justifyContent: "space-between",
+              display: "flex",
+              flexWrap: "wrap",
               alignItems: "center",
+              columnGap: 2,
+              rowGap: 1.25,
             }}
           >
-            {/* From lg up the pick summary shares the header row, pushed
-                right next to the Week/User dropdowns since it describes the
-                selected user. If it can't fit it wraps below rather than
-                squeezing the title onto two lines. */}
-            <Grid size={{ xs: 12, sm: "grow" }} sx={{ minWidth: 0 }}>
+            <Typography
+              component="h1"
+              sx={(theme) => ({
+                mr: "auto",
+                fontSize: "0.9375rem",
+                fontWeight: 700,
+                letterSpacing: "-0.01em",
+                whiteSpace: "nowrap",
+                [theme.breakpoints.down("md")]: visuallyHidden,
+              })}
+            >
+              Morlocked{" "}
               <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  columnGap: 3,
-                  rowGap: 1,
-                }}
+                component="span"
+                sx={{ color: "text.secondary", fontWeight: 500 }}
               >
-                <Typography
-                  align="left"
-                  variant="h5"
-                  sx={{ whiteSpace: { lg: "nowrap" } }}
-                >
-                  Morlocked Pick'em
-                </Typography>
-                <Box
-                  sx={{
-                    display: { xs: "none", lg: "block" },
-                    ml: "auto",
-                    mr: 1,
-                  }}
-                >
-                  {showPlayerControls && (
-                    <UserSelectedMain
-                      userId={user}
-                      userList={userList}
-                      userTrends={selectedUserTrends}
-                      showStreak={isCurrentWeek}
-                    />
-                  )}
-                </Box>
+                Pick'em
               </Box>
-            </Grid>
-
-            {showPlayerControls && (
-              <Grid
-                size={{ xs: 12, sm: "auto" }}
+            </Typography>
+            {showPlayerControls && showWeekPicks && selectedUser && (
+              <Box
+                // Beside the Week pill from lg; below the header row on
+                // narrower screens, where the card needs the room.
                 sx={{
-                  alignItems: { xs: "center", sm: "flex-end" },
+                  order: { xs: 3, lg: 0 },
+                  width: { xs: "100%", lg: "auto" },
                 }}
               >
-                <Stack
-                  sx={{
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    pb: 2,
-                  }}
-                  spacing={2}
-                  direction="row"
-                >
-                  {/* Records isn't weekly data, so there's no week to pick. */}
-                  {activeTab !== RECORDS_TAB && (
-                    <WeekDropdown
-                      currentWeek={currentWeek}
-                      selectedWeek={selectedWeek}
-                      onWeekChange={onWeekChange}
-                    />
-                  )}
-                  <UserSelectDropdown
-                    userList={userList}
-                    user={user}
-                    onUserChange={handleUserChange}
-                    open={userMenuOpen}
-                    onOpenChange={setUserMenuOpen}
-                    onMenuClosed={scrollToPendingRow}
-                  />
-                </Stack>
-              </Grid>
+                {UserGamePicksStack(
+                  selectedUser.picks,
+                  true,
+                  selectedUser.has_submitted_picks
+                )}
+              </Box>
             )}
-
-            {showPlayerControls && (
-              <UserSelected
-                userId={user}
-                userList={userList}
-                userTrends={selectedUserTrends}
-                showStreak={isCurrentWeek}
+            {showPlayerControls && activeTab !== RECORDS_TAB && (
+              // Records isn't weekly data, so there's no week to pick.
+              <WeekDropdown
+                currentWeek={currentWeek}
+                selectedWeek={selectedWeek}
+                onWeekChange={onWeekChange}
               />
             )}
-          </Grid>
+            {showPlayerControls && (
+              <UserSelectDropdown
+                userList={userList}
+                user={user}
+                onUserChange={handleUserChange}
+                open={userMenuOpen}
+                onOpenChange={setUserMenuOpen}
+                onMenuClosed={scrollToPendingRow}
+                summary={isDesktop ? "card" : "compact"}
+                standings={showWeekPicks ? moneyStandings : []}
+              />
+            )}
+          </Box>
 
           <Box
             sx={{
-              mt: 2,
+              mt: 1.5,
               borderBottom: 1,
               borderColor: "divider",
               display: "flex",
@@ -417,6 +419,7 @@ export default function MainGrid() {
                 season={season}
                 recap={recap}
                 showStreak={isCurrentWeek}
+                moneyStandings={moneyStandings}
               />
             </Grid>
             <Grid

@@ -5,10 +5,11 @@ import UserDataMobile from "./UserDataMobile";
 import { UserGridProps } from "./types";
 import { UserSeasonTrends } from "../../types";
 import { GetUserSeasonTrends } from "../../data/GetUserSeasonTrends";
-import { StandingsPlaceholder, StandingsStatusLine } from "./StandingsStatus";
+import { RefreshFailedLine, StandingsPlaceholder } from "./StandingsStatus";
+import { PinnedPlayerRow } from "./PinnedPlayerRow";
 
 export default function UsersTable(props: UserGridProps) {
-  const { userList, season, userId, showSecondHalf, week, leaderboardStatus } =
+  const { userList, season, userId, week, leaderboardStatus, moneyStandings } =
     props;
   const [trends, setTrends] = useState<Record<string, UserSeasonTrends>>({});
 
@@ -35,12 +36,7 @@ export default function UsersTable(props: UserGridProps) {
 
   return (
     <>
-      <StandingsStatusLine
-        userList={userList}
-        userId={userId}
-        showSecondHalf={showSecondHalf}
-        leaderboardStatus={leaderboardStatus}
-      />
+      <RefreshFailedLine leaderboardStatus={leaderboardStatus} />
       <Grid
         id="gridUser"
         size={{ xs: 12, sm: 12, xl: 7 }}
@@ -56,6 +52,10 @@ export default function UsersTable(props: UserGridProps) {
       <Grid sx={{ display: { xs: "block", sm: "none" } }} size={{ xs: 12 }}>
         <UserDataMobile {...gridProps} />
       </Grid>
+      <PinnedPlayerRow
+        user={userList.find((user) => user.id === userId)}
+        standings={moneyStandings}
+      />
     </>
   );
 }
