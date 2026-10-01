@@ -24,8 +24,10 @@ export default function UserSelectDropdown({
   onOpenChange,
   onMenuClosed,
 }: Props) {
+  // Case-insensitive, so lowercase names sit with their letter instead of
+  // after "Z".
   const users = [...userList].sort((a, b) =>
-    a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -63,9 +65,13 @@ export default function UserSelectDropdown({
           }
           label="User"
         >
-          <MenuItem value="">
-            <em>No one</em>
-          </MenuItem>
+          {/* Only to clear a choice; with no one chosen it would just be
+              the highlighted first item when the menu opens. */}
+          {user && (
+            <MenuItem value="">
+              <em>No one</em>
+            </MenuItem>
+          )}
           {users.map((userItem: RankedUser) => {
             return (
               <MenuItem

@@ -75,7 +75,14 @@ export function CategoryMark({
   );
 }
 
-export function ScopeTag({ scope }: { scope: "week" | "season" }) {
+// "This week", or "Week N" when the strip is showing a past week's items.
+export function ScopeTag({
+  scope,
+  week: pastWeek,
+}: {
+  scope: "week" | "season";
+  week?: number;
+}) {
   const week = scope === "week";
   return (
     <Box
@@ -90,10 +97,11 @@ export function ScopeTag({ scope }: { scope: "week" | "season" }) {
         py: "1px",
         whiteSpace: "nowrap",
         bgcolor: week ? "hsl(210, 100%, 95%)" : "hsl(220, 30%, 94%)",
-        color: week ? "primary.main" : "text.secondary",
+        // brand 700-ish on the pale blue: 5:1 (primary.main was 4.1:1).
+        color: week ? "#1565c0" : "text.secondary",
       }}
     >
-      {week ? "This week" : "Season"}
+      {week ? (pastWeek ? `Week ${pastWeek}` : "This week") : "Season"}
     </Box>
   );
 }

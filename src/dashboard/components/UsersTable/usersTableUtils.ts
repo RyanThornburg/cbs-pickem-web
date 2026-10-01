@@ -132,3 +132,75 @@ export const paidLines = (
   }
   return lines;
 };
+
+export interface MoneyStanding {
+  prize: "1st half" | "2nd half" | "Overall";
+  cutoff: number;
+  inMoney: boolean;
+  // Points behind the last paid score (tying it is enough); 0 when in.
+  ptsOut: number;
+}
+
+interface MoneyStandingRow {
+  id: string;
+  place: number | null;
+  second_half_place: number | null;
+  score: number;
+  second_half_score: number;
+}
+
+// Where one player stands against each prize being played for right now,
+// on the same displayed scores and ranks as the table and its paid lines:
+// the 1st half and overall until the 2nd half starts (both rank the same
+// points), then the 2nd half and overall. Empty before anyone has scored,
+// when everyone is tied for 1st.
+export const moneyStandings = (
+  rows: MoneyStandingRow[],
+  userId: string,
+  paid: { overall: number; first_half: number; second_half: number },
+  secondHalf: boolean
+): MoneyStanding[] => {
+  const me = rows.find((row) => row.id === userId);
+  if (!me || !rows.some((row) => row.score > 0)) return [];
+
+  const standing = (
+    prize: MoneyStanding["prize"],
+    cutoff: number,
+    placeOf: (row: MoneyStandingRow) => number | null,
+    scoreOf: (row: MoneyStandingRow) => number
+  ): MoneyStanding | null => {
+    const myPlace = placeOf(me);
+    if (myPlace == null) return null;
+    if (myPlace <= cutoff) return { prize, cutoff, inMoney: true, ptsOut: 0 };
+    const paidScores = rows
+      .filter((row) => {
+        const place = placeOf(row);
+        return place != null && place <= cutoff;
+      })
+      .map(scoreOf);
+    if (!paidScores.length) return null;
+    const ptsOut = Math.max(0, Math.min(...paidScores) - scoreOf(me));
+    return { prize, cutoff, inMoney: false, ptsOut };
+  };
+
+  const half = secondHalf
+    ? standing(
+        "2nd half",
+        paid.second_half,
+        (row) => row.second_half_place,
+        (row) => row.second_half_score
+      )
+    : standing(
+        "1st half",
+        paid.first_half,
+        (row) => row.place,
+        (row) => row.score
+      );
+  const overall = standing(
+    "Overall",
+    paid.overall,
+    (row) => row.place,
+    (row) => row.score
+  );
+  return [half, overall].filter((s): s is MoneyStanding => s !== null);
+};

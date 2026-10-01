@@ -14,6 +14,7 @@ import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { PaidLineRule } from "./PaidLineRule";
 import { UserTrendPanel } from "./UserTrendPanel";
+import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
 
 const StyledTableCellHeader = styled(TableCell)(() => ({
@@ -50,13 +51,9 @@ export default function UserDataMobile({
     showStreak,
   });
 
-  if (userList.length === 0) {
-    return null;
-  }
-
   return (
     <TableContainer>
-      <Table size="small" aria-label="a dense table">
+      <Table size="small" aria-label="Standings and picks">
         <TableHead>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -90,6 +87,7 @@ export default function UserDataMobile({
                         header.getContext()
                       ))
                     )}
+                    {header.column.id === "name" && <BadgeKey />}
                   </StyledTableCellHeader>
                 ))}
             </TableRow>

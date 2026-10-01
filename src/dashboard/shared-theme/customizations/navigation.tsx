@@ -79,6 +79,13 @@ export const navigationCustomizations: Components<Theme> = {
           outlineOffset: 0,
           borderColor: gray[400],
         },
+        // The app's focus ring when reached by keyboard. The focusable
+        // element is the inner combobox, so the ring goes on the box
+        // around it; a mouse choice doesn't light it up.
+        [`&:has(.${selectClasses.select}:focus-visible)`]: {
+          outline: `3px solid ${brand[500]}`,
+          outlineOffset: "2px",
+        },
         "&:before, &:after": {
           display: "none",
         },

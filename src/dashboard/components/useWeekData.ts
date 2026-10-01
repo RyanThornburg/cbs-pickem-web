@@ -13,17 +13,40 @@ const LIVE_STATUSES = [
   GameStatus.Delayed,
 ];
 
+// How the browsed week's leaderboard poll is going, for User Picks' loading,
+// error and "Updated" states. `updatedAt` is null until the first success.
+export interface LeaderboardStatus {
+  updatedAt: Date | null;
+  failed: boolean;
+}
+
 // Everything MainGrid polls for the browsed week: the leaderboard (shared by
 // every tab), the recap (strip plus in-context badges) and whether any game
 // is live (the Scoreboard tab's dot).
 export function useWeekData(season: number, week: number) {
   const [userList, setUserList] = useState<RankedUser[]>([]);
+  const [leaderboardStatus, setLeaderboardStatus] = useState<LeaderboardStatus>(
+    { updatedAt: null, failed: false }
+  );
   const [recap, setRecap] = useState<WeekRecap | undefined>(undefined);
   const [hasLiveGame, setHasLiveGame] = useState(false);
 
+  // Switching weeks clears the old week first, so its standings never sit
+  // under the new week's number while the new ones load. A failed poll
+  // keeps the last good standings and only flags the failure.
   useEffect(() => {
+    setUserList([]);
+    setLeaderboardStatus({ updatedAt: null, failed: false });
     if (season > 0 && week > 0) {
-      return GetUserByWeek(season, week, setUserList);
+      return GetUserByWeek(
+        season,
+        week,
+        (users) => {
+          setUserList(users);
+          setLeaderboardStatus({ updatedAt: new Date(), failed: false });
+        },
+        () => setLeaderboardStatus((status) => ({ ...status, failed: true }))
+      );
     }
   }, [season, week]);
 
@@ -44,7 +67,7 @@ export function useWeekData(season: number, week: number) {
     }
   }, [season, week]);
 
-  return { userList, recap, hasLiveGame };
+  return { userList, leaderboardStatus, recap, hasLiveGame };
 }
 
 // The selected user, persisted to localStorage under "user". Cleared if the

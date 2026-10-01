@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { WeekRecap } from "../../types";
 import { CategoryMark, ScopeTag } from "./recapCategory";
@@ -17,15 +17,22 @@ const ROTATE_MS = 8000;
 
 type Props = {
   recap: WeekRecap | undefined;
+  // False while browsing a past week: its items get tagged "Week N".
+  isCurrentWeek: boolean;
 };
 
 // One-line rotating strip of the week's top items on User Picks. Unseen
 // items come first; rotation pauses while hovered or focused, and doesn't
 // auto-advance at all for reduced motion.
-export default function RecapStrip({ recap }: Props) {
+export default function RecapStrip({ recap, isCurrentWeek }: Props) {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Screen readers hear the headline only after a manual step, not on
+  // every 8-second rotation.
+  const [announce, setAnnounce] = useState(false);
+  const [searchParams] = useSearchParams();
+  const pastWeek = searchParams.get("week");
 
   const season = recap?.season ?? 0;
   const week = recap?.week ?? 0;
@@ -61,8 +68,10 @@ export default function RecapStrip({ recap }: Props) {
 
   if (!current) return null;
 
-  const step = (delta: number) =>
+  const step = (delta: number) => {
+    setAnnounce(true);
     setIndex((i) => (i + delta + items.length) % items.length);
+  };
 
   return (
     <Box
@@ -93,7 +102,10 @@ export default function RecapStrip({ recap }: Props) {
       <CategoryMark category={current.category} />
       <Box sx={{ minWidth: 0 }}>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 0.25 }}>
-          <ScopeTag scope={current.scope} />
+          <ScopeTag
+            scope={current.scope}
+            week={isCurrentWeek ? undefined : week}
+          />
           <Typography
             variant="caption"
             sx={{
@@ -105,7 +117,7 @@ export default function RecapStrip({ recap }: Props) {
           </Typography>
         </Box>
         <Typography
-          aria-live="polite"
+          aria-live={announce ? "polite" : "off"}
           sx={{ fontSize: "0.9rem", fontWeight: 500 }}
         >
           {/* The full sentence has room on desktop; phones get the
@@ -138,14 +150,20 @@ export default function RecapStrip({ recap }: Props) {
           {items.map((item, i) => {
             const on = i === index % items.length;
             return (
-              // The button is a 24px-tall hit area; the dot is drawn inside it.
+              // The button is a 24px-tall hit area; the dot is drawn inside
+              // it. Out of the tab order: Previous/Next are the keyboard
+              // way through, rather than eight stops before the table.
               <Box
                 key={item.id}
                 component="button"
                 type="button"
+                tabIndex={-1}
                 aria-label={`Show item ${i + 1}`}
                 aria-current={on}
-                onClick={() => setIndex(i)}
+                onClick={() => {
+                  setAnnounce(true);
+                  setIndex(i);
+                }}
                 sx={{
                   display: "grid",
                   placeItems: "center",
@@ -172,7 +190,10 @@ export default function RecapStrip({ recap }: Props) {
         </IconButton>
         <Link
           component={RouterLink}
-          to="/trends"
+          to={{
+            pathname: "/trends",
+            search: pastWeek ? `?week=${pastWeek}` : "",
+          }}
           underline="hover"
           sx={{
             fontSize: "0.78rem",

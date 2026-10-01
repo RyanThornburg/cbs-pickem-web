@@ -12,7 +12,7 @@ colors:
   missed-red: "#d32f2f"
   caution-orange: "#ed6c02"
   trophy-gold: "#d4a017"
-  trophy-gold-deep: "#a87f12"
+  trophy-gold-deep: "#8a6a0f"
   medal-silver: "#c3c7cf"
   medal-bronze: "#d9a27a"
   selected-lime: "#f0f4c3"
@@ -177,14 +177,14 @@ The palette is ink on white paper, a traffic-light status set for results, and o
 - **Office Blue** (`office-blue`): MUI's default primary. It's used sparingly: the inset 3px marker on the "you" row in Records tables, focus rings, and links. It isn't a brand color, just the default accent the app inherited.
 
 ### Secondary
-- **Trophy Gold** (`trophy-gold`): honors only. The defending champion's trophy, the 1st-place medal tile, the "▲ Highest score" champion badge, the gold 5-0 name badge, and chart highlights for perfect weeks. **Deep Trophy Gold** (`trophy-gold-deep`) is the text-safe version, used on the Records tab label and icon.
+- **Trophy Gold** (`trophy-gold`): honors only. The defending champion's trophy, the 1st-place medal tile, the "▲ Highest score" champion badge, the gold 5-0 name badge, and chart highlights for perfect weeks. **Deep Trophy Gold** (`trophy-gold-deep`, 5.1:1 on white) is the text-safe version, used on the Records tab label and icon, the paid lines and "in the money". It was `#a87f12` (3.7:1) until 2026-10-01. Icons on a pale gold tile (the defending-champion trophy) use `#9a7410` to reach 3:1.
 - **Medal Silver** (`medal-silver`) and **Medal Bronze** (`medal-bronze`): 2nd- and 3rd-place tiles on the leader cards, with dark text for contrast.
 
 ### Tertiary (status)
 - **Covered Green** (`covered-green`) and **Missed Red** (`missed-red`): won or lost, covering or not. Used in the your-pick badge, the pick-split bar, ATS tags and fourth-down text.
 - **Pick fills**: each of the five pick tiles per row is tinted by result. Won is a pale green fill (`pick-won-fill`), lost is pale pink (`pick-lost-fill`), and open or TBD is pale blue (`pick-open-fill`). Once a game is final the tile gets a thin solid edge in the matching mid tone (`*-edge`). While it's live the edge is dashed and the text is italic.
 - **Caution Orange** (`caution-orange`): warnings, and the shared theme's `Alert` (which paints every alert orange unless a component re-colors it by severity, as `AdminPanel` does).
-- **Streak Flame** (`streak-flame`): the weekly hot icon. The hot-streak pill uses a deeper flame, `streak-pill` to `streak-pill-end`, so its white 11px text reaches 5.6:1 (the brighter flame was 2.7:1).
+- **Streak Flame** (`streak-flame`): the tint behind the weekly hot icon. The icons on the Week column's tinted tiles are darker so they reach 3:1: flame `#d84315`, snowflake `#0277bd`, even dot `#717a8a`. The hot-streak pill uses a deeper flame, `streak-pill` to `streak-pill-end`, so its white 12px text reaches 5.6:1 (the brighter flame was 2.7:1).
 - **Selected Lime** (`selected-lime`): the selected player's row on User Picks and in the leader cards. It's pale yellow-green, so it reads as a highlighter mark, not as a status.
 - **Box score pair**: `away-blue` and `home-orange` are fixed stat-bar colors for away and home in every game, chosen because team colors clashed (ARI/SF, BAL/DAL). `turf-green` is the Scoreboard field strip.
 - **Team colors**: logos, the Games team chips and the drive band use each team's own color from `team_data.json`, applied inline.
@@ -231,7 +231,8 @@ Nothing goes below 0.75rem (12px), including the Games hourly strip.
 
 The page is one centered column: the header (title, the selected player's summary with their five pick tiles, then the Week and User dropdowns), then a row of route tabs (User Picks, Games, Scoreboard, Trends, then after a divider Records and, for the admin, Admin), then the tab's content. MUI's v2 `Grid` handles columns with breakpoints at `sm` 600, `md` 900, `lg` 1200 and `xl` 1536.
 
-- **User Picks** is a full-width table: place, name with badges, score, week form, then five pick tiles. On phones it switches to a separate `UserDataMobile` table with the picks stacked, and badges wrap under the name.
+- **User Picks** is a full-width table: place, name with badges, score, week form, then five pick tiles. On phones it switches to a separate `UserDataMobile` table with the picks stacked, and badges wrap under the name. A status line sits above the table: the selected player's money standing on the left and "Updated 2:41 PM" on the right. Before the table loads there are skeleton rows; if it can't load, a bordered note says so and that it retries every minute. It's never a blank tab.
+- **Past weeks** are in the URL (`?week=3`), and every weekly tab gets a quiet slate-50 notice under the tab row ("Week 3 · a past week, not this week" with a "Back to week 4" button), so old standings can't pass for this week's.
 - **Scoreboard** uses two-column game cards on desktop and one on phones, or a compact list, grouped Live → Upcoming → Final, each in kickoff order. The order never changes with game state.
 - **Games** is a fixed-layout table with a horizontal scroll floor of 820px, which becomes a stacked card per game on phones.
 - **Trends** uses rows of up to four cards on desktop, with the season team table at `lg: 8` beside the All Alone Log at `lg: 4`.
@@ -272,7 +273,7 @@ Quiet and tactile. Ripples are off everywhere; transitions are 100ms.
 
 ### Chips and badges
 - **Theme chips:** pills with a 1px border and 600-weight 12px labels, 20px tall. Default is slate; success and error are pale green and pale red with dark text.
-- **Name badges:** the tiny inline marks next to a player's name. Mover arrows (▲3 green, ▼4 red), the flame streak pill ("🔥 2 wks": the unit keeps it apart from the Week column's this-week flame), the gold trophy, the gold 5-0. They're friendly and small, and never louder than the name itself.
+- **Name badges:** the tiny inline marks next to a player's name. Mover arrows (▲3 green, ▼4 red), the flame streak pill ("🔥 2 wks": the unit keeps it apart from the Week column's this-week flame), the gold trophy, the gold 5-0. They're friendly and small, and never louder than the name itself. Badge text is 12px. Every badge and Week-column icon explains itself on hover, on keyboard focus (the 3px brand ring) or on a tap, never only on hover. A "?" button in the Name header opens a key that draws each mark with its meaning.
 - **Your-pick badge (Scoreboard):** a pill colored by result, with an icon. Covering or won is green with a trend-up or check; not covering or lost is red with a trend-down or ✕; a push is amber with a dash; not started is plain blue.
 
 ### Pick tiles
@@ -297,8 +298,11 @@ From the second-half start week only, two cards: Overall and 2nd half. There are
 ### Paid lines
 A dashed 1.5px rule in Deep Trophy Gold under the last paid place, with a small 12px gold label on the right ("Paid · top 5 overall (8 with the tie)"). In the User Picks table it appears only in rank order: by place (overall, plus the 1st half until the 2nd half starts, since both rank the same points) or by 2nd-half place. Everyone tied at a cutoff sits above the line. The place column marks 1st–3rd with the leader cards' gold, silver and bronze medals; other places are plain numbers, since the line, not the marker color, says who's paid.
 
+### Money standing
+The status line above the User Picks table, shown once a player is chosen and someone has scored: "You · 1st half (top 3): 2 pts out of the money · Overall (top 5): in the money" (2nd half instead of 1st from `second_half_start_week`). It's measured on the same displayed scores and ranks as the paid lines, and tying the last paid score counts as in. "In the money" is set in Deep Trophy Gold, and a gap is set in bold ink. The words carry the meaning, not the color.
+
 ### Recap strip
-A well-rounded (20px) bar at the top of User Picks that rotates the week's recap headlines, with a category icon, a "This week" tag and a dot pager. It pauses on hover or tap.
+A well-rounded (20px) bar at the top of User Picks that rotates the week's recap headlines, with a category icon, a "This week" tag ("Week 3" on a past week) and a dot pager. It pauses on hover, focus or tap. Screen readers hear a headline only after a manual step, not on every rotation, and the dots stay out of the tab order (Previous and Next are the keyboard path).
 
 ### Kickoff Board table (Games)
 White table in a 12px rounded wrapper with a 1px border. The header row is tinted, with bold 12px sentence-case labels like User Picks. Team chips are 5px-rounded with a team-color edge and a 14% team-color fill. Weather flags are small amber or brick pills in sentence case, label then number ("High wind 22 mph", "Precip 60%"; visibility only at dense-fog levels, ¼ mile or less), on their own full-width line under the conditions and the hourly strip, and there's an hourly strip of time, icon and precipitation per hour, with no box behind each hour: only the wettest hour gets a teal tile. A precipitation flag shows only when there's no hourly strip, since the strip already shows the wettest hour. Lines always name the favorite ("PIT −3", "Pick'em" at 0), never a bare home-side number. **CBS line** comes first and biggest (1.125rem bold), since it's the line the pool scores against, with "Falcons covered" (the nickname: "NO covered" read as "no one covered") or "Push" once final and an "ATL edge 2" tag; cover streaks read "BUF: 3 straight covers" / "PHI: 3 straight without a cover"; (points easier, in the tag so phones see it) when CBS is 1+ point easier on a side than Vegas. **Vegas** follows as the comparison: current line, "Opened …" only when the open differs from the current line, a "Moved 4.5 to ARI" badge on 2+ point moves, then "O/U 44.5 · Over". On phones the CBS line block sits between the teams and the weather, with Vegas as one line under it, and kickoff reads "Sun 1:00 PM" over the network, as on desktop (no month and day; every game is in the browsed week). No legend: every label explains itself. The table only shows from 1180px; below that the CBS line wraps and the weather text runs under the hourly strip. Below 1180px Games uses phone-width cards (about 310–420px): one per row under 700px, two from 700px, three from 1000px, with Books pinned to the bottom so cards in a row line up. In the weather cell the conditions cap at 15rem, so on wide screens the hourly strip sits right after them; when fewer than 6rem would be left for the conditions (320px phones, or a 5–6 hour strip) the strip wraps onto its own line, and a strip wider than the whole cell scrolls inside it. On the cards, Books opens as one small table per bet type (Moneyline, Spread, Total) with the books down the side, so nothing scrolls sideways. Only the temperature (or the roof label) links to the forecast, as a 24px-tall target; the phone Books control is a plain 44px row on the card's bottom divider (no fill, so it doesn't outweigh the CBS line); Games buttons and links use the app's 3px solid brand-blue focus ring (4.9:1 on white; it was 50% alpha, 2.2:1, until 2026-09-30). A muted "Odds updated Wed, Sep 30, 9:47 PM" line sits above the table, from the odds feed's `updated_at`. A game with no book data shows "No books" on desktop and no Books row on phones; an open-air game with no saved forecast says "No forecast" with no link. If the week's games fail to load, the tab says so and retries on the next poll instead of spinning. The Games tab is for pregame and odds research only: no pool picks or "you" markers here (those live on User Picks and Scoreboard).

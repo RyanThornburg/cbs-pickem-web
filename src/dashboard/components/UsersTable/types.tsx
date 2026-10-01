@@ -1,7 +1,10 @@
 import { RankedUser, UserSeasonTrends, WeekRecap } from "../../types";
+import { LeaderboardStatus } from "../useWeekData";
 
 export type UserGridProps = {
   userList: RankedUser[];
+  // Loading, failed and "Updated" state of the userList poll.
+  leaderboardStatus: LeaderboardStatus;
   userId: string;
   showSecondHalf: boolean;
   week: number;

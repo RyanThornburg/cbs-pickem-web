@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
+import { MONEY_GOLD } from "./StandingsStatus";
 
-// Deep trophy gold: the prize color, dark enough for 12px text (DESIGN.md).
-const PAID_GOLD = "#a87f12";
+// Deep trophy gold: the prize color, dark enough for 12px text (5.1:1).
+const PAID_GOLD = MONEY_GOLD;
 
 // The dashed "paid" line under the last paid place, in User Picks and the
 // first-half leader card. Its label names the prize and any tie.

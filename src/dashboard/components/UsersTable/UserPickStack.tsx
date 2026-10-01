@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import { GameStatus, UserPick } from "../../types";
 import { StatusColor } from "../../helper";
 import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import { Divider, Stack, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -51,87 +50,73 @@ const pickResult = (
   return { label: "not started" };
 };
 
-const GamePickFormatted = (pick: UserPick, index: number, header: boolean) => {
+// One pick: the fill carries the result, the edge carries the game's state
+// (none before kickoff, dashed and italic while live, solid when final), and
+// an icon plus hidden text repeat the result without color. Also drawn in
+// the badge key.
+export const PickTile = ({
+  pick,
+  header = false,
+}: {
+  pick: UserPick;
+  header?: boolean;
+}) => {
   const team = pick.visible ? pick.team : "TBD";
-
-  const fontWeight = "regular";
-  const fontStyle = "normal";
-
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
 
-  const statusKey = pickStatusKey(pick);
   const { label, Icon } = pickResult(pick, isGameOver);
-  const statusColor = StatusColor[statusKey];
-
-  const Item = styled(Paper)(({ theme }) => [
-    {
-      backgroundColor: statusColor.bgColor,
-      ...theme.typography.body2,
-      // Contains the visually hidden result text, which would otherwise be
-      // placed against the page and widen it.
-      position: "relative",
-      padding: 0.5,
-      width: 60,
-      // The header row is tight at 1200-1400px, so its tiles fit their
-      // content (abbreviation + result icon) instead of the table's 70px,
-      // at the summary's own 13px until xl.
-      [theme.breakpoints.up("lg")]: header
-        ? {
-            width: "auto",
-            minWidth: 44,
-            padding: "0 5px",
-            fontSize: "0.8125rem",
-          }
-        : { width: 70 },
-      [theme.breakpoints.up("xl")]: header ? { fontSize: "0.875rem" } : {},
-      // On phones the five tiles share the row's width instead, so they fit
-      // at 360px (fixed 60px tiles overflowed the table).
-      [theme.breakpoints.only("xs")]: {
-        width: "100%",
-        fontSize: ".75rem",
-      },
-      textAlign: "center",
-      color: theme.palette.text.primary,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      ...theme.applyStyles("dark", { backgroundColor: statusColor.bgBack }),
-    },
-    statusKey === "CORRECT" && {
-      backgroundColor: theme.palette.primary[50],
-    },
-    isGameOver && {
-      border: `thin solid ${statusColor.borderColor}`,
-    },
-    inProgress && {
-      border: `dashed ${statusColor.borderInProgressColor}`,
-      fontStyle: "italic",
-    },
-  ]);
+  const statusColor = StatusColor[pickStatusKey(pick)];
 
   return (
-    <Box key={index} sx={{ flex: { xs: "1 1 0", sm: "none" }, minWidth: 0 }}>
-      <Item>
-        <Box
-          component="span"
-          sx={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "2px",
-            maxWidth: "100%",
-          }}
-        >
-          {team}
-          {Icon && (
-            <Icon aria-hidden sx={{ fontSize: "0.85em", flexShrink: 0 }} />
-          )}
-          <Box component="span" sx={visuallyHidden}>
-            , {label}
-          </Box>
+    <Paper
+      sx={[
+        {
+          typography: "body2",
+          bgcolor: statusColor.bgColor,
+          // Contains the visually hidden result text, which would otherwise
+          // be placed against the page and widen it.
+          position: "relative",
+          // The header row is tight at 1200-1400px, so its tiles fit their
+          // content (abbreviation + result icon) instead of the table's
+          // 70px, at the summary's own 13px until xl. On phones the five
+          // tiles share the row's width instead, so they fit at 360px.
+          padding: header ? { xs: "0.5px", lg: "0 5px" } : "0.5px",
+          width: { xs: "100%", sm: 60, lg: header ? "auto" : 70 },
+          minWidth: header ? { lg: 44 } : undefined,
+          fontSize: header
+            ? { xs: ".75rem", sm: "0.875rem", lg: "0.8125rem", xl: "0.875rem" }
+            : { xs: ".75rem", sm: "0.875rem" },
+          textAlign: "center",
+          color: "text.primary",
+        },
+        isGameOver && { border: `thin solid ${statusColor.borderColor}` },
+        inProgress && {
+          border: `dashed ${statusColor.borderInProgressColor}`,
+          fontStyle: "italic",
+        },
+        (theme) => theme.applyStyles("dark", { bgcolor: statusColor.bgBack }),
+      ]}
+    >
+      <Box
+        component="span"
+        sx={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "2px",
+          maxWidth: "100%",
+        }}
+      >
+        {team}
+        {Icon && (
+          <Icon aria-hidden sx={{ fontSize: "0.85em", flexShrink: 0 }} />
+        )}
+        <Box component="span" sx={visuallyHidden}>
+          , {label}
         </Box>
-      </Item>
-    </Box>
+      </Box>
+    </Paper>
   );
 };
 
@@ -174,7 +159,14 @@ export const UserGamePicksStack = (
         />
       }
     >
-      {picks.map((pick, index) => GamePickFormatted(pick, index, header))}
+      {picks.map((pick) => (
+        <Box
+          key={pick.game_id}
+          sx={{ flex: { xs: "1 1 0", sm: "none" }, minWidth: 0 }}
+        >
+          <PickTile pick={pick} header={header} />
+        </Box>
+      ))}
     </Stack>
   );
 };

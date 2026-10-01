@@ -92,8 +92,13 @@ export default function UserSelected({
             <ScoreWithCovering
               total={(user.cumulative_score ?? 0) + (user.trending_score ?? 0)}
               covering={user.trending_score ?? 0}
-            />{" "}
-            ({ordinal(user.place)})
+            />
+            {user.place != null && (
+              <Box component="span" sx={{ color: "text.secondary" }}>
+                {" · "}
+                {ordinal(user.place)}
+              </Box>
+            )}
           </Box>
 
           {user.second_half_score !== null && (
@@ -105,8 +110,12 @@ export default function UserSelected({
                 }
                 covering={user.trending_score ?? 0}
               />
-              {user.second_half_place != null &&
-                ` (${ordinal(user.second_half_place)})`}
+              {user.second_half_place != null && (
+                <Box component="span" sx={{ color: "text.secondary" }}>
+                  {" · "}
+                  {ordinal(user.second_half_place)}
+                </Box>
+              )}
             </Box>
           )}
         </Stack>

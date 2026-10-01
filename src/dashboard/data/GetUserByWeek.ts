@@ -189,7 +189,8 @@ const toRankedUser = (
 export const GetUserByWeek = (
   season: number,
   week: number,
-  callback: (users: RankedUser[]) => void
+  callback: (users: RankedUser[]) => void,
+  onError?: (error: Error) => void
 ) => {
   if (season === 0 || week === 0) {
     callback([]);
@@ -220,7 +221,8 @@ export const GetUserByWeek = (
       .sort(compareUsers);
   };
 
-  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) =>
-    console.error("Failed to fetch week leaderboard", error)
-  );
+  return pollAsync(load, POLL_INTERVAL_MS, callback, (error) => {
+    console.error("Failed to fetch week leaderboard", error);
+    onError?.(error);
+  });
 };

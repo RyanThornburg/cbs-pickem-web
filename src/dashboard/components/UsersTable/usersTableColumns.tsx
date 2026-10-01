@@ -235,11 +235,16 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
     cell: (info) => {
       const { picks, covering } = info.row.original;
       // Before any of this week's picks is decided or live, a "0" and a
-      // grey dot on every row said nothing; a muted dash does.
+      // grey dot on every row said nothing; a muted dash does (in
+      // secondary ink, 5.7:1; disabled ink was 2.7:1).
       const f = getWeeklyForm(picks);
       if (f.won + f.lost + f.covering + f.notCovering === 0) {
         return (
-          <Box component="span" sx={{ color: "text.disabled" }}>
+          <Box
+            component="span"
+            aria-label="No picks decided yet"
+            sx={{ color: "text.secondary" }}
+          >
             –
           </Box>
         );

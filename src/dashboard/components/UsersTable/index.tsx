@@ -5,9 +5,11 @@ import UserDataMobile from "./UserDataMobile";
 import { UserGridProps } from "./types";
 import { UserSeasonTrends } from "../../types";
 import { GetUserSeasonTrends } from "../../data/GetUserSeasonTrends";
+import { StandingsPlaceholder, StandingsStatusLine } from "./StandingsStatus";
 
 export default function UsersTable(props: UserGridProps) {
-  const { userList, season } = props;
+  const { userList, season, userId, showSecondHalf, week, leaderboardStatus } =
+    props;
   const [trends, setTrends] = useState<Record<string, UserSeasonTrends>>({});
 
   // Sorted, joined into one string so the effect only re-runs when the set
@@ -25,8 +27,20 @@ export default function UsersTable(props: UserGridProps) {
 
   const gridProps = { ...props, trends };
 
+  if (userList.length === 0) {
+    return (
+      <StandingsPlaceholder week={week} leaderboardStatus={leaderboardStatus} />
+    );
+  }
+
   return (
     <>
+      <StandingsStatusLine
+        userList={userList}
+        userId={userId}
+        showSecondHalf={showSecondHalf}
+        leaderboardStatus={leaderboardStatus}
+      />
       <Grid
         id="gridUser"
         size={{ xs: 12, sm: 12, xl: 7 }}

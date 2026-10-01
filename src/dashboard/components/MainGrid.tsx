@@ -10,7 +10,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import AdminPanel from "./AdminPanel";
 import GamesCard from "./GamesCard";
@@ -19,6 +19,7 @@ import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
 import PickYourselfHint from "./PickYourselfHint";
+import PastWeekNotice from "./PastWeekNotice";
 import WeekDropdown from "./WeekDropdown";
 import UserSelected from "./UserSelected";
 import {
@@ -46,11 +47,22 @@ export default function MainGrid() {
     useCurrentWeek();
   const { tab } = useParams<{ tab: string }>();
   const navigate = useNavigate();
-  const [selectedWeek, setSelectedWeek] = useState<number>(currentWeek);
+  const [searchParams, setSearchParams] = useSearchParams();
+  // The browsed week lives in the URL (?week=3), so a reload or a shared
+  // link keeps it. No param, or one out of range, means the current week,
+  // which also follows meta when a new week opens.
+  const urlWeek = Number(searchParams.get("week"));
+  const selectedWeek =
+    Number.isInteger(urlWeek) && urlWeek >= 1 && urlWeek <= currentWeek
+      ? urlWeek
+      : currentWeek;
   // The hot streak badge is season data as of now, with no week-by-week
   // history, so it only shows while browsing the current week.
   const isCurrentWeek = selectedWeek === currentWeek;
-  const { userList, recap, hasLiveGame } = useWeekData(season, selectedWeek);
+  const { userList, leaderboardStatus, recap, hasLiveGame } = useWeekData(
+    season,
+    selectedWeek
+  );
   const [user, onUserChange] = useSelectedUser(userList);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -116,23 +128,23 @@ export default function MainGrid() {
     }
   }, [activeTab, navigate]);
 
+  // A past week carries over to the next tab; other params (Trends'
+  // ?view=) belong to the tab they were set on.
+  const weekSearch = isCurrentWeek ? "" : `?week=${selectedWeek}`;
   const handleTabChange = (_: React.SyntheticEvent, value: AppTab) => {
     if (isPrimaryTab(value)) {
       setStoredTab(value);
     }
-    navigate(`/${value}`);
+    navigate({ pathname: `/${value}`, search: weekSearch });
   };
 
   const onWeekChange = (week: number): void => {
-    setSelectedWeek(week);
+    setSearchParams((params) => {
+      if (week === currentWeek) params.delete("week");
+      else params.set("week", String(week));
+      return params;
+    });
   };
-
-  // Handle selectedWeek initialization
-  useEffect(() => {
-    if (selectedWeek === 0 && currentWeek > 0) {
-      setSelectedWeek(currentWeek);
-    }
-  }, [selectedWeek, currentWeek]);
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
@@ -314,12 +326,13 @@ export default function MainGrid() {
                   ml: { xs: 0.5, sm: 1 },
                   pl: { xs: 1, sm: 1.5 },
                   minWidth: 0,
-                  borderLeft: 1,
-                  borderColor: "divider",
+                  // The theme gives every tab a transparent border on all
+                  // four sides; only the left one is the divider.
+                  borderLeftColor: "divider",
                   borderRadius: 0,
-                  color: "#a87f12",
+                  color: "#8a6a0f",
                   "& .MuiTab-icon": { mr: { xs: 0, sm: 1 } },
-                  "&.Mui-selected": { color: "#a87f12" },
+                  "&.Mui-selected": { color: "#8a6a0f" },
                 }}
               />
               {/* Also rendered while on /admin itself so the Tabs value stays
@@ -333,8 +346,7 @@ export default function MainGrid() {
                   sx={{
                     ml: 1,
                     pl: 1.5,
-                    borderLeft: 1,
-                    borderColor: "divider",
+                    borderLeftColor: "divider",
                     borderRadius: 0,
                     color: "warning.main",
                     "&.Mui-selected": { color: "warning.main" },
@@ -370,6 +382,16 @@ export default function MainGrid() {
             )}
           </Box>
 
+          {!isCurrentWeek &&
+            activeTab !== RECORDS_TAB &&
+            activeTab !== ADMIN_TAB && (
+              <PastWeekNotice
+                week={selectedWeek}
+                currentWeek={currentWeek}
+                onBack={() => onWeekChange(currentWeek)}
+              />
+            )}
+
           <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
             <Grid
               size={{ xs: 12, lg: 12 }}
@@ -385,9 +407,10 @@ export default function MainGrid() {
                   week={selectedWeek}
                 />
               )}
-              <RecapStrip recap={recap} />
+              <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
               <UsersTable
                 userList={userList}
+                leaderboardStatus={leaderboardStatus}
                 userId={user}
                 showSecondHalf={selectedWeek >= secondHalfStartWeek}
                 week={selectedWeek}

@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { SEASON_STREAK_MIN_WEEKS } from "./usersTableUtils";
+import { BadgeTooltip } from "./BadgeTooltip";
 
 // Season-level hot streak, from the user:N:season endpoint's
 // current_season.hot_streak.current_streak -- distinct from WeeklyFormIcon's
@@ -13,15 +13,18 @@ const PICKS_PER_WEEK = 5;
 export function StreakBadge({
   weeks,
   thresholdPct = 0.8,
+  plain,
 }: {
   weeks: number;
   thresholdPct?: number;
+  plain?: boolean;
 }) {
   if (weeks < SEASON_STREAK_MIN_WEEKS) return null;
   const minCorrect = Math.ceil(thresholdPct * PICKS_PER_WEEK - 1e-9);
 
   return (
-    <Tooltip
+    <BadgeTooltip
+      plain={plain}
       title={`Hot streak: ${weeks} straight weeks going ${minCorrect}+ or better`}
     >
       <Box
@@ -35,7 +38,7 @@ export function StreakBadge({
           color: "#fff",
           borderRadius: "12px",
           padding: "1px 7px 1px 5px",
-          fontSize: "0.6875rem",
+          fontSize: "0.75rem",
           fontWeight: 700,
           lineHeight: 1.4,
           whiteSpace: "nowrap",
@@ -46,6 +49,6 @@ export function StreakBadge({
             this week only. */}
         {weeks} wks
       </Box>
-    </Tooltip>
+    </BadgeTooltip>
   );
 }
