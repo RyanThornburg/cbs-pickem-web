@@ -319,12 +319,12 @@ export default function BookOddsTable({
                     <Offer
                       price={book.total.home_price}
                       best={bestOver.has(i)}
-                      prefix="o "
+                      prefix="Over "
                     />
                     <Offer
                       price={book.total.away_price}
                       best={bestUnder.has(i)}
-                      prefix="u "
+                      prefix="Under "
                     />
                   </>
                 )}

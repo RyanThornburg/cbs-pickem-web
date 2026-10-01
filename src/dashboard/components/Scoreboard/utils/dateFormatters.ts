@@ -1,16 +1,11 @@
 import dayjs from "dayjs";
 
-export const formatGameDate = (gameStart: number): string => {
-  return dayjs(gameStart).format("ddd, MMM D");
-};
-
-export const formatGameTime = (gameStart: number): string => {
-  return dayjs(gameStart).format("h:mm A");
-};
-
 // Short weekday + time on one line -- for layouts tight on column width
 // (e.g. GamesCard's Kickoff column) where the full "ddd, MMM DD" date
 // wraps onto a second line and throws off row alignment.
+// "Time TBD" rather than dayjs's "Invalid Date" when the feed's kickoff
+// doesn't parse (e.g. a flexed game whose time isn't set yet).
 export const formatGameShort = (gameStart: number): string => {
-  return dayjs(gameStart).format("ddd h:mm A");
+  const day = dayjs(gameStart);
+  return day.isValid() ? day.format("ddd h:mm A") : "Time TBD";
 };

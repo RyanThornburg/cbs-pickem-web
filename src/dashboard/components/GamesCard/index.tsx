@@ -1,4 +1,5 @@
 import { Alert, CircularProgress } from "@mui/material";
+import dayjs from "dayjs";
 import { useMemo } from "react";
 import { byeTeams } from "../../data/weekGames";
 import { ByeTeams } from "../ByeTeams";
@@ -17,19 +18,39 @@ type Props = {
 
 export default function GamesCard({ week, recap }: Props) {
   const streaks = useMemo(() => coverStreaksByTeamId(recap), [recap]);
-  const { games, loading, oddsAvailable } = useGamesWithOdds(week);
+  const { games, loading, failed, oddsAvailable, oddsUpdatedAt } =
+    useGamesWithOdds(week);
 
   if (loading) {
-    return <CircularProgress />;
+    return <CircularProgress aria-label={`Loading week ${week} games`} />;
+  }
+
+  if (failed) {
+    return (
+      <Alert severity="error">
+        Couldn't load week {week}'s games. This page tries again every 5
+        minutes, or reload to try now.
+      </Alert>
+    );
   }
 
   return (
     <div className="games-card">
+      {oddsAvailable &&
+        oddsUpdatedAt &&
+        dayjs(oddsUpdatedAt).isValid() &&
+        games.length > 0 && (
+          <p className="gc-oddstime">
+            Odds updated{" "}
+            <time dateTime={oddsUpdatedAt}>
+              {dayjs(oddsUpdatedAt).format("ddd, MMM D, h:mm A")}
+            </time>
+          </p>
+        )}
       {!oddsAvailable && games.length > 0 && (
         <Alert severity="warning" sx={{ mb: 1.5 }}>
-          Odds unavailable for week {week} right now. Games, CBS lines and
-          weather still show; the Vegas line, O/U and books will fill in once
-          the odds update.
+          Week {week} odds aren't in yet. Vegas lines, O/U and books will show
+          up when they are.
         </Alert>
       )}
       <div className="gc-desktop-view">

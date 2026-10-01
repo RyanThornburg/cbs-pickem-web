@@ -31,12 +31,19 @@ export default function WeatherCell({ forecast, stadium }: Props) {
     // An open-air stadium only lacks a forecast when none was saved (weeks
     // from before forecasts were collected): say that, not "Open" next to a
     // dome icon, which reads as a roof type.
+    // No link on "No forecast": the forecast site only has today's
+    // forecast, which says nothing about a game that has no saved one.
     const openAir = stadium?.roof_type === "Open";
+    if (openAir) {
+      return <div className="gc-dome">No forecast</div>;
+    }
     return (
       <div className="gc-dome">
-        {!openAir && <DomeIcon />}
+        <DomeIcon />
         <ForecastLink url={forecastUrl}>
-          {openAir ? "No forecast" : (stadium?.roof_type ?? "Enclosed")}
+          {stadium?.roof_type === "Retractable"
+            ? "Retractable roof"
+            : (stadium?.roof_type ?? "Enclosed")}
           {forecastUrl && <ExternalLinkIcon />}
         </ForecastLink>
       </div>
@@ -70,19 +77,22 @@ export default function WeatherCell({ forecast, stadium }: Props) {
               {trend.direction === "up" ? "↑" : "↓"} {trend.label}
             </span>
           ))}
-          {flags.length > 0 && (
-            <div className="gc-flags">
-              {flags.map((flag) => (
-                <span key={flag.label} className={`gc-flag ${flag.tier}`}>
-                  {flag.tier === "danger" && <AlertFlagIcon />}
-                  {flag.label}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
       {hours.length > 0 && <HourlyStrip hours={hours} />}
+      {/* Their own full-width line under the conditions and the strip, so a
+          tag like "0.74mi Visibility" doesn't wrap in the narrow text column
+          beside the strip on phones. */}
+      {flags.length > 0 && (
+        <div className="gc-flags">
+          {flags.map((flag) => (
+            <span key={flag.label} className={`gc-flag ${flag.tier}`}>
+              {flag.tier === "danger" && <AlertFlagIcon />}
+              {flag.label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

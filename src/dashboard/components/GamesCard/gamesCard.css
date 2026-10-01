@@ -185,6 +185,9 @@
 /* Mobile's kickoff block is right-aligned, so the badge follows it there. */
 .games-card .gc-gamecard-top .gc-venuebadge {
   align-self: flex-end;
+  /* When a narrow card wraps "London, England", keep the lines left-aligned
+     beside the globe rather than inheriting the kickoff's right alignment. */
+  text-align: left;
 }
 /* Streak line spans the card under both teams and the kickoff. */
 .games-card .gc-gamecard-top .gc-streaks {
@@ -260,17 +263,24 @@
   position: relative;
 }
 
+/* Conditions left, hourly strip right after them, tags on a full-width line
+   below. The conditions cap at 15rem so on wide screens the strip stays
+   next to them instead of drifting to the far edge. When fewer than 6rem
+   would be left for the conditions (a 320px phone, or a 5-6 hour strip),
+   the strip wraps onto its own line instead of squeezing the text to one
+   word per line. */
 .games-card .gc-wx {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 6px 12px;
 }
 .games-card .gc-wx .gc-wxmain {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  flex: 1 1 auto;
+  flex: 1 1 6rem;
+  max-width: 15rem;
   min-width: 0;
 }
 .games-card .gc-wx svg {
@@ -305,7 +315,11 @@
 .games-card .gc-wx .gc-hours {
   display: flex;
   gap: 3px;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
+  /* Last resort for a strip wider than the whole cell (6+ hours on a 320px
+     phone): scroll inside it, never past the card. */
+  max-width: 100%;
+  overflow-x: auto;
 }
 .games-card .gc-wx .gc-hour {
   position: relative;
@@ -318,10 +332,14 @@
   gap: 2px;
   padding: 4px 4px;
   border-radius: 5px;
-  background: var(--gc-surface-2);
 }
+/* Only the wettest hour gets a tile, so it stands out from the row. */
 .games-card .gc-wx .gc-hour.peak {
   background: var(--gc-weather-soft);
+}
+/* Muted gray on the teal tile was 4.47:1; ink clears 4.5:1. */
+.games-card .gc-wx .gc-hour.peak .gc-hour-time {
+  color: var(--gc-text);
 }
 .games-card .gc-wx .gc-hour svg {
   width: 16px;
@@ -341,11 +359,14 @@
 .games-card .gc-wx .gc-hour-pct.wet {
   color: var(--gc-weather);
 }
+/* Full width under the conditions and strip, indented to the text past the
+   20px condition icon and its 8px gap. */
 .games-card .gc-wx .gc-flags {
+  flex-basis: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 2px;
+  padding-left: 28px;
 }
 .games-card .gc-dome {
   display: inline-flex;
@@ -387,8 +408,6 @@ a.gc-wx-link:hover .gc-temp,
   border-radius: 5px;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
   width: fit-content;
 }
 .games-card .gc-flag.danger {
@@ -417,11 +436,11 @@ a.gc-wx-link:hover .gc-temp,
   justify-content: center;
   gap: 5px;
 }
-/* The app's focus ring (3px brand blue at 50%), on the Games tab's own
-   buttons and links. */
+/* The app's focus ring (3px solid brand blue, 4.9:1 on white), on the Games
+   tab's own buttons and links. */
 .games-card .gc-expandbtn:focus-visible,
 .games-card a.gc-wx-link:focus-visible {
-  outline: 3px solid hsla(210, 98%, 42%, 0.5);
+  outline: 3px solid hsl(210, 98%, 42%);
   outline-offset: 2px;
 }
 .games-card .gc-expandbtn:hover {
@@ -498,7 +517,9 @@ a.gc-wx-link:hover .gc-temp,
 .games-card .gc-mobile-view {
   display: none;
 }
-@media (max-width: 900px) {
+/* The six-column table needs about 1180px: below that the CBS line wraps
+   and the weather text runs under the hourly strip, so cards take over. */
+@media (max-width: 1179px) {
   .games-card .gc-desktop-view {
     display: none;
   }
@@ -512,7 +533,23 @@ a.gc-wx-link:hover .gc-temp,
   flex-direction: column;
   gap: 12px;
 }
+/* Tablets and small laptops: phone-width cards (about 310-420px), two or
+   three per row, instead of one card stretched with its teams and kickoff
+   at opposite edges. */
+@media (min-width: 700px) and (max-width: 1179px) {
+  .games-card .gc-cardlist {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1000px) and (max-width: 1179px) {
+  .games-card .gc-cardlist {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 .games-card .gc-gamecard {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--gc-border);
   border-radius: 12px;
   background: var(--gc-surface);
@@ -539,10 +576,19 @@ a.gc-wx-link:hover .gc-temp,
   grid-row: 1 / span 2;
   text-align: right;
 }
+/* Takes any spare height when a card shares a row with a taller one, so
+   Books stays at the bottom and lines up across the row. */
 .games-card .gc-gamecard-wx {
+  flex: 1 0 auto;
   margin-bottom: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--gc-border);
+}
+/* No books for this game: no Books row, so no divider above nothing. */
+.games-card .gc-gamecard-wx:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 .games-card .gc-gamecard .gc-mrow {
   min-width: 0;
@@ -595,9 +641,22 @@ a.gc-wx-link:hover .gc-temp,
   letter-spacing: 0.04em;
   color: var(--gc-text-muted);
 }
+/* A plain row on the card's bottom divider rather than a filled button, so
+   it doesn't outweigh the CBS line on every card. Still 44px to tap. */
 .games-card .gc-gamecard .gc-expandbtn {
-  width: 100%;
+  /* Bleeds 6px each side so the label lines up with the card's text while
+     the hover fill still has room. */
+  width: calc(100% + 12px);
   min-height: 44px;
+  justify-content: flex-start;
+  margin: -6px -6px;
+  padding: 0 6px;
+  border: none;
+  background: none;
+  border-radius: 5px;
+}
+.games-card .gc-gamecard .gc-expandbtn:hover {
+  background: var(--gc-surface-2);
 }
 .games-card .gc-bookdetail-mobile {
   margin-top: 12px;
@@ -672,4 +731,14 @@ a.gc-wx-link:hover .gc-temp,
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+.games-card .gc-oddstime {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  color: var(--gc-text-muted);
+}
+.games-card .gc-nobooks {
+  font-size: 0.75rem;
+  color: var(--gc-text-muted);
 }

@@ -163,10 +163,15 @@ export const GetWeekBooks = (
 export const GetGamesTabData = (
   season: number,
   week: number,
-  callback: (games: GameWithOdds[], oddsAvailable: boolean) => void
+  callback: (
+    games: GameWithOdds[],
+    oddsAvailable: boolean,
+    oddsUpdatedAt: string | null
+  ) => void,
+  onError?: (error: Error) => void
 ): (() => void) => {
   if (season === 0 || week === 0) {
-    callback([], true);
+    callback([], true, null);
     return () => {};
   }
 
@@ -184,13 +189,21 @@ export const GetGamesTabData = (
     const games = weekGames.games
       .map((game) => joinGameWithOdds(game, oddsByGameId.get(game.game_id)))
       .sort((a, b) => a.game_time - b.game_time);
-    return { games, oddsAvailable: odds !== null };
+    return {
+      games,
+      oddsAvailable: odds !== null,
+      oddsUpdatedAt: odds?.updated_at ?? null,
+    };
   };
 
   return pollAsync(
     load,
     POLL_INTERVAL_MS,
-    ({ games, oddsAvailable }) => callback(games, oddsAvailable),
-    (error) => console.error("Failed to fetch games tab data", error)
+    ({ games, oddsAvailable, oddsUpdatedAt }) =>
+      callback(games, oddsAvailable, oddsUpdatedAt),
+    (error) => {
+      console.error("Failed to fetch games tab data", error);
+      onError?.(error);
+    }
   );
 };

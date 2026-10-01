@@ -14,8 +14,11 @@ export default function CoverStreaks({
     <div className="gc-streaks">
       {shown.map((s) => (
         <span key={s.team.id} className={`gc-streak ${s.streak_type}`}>
-          {s.team.abbr} {s.streak_type === "cover" ? "covered" : "missed"}{" "}
-          {s.length} straight
+          {/* "missed 3 straight" could mean anything; say what didn't
+              happen. Both start "N straight" so they line up side by side. */}
+          {s.streak_type === "cover"
+            ? `${s.team.abbr}: ${s.length} straight covers`
+            : `${s.team.abbr}: ${s.length} straight without a cover`}
         </span>
       ))}
     </div>

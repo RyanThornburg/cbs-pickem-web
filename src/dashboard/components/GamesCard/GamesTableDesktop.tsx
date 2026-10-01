@@ -18,6 +18,7 @@ import {
   getValueSide,
   modeTotal,
   moveTowardAbbr,
+  openedChanged,
 } from "./gamesCardUtils";
 
 type Props = {
@@ -83,9 +84,11 @@ function SpreadCell({ game }: { game: GameWithOdds }) {
       <span className="gc-num">
         {fmtTeamLine(game.market_spread?.close, game)}
       </span>
-      <span className="gc-linesub">
-        Opened {fmtTeamLine(game.market_spread?.open, game)}
-      </span>
+      {openedChanged(game) && (
+        <span className="gc-linesub">
+          Opened {fmtTeamLine(game.market_spread?.open, game)}
+        </span>
+      )}
       {move != null && (
         <span
           className="gc-movebadge"
@@ -187,20 +190,24 @@ function GameRow({
           <WeatherCell forecast={game.forecast} stadium={game.stadium} />
         </td>
         <td>
-          <button
-            className="gc-expandbtn"
-            aria-expanded={open}
-            aria-controls={booksId}
-            onClick={() => setOpen((v) => !v)}
-          >
-            Books{" "}
-            <span className="gc-arrow" aria-hidden="true">
-              ▾
-            </span>
-          </button>
+          {game.books.length === 0 ? (
+            <span className="gc-nobooks">No books</span>
+          ) : (
+            <button
+              className="gc-expandbtn"
+              aria-expanded={open}
+              aria-controls={booksId}
+              onClick={() => setOpen((v) => !v)}
+            >
+              Books{" "}
+              <span className="gc-arrow" aria-hidden="true">
+                ▾
+              </span>
+            </button>
+          )}
         </td>
       </tr>
-      {open && (
+      {open && game.books.length > 0 && (
         <tr className="gc-bookdetail" id={booksId}>
           <td colSpan={6}>
             <BookOddsTable

@@ -1,5 +1,6 @@
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import dayjs from "dayjs";
+import { getTeamData } from "../../utils/teamAssets";
 import {
   Book,
   Forecast,
@@ -20,7 +21,9 @@ export const WEATHER_THRESHOLDS = {
   freezingF: 32,
   hotF: 90,
   heavyPrecipPct: 50,
-  lowVisibilityMi: 3,
+  // NWS "dense fog": at a quarter mile (440 yards) you can still see the
+  // whole 120-yard field, so anything above it isn't football news.
+  lowVisibilityMi: 0.25,
   snowAccumIn: 0.1,
 };
 // During-game trend notes: only call out a precip change when it crosses
@@ -96,13 +99,14 @@ export const moveTowardAbbr = (game: GameWithOdds, move: number): string =>
   move > 0 ? game.away_team.abbr : game.home_team.abbr;
 
 // Who covered the CBS line (the one the pool scores against) once a game is
-// final, or "Push". coveringTeamId is measured against the CBS line.
+// final, or "Push". coveringTeamId is measured against the CBS line. Uses the
+// nickname, not the abbreviation: "NO covered" read as "no one covered".
 export const cbsCoverNote = (game: GameWithOdds): string | null => {
   if (game.status !== GameStatus.Final || game.cbs_spread == null) return null;
   if (game.coveringTeamId == null) return "Push";
   const team =
     game.coveringTeamId === game.home_team.id ? game.home_team : game.away_team;
-  return `${team.abbr} covered`;
+  return `${getTeamData(team.abbr).name} covered`;
 };
 
 // How many points easier the CBS line is than Vegas for the value side;
@@ -118,6 +122,13 @@ export const edgeTitle = (
 ): string => {
   const abbr = side === "home" ? game.home_team.abbr : game.away_team.abbr;
   return `CBS line is ${edgePoints(game)} easier for ${abbr} than Vegas`;
+};
+
+// The Vegas open line is only worth a line of its own when it differs from
+// the current one; "CHI −3.5 / Opened CHI −3.5" said the same thing twice.
+export const openedChanged = (game: GameWithOdds): boolean => {
+  const open = game.market_spread?.open;
+  return open != null && open !== game.market_spread?.close;
 };
 
 export const getMoveDelta = (game: GameWithOdds): number | null => {
@@ -278,9 +289,9 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
     }
   });
   if (x.windMph >= WEATHER_THRESHOLDS.windMph) {
-    flags.push({ label: `High Wind ${x.windMph}mph`, tier: "warn" });
+    flags.push({ label: `High wind ${x.windMph} mph`, tier: "warn" });
   } else if (x.gustMph >= WEATHER_THRESHOLDS.gustMph) {
-    flags.push({ label: `Gusts to ${x.gustMph}mph`, tier: "warn" });
+    flags.push({ label: `Gusts ${x.gustMph} mph`, tier: "warn" });
   }
   if (x.tempLow <= WEATHER_THRESHOLDS.freezingF) {
     flags.push({ label: `Freezing ${x.tempLow}°F`, tier: "warn" });
@@ -289,18 +300,23 @@ export const weatherFlags = (forecast: Forecast): WeatherFlag[] => {
   }
   if (x.snowIn >= WEATHER_THRESHOLDS.snowAccumIn) {
     flags.push({
-      label: `Snow ${Math.round(x.snowIn * 10) / 10}in`,
+      label: `Snow ${Math.round(x.snowIn * 10) / 10} in`,
       tier: "warn",
     });
-  } else if (x.precipPct >= WEATHER_THRESHOLDS.heavyPrecipPct) {
-    flags.push({ label: `${x.precipPct}% Precip`, tier: "warn" });
+  } else if (
+    x.precipPct >= WEATHER_THRESHOLDS.heavyPrecipPct &&
+    // The hourly strip already shows (and tints) the wettest hour, so a
+    // precip flag next to it says the same thing twice.
+    !duringGameHours(forecast).length
+  ) {
+    flags.push({ label: `Precip ${x.precipPct}%`, tier: "warn" });
   }
   if (
     forecast.visibility_mi != null &&
-    forecast.visibility_mi < WEATHER_THRESHOLDS.lowVisibilityMi
+    forecast.visibility_mi <= WEATHER_THRESHOLDS.lowVisibilityMi
   ) {
     flags.push({
-      label: `${forecast.visibility_mi}mi Visibility`,
+      label: `Low visibility ${Math.round(forecast.visibility_mi * 10) / 10} mi`,
       tier: "warn",
     });
   }

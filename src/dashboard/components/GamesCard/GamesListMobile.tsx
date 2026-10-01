@@ -3,10 +3,7 @@ import { GameWithOdds } from "../../data/GetGamesTabData";
 import { GameStatus, RecapCoverStreak } from "../../types";
 import CoverStreaks from "./CoverStreaks";
 import { getTeamData } from "../../utils/teamAssets";
-import {
-  formatGameDate,
-  formatGameTime,
-} from "../Scoreboard/utils/dateFormatters";
+import { formatGameShort } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
 import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
@@ -21,6 +18,7 @@ import {
   getValueSide,
   modeTotal,
   moveTowardAbbr,
+  openedChanged,
 } from "./gamesCardUtils";
 
 type Props = {
@@ -96,10 +94,9 @@ function GameCardItem({
           covered={isFinal && game.coveringTeamId === game.home_team.id}
         />
         <div className="gc-kickoff">
-          <span className="gc-time">{formatGameTime(game.game_time)}</span>
-          {/* Date, then the channel (or "Final") on its own line: a "·"
-              between them ended up dangling on narrow phones. */}
-          <span className="gc-tv">{formatGameDate(game.game_time)}</span>
+          {/* Weekday and time, then the channel (or "Final"), as on desktop:
+              every game is in the browsed week, so no month/day. */}
+          <span className="gc-time">{formatGameShort(game.game_time)}</span>
           {(isFinal || game.tv_network) && (
             <span className="gc-tv">{isFinal ? "Final" : game.tv_network}</span>
           )}
@@ -137,8 +134,10 @@ function GameCardItem({
         </div>
         {hasVegas && (
           <span className="gc-linesub">
-            Vegas {fmtTeamLine(game.market_spread?.close, game)} · opened{" "}
-            {fmtTeamLine(game.market_spread?.open, game)} ·{" "}
+            Vegas {fmtTeamLine(game.market_spread?.close, game)} ·{" "}
+            {openedChanged(game) && (
+              <>opened {fmtTeamLine(game.market_spread?.open, game)} · </>
+            )}
             <span className="gc-nowrap">
               O/U {total ?? "—"}
               {totalResult && (
@@ -164,18 +163,20 @@ function GameCardItem({
         <WeatherCell forecast={game.forecast} stadium={game.stadium} />
       </div>
 
-      <button
-        className="gc-expandbtn"
-        aria-expanded={open}
-        aria-controls={booksId}
-        onClick={() => setOpen((v) => !v)}
-      >
-        Books{" "}
-        <span className="gc-arrow" aria-hidden="true">
-          ▾
-        </span>
-      </button>
-      {open && (
+      {game.books.length > 0 && (
+        <button
+          className="gc-expandbtn"
+          aria-expanded={open}
+          aria-controls={booksId}
+          onClick={() => setOpen((v) => !v)}
+        >
+          Books{" "}
+          <span className="gc-arrow" aria-hidden="true">
+            ▾
+          </span>
+        </button>
+      )}
+      {open && game.books.length > 0 && (
         <div className="gc-bookdetail-mobile" id={booksId}>
           <BookOddsTable
             books={game.books}

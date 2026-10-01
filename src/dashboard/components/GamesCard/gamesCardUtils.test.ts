@@ -1,9 +1,16 @@
 import dayjs from "dayjs";
-import { Book, Forecast, HourlyForecast, WeatherAlert } from "../../types";
+import {
+  Book,
+  Forecast,
+  GameStatus,
+  HourlyForecast,
+  WeatherAlert,
+} from "../../types";
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import {
   bestOf,
   bestOfferIndexes,
+  cbsCoverNote,
   edgePoints,
   fmtSpread,
   fmtTeamLine,
@@ -14,6 +21,7 @@ import {
   isBest,
   modeTotal,
   moveTowardAbbr,
+  openedChanged,
   weatherFlags,
   weatherTrends,
 } from "./gamesCardUtils";
@@ -168,13 +176,21 @@ describe("weatherFlags", () => {
     const labels = weatherFlags(forecast({ precipitation_pct: 38 }, hrs)).map(
       (f) => f.label
     );
-    expect(labels).toEqual(["Gusts to 24mph", "68% Precip"]);
+    // No precip flag: the hourly strip shows the 68% hour itself.
+    expect(labels).toEqual(["Gusts 24 mph"]);
+  });
+
+  it("flags visibility only at dense-fog levels (1/4 mile or less)", () => {
+    expect(weatherFlags(forecast({ visibility_mi: 0.74 }))).toEqual([]);
+    expect(
+      weatherFlags(forecast({ visibility_mi: 0.2 })).map((f) => f.label)
+    ).toEqual(["Low visibility 0.2 mi"]);
   });
 
   it("falls back to kickoff values without hourly data", () => {
     expect(
       weatherFlags(forecast({ precipitation_pct: 55 })).map((f) => f.label)
-    ).toEqual(["55% Precip"]);
+    ).toEqual(["Precip 55%"]);
   });
 
   it("flags snow accumulation over precip %", () => {
@@ -182,7 +198,7 @@ describe("weatherFlags", () => {
       hour(H1, { precipitation_pct: 80, condition: "Snow" }),
     ]);
     f.during_game!.snow_accumulation_in = 1.24;
-    expect(weatherFlags(f).map((x) => x.label)).toEqual(["Snow 1.2in"]);
+    expect(weatherFlags(f).map((x) => x.label)).toEqual(["Snow 1.2 in"]);
   });
 
   it("works on forecasts that predate during_game", () => {
@@ -204,7 +220,7 @@ describe("weatherFlags", () => {
     expect(weatherFlags(f).map((x) => x.label)).toEqual([
       "Flood Watch",
       "Wind Advisory",
-      "60% Precip",
+      "Precip 60%",
     ]);
   });
 
@@ -262,6 +278,30 @@ describe("odds helpers", () => {
       )
     ).toBeNull();
     expect(getValueSide(oddsGame({ cbs_spread: -3 }))).toBeNull();
+  });
+
+  it("cbsCoverNote: the covering team's nickname, or Push, once final", () => {
+    const final = (coveringTeamId: number | null) =>
+      oddsGame({
+        status: GameStatus.Final,
+        cbs_spread: -2.5,
+        coveringTeamId,
+        home_team: { id: 1, abbr: "NO" } as GameWithOdds["home_team"],
+        away_team: { id: 2, abbr: "ATL" } as GameWithOdds["away_team"],
+      });
+    expect(cbsCoverNote(final(1))).toBe("Saints covered");
+    expect(cbsCoverNote(final(null))).toBe("Push");
+    expect(cbsCoverNote(oddsGame({ cbs_spread: -2.5 }))).toBeNull();
+  });
+
+  it("openedChanged: only when the open line differs from the close", () => {
+    expect(openedChanged(oddsGame({ market_spread: market(-3, -3.5) }))).toBe(
+      true
+    );
+    expect(openedChanged(oddsGame({ market_spread: market(-3, -3) }))).toBe(
+      false
+    );
+    expect(openedChanged(oddsGame())).toBe(false);
   });
 
   it("getMoveDelta: open-to-close moves of 2+ points only", () => {
