@@ -30,6 +30,7 @@ import {
   taskHealth,
 } from "./adminUtils";
 import EventsCard, { LastSeenCell } from "./EventsCard";
+import TabIntro from "../TabIntro";
 import TaskCard from "./TaskCard";
 
 type WatchedKey =
@@ -234,298 +235,251 @@ export default function AdminPanel() {
     : null;
 
   return (
-    <Stack spacing={3} sx={{ textAlign: "left" }}>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6">Pipeline status</Typography>
-        {/* Full navigation, not a router link: /logout is a Worker redirect
-            to Access's own logout endpoint, which clears the session. */}
-        <Button
-          href="/logout"
-          variant="outlined"
-          size="small"
-          startIcon={<LogoutIcon />}
-        >
-          Log out
-        </Button>
-      </Stack>
-
-      {unauthorized && (
-        <Alert
-          severity="warning"
-          sx={severitySx("warning")}
-          action={
-            // Full page load so it goes back through the Access login.
-            <Button color="inherit" size="small" href="/admin">
-              Sign in
-            </Button>
-          }
-        >
-          Your admin session has expired or you're not signed in.
-        </Alert>
-      )}
-      {error && !unauthorized && (
-        <Alert severity="error" sx={severitySx("error")}>
-          Couldn't load admin status ({error.message}). Retrying every minute.
-        </Alert>
-      )}
-
-      {status && health && (
-        <>
-          {heartbeatDead ? (
-            <Alert severity="error" sx={severitySx("error")}>
-              Pipeline heartbeat is {formatAgo(status.updated_at, now)} (
-              {formatEt(status.updated_at)}). meta:admin normally updates every
-              minute, so the pipeline isn't running: the machine is off, the
-              cron has stopped, or it crashes on startup. Everything below is
-              out of date too, so it's greyed out.
-            </Alert>
-          ) : (
-            summary && (
-              <Alert
-                severity={summary.severity}
-                sx={severitySx(summary.severity)}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {summary.text}
-                </Typography>
-                Pipeline heartbeat {formatAgo(status.updated_at, now)} (
-                {formatEt(status.updated_at)}).
-                <Typography
-                  variant="caption"
-                  sx={{
-                    display: "block",
-                    color: "text.secondary",
-                  }}
-                >
-                  Rewritten every minute. If this goes stale, the pipeline isn't
-                  running. A single failing task doesn't stop it: those show up
-                  below as a Failing card and in System events.
-                </Typography>
-              </Alert>
-            )
-          )}
-
-          <TaskSection
-            title="Always"
-            caption="Run on their own cadence whether or not games are live. Stale means the last success is past the data repo's per-task limit; for the every-minute tasks, no run in 10 minutes."
+    <>
+      <TabIntro
+        title="Admin"
+        meta="Pipeline status"
+        actions={
+          // Full navigation, not a router link: /logout is a Worker
+          // redirect to Access's own logout endpoint, which clears the
+          // session.
+          <Button
+            href="/logout"
+            variant="outlined"
+            size="small"
+            startIcon={<LogoutIcon />}
           >
-            <Grid size={CARD_SIZE}>
-              {/* One card, one data-side stale flag for both lines: the
+            Log out
+          </Button>
+        }
+      />
+      <Stack spacing={3} sx={{ textAlign: "left" }}>
+        {unauthorized && (
+          <Alert
+            severity="warning"
+            sx={severitySx("warning")}
+            action={
+              // Full page load so it goes back through the Access login.
+              <Button color="inherit" size="small" href="/admin">
+                Sign in
+              </Button>
+            }
+          >
+            Your admin session has expired or you're not signed in.
+          </Alert>
+        )}
+        {error && !unauthorized && (
+          <Alert severity="error" sx={severitySx("error")}>
+            Couldn't load admin status ({error.message}). Retrying every minute.
+          </Alert>
+        )}
+
+        {status && health && (
+          <>
+            {heartbeatDead ? (
+              <Alert severity="error" sx={severitySx("error")}>
+                Pipeline heartbeat is {formatAgo(status.updated_at, now)} (
+                {formatEt(status.updated_at)}). meta:admin normally updates
+                every minute, so the pipeline isn't running: the machine is off,
+                the cron has stopped, or it crashes on startup. Everything below
+                is out of date too, so it's greyed out.
+              </Alert>
+            ) : (
+              summary && (
+                <Alert
+                  severity={summary.severity}
+                  sx={severitySx(summary.severity)}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {summary.text}
+                  </Typography>
+                  Pipeline heartbeat {formatAgo(status.updated_at, now)} (
+                  {formatEt(status.updated_at)}).
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      color: "text.secondary",
+                    }}
+                  >
+                    Rewritten every minute. If this goes stale, the pipeline
+                    isn't running. A single failing task doesn't stop it: those
+                    show up below as a Failing card and in System events.
+                  </Typography>
+                </Alert>
+              )
+            )}
+
+            <TaskSection
+              title="Always"
+              caption="Run on their own cadence whether or not games are live. Stale means the last success is past the data repo's per-task limit; for the every-minute tasks, no run in 10 minutes."
+            >
+              <Grid size={CARD_SIZE}>
+                {/* One card, one data-side stale flag for both lines: the
                   pre-kickoff capture keeps it fresh while the baseline is
                   paused for live games. */}
-              <TaskCard
-                name="Odds"
-                health={health.odds}
-                dimmed={heartbeatDead}
-                now={now}
-                runs={[
-                  {
-                    label: "Pre-kickoff",
-                    lastAt: status.last_run.odds.prekickoff_last_at,
-                    lastSuccessAt:
-                      status.last_run.odds.prekickoff_last_success_at,
-                  },
-                  {
-                    label: "Baseline (pauses during games)",
-                    lastAt: status.last_run.odds.baseline_last_at,
-                    lastSuccessAt:
-                      status.last_run.odds.baseline_last_success_at,
-                  },
-                ]}
-              />
-            </Grid>
-            {ALWAYS_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key] ?? { ...NOT_RUN, stale: false };
-              return (
-                <Grid key={key} size={CARD_SIZE}>
-                  <TaskCard
-                    name={name}
-                    health={health[key]}
-                    dimmed={heartbeatDead}
-                    now={now}
-                    runs={[
-                      {
-                        lastAt: task.last_at,
-                        lastSuccessAt: task.last_success_at,
-                      },
-                    ]}
-                  />
-                </Grid>
-              );
-            })}
-            {EVERY_MINUTE_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key] ?? NOT_RUN;
-              return (
-                <Grid key={key} size={CARD_SIZE}>
-                  <TaskCard
-                    name={name}
-                    health={health[key]}
-                    dimmed={heartbeatDead}
-                    now={now}
-                    note="Every minute"
-                    runs={[
-                      {
-                        lastAt: task.last_at,
-                        lastSuccessAt: task.last_success_at,
-                      },
-                    ]}
-                  />
-                </Grid>
-              );
-            })}
-            <Grid size={CARD_SIZE}>
-              <TaskCard
-                name="Sunday deadline sweep"
-                health={health.deadline}
-                dimmed={heartbeatDead}
-                now={now}
-                runs={[]}
-                detail={
-                  // Bare date, not a timestamp -- shown as-is rather than
-                  // run through the UTC->ET formatting.
-                  <>
-                    <Typography variant="body2">
-                      Ran for Sun{" "}
-                      {status.last_run.deadline_last_synced_sunday ?? "never"}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: "text.secondary",
-                      }}
-                    >
-                      Once per week, first tick after Sun 1 PM ET
-                    </Typography>
-                  </>
-                }
-              />
-            </Grid>
-          </TaskSection>
-
-          <TaskSection
-            title="Quiet only"
-            caption="Paused while any game is live, so hours without a run on a Sunday is normal. Stale limits already allow for that."
-          >
-            {QUIET_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key] ?? { ...NOT_RUN, stale: false };
-              return (
-                <Grid key={key} size={CARD_SIZE}>
-                  <TaskCard
-                    name={name}
-                    health={health[key]}
-                    dimmed={heartbeatDead}
-                    now={now}
-                    runs={[
-                      {
-                        lastAt: task.last_at,
-                        lastSuccessAt: task.last_success_at,
-                      },
-                    ]}
-                  />
-                </Grid>
-              );
-            })}
-          </TaskSection>
-
-          <TaskSection
-            title="Live only"
-            caption="Only run during a game's live window, so an old timestamp is normal most of the week."
-          >
-            {LIVE_TASKS.map(({ key, name }) => {
-              const task = status.last_run[key] ?? NOT_RUN;
-              return (
-                <Grid key={key} size={CARD_SIZE}>
-                  <TaskCard
-                    name={name}
-                    health={health[key]}
-                    dimmed={heartbeatDead}
-                    now={now}
-                    runs={[
-                      {
-                        lastAt: task.last_at,
-                        lastSuccessAt: task.last_success_at,
-                      },
-                    ]}
-                  />
-                </Grid>
-              );
-            })}
-          </TaskSection>
-
-          <Grid container spacing={2}>
-            <Grid size={12}>
-              <EventsCard<AdminSystemEvent>
-                title="System events"
-                description="Caught failures, one row per source + message. These never age out. Active means seen in the last 24h."
-                distinctCount={status.system_events.distinct_count}
-                totalOccurrences={status.system_events.total_occurrences}
-                activeCount={activeEvents}
-                rows={status.system_events.recent}
-                rowKey={(row) => `${row.source}|${row.message}`}
-                emptyText="No recorded failures."
-                columns={[
-                  { header: "Source", render: (row) => row.source },
-                  {
-                    header: "Message",
-                    wide: true,
-                    render: (row) => (
+                <TaskCard
+                  name="Odds"
+                  health={health.odds}
+                  dimmed={heartbeatDead}
+                  now={now}
+                  runs={[
+                    {
+                      label: "Pre-kickoff",
+                      lastAt: status.last_run.odds.prekickoff_last_at,
+                      lastSuccessAt:
+                        status.last_run.odds.prekickoff_last_success_at,
+                    },
+                    {
+                      label: "Baseline (pauses during games)",
+                      lastAt: status.last_run.odds.baseline_last_at,
+                      lastSuccessAt:
+                        status.last_run.odds.baseline_last_success_at,
+                    },
+                  ]}
+                />
+              </Grid>
+              {ALWAYS_TASKS.map(({ key, name }) => {
+                const task = status.last_run[key] ?? {
+                  ...NOT_RUN,
+                  stale: false,
+                };
+                return (
+                  <Grid key={key} size={CARD_SIZE}>
+                    <TaskCard
+                      name={name}
+                      health={health[key]}
+                      dimmed={heartbeatDead}
+                      now={now}
+                      runs={[
+                        {
+                          lastAt: task.last_at,
+                          lastSuccessAt: task.last_success_at,
+                        },
+                      ]}
+                    />
+                  </Grid>
+                );
+              })}
+              {EVERY_MINUTE_TASKS.map(({ key, name }) => {
+                const task = status.last_run[key] ?? NOT_RUN;
+                return (
+                  <Grid key={key} size={CARD_SIZE}>
+                    <TaskCard
+                      name={name}
+                      health={health[key]}
+                      dimmed={heartbeatDead}
+                      now={now}
+                      note="Every minute"
+                      runs={[
+                        {
+                          lastAt: task.last_at,
+                          lastSuccessAt: task.last_success_at,
+                        },
+                      ]}
+                    />
+                  </Grid>
+                );
+              })}
+              <Grid size={CARD_SIZE}>
+                <TaskCard
+                  name="Sunday deadline sweep"
+                  health={health.deadline}
+                  dimmed={heartbeatDead}
+                  now={now}
+                  runs={[]}
+                  detail={
+                    // Bare date, not a timestamp -- shown as-is rather than
+                    // run through the UTC->ET formatting.
+                    <>
+                      <Typography variant="body2">
+                        Ran for Sun{" "}
+                        {status.last_run.deadline_last_synced_sunday ?? "never"}
+                      </Typography>
                       <Typography
-                        variant="body2"
+                        variant="caption"
                         sx={{
-                          fontFamily: "monospace",
-                          wordBreak: "break-word",
+                          color: "text.secondary",
                         }}
                       >
-                        {row.message}
+                        Once per week, first tick after Sun 1 PM ET
                       </Typography>
-                    ),
-                  },
-                  {
-                    header: "Last seen",
-                    render: (row) => (
-                      <LastSeenCell
-                        iso={row.last_seen_at}
-                        now={now}
-                        active={isEventActive(row, now)}
-                      />
-                    ),
-                  },
-                  {
-                    header: "Count",
-                    align: "right",
-                    render: (row) => row.occurrences,
-                  },
-                ]}
-              />
-            </Grid>
-            <Grid size={12}>
-              <EventsCard<AdminMappingGap>
-                title="Mapping gaps"
-                description="Source values a loader couldn't match to a D1 row. These never raise an error, so they only show up here."
-                distinctCount={status.mapping_gaps.distinct_count}
-                totalOccurrences={status.mapping_gaps.total_occurrences}
-                rows={status.mapping_gaps.recent}
-                rowKey={(row) =>
-                  `${row.source}|${row.entity_type}|${row.raw_value}`
-                }
-                emptyText="No unmapped values."
-                columns={[
-                  {
-                    header: "Source",
-                    render: (row) => `${row.source} · ${row.entity_type}`,
-                  },
-                  {
-                    header: "Value",
-                    wide: true,
-                    render: (row) => (
-                      <>
+                    </>
+                  }
+                />
+              </Grid>
+            </TaskSection>
+
+            <TaskSection
+              title="Quiet only"
+              caption="Paused while any game is live, so hours without a run on a Sunday is normal. Stale limits already allow for that."
+            >
+              {QUIET_TASKS.map(({ key, name }) => {
+                const task = status.last_run[key] ?? {
+                  ...NOT_RUN,
+                  stale: false,
+                };
+                return (
+                  <Grid key={key} size={CARD_SIZE}>
+                    <TaskCard
+                      name={name}
+                      health={health[key]}
+                      dimmed={heartbeatDead}
+                      now={now}
+                      runs={[
+                        {
+                          lastAt: task.last_at,
+                          lastSuccessAt: task.last_success_at,
+                        },
+                      ]}
+                    />
+                  </Grid>
+                );
+              })}
+            </TaskSection>
+
+            <TaskSection
+              title="Live only"
+              caption="Only run during a game's live window, so an old timestamp is normal most of the week."
+            >
+              {LIVE_TASKS.map(({ key, name }) => {
+                const task = status.last_run[key] ?? NOT_RUN;
+                return (
+                  <Grid key={key} size={CARD_SIZE}>
+                    <TaskCard
+                      name={name}
+                      health={health[key]}
+                      dimmed={heartbeatDead}
+                      now={now}
+                      runs={[
+                        {
+                          lastAt: task.last_at,
+                          lastSuccessAt: task.last_success_at,
+                        },
+                      ]}
+                    />
+                  </Grid>
+                );
+              })}
+            </TaskSection>
+
+            <Grid container spacing={2}>
+              <Grid size={12}>
+                <EventsCard<AdminSystemEvent>
+                  title="System events"
+                  description="Caught failures, one row per source + message. These never age out. Active means seen in the last 24h."
+                  distinctCount={status.system_events.distinct_count}
+                  totalOccurrences={status.system_events.total_occurrences}
+                  activeCount={activeEvents}
+                  rows={status.system_events.recent}
+                  rowKey={(row) => `${row.source}|${row.message}`}
+                  emptyText="No recorded failures."
+                  columns={[
+                    { header: "Source", render: (row) => row.source },
+                    {
+                      header: "Message",
+                      wide: true,
+                      render: (row) => (
                         <Typography
                           variant="body2"
                           sx={{
@@ -533,36 +487,87 @@ export default function AdminPanel() {
                             wordBreak: "break-word",
                           }}
                         >
-                          {row.raw_value}
+                          {row.message}
                         </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "text.secondary",
-                          }}
-                        >
-                          {row.context}
-                        </Typography>
-                      </>
-                    ),
-                  },
-                  {
-                    header: "Last seen",
-                    render: (row) => (
-                      <LastSeenCell iso={row.last_seen_at} now={now} />
-                    ),
-                  },
-                  {
-                    header: "Count",
-                    align: "right",
-                    render: (row) => row.occurrences,
-                  },
-                ]}
-              />
+                      ),
+                    },
+                    {
+                      header: "Last seen",
+                      render: (row) => (
+                        <LastSeenCell
+                          iso={row.last_seen_at}
+                          now={now}
+                          active={isEventActive(row, now)}
+                        />
+                      ),
+                    },
+                    {
+                      header: "Count",
+                      align: "right",
+                      render: (row) => row.occurrences,
+                    },
+                  ]}
+                />
+              </Grid>
+              <Grid size={12}>
+                <EventsCard<AdminMappingGap>
+                  title="Mapping gaps"
+                  description="Source values a loader couldn't match to a D1 row. These never raise an error, so they only show up here."
+                  distinctCount={status.mapping_gaps.distinct_count}
+                  totalOccurrences={status.mapping_gaps.total_occurrences}
+                  rows={status.mapping_gaps.recent}
+                  rowKey={(row) =>
+                    `${row.source}|${row.entity_type}|${row.raw_value}`
+                  }
+                  emptyText="No unmapped values."
+                  columns={[
+                    {
+                      header: "Source",
+                      render: (row) => `${row.source} · ${row.entity_type}`,
+                    },
+                    {
+                      header: "Value",
+                      wide: true,
+                      render: (row) => (
+                        <>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontFamily: "monospace",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {row.raw_value}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "text.secondary",
+                            }}
+                          >
+                            {row.context}
+                          </Typography>
+                        </>
+                      ),
+                    },
+                    {
+                      header: "Last seen",
+                      render: (row) => (
+                        <LastSeenCell iso={row.last_seen_at} now={now} />
+                      ),
+                    },
+                    {
+                      header: "Count",
+                      align: "right",
+                      render: (row) => row.occurrences,
+                    },
+                  ]}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        </>
-      )}
-    </Stack>
+          </>
+        )}
+      </Stack>
+    </>
   );
 }

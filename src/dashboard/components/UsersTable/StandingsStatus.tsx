@@ -86,9 +86,22 @@ export function StandingsPlaceholder({
 
 // Placeholder standings rows, also the app's body while meta first loads
 // (AppShellStatus), so User Picks looks the same through both loads.
-export function StandingsSkeleton({ label }: { label: string }) {
+export function StandingsSkeleton({
+  label,
+  animate = true,
+}: {
+  label: string;
+  animate?: boolean;
+}) {
+  const animation = animate ? "pulse" : false;
   return (
-    <Box aria-busy="true" aria-label={label}>
+    // Still and faded when nothing is loading, so they hold the page's
+    // shape without reading as "loading".
+    <Box
+      aria-busy={animate}
+      aria-label={label}
+      sx={{ opacity: animate ? 1 : 0.45 }}
+    >
       {Array.from({ length: 8 }, (_, i) => (
         <Box
           key={i}
@@ -102,10 +115,20 @@ export function StandingsSkeleton({ label }: { label: string }) {
             borderColor: "divider",
           }}
         >
-          <Skeleton variant="text" width={20} />
-          <Skeleton variant="circular" width={26} height={26} />
-          <Skeleton variant="text" sx={{ flex: "0 1 10rem" }} />
+          <Skeleton animation={animation} variant="text" width={20} />
           <Skeleton
+            animation={animation}
+            variant="circular"
+            width={26}
+            height={26}
+          />
+          <Skeleton
+            animation={animation}
+            variant="text"
+            sx={{ flex: "0 1 10rem" }}
+          />
+          <Skeleton
+            animation={animation}
             variant="rounded"
             height={24}
             sx={{ flex: "1 1 auto", maxWidth: 380, ml: "auto" }}

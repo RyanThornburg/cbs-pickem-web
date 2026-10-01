@@ -25,6 +25,9 @@ export type Props = {
   // The money lines worth showing (desktop card only; phones put them on
   // the table's paid lines).
   standings: ShownMoneyStanding[];
+  // Set while a past week is browsed, so the card's place and money read
+  // as that week's, not today's.
+  asOfWeek?: number;
 };
 
 // The player picker doubles as the selected player's summary, so the
@@ -39,6 +42,7 @@ export default function UserSelectDropdown({
   onMenuClosed,
   summary,
   standings,
+  asOfWeek,
 }: Props) {
   // Case-insensitive, so lowercase names sit with their letter instead of
   // after "Z".
@@ -150,6 +154,7 @@ export default function UserSelectDropdown({
             {score} pts
             {selected.second_half_place != null &&
               ` · 2nd half ${ordinal(selected.second_half_place)}`}
+            {asOfWeek != null && ` · as of week ${asOfWeek}`}
           </Box>
         </Box>
         {standings.length > 0 && (
@@ -175,7 +180,9 @@ export default function UserSelectDropdown({
         sx={{
           pl: summary === "card" ? 1.5 : "10px",
           py: summary === "card" ? 0.75 : 0,
-          minHeight: 40,
+          // The card's height with a player in it, so choosing yourself
+          // doesn't make the header jump.
+          minHeight: summary === "card" ? 59 : 40,
           borderRadius: summary === "card" ? "10px" : undefined,
           "& .MuiSelect-select": { minWidth: 0 },
         }}

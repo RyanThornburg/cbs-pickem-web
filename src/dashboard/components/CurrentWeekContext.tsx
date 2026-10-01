@@ -39,6 +39,15 @@ interface ApiMeta {
 // last good meta, which changes about once a week.
 export type MetaStatus = "loading" | "ready" | "failed";
 
+const CBS_POOL_URL_KEY = "cbsPoolUrl";
+const readCbsPoolUrl = (): string | null => {
+  try {
+    return localStorage.getItem(CBS_POOL_URL_KEY);
+  } catch {
+    return null;
+  }
+};
+
 type CurrentWeekContextType = {
   metaStatus: MetaStatus;
   // Load meta now instead of waiting for the next retry.
@@ -64,7 +73,9 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondHalfStartWeek, setSecondHalfStartWeek] = useState<number>(
     DEFAULT_SECOND_HALF_START_WEEK
   );
-  const [cbsPoolUrl, setCbsPoolUrl] = useState<string | null>(null);
+  // Remembered from the last visit, so the CBS link still works while meta
+  // can't load.
+  const [cbsPoolUrl, setCbsPoolUrl] = useState<string | null>(readCbsPoolUrl);
   const [paidPlaces, setPaidPlaces] = useState<PaidPlaces>(DEFAULT_PAID_PLACES);
   const [metaStatus, setMetaStatus] = useState<MetaStatus>("loading");
   // The running poll's "load now", for retryMeta.
@@ -82,6 +93,13 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentWeek(meta.current_week);
       setSecondHalfStartWeek(meta.second_half_start_week);
       setCbsPoolUrl(meta.cbs_pool_url ?? null);
+      try {
+        if (meta.cbs_pool_url) {
+          localStorage.setItem(CBS_POOL_URL_KEY, meta.cbs_pool_url);
+        }
+      } catch {
+        // Blocked storage: the link just won't be there during an outage.
+      }
       setPaidPlaces({
         overall: meta.paid_places?.overall ?? DEFAULT_PAID_PLACES.overall,
         first_half:

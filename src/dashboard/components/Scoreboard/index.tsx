@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -23,6 +23,8 @@ import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
 import { WeekRecap } from "../../types";
 import { gameTagsById } from "../Recap/recapBadges";
+import TabIntro from "../TabIntro";
+import TabSkeleton from "../TabSkeleton";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
@@ -64,7 +66,7 @@ const GroupHeader = ({ children }: { children: string }) => (
 
 const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
-  const { games, loading, error } = useGameData(week);
+  const { games, loading, failed } = useGameData(week);
   const deadline = useMemo(() => pickDeadline(games), [games]);
   const totals = useWeekTotals(week);
   const byes = useMemo(() => byeTeams(games), [games]);
@@ -90,9 +92,37 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
     }
   };
 
-  if (loading) return <CircularProgress />;
-  if (error) return <div>{error.message}</div>;
-  if (!games.length) return <Box>No games scheduled for week {week}</Box>;
+  const intro = (actions?: React.ReactNode) => (
+    <TabIntro title="Scoreboard" week={week} actions={actions} />
+  );
+  if (loading) {
+    return (
+      <>
+        {intro()}
+        <TabSkeleton shape="cards" label={`Loading week ${week} scores`} />
+      </>
+    );
+  }
+  if (failed) {
+    return (
+      <>
+        {intro()}
+        <Alert severity="error" sx={{ textAlign: "left" }}>
+          Couldn't load week {week}'s scores. Trying again every minute.
+        </Alert>
+      </>
+    );
+  }
+  if (!games.length) {
+    return (
+      <>
+        {intro()}
+        <Box sx={{ textAlign: "left", color: "text.secondary" }}>
+          No games scheduled for week {week}.
+        </Box>
+      </>
+    );
+  }
 
   const groups = groupGames(games, picksFirst ? userId : undefined);
   // Re-checked on every games poll (once a minute), which is plenty for a
@@ -100,17 +130,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const now = Date.now();
 
   const controls = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        flexWrap: "wrap",
-        columnGap: 2,
-        rowGap: 1,
-        ml: "auto",
-      }}
-    >
+    <>
       <FormControlLabel
         control={
           <Switch
@@ -139,90 +159,90 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
           Compact
         </ToggleButton>
       </ToggleButtonGroup>
-    </Box>
+    </>
   );
 
-  // Full cards: the controls share a line with the first section header, so
-  // there's no empty row above the games. Compact keeps its headers inside
-  // the list box, so the controls sit just above it.
+  // The layout controls sit on the tab's intro row, like every tab's own
+  // controls.
   return (
-    <Box
-      id={`gameWeek-${week}`}
-      sx={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: layout === "full" ? 2 : 1,
-        textAlign: "left",
-      }}
-    >
-      {layout === "full" ? (
-        groups.map(({ group, games }, i) => (
-          <Box
-            key={group}
-            sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-          >
+    <>
+      {intro(controls)}
+      <Box
+        id={`gameWeek-${week}`}
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: layout === "full" ? 2 : 1,
+          textAlign: "left",
+        }}
+      >
+        {layout === "full" ? (
+          groups.map(({ group, games }) => (
             <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: 1,
-              }}
+              key={group}
+              sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
-              <GroupHeader>{group}</GroupHeader>
-              {i === 0 && controls}
-            </Box>
-            <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
-              {games.map((game) => (
-                <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
-                  <GameCard
-                    game={game}
-                    userId={userId}
-                    totalUsers={totalUsers}
-                    tags={gameTags.get(game.game_id)}
-                    picksRevealed={picksRevealed(game, deadline, now)}
-                    total={totals.get(game.game_id)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        ))
-      ) : (
-        <>
-          {controls}
-          <Paper variant="outlined" sx={{ overflow: "hidden" }}>
-            {groups.map(({ group, games }) => (
-              <Box key={group}>
-                <Box
-                  sx={{
-                    px: 1.75,
-                    py: 0.5,
-                    bgcolor: "action.hover",
-                    borderBottom: 1,
-                    borderColor: "divider",
-                  }}
-                >
-                  <GroupHeader>{group}</GroupHeader>
-                </Box>
-                {games.map((game) => (
-                  <GameRow
-                    key={game.game_id}
-                    game={game}
-                    userId={userId}
-                    tags={gameTags.get(game.game_id)}
-                    picksRevealed={picksRevealed(game, deadline, now)}
-                    total={totals.get(game.game_id)}
-                  />
-                ))}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 1,
+                }}
+              >
+                <GroupHeader>{group}</GroupHeader>
               </Box>
-            ))}
-          </Paper>
-        </>
-      )}
-      <ByeTeams teams={byes} />
-    </Box>
+              <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
+                {games.map((game) => (
+                  <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
+                    <GameCard
+                      game={game}
+                      userId={userId}
+                      totalUsers={totalUsers}
+                      tags={gameTags.get(game.game_id)}
+                      picksRevealed={picksRevealed(game, deadline, now)}
+                      total={totals.get(game.game_id)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          ))
+        ) : (
+          <>
+            <Paper variant="outlined" sx={{ overflow: "hidden" }}>
+              {groups.map(({ group, games }) => (
+                <Box key={group}>
+                  <Box
+                    sx={{
+                      px: 1.75,
+                      py: 0.5,
+                      bgcolor: "action.hover",
+                      borderBottom: 1,
+                      borderColor: "divider",
+                    }}
+                  >
+                    <GroupHeader>{group}</GroupHeader>
+                  </Box>
+                  {games.map((game) => (
+                    <GameRow
+                      key={game.game_id}
+                      game={game}
+                      userId={userId}
+                      tags={gameTags.get(game.game_id)}
+                      picksRevealed={picksRevealed(game, deadline, now)}
+                      total={totals.get(game.game_id)}
+                    />
+                  ))}
+                </Box>
+              ))}
+            </Paper>
+          </>
+        )}
+        <ByeTeams teams={byes} />
+      </Box>
+    </>
   );
 });
 

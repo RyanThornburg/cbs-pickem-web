@@ -28,6 +28,7 @@ import SeasonAllAloneCard from "./SeasonAllAloneCard";
 import SeasonTeamTable from "./SeasonTeamTable";
 import YouThisWeekCard from "./YouThisWeekCard";
 import { useTabActive } from "../tabLinks";
+import TabIntro from "../TabIntro";
 
 export type Props = {
   season: number;
@@ -406,22 +407,27 @@ export default function TrendsSection({
 
   return (
     <Box sx={{ textAlign: "left" }}>
-      {/* A switch between two views of the page, not a second tab row:
-          the same segmented control as the Scoreboard's layout toggle. */}
-      <ToggleButtonGroup
-        size="small"
-        exclusive
-        value={view}
-        onChange={handleViewChange}
-        aria-label="Trends for this week or the season"
-        sx={{
-          mb: 2,
-          "& .MuiToggleButton-root": { minHeight: 40, py: 0.5, px: 2 },
-        }}
-      >
-        <ToggleButton value="week">Week {week}</ToggleButton>
-        <ToggleButton value="season">Season</ToggleButton>
-      </ToggleButtonGroup>
+      {/* No week in the title: the switch names it, and it can be on
+          Season. A switch between two views of the page, not a second tab
+          row: the same segmented control as the Scoreboard's layout. */}
+      <TabIntro
+        title="Trends"
+        actions={
+          <ToggleButtonGroup
+            size="small"
+            exclusive
+            value={view}
+            onChange={handleViewChange}
+            aria-label="Trends for this week or the season"
+            sx={{
+              "& .MuiToggleButton-root": { minHeight: 40, py: 0.5, px: 2 },
+            }}
+          >
+            <ToggleButton value="week">Week {week}</ToggleButton>
+            <ToggleButton value="season">Season</ToggleButton>
+          </ToggleButtonGroup>
+        }
+      />
       {view === "week" ? weekView : seasonView}
     </Box>
   );

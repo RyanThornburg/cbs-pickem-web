@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Box,
-  CircularProgress,
+  Button,
   Stack,
   Tab,
   Tabs,
   Typography,
 } from "@mui/material";
 import { GetHistorical } from "../../data/GetHistorical";
+import TabSkeleton from "../TabSkeleton";
 import { HistoricalRecords } from "../../types";
 import AllTimeTable, { useAllTimeTable } from "./AllTimeTable";
 import ChampionsRow from "./ChampionsRow";
@@ -42,7 +44,20 @@ export default function RecordsSection({ season, userId }: Props) {
     undefined
   );
 
-  useEffect(() => GetHistorical(setData), []);
+  // The poll only repeats every 30 minutes, so a failed first load offers
+  // its own retry; bumping `attempt` restarts the poll.
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    setFailed(false);
+    return GetHistorical(
+      (records) => {
+        setData(records);
+        setFailed(false);
+      },
+      () => setFailed(true)
+    );
+  }, [attempt]);
 
   const careerRows = useMemo(() => (data ? buildCareerRows(data) : []), [data]);
   const tiles = useMemo(
@@ -51,12 +66,27 @@ export default function RecordsSection({ season, userId }: Props) {
   );
   const allTimeTable = useAllTimeTable(careerRows);
 
-  if (!data) {
+  if (!data && failed) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-        <CircularProgress size={28} />
-      </Box>
+      <Alert
+        severity="error"
+        sx={{ textAlign: "left" }}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
+            Try again
+          </Button>
+        }
+      >
+        Couldn't load the records.
+      </Alert>
     );
+  }
+  if (!data) {
+    return <TabSkeleton shape="tiles" label="Loading the records" />;
   }
 
   const years = closedSeasons(data);
@@ -75,7 +105,7 @@ export default function RecordsSection({ season, userId }: Props) {
         </Stack>
 
         <Stack spacing={1.5}>
-          <SectionTitle>Records</SectionTitle>
+          <SectionTitle>All-time records</SectionTitle>
           <RecordTiles tiles={tiles} userId={userId} />
         </Stack>
 

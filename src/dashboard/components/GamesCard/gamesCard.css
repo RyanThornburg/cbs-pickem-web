@@ -728,11 +728,6 @@ a.gc-wx-link:hover .gc-temp,
   white-space: nowrap;
 }
 
-.games-card .gc-oddstime {
-  margin: 0 0 8px;
-  font-size: 0.75rem;
-  color: var(--gc-text-muted);
-}
 .games-card .gc-nobooks {
   font-size: 0.75rem;
   color: var(--gc-text-muted);

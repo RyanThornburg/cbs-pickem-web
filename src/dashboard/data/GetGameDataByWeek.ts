@@ -37,7 +37,9 @@ export const hasLiveishGame = (games: ApiGame[], now: number): boolean =>
 export const GetGameDataByWeek = (
   season: number,
   week: number,
-  callback: (games: Game[]) => void
+  callback: (games: Game[]) => void,
+  // Each failed fetch; the poll keeps going and tries again on schedule.
+  onError?: (error: Error) => void
 ) => {
   if (season === 0 || week === 0) {
     callback([]);
@@ -67,6 +69,9 @@ export const GetGameDataByWeek = (
         }
       } catch (error) {
         console.error("Failed to fetch week games", error);
+        if (!stopped) {
+          onError?.(error instanceof Error ? error : new Error(String(error)));
+        }
       }
     }
     inFlight = false;

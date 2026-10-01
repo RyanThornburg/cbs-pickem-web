@@ -16,6 +16,8 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import AppShellStatus from "./AppShellStatus";
+import TabIntro from "./TabIntro";
+import TabSkeleton, { TabSkeletonShape } from "./TabSkeleton";
 import GamesCard from "./GamesCard";
 import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
@@ -40,13 +42,23 @@ import RecapStrip from "./Recap/RecapStrip";
 import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
 import { useCurrentWeek } from "./CurrentWeekContext";
 import { useIsAdmin, useSelectedUser, useWeekData } from "./useWeekData";
-import { MONEY_GOLD, StandingsSkeleton } from "./UsersTable/StandingsStatus";
+import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
 import { TabActiveContext, followTabLink, tabHref } from "./tabLinks";
 
 // All-time records and the owner-only admin page aren't weekly, and most
 // visits never open them, so they load on first open.
 const RecordsSection = lazy(() => import("./RecordsSection"));
 const AdminPanel = lazy(() => import("./AdminPanel"));
+
+// What each tab's loading placeholder looks like (see TabSkeleton).
+const TAB_SKELETONS: Record<AppTab, TabSkeletonShape> = {
+  picks: "rows",
+  games: "cards",
+  scoreboard: "cards",
+  trends: "cards",
+  [RECORDS_TAB]: "tiles",
+  [ADMIN_TAB]: "rows",
+};
 
 const TAB_TITLES: Record<AppTab, string> = {
   picks: "User Picks",
@@ -320,13 +332,36 @@ export default function MainGrid() {
             </Typography>
             {showPlayerControls && showWeekPicks && selectedUser && (
               <Box
-                // Beside the Week pill from lg; below the header row on
-                // narrower screens, where the card needs the room.
+                // Beside the Week pill from lg. Below that the row can't
+                // fit them, so they drop under it: under the card (right
+                // aligned) from md, full width on phones.
+                role="group"
+                aria-label="Your picks"
                 sx={{
                   order: { xs: 3, lg: 0 },
                   width: { xs: "100%", lg: "auto" },
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: { xs: "flex-start", md: "flex-end" },
+                  gap: 1,
                 }}
               >
+                <Box
+                  component="span"
+                  aria-hidden
+                  sx={{
+                    flexShrink: 0,
+                    // Two short lines on phones, where the tiles need the
+                    // width.
+                    maxWidth: { xs: "3.5em", sm: "none" },
+                    fontSize: "0.75rem",
+                    lineHeight: 1.2,
+                    fontWeight: 500,
+                    color: "text.secondary",
+                  }}
+                >
+                  Your picks
+                </Box>
                 {UserGamePicksStack(
                   selectedUser.picks,
                   true,
@@ -335,16 +370,26 @@ export default function MainGrid() {
               </Box>
             )}
             {showPlayerControls && !metaReady && (
-              // The Week pill and player picker, sized like the real ones.
-              <>
+              // The Week pill and player picker, sized like the real ones;
+              // still and faded once the load has failed.
+              <Box
+                sx={{
+                  display: "contents",
+                  "& .MuiSkeleton-root": {
+                    opacity: metaStatus === "failed" ? 0.45 : 1,
+                  },
+                }}
+              >
                 {activeTab !== RECORDS_TAB && (
                   <Skeleton
+                    animation={metaStatus === "failed" ? false : "pulse"}
                     variant="rounded"
                     height={40}
                     sx={{ width: { xs: 72, md: 88 }, borderRadius: "999px" }}
                   />
                 )}
                 <Skeleton
+                  animation={metaStatus === "failed" ? false : "pulse"}
                   variant="rounded"
                   sx={{
                     height: { xs: 40, md: 59 },
@@ -353,7 +398,7 @@ export default function MainGrid() {
                     borderRadius: { xs: 1, md: "10px" },
                   }}
                 />
-              </>
+              </Box>
             )}
             {metaReady && showPlayerControls && activeTab !== RECORDS_TAB && (
               // Records isn't weekly data, so there's no week to pick.
@@ -373,6 +418,7 @@ export default function MainGrid() {
                 onMenuClosed={scrollToPendingRow}
                 summary={isDesktop ? "card" : "compact"}
                 standings={showWeekPicks ? moneyStandings : []}
+                asOfWeek={isCurrentWeek ? undefined : selectedWeek}
               />
             )}
             {cbsPoolUrl && (
@@ -431,6 +477,9 @@ export default function MainGrid() {
                 flex: 1,
                 minWidth: 0,
                 "& .MuiTab-root": { px: 1 },
+                // The scroller clips anything outside the tabs, so the
+                // focus ring goes inside the tab instead of around it.
+                "& .MuiTab-root:focus-visible": { outlineOffset: "-3px" },
               }}
             >
               <Tab label="User Picks" {...navTabProps("picks")} />
@@ -549,14 +598,6 @@ export default function MainGrid() {
             tabIndex={-1}
             sx={{ outline: "none" }}
           >
-            {/* Every tab gets a heading, for screen readers' heading list. */}
-            <Typography component="h2" sx={visuallyHidden}>
-              {TAB_TITLES[activeTab]}
-              {metaReady &&
-                activeTab !== RECORDS_TAB &&
-                activeTab !== ADMIN_TAB &&
-                `, week ${selectedWeek}`}
-            </Typography>
             {!isCurrentWeek &&
               activeTab !== RECORDS_TAB &&
               activeTab !== ADMIN_TAB && (
@@ -567,8 +608,19 @@ export default function MainGrid() {
                 />
               )}
 
+            {/* Each tab opens with a TabIntro (its heading and controls):
+                the weekly tab components render their own, since the
+                controls are theirs; the rest are here. */}
             {!metaReady && (
-              <AppShellStatus metaStatus={metaStatus} onRetry={retryMeta} />
+              <Box sx={{ mt: 2 }}>
+                <TabIntro title={TAB_TITLES[activeTab]} />
+                <AppShellStatus
+                  metaStatus={metaStatus}
+                  onRetry={retryMeta}
+                  shape={TAB_SKELETONS[activeTab]}
+                  cbsPoolUrl={cbsPoolUrl}
+                />
+              </Box>
             )}
             {metaReady && (
               <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
@@ -576,6 +628,7 @@ export default function MainGrid() {
                   size={{ xs: 12, lg: 12 }}
                   sx={{ display: activeTab === "picks" ? "block" : "none" }}
                 >
+                  <TabIntro title={TAB_TITLES.picks} week={selectedWeek} />
                   {!user && userList.length > 0 && (
                     <PickYourselfHint onChoose={openUserMenu} />
                   )}
@@ -638,9 +691,13 @@ export default function MainGrid() {
                 </Grid>
                 {activeTab === RECORDS_TAB && (
                   <Grid size={{ xs: 12, lg: 12 }}>
+                    <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
                     <Suspense
                       fallback={
-                        <StandingsSkeleton label="Loading the records" />
+                        <TabSkeleton
+                          shape="tiles"
+                          label="Loading the records"
+                        />
                       }
                     >
                       <RecordsSection season={season} userId={user} />
@@ -653,7 +710,10 @@ export default function MainGrid() {
                   <Grid size={{ xs: 12, lg: 12 }}>
                     <Suspense
                       fallback={
-                        <StandingsSkeleton label="Loading the admin page" />
+                        <TabSkeleton
+                          shape="rows"
+                          label="Loading the admin page"
+                        />
                       }
                     >
                       <AdminPanel />
@@ -669,6 +729,17 @@ export default function MainGrid() {
             search={weekSearch}
             hasLiveGame={hasLiveGame}
             showAdmin={isAdmin || activeTab === ADMIN_TAB}
+            pastWeek={
+              !isCurrentWeek &&
+              activeTab !== RECORDS_TAB &&
+              activeTab !== ADMIN_TAB
+                ? {
+                    week: selectedWeek,
+                    currentWeek,
+                    onBack: () => onWeekChange(currentWeek),
+                  }
+                : undefined
+            }
           />
         </>
       )}

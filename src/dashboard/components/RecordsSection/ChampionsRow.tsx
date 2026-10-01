@@ -24,7 +24,8 @@ function Tag({ tone, children }: { tone: TagTone; children: React.ReactNode }) {
       component="span"
       sx={{
         alignSelf: "flex-start",
-        fontSize: "0.65rem",
+        // DESIGN.md's smallest step (label, 12px); was 10.4px.
+        fontSize: "0.75rem",
         fontWeight: 700,
         textTransform: "uppercase",
         letterSpacing: "0.06em",

@@ -1,5 +1,8 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import ButtonBase from "@mui/material/ButtonBase";
+import HistoryIcon from "@mui/icons-material/History";
+import { useEffect } from "react";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
@@ -13,9 +16,19 @@ import { followTabLink, tabHref } from "./tabLinks";
 import { focusRingColor } from "../shared-theme/themePrimitives";
 
 // The bar's height above the phone's safe area. User Picks' pinned row sits
-// on top of it, and the page leaves this much room at the bottom.
+// on top of it, and the page leaves this much room at the bottom. While a
+// past week is browsed the bar grows a strip saying so, and the offset
+// follows it through a CSS variable.
 export const PHONE_TAB_BAR_HEIGHT = 60;
-export const PHONE_TAB_BAR_OFFSET = `calc(${PHONE_TAB_BAR_HEIGHT}px + env(safe-area-inset-bottom, 0px))`;
+const PAST_WEEK_STRIP_HEIGHT = 40;
+const EXTRA_VAR = "--phone-tab-bar-extra";
+export const PHONE_TAB_BAR_OFFSET = `calc(${PHONE_TAB_BAR_HEIGHT}px + var(${EXTRA_VAR}, 0px) + env(safe-area-inset-bottom, 0px))`;
+
+export interface PastWeek {
+  week: number;
+  currentWeek: number;
+  onBack: () => void;
+}
 
 interface Item {
   value: AppTab;
@@ -32,6 +45,7 @@ export function PhoneTabBar({
   search,
   hasLiveGame,
   showAdmin,
+  pastWeek,
 }: {
   activeTab: AppTab;
   onChange: (value: AppTab) => void;
@@ -39,7 +53,22 @@ export function PhoneTabBar({
   search: string;
   hasLiveGame: boolean;
   showAdmin: boolean;
+  // Set while a past week is browsed on a weekly tab: the notice under the
+  // tab row scrolls away, so the bar keeps saying it.
+  pastWeek?: PastWeek;
 }) {
+  const showStrip = pastWeek !== undefined;
+  useEffect(() => {
+    const root = document.documentElement.style;
+    root.setProperty(
+      EXTRA_VAR,
+      showStrip ? `${PAST_WEEK_STRIP_HEIGHT}px` : "0px"
+    );
+    return () => {
+      root.removeProperty(EXTRA_VAR);
+    };
+  }, [showStrip]);
+
   const items: Item[] = [
     { value: "picks", label: "Picks", Icon: FormatListBulletedIcon },
     { value: "games", label: "Games", Icon: SportsFootballIcon },
@@ -68,8 +97,7 @@ export function PhoneTabBar({
       component="nav"
       aria-label="Sections"
       sx={{
-        display: { xs: "grid", md: "none" },
-        gridTemplateColumns: `repeat(${items.length}, 1fr)`,
+        display: { xs: "block", md: "none" },
         position: "fixed",
         left: 0,
         right: 0,
@@ -83,68 +111,116 @@ export function PhoneTabBar({
         boxShadow: "0 -6px 14px -10px hsla(220, 30%, 5%, 0.25)",
       }}
     >
-      {items.map(({ value, label, Icon, color }) => {
-        const selected = value === activeTab;
-        const live = value === "scoreboard" && hasLiveGame && !selected;
-        return (
-          <ButtonBase
-            key={value}
-            component="a"
-            href={tabHref(value, search)}
-            onClick={(event) => followTabLink(event, value, onChange)}
-            aria-current={selected ? "page" : undefined}
-            aria-label={live ? `${label}, games in progress` : undefined}
-            sx={{
-              height: PHONE_TAB_BAR_HEIGHT,
-              display: "grid",
-              justifyItems: "center",
-              alignContent: "center",
-              gap: "2px",
-              fontSize: "0.75rem",
-              // A link inherits the body's line height; keep the button's.
-              lineHeight: "normal",
-              fontWeight: selected ? 700 : 500,
-              color: color ?? (selected ? "text.primary" : "text.secondary"),
-              "&:focus-visible": {
-                outline: `3px solid ${focusRingColor}`,
-                outlineOffset: -3,
-              },
-            }}
+      {pastWeek && (
+        <Box
+          sx={{
+            height: PAST_WEEK_STRIP_HEIGHT,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pl: 2,
+            pr: 1,
+            borderBottom: 1,
+            borderColor: "divider",
+            // DESIGN.md slate-50, the same quiet tone as PastWeekNotice.
+            bgcolor: "hsl(220, 35%, 97%)",
+            fontSize: "0.8125rem",
+          }}
+        >
+          <HistoryIcon
+            aria-hidden
+            sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+          />
+          <Box component="span" sx={{ flex: 1, minWidth: 0 }}>
+            <Box component="span" sx={{ fontWeight: 600 }}>
+              Week {pastWeek.week}
+            </Box>
+            <Box component="span" sx={{ color: "text.secondary" }}>
+              {" "}
+              · past week
+            </Box>
+          </Box>
+          <Button
+            size="small"
+            onClick={pastWeek.onBack}
+            sx={{ minHeight: 36, flexShrink: 0 }}
           >
-            <Box
-              component="span"
+            Back to week {pastWeek.currentWeek}
+          </Button>
+        </Box>
+      )}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${items.length}, 1fr)`,
+        }}
+      >
+        {items.map(({ value, label, Icon, color }) => {
+          const selected = value === activeTab;
+          const live = value === "scoreboard" && hasLiveGame && !selected;
+          return (
+            <ButtonBase
+              key={value}
+              component="a"
+              href={tabHref(value, search)}
+              onClick={(event) => followTabLink(event, value, onChange)}
+              aria-current={selected ? "page" : undefined}
+              aria-label={live ? `${label}, games in progress` : undefined}
               sx={{
-                position: "relative",
-                display: "inline-flex",
-                px: 1.75,
-                py: "2px",
-                borderRadius: 999,
-                bgcolor: selected ? "grey.100" : "transparent",
+                height: PHONE_TAB_BAR_HEIGHT,
+                display: "grid",
+                justifyItems: "center",
+                alignContent: "center",
+                gap: "2px",
+                fontSize: "0.75rem",
+                // A link inherits the body's line height; keep the button's.
+                lineHeight: "normal",
+                fontWeight: selected ? 700 : 500,
+                // A section's own color (Records' gold) is on its icon only,
+                // so only the selected item reads as "on".
+                color: selected ? "text.primary" : "text.secondary",
+                "&:focus-visible": {
+                  outline: `3px solid ${focusRingColor}`,
+                  outlineOffset: -3,
+                },
               }}
             >
-              <Icon sx={{ fontSize: 22 }} aria-hidden />
-              {live && (
-                <Box
-                  component="span"
-                  aria-hidden
-                  sx={{
-                    position: "absolute",
-                    top: 1,
-                    right: 10,
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    bgcolor: "error.main",
-                    boxShadow: (theme) =>
-                      `0 0 0 2px ${theme.palette.background.paper}`,
-                  }}
-                />
-              )}
-            </Box>
-            {label}
-          </ButtonBase>
-        );
-      })}
+              <Box
+                component="span"
+                sx={{
+                  position: "relative",
+                  display: "inline-flex",
+                  px: 1.75,
+                  py: "2px",
+                  borderRadius: 999,
+                  // DESIGN.md slate-200: a filled pill marks the current tab.
+                  bgcolor: selected ? "hsl(220, 20%, 88%)" : "transparent",
+                }}
+              >
+                <Icon sx={{ fontSize: 22, color }} aria-hidden />
+                {live && (
+                  <Box
+                    component="span"
+                    aria-hidden
+                    sx={{
+                      position: "absolute",
+                      top: 1,
+                      right: 10,
+                      width: 7,
+                      height: 7,
+                      borderRadius: "50%",
+                      bgcolor: "error.main",
+                      boxShadow: (theme) =>
+                        `0 0 0 2px ${theme.palette.background.paper}`,
+                    }}
+                  />
+                )}
+              </Box>
+              {label}
+            </ButtonBase>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
