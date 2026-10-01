@@ -466,9 +466,10 @@ a.gc-wx-link:hover .gc-temp,
   font-weight: 700;
 }
 .games-card .gc-booktable .gc-bestval::after,
+.games-card .gc-bettable .gc-bestval::after,
 .games-card .gc-bestoffer .gc-pricesub::after {
   content: " \2713";
-  font-size: 0.7em;
+  font-size: 0.75rem;
 }
 .games-card .gc-totalarrow {
   margin-left: 5px;
@@ -600,10 +601,55 @@ a.gc-wx-link:hover .gc-temp,
 }
 .games-card .gc-bookdetail-mobile {
   margin-top: 12px;
-  overflow-x: auto;
 }
-.games-card .gc-bookdetail-mobile .gc-booktable {
-  min-width: 480px;
+/* Phone Books: one small table per bet type, books down the side. */
+.games-card .gc-bybet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.games-card .gc-bettable {
+  width: 100%;
+  /* Undo the 800px floor ".games-card table" sets for the desktop table. */
+  min-width: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+}
+.games-card .gc-bettable caption {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gc-text-muted);
+  padding-bottom: 4px;
+}
+.games-card .gc-bettable th,
+.games-card .gc-bettable td {
+  text-align: left;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--gc-border);
+  vertical-align: top;
+}
+.games-card .gc-bettable thead th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gc-text-muted);
+  background: var(--gc-surface-2);
+}
+.games-card .gc-bettable tbody th {
+  font-weight: 500;
+}
+.games-card .gc-bettable th:first-child {
+  width: 38%;
+}
+.games-card .gc-bettable tr:last-child th,
+.games-card .gc-bettable tr:last-child td {
+  border-bottom: none;
+}
+.games-card .gc-bettable .gc-bestval {
+  font-weight: 700;
 }
 
 .games-card .gc-empty {

@@ -105,17 +105,19 @@ export const cbsCoverNote = (game: GameWithOdds): string | null => {
   return `${team.abbr} covered`;
 };
 
-// The tooltip behind the "ARI edge" tag: how much easier the CBS line is
-// for the value side than the market's.
+// How many points easier the CBS line is than Vegas for the value side;
+// shown in the tag itself ("ARI edge 1.5") so phones, which never see the
+// tooltip, still get the size of it.
+export const edgePoints = (game: GameWithOdds): number =>
+  Math.abs((game.market_spread?.close ?? 0) - (game.cbs_spread ?? 0));
+
+// The tooltip / screen-reader text behind the "ARI edge 1.5" tag.
 export const edgeTitle = (
   game: GameWithOdds,
   side: "home" | "away"
 ): string => {
-  const diff = Math.abs(
-    (game.market_spread?.close ?? 0) - (game.cbs_spread ?? 0)
-  );
   const abbr = side === "home" ? game.home_team.abbr : game.away_team.abbr;
-  return `CBS line is ${diff} easier for ${abbr} than Vegas`;
+  return `CBS line is ${edgePoints(game)} easier for ${abbr} than Vegas`;
 };
 
 export const getMoveDelta = (game: GameWithOdds): number | null => {

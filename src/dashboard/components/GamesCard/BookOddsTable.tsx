@@ -11,7 +11,23 @@ type Props = {
   books: Book[];
   homeAbbr: string;
   awayAbbr: string;
+  // Phones: one small table per bet type (Moneyline, Spread, Total) with
+  // the books down the side, instead of one wide table that scrolls
+  // sideways inside the card.
+  byBet?: boolean;
 };
+
+// The feed's bookmaker ids are lowercase; text-transform: capitalize gave
+// "Draftkings" and "Betmgm".
+const BOOK_NAMES: Record<string, string> = {
+  draftkings: "DraftKings",
+  fanduel: "FanDuel",
+  betmgm: "BetMGM",
+  betrivers: "BetRivers",
+  bovada: "Bovada",
+};
+const bookName = (id: string): string =>
+  BOOK_NAMES[id] ?? id.charAt(0).toUpperCase() + id.slice(1);
 
 // One spread or total side for one book: the point, then its price (the
 // vig, itself American odds, so -105 costs less than -110). A best offer
@@ -38,7 +54,12 @@ const Offer = ({
   </span>
 );
 
-export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
+export default function BookOddsTable({
+  books,
+  homeAbbr,
+  awayAbbr,
+  byBet,
+}: Props) {
   if (!books.length) {
     return (
       <p
@@ -107,6 +128,114 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
     return null;
   };
 
+  if (byBet) {
+    const Section = ({
+      title,
+      left,
+      right,
+      cell,
+    }: {
+      title: string;
+      left: string;
+      right: string;
+      cell: (book: Book, i: number, side: "left" | "right") => React.ReactNode;
+    }) => (
+      <table className="gc-bettable">
+        <caption>{title}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Book</th>
+            <th scope="col">{left}</th>
+            <th scope="col">{right}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((book, i) => (
+            <tr key={book.bookmaker}>
+              <th scope="row">{bookName(book.bookmaker)}</th>
+              <td>{cell(book, i, "left")}</td>
+              <td>{cell(book, i, "right")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+    return (
+      <div className="gc-bybet">
+        <Section
+          title="Moneyline"
+          left={awayAbbr}
+          right={homeAbbr}
+          cell={(book, _i, side) => {
+            const price =
+              side === "left"
+                ? book.moneyline?.away_price
+                : book.moneyline?.home_price;
+            const best = isBest(
+              price,
+              side === "left" ? bestMlAway : bestMlHome
+            );
+            return (
+              <span className={best ? "gc-bestval" : undefined}>
+                {fmtMoney(price)}
+              </span>
+            );
+          }}
+        />
+        <Section
+          title="Spread"
+          left={awayAbbr}
+          right={homeAbbr}
+          cell={(book, i, side) =>
+            book.spread ? (
+              <Offer
+                point={fmtSpread(
+                  side === "left"
+                    ? book.spread.away_point
+                    : book.spread.home_point
+                )}
+                price={
+                  side === "left"
+                    ? book.spread.away_price
+                    : book.spread.home_price
+                }
+                best={(side === "left" ? bestAwaySpread : bestHomeSpread).has(
+                  i
+                )}
+              />
+            ) : (
+              "—"
+            )
+          }
+        />
+        <Section
+          title="Total"
+          left="Over"
+          right="Under"
+          cell={(book, i, side) =>
+            book.total ? (
+              <Offer
+                point={String(
+                  side === "left"
+                    ? book.total.home_point
+                    : book.total.away_point
+                )}
+                price={
+                  side === "left"
+                    ? book.total.home_price
+                    : book.total.away_price
+                }
+                best={(side === "left" ? bestOver : bestUnder).has(i)}
+              />
+            ) : (
+              "—"
+            )
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <table className="gc-booktable">
       <thead>
@@ -124,7 +253,7 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
           const trend = totalTrend(book.total?.home_point);
           return (
             <tr key={book.bookmaker}>
-              <td style={{ textTransform: "capitalize" }}>{book.bookmaker}</td>
+              <td>{bookName(book.bookmaker)}</td>
               <td
                 className={
                   isBest(book.moneyline?.away_price, bestMlAway)

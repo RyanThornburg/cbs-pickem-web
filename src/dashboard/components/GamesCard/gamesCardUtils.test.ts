@@ -4,6 +4,7 @@ import { GameWithOdds } from "../../data/GetGamesTabData";
 import {
   bestOf,
   bestOfferIndexes,
+  edgePoints,
   fmtSpread,
   fmtTeamLine,
   formatRecord,
@@ -373,6 +374,13 @@ describe("odds helpers", () => {
     expect(
       bestOfferIndexes([{ point: null, price: -110 }], "higher").size
     ).toBe(0);
+  });
+
+  it("edgePoints: CBS vs Vegas gap for the edge tag", () => {
+    // ARI @ NYG week 4: CBS ARI -0.5 (+0.5 home), Vegas ARI -2 (+2 home).
+    expect(
+      edgePoints(oddsGame({ cbs_spread: 0.5, market_spread: market(-2.5, 2) }))
+    ).toBe(1.5);
   });
 
   it("formats spreads and records", () => {

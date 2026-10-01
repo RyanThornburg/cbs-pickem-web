@@ -9,6 +9,7 @@ import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
 import {
   cbsCoverNote,
+  edgePoints,
   edgeTitle,
   fmtTeamLine,
   formatRecord,
@@ -121,7 +122,8 @@ function CbsLineCell({ game }: { game: GameWithOdds }) {
       )}
       {vSide && (
         <span className="gc-edge" title={edgeTitle(game, vSide)}>
-          {vSide === "home" ? game.home_team.abbr : game.away_team.abbr} edge
+          {vSide === "home" ? game.home_team.abbr : game.away_team.abbr} edge{" "}
+          {edgePoints(game)}
           <span className="gc-sr">: {edgeTitle(game, vSide)}</span>
         </span>
       )}

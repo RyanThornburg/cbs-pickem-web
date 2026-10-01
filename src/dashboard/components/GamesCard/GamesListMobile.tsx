@@ -12,6 +12,7 @@ import VenueBadge from "./VenueBadge";
 import WeatherCell from "./WeatherCell";
 import {
   cbsCoverNote,
+  edgePoints,
   edgeTitle,
   fmtTeamLine,
   formatRecord,
@@ -129,7 +130,7 @@ function GameCardItem({
           {vSide && (
             <span className="gc-edge" title={edgeTitle(game, vSide)}>
               {vSide === "home" ? game.home_team.abbr : game.away_team.abbr}{" "}
-              edge
+              edge {edgePoints(game)}
               <span className="gc-sr">: {edgeTitle(game, vSide)}</span>
             </span>
           )}
@@ -180,6 +181,7 @@ function GameCardItem({
             books={game.books}
             homeAbbr={game.home_team.abbr}
             awayAbbr={game.away_team.abbr}
+            byBet
           />
         </div>
       )}
