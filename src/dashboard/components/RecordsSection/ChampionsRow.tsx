@@ -120,7 +120,12 @@ export default function ChampionsRow({ data, currentSeason, userId }: Props) {
   const champions = [...data.champions].sort((a, b) => b.year - a.year);
 
   return (
+    // Scrolls sideways on narrow screens, so it takes focus (arrow keys
+    // scroll it) and is named for screen readers.
     <Box
+      role="region"
+      aria-label="Champions by season"
+      tabIndex={0}
       sx={{
         display: "flex",
         gap: 1.25,

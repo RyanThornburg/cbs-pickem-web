@@ -280,8 +280,9 @@ export const inputsCustomizations: Components<Theme> = {
       root: ({ theme }) => ({
         borderRadius: "10px",
         boxShadow: `0 4px 16px ${alpha(gray[400], 0.2)}`,
+        // brand[500] on the selected grey was 4.3:1; this is 6:1.
         [`& .${toggleButtonGroupClasses.selected}`]: {
-          color: brand[500],
+          color: brand[700],
         },
         ...theme.applyStyles("dark", {
           [`& .${toggleButtonGroupClasses.selected}`]: {

@@ -9,6 +9,8 @@ import SportsFootballIcon from "@mui/icons-material/SportsFootballOutlined";
 import { SvgIconComponent } from "@mui/icons-material";
 import { ADMIN_TAB, AppTab, RECORDS_TAB } from "../utils/defaultTab";
 import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
+import { followTabLink, tabHref } from "./tabLinks";
+import { focusRingColor } from "../shared-theme/themePrimitives";
 
 // The bar's height above the phone's safe area. User Picks' pinned row sits
 // on top of it, and the page leaves this much room at the bottom.
@@ -27,11 +29,14 @@ interface Item {
 export function PhoneTabBar({
   activeTab,
   onChange,
+  search,
   hasLiveGame,
   showAdmin,
 }: {
   activeTab: AppTab;
   onChange: (value: AppTab) => void;
+  // The browsed week's ?week=, carried into each tab's link.
+  search: string;
   hasLiveGame: boolean;
   showAdmin: boolean;
 }) {
@@ -84,7 +89,9 @@ export function PhoneTabBar({
         return (
           <ButtonBase
             key={value}
-            onClick={() => onChange(value)}
+            component="a"
+            href={tabHref(value, search)}
+            onClick={(event) => followTabLink(event, value, onChange)}
             aria-current={selected ? "page" : undefined}
             aria-label={live ? `${label}, games in progress` : undefined}
             sx={{
@@ -94,10 +101,12 @@ export function PhoneTabBar({
               alignContent: "center",
               gap: "2px",
               fontSize: "0.75rem",
+              // A link inherits the body's line height; keep the button's.
+              lineHeight: "normal",
               fontWeight: selected ? 700 : 500,
               color: color ?? (selected ? "text.primary" : "text.secondary"),
               "&:focus-visible": {
-                outline: "3px solid hsl(210, 98%, 42%)",
+                outline: `3px solid ${focusRingColor}`,
                 outlineOffset: -3,
               },
             }}

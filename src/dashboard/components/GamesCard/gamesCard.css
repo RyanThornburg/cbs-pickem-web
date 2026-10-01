@@ -26,11 +26,6 @@
 
   color: var(--gc-text);
   font-variant-numeric: tabular-nums;
-  /* App.css's leftover CRA boilerplate sets .App{text-align:center} on the
-     whole app -- text-align inherits, so it was silently centering this
-     component's unstyled inline elements (e.g. the Books button). Reset it
-     here rather than touching the global .App class. */
-  text-align: left;
 }
 
 .games-card .gc-tablewrap {

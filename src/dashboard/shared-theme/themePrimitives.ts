@@ -45,6 +45,9 @@ export const brand = {
   900: "hsl(210, 100%, 21%)",
 };
 
+// The app-wide keyboard focus ring (inputs, tabs, charts): solid brand blue.
+export const focusRingColor = brand[500];
+
 export const gray = {
   50: "hsl(220, 35%, 97%)",
   100: "hsl(220, 30%, 94%)",

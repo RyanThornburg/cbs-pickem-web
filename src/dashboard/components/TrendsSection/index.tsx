@@ -6,8 +6,8 @@ import {
   Button,
   Skeleton,
   Stack,
-  Tab,
-  Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -27,6 +27,7 @@ import AllAloneCard from "./AllAloneCard";
 import SeasonAllAloneCard from "./SeasonAllAloneCard";
 import SeasonTeamTable from "./SeasonTeamTable";
 import YouThisWeekCard from "./YouThisWeekCard";
+import { useTabActive } from "../tabLinks";
 
 export type Props = {
   season: number;
@@ -106,6 +107,7 @@ export default function TrendsSection({
   userList,
   userId,
 }: Props) {
+  const active = useTabActive();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlView = searchParams.get("view");
 
@@ -129,6 +131,12 @@ export default function TrendsSection({
     setWeekTrends(undefined);
     setWeekFailed(false);
     setGameResults(new Map());
+  }, [season, week]);
+
+  // The polls below run only while Trends is on screen, and refresh as soon
+  // as it's shown again.
+  useEffect(() => {
+    if (!active) return;
     const unsubscribe = GetTrendsByWeek(
       season,
       week,
@@ -139,11 +147,15 @@ export default function TrendsSection({
       () => setWeekFailed(true)
     );
     return () => unsubscribe?.();
-  }, [season, week]);
+  }, [season, week, active]);
 
   useEffect(() => {
     setSeasonTrends(undefined);
     setSeasonFailed(false);
+  }, [season]);
+
+  useEffect(() => {
+    if (!active) return;
     const unsubscribe = GetSeasonTrends(
       season,
       (trends) => {
@@ -153,12 +165,12 @@ export default function TrendsSection({
       () => setSeasonFailed(true)
     );
     return () => unsubscribe?.();
-  }, [season]);
+  }, [season, active]);
 
   // Grades trend cards against final scores -- see getGameCoverResult for why
   // this uses the ATS cover, not the straight-up winner, as "who won the pick".
   useEffect(() => {
-    if (season === 0 || week === 0) return;
+    if (!active || season === 0 || week === 0) return;
     let cancelled = false;
 
     const tick = () => {
@@ -180,7 +192,7 @@ export default function TrendsSection({
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [season, week]);
+  }, [season, week, active]);
 
   // Grades the season all-alone log against each pick's own week's final score --
   // spans multiple weeks, so results are keyed by "{week_number}:{game_id}".
@@ -218,7 +230,9 @@ export default function TrendsSection({
     };
   }, [season, seasonAlone]);
 
-  const handleViewChange = (_event: SyntheticEvent, value: View) => {
+  // Exclusive, so pressing the shown view again sends null: ignore it.
+  const handleViewChange = (_event: SyntheticEvent, value: View | null) => {
+    if (!value) return;
     try {
       localStorage.setItem(VIEW_STORAGE_KEY, value);
     } catch {
@@ -392,15 +406,22 @@ export default function TrendsSection({
 
   return (
     <Box sx={{ textAlign: "left" }}>
-      <Tabs
+      {/* A switch between two views of the page, not a second tab row:
+          the same segmented control as the Scoreboard's layout toggle. */}
+      <ToggleButtonGroup
+        size="small"
+        exclusive
         value={view}
         onChange={handleViewChange}
         aria-label="Trends for this week or the season"
-        sx={{ mb: 2, borderBottom: 1, borderColor: "divider" }}
+        sx={{
+          mb: 2,
+          "& .MuiToggleButton-root": { minHeight: 40, py: 0.5, px: 2 },
+        }}
       >
-        <Tab value="week" label={`Week ${week}`} sx={{ minHeight: 44 }} />
-        <Tab value="season" label="Season" sx={{ minHeight: 44 }} />
-      </Tabs>
+        <ToggleButton value="week">Week {week}</ToggleButton>
+        <ToggleButton value="season">Season</ToggleButton>
+      </ToggleButtonGroup>
       {view === "week" ? weekView : seasonView}
     </Box>
   );

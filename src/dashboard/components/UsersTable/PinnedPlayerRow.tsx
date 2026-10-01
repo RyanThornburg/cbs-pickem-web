@@ -9,6 +9,7 @@ import { pts } from "./MoneyLines";
 import { selectedRowSx } from "./selectedRowSx";
 import { ShownMoneyStanding } from "./usersTableUtils";
 import { PHONE_TAB_BAR_OFFSET } from "../PhoneTabBar";
+import { focusRingColor } from "../../shared-theme/themePrimitives";
 
 // The prize most worth a line: one you're in, else the closest chase.
 const pinnedNote = (standings: ShownMoneyStanding[]) => {
@@ -104,7 +105,7 @@ export function PinnedPlayerRow({
             textAlign: "left",
             fontSize: "0.875rem",
             "&:focus-visible": {
-              outline: "3px solid hsl(210, 98%, 42%)",
+              outline: `3px solid ${focusRingColor}`,
               outlineOffset: -3,
             },
           },

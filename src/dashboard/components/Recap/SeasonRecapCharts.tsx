@@ -1,5 +1,6 @@
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { focusRingColor } from "../../shared-theme/themePrimitives";
 import {
   RecapChaosPoint,
   RecapPoolAccuracyPoint,
@@ -203,9 +204,10 @@ function HitColumns({
           height={PLOT_H + 40}
           rx={4}
           fill={active === i ? "rgba(0, 0, 0, 0.04)" : "transparent"}
-          stroke={focused === i ? "hsl(210, 98%, 42%)" : "none"}
+          stroke={focused === i ? focusRingColor : "none"}
           strokeWidth={2}
           tabIndex={0}
+          role="img"
           aria-label={label}
           onMouseEnter={() => onActive(i)}
           onMouseLeave={() => onActive(null)}
@@ -326,7 +328,7 @@ function PoolAccuracyChart({
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width="100%"
-        role="img"
+        role="group"
         aria-label={`Pool accuracy by week: ${series.map((p) => `week ${p.week} ${pct(p.accuracy)}`).join(", ")}`}
       >
         {ticks.map((v) => (
@@ -505,7 +507,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width="100%"
-        role="img"
+        role="group"
         aria-label={`Chaos index by week: ${series.map((p) => `week ${p.week} ${p.index.toFixed(1)}${p.partial ? " so far" : ""}`).join(", ")}`}
       >
         {[0, 5, 10].map((v) => (

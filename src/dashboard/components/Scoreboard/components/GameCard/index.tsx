@@ -332,7 +332,6 @@ export const GameCard = memo(
               }
               label={venueBadge.label}
               size="small"
-              color="warning"
               variant="outlined"
             />
           )}

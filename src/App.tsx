@@ -1,6 +1,5 @@
 import ReactGA from "react-ga4";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import "./App.css";
 import Dashboard from "./dashboard/Dashboard";
 import { CurrentWeekProvider } from "./dashboard/components/CurrentWeekContext";
 import { getInitialTab } from "./dashboard/utils/defaultTab";

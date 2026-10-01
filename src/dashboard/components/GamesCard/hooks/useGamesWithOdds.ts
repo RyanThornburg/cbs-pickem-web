@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GameWithOdds, GetGamesTabData } from "../../../data/GetGamesTabData";
 import { useCurrentWeek } from "../../CurrentWeekContext";
+import { useTabActive } from "../../tabLinks";
 
 export const useGamesWithOdds = (week: number) => {
   const { season } = useCurrentWeek();
+  const active = useTabActive();
   const [games, setGames] = useState<GameWithOdds[]>([]);
   const [loading, setLoading] = useState(true);
   const [oddsAvailable, setOddsAvailable] = useState(true);
@@ -11,6 +13,7 @@ export const useGamesWithOdds = (week: number) => {
   // Only a failure with nothing loaded yet: once a week has loaded, a failed
   // refresh keeps showing the last good data and the next poll retries.
   const [failed, setFailed] = useState(false);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     // A new week starts from scratch, so the previous week's games never sit
@@ -24,13 +27,17 @@ export const useGamesWithOdds = (week: number) => {
       return;
     }
     setLoading(true);
+    loadedRef.current = false;
+  }, [week, season]);
 
-    let loaded = false;
+  // Polls only while Games is on screen; showing it again refreshes at once.
+  useEffect(() => {
+    if (!active || week <= 0 || season <= 0) return;
     const unsubscribe = GetGamesTabData(
       season,
       week,
       (newGames, hasOdds, updatedAt) => {
-        loaded = true;
+        loadedRef.current = true;
         setGames(newGames);
         setOddsAvailable(hasOdds);
         setOddsUpdatedAt(updatedAt);
@@ -38,7 +45,7 @@ export const useGamesWithOdds = (week: number) => {
         setLoading(false);
       },
       () => {
-        if (!loaded) {
+        if (!loadedRef.current) {
           setFailed(true);
           setLoading(false);
         }
@@ -50,7 +57,7 @@ export const useGamesWithOdds = (week: number) => {
         unsubscribe();
       }
     };
-  }, [week, season]);
+  }, [week, season, active]);
 
   return { games, loading, failed, oddsAvailable, oddsUpdatedAt };
 };

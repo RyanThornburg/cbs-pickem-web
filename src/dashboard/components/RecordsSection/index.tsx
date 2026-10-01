@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Box,
-  Card,
-  CardContent,
   CircularProgress,
   Stack,
   Tab,
@@ -68,84 +66,80 @@ export default function RecordsSection({ season, userId }: Props) {
   );
 
   return (
-    // App.css centers text app-wide; this page reads as tables and tiles.
-    <Card variant="outlined" sx={{ textAlign: "left" }}>
-      <CardContent>
-        <Stack spacing={4}>
-          <Stack spacing={1.5}>
-            <SectionTitle>Champions</SectionTitle>
-            <ChampionsRow data={data} currentSeason={season} userId={userId} />
-          </Stack>
-
-          <Stack spacing={1.5}>
-            <SectionTitle>Records</SectionTitle>
-            <RecordTiles tiles={tiles} userId={userId} />
-          </Stack>
-
-          <Stack spacing={1.5}>
-            <Tabs
-              value={tab}
-              onChange={(_, value: TableTab) => setTab(value)}
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-              sx={{ borderBottom: 1, borderColor: "divider" }}
-            >
-              <Tab value="all-time" label="All-time" />
-              <Tab value="season" label="By season" />
-              <Tab value="finishes" label="Finishes by year" />
-            </Tabs>
-
-            {tab === "all-time" && (
-              <>
-                <AllTimeTable table={allTimeTable} userId={userId} />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  Avg finish and avg score count every season a player has on
-                  record. Click a column to sort.
-                </Typography>
-              </>
-            )}
-            {tab === "season" && (
-              <SeasonTable
-                data={data}
-                year={year}
-                onYearChange={setSelectedYear}
-                userId={userId}
-              />
-            )}
-            {tab === "finishes" && (
-              <FinishesGrid
-                data={data}
-                rows={allTimeTable
-                  .getRowModel()
-                  .rows.map((row) => row.original)}
-                userId={userId}
-              />
-            )}
-          </Stack>
-
-          <Typography
-            variant="caption"
-            sx={{
-              color: "text.secondary",
-              bgcolor: "background.default",
-              borderRadius: 1,
-              px: 1.5,
-              py: 1,
-            }}
-          >
-            * Records before {HALVES_FROM_SEASON} are incomplete. First and
-            second-half results start in {HALVES_FROM_SEASON}.
-            {incompleteYears.length > 0 &&
-              ` ${incompleteYears.join(" and ")} ${incompleteYears.length === 1 ? "is" : "are"} missing some players, including the champion.`}{" "}
-          </Typography>
+    // No card around the page: it sits flush like the other tabs.
+    <Box>
+      <Stack spacing={4}>
+        <Stack spacing={1.5}>
+          <SectionTitle>Champions</SectionTitle>
+          <ChampionsRow data={data} currentSeason={season} userId={userId} />
         </Stack>
-      </CardContent>
-    </Card>
+
+        <Stack spacing={1.5}>
+          <SectionTitle>Records</SectionTitle>
+          <RecordTiles tiles={tiles} userId={userId} />
+        </Stack>
+
+        <Stack spacing={1.5}>
+          <Tabs
+            value={tab}
+            onChange={(_, value: TableTab) => setTab(value)}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{ borderBottom: 1, borderColor: "divider" }}
+          >
+            <Tab value="all-time" label="All-time" />
+            <Tab value="season" label="By season" />
+            <Tab value="finishes" label="Finishes by year" />
+          </Tabs>
+
+          {tab === "all-time" && (
+            <>
+              <AllTimeTable table={allTimeTable} userId={userId} />
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                Avg finish and avg score count every season a player has on
+                record. Click a column to sort.
+              </Typography>
+            </>
+          )}
+          {tab === "season" && (
+            <SeasonTable
+              data={data}
+              year={year}
+              onYearChange={setSelectedYear}
+              userId={userId}
+            />
+          )}
+          {tab === "finishes" && (
+            <FinishesGrid
+              data={data}
+              rows={allTimeTable.getRowModel().rows.map((row) => row.original)}
+              userId={userId}
+            />
+          )}
+        </Stack>
+
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            bgcolor: "background.default",
+            borderRadius: 1,
+            px: 1.5,
+            py: 1,
+          }}
+        >
+          * Records before {HALVES_FROM_SEASON} are incomplete. First and
+          second-half results start in {HALVES_FROM_SEASON}.
+          {incompleteYears.length > 0 &&
+            ` ${incompleteYears.join(" and ")} ${incompleteYears.length === 1 ? "is" : "are"} missing some players, including the champion.`}{" "}
+        </Typography>
+      </Stack>
+    </Box>
   );
 }
