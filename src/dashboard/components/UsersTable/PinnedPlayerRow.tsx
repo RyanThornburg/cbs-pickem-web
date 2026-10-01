@@ -8,6 +8,7 @@ import { ScoreWithCovering } from "./ScoreWithCovering";
 import { pts } from "./MoneyLines";
 import { selectedRowSx } from "./selectedRowSx";
 import { ShownMoneyStanding } from "./usersTableUtils";
+import { PHONE_TAB_BAR_OFFSET } from "../PhoneTabBar";
 
 // The prize most worth a line: one you're in, else the closest chase.
 const pinnedNote = (standings: ShownMoneyStanding[]) => {
@@ -76,11 +77,10 @@ export function PinnedPlayerRow({
       sx={{
         display: { xs: "block", md: "none" },
         position: "sticky",
-        bottom: 0,
+        // Just above the phone tab bar.
+        bottom: PHONE_TAB_BAR_OFFSET,
         zIndex: 2,
         mt: 1,
-        // Clears the phone's home indicator.
-        pb: "env(safe-area-inset-bottom, 0px)",
         bgcolor: "background.paper",
         borderTop: 1,
         borderColor: "divider",

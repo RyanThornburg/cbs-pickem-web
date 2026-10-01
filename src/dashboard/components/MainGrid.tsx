@@ -4,6 +4,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -33,7 +34,8 @@ import {
 import UsersTable from "./UsersTable";
 import { UserGamePicksStack } from "./UsersTable/UserPickStack";
 import { useMoneyStandings } from "./UsersTable/useMoneyStandings";
-import { visuallyHidden } from "../helper";
+import { ordinal, visuallyHidden } from "../helper";
+import { PHONE_TAB_BAR_OFFSET, PhoneTabBar } from "./PhoneTabBar";
 import RecapStrip from "./Recap/RecapStrip";
 import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
 import { useCurrentWeek } from "./CurrentWeekContext";
@@ -156,12 +158,28 @@ export default function MainGrid() {
   // A past week carries over to the next tab; other params (Trends'
   // ?view=) belong to the tab they were set on.
   const weekSearch = isCurrentWeek ? "" : `?week=${selectedWeek}`;
-  const handleTabChange = (_: React.SyntheticEvent, value: AppTab) => {
+  // A new tab starts at its top, not at the old tab's scroll position.
+  const goToTab = (value: AppTab) => {
     if (isPrimaryTab(value)) {
       setStoredTab(value);
     }
     navigate({ pathname: `/${value}`, search: weekSearch });
+    window.scrollTo({ top: 0 });
   };
+
+  // Desktop's tab row sticks to the top once the header scrolls away, and
+  // then names the week and player, since the header that did is gone.
+  const tabRowSentinel = useRef<HTMLDivElement>(null);
+  const [tabRowStuck, setTabRowStuck] = useState(false);
+  useEffect(() => {
+    const sentinel = tabRowSentinel.current;
+    if (!sentinel) return undefined;
+    const observer = new IntersectionObserver(([entry]) =>
+      setTabRowStuck(!entry.isIntersecting && entry.boundingClientRect.top < 0)
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [currentWeek, activeTab]);
 
   const onWeekChange = (week: number): void => {
     setSearchParams((params) => {
@@ -172,7 +190,14 @@ export default function MainGrid() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: { sm: "100%", md: "1700px" },
+        // Room for the phone tab bar, so it never covers the page's end.
+        pb: { xs: PHONE_TAB_BAR_OFFSET, md: 0 },
+      }}
+    >
       {/* cards */}
       {currentWeek !== 0 && activeTab !== null && (
         <>
@@ -188,7 +213,7 @@ export default function MainGrid() {
               display: "flex",
               flexWrap: "wrap",
               alignItems: "center",
-              columnGap: 2,
+              columnGap: { xs: 1, md: 2 },
               rowGap: 1.25,
             }}
           >
@@ -247,54 +272,63 @@ export default function MainGrid() {
                 standings={showWeekPicks ? moneyStandings : []}
               />
             )}
+            {cbsPoolUrl && (
+              // On phones the tab row is the bottom bar, so the CBS link
+              // joins the header row.
+              <IconButton
+                href={cbsPoolUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open the pool on CBS Sports (new tab)"
+                sx={{
+                  display: { xs: "inline-flex", md: "none" },
+                  width: 36,
+                  height: 40,
+                  mr: -0.5,
+                  color: "text.secondary",
+                }}
+              >
+                <OpenInNewIcon fontSize="small" />
+              </IconButton>
+            )}
           </Box>
 
+          <Box ref={tabRowSentinel} aria-hidden sx={{ height: 0 }} />
+          {/* Desktop only; phones get PhoneTabBar at the bottom. */}
           <Box
             sx={{
               mt: 1.5,
               borderBottom: 1,
               borderColor: "divider",
-              display: "flex",
+              display: { xs: "none", md: "flex" },
               alignItems: "center",
+              // Out into the page's side margins, so rows don't show beside
+              // the bar once it's stuck.
+              mx: -3,
+              px: 3,
+              position: "sticky",
+              top: 0,
+              zIndex: "appBar",
+              bgcolor: "background.paper",
+              // Floats once stuck, so it gets the float shadow then.
+              boxShadow: tabRowStuck
+                ? "0 6px 14px -8px hsla(220, 30%, 5%, 0.25)"
+                : "none",
+              transition: "box-shadow 150ms ease-out",
             }}
           >
-            {/* Scrollable so the Admin tab can't push the row past 360px.
-                Arrows only appear on overflow, i.e. only for the admin on a
-                phone. The five public tabs fit at 360px thanks to the short
-                "Picks" label and tighter padding on phones. */}
             <Tabs
               value={activeTab}
-              onChange={handleTabChange}
+              onChange={(_, value: AppTab) => goToTab(value)}
               variant="scrollable"
               scrollButtons="auto"
-              allowScrollButtonsMobile
               sx={{
                 flex: 1,
                 minWidth: 0,
-                "& .MuiTab-root": {
-                  px: { xs: "4px", sm: 1 },
-                  fontSize: { xs: "0.8125rem", sm: undefined },
-                  // Taller tap targets on phones; the width is unchanged.
-                  minHeight: { xs: 44, sm: "fit-content" },
-                },
+                "& .MuiTab-root": { px: 1 },
               }}
             >
-              <Tab
-                // One span: Tab lays its children out as a flex column, so
-                // "User" and "Picks" as siblings would stack.
-                label={
-                  <span>
-                    <Box
-                      component="span"
-                      sx={{ display: { xs: "none", sm: "inline" } }}
-                    >
-                      User{" "}
-                    </Box>
-                    Picks
-                  </span>
-                }
-                value="picks"
-              />
+              <Tab label="User Picks" value="picks" />
               <Tab label="Games" value="games" />
               <Tab
                 label={
@@ -309,31 +343,22 @@ export default function MainGrid() {
                 value="scoreboard"
               />
               <Tab label="Trends" value="trends" />
-              {/* Set apart like Admin: all-time data, not this week's.
-                  Icon-only on phones so the row still fits at 360px. */}
+              {/* Set apart like Admin: all-time data, not this week's. */}
               <Tab
-                label={
-                  <Box
-                    component="span"
-                    sx={{ display: { xs: "none", sm: "inline" } }}
-                  >
-                    Records
-                  </Box>
-                }
-                aria-label="Records"
+                label="Records"
                 value={RECORDS_TAB}
                 icon={<EmojiEventsIcon fontSize="small" />}
                 iconPosition="start"
                 sx={{
-                  ml: { xs: 0.5, sm: 1 },
-                  pl: { xs: 1, sm: 1.5 },
+                  ml: 1,
+                  pl: 1.5,
                   minWidth: 0,
                   // The theme gives every tab a transparent border on all
                   // four sides; only the left one is the divider.
                   borderLeftColor: "divider",
                   borderRadius: 0,
                   color: "#8a6a0f",
-                  "& .MuiTab-icon": { mr: { xs: 0, sm: 1 } },
+                  "& .MuiTab-icon": { mr: 1 },
                   "&.Mui-selected": { color: "#8a6a0f" },
                 }}
               />
@@ -356,30 +381,52 @@ export default function MainGrid() {
                 />
               )}
             </Tabs>
+            {tabRowStuck && (
+              <Typography
+                variant="body2"
+                sx={{
+                  flexShrink: 0,
+                  px: 1,
+                  color: "text.secondary",
+                  whiteSpace: "nowrap",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {activeTab !== RECORDS_TAB && activeTab !== ADMIN_TAB && (
+                  <>
+                    Week{" "}
+                    <Box component="span" sx={{ color: "text.primary" }}>
+                      {selectedWeek}
+                    </Box>
+                  </>
+                )}
+                {selectedUser &&
+                  activeTab !== ADMIN_TAB &&
+                  `${activeTab !== RECORDS_TAB ? " · " : ""}${selectedUser.name}`}
+                {selectedUser?.place != null && activeTab !== ADMIN_TAB && (
+                  <>
+                    {" · "}
+                    <Box
+                      component="span"
+                      sx={{ color: "text.primary", fontWeight: 600 }}
+                    >
+                      {ordinal(selectedUser.place)}
+                    </Box>
+                  </>
+                )}
+              </Typography>
+            )}
             {cbsPoolUrl && (
-              // Icon-only on phones -- the four tabs already use most of the
-              // row at 360px.
               <Button
                 href={cbsPoolUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 size="small"
-                aria-label="Open the pool on CBS Sports"
+                aria-label="CBS Pool (opens in a new tab)"
                 endIcon={<OpenInNewIcon />}
-                sx={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  minWidth: 0,
-                  px: { xs: 0.5, sm: 1 },
-                  "& .MuiButton-endIcon": { ml: { xs: 0, sm: 1 } },
-                }}
+                sx={{ flexShrink: 0, whiteSpace: "nowrap" }}
               >
-                <Box
-                  component="span"
-                  sx={{ display: { xs: "none", sm: "inline" } }}
-                >
-                  CBS Pool
-                </Box>
+                CBS Pool
               </Button>
             )}
           </Box>
@@ -464,6 +511,12 @@ export default function MainGrid() {
               </Grid>
             )}
           </Grid>
+          <PhoneTabBar
+            activeTab={activeTab}
+            onChange={goToTab}
+            hasLiveGame={hasLiveGame}
+            showAdmin={isAdmin || activeTab === ADMIN_TAB}
+          />
         </>
       )}
     </Box>
