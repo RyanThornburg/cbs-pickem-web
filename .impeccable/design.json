@@ -689,7 +689,7 @@
       "refersTo": "button-contained",
       "description": "Primary action; near-black slate with a soft gradient, flattens on hover.",
       "html": "<button class=\"ds-btn-contained\">Full recap</button>",
-      "css": ".ds-btn-contained{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; font-weight:500; height:40px; padding:0 16px; color:#fff; background-color:hsl(220,35%,3%); background-image:linear-gradient(to bottom,hsl(220,20%,25%),hsl(220,30%,6%)); box-shadow:inset 0 1px 0 hsl(220,20%,35%),inset 0 -1px 0 1px hsl(220,0%,0%); border:1px solid hsl(220,20%,25%); border-radius:8px; cursor:pointer; transition:all 100ms ease-in;} .ds-btn-contained:hover{background-image:none; background-color:hsl(220,20%,25%); box-shadow:none;} .ds-btn-contained:focus-visible{outline:3px solid rgba(25,118,210,0.5); outline-offset:2px;}"
+      "css": ".ds-btn-contained{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; font-weight:500; height:40px; padding:0 16px; color:#fff; background-color:hsl(220,35%,3%); background-image:linear-gradient(to bottom,hsl(220,20%,25%),hsl(220,30%,6%)); box-shadow:inset 0 1px 0 hsl(220,20%,35%),inset 0 -1px 0 1px hsl(220,0%,0%); border:1px solid hsl(220,20%,25%); border-radius:8px; cursor:pointer; transition:all 100ms ease-in;} .ds-btn-contained:hover{background-image:none; background-color:hsl(220,20%,25%); box-shadow:none;} .ds-btn-contained:focus-visible{outline:3px solid hsl(210,98%,42%); outline-offset:2px;}"
     },
     {
       "name": "Outlined Button",
@@ -697,7 +697,7 @@
       "refersTo": "button-outlined",
       "description": "Secondary action and pager arrows; pale slate fill with a hairline border.",
       "html": "<button class=\"ds-btn-outlined\">Books ▾</button>",
-      "css": ".ds-btn-outlined{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; font-weight:500; height:40px; padding:0 14px; color:rgba(0,0,0,0.87); background:hsla(220,35%,97%,0.3); border:1px solid hsl(220,20%,88%); border-radius:8px; cursor:pointer; transition:all 100ms ease-in;} .ds-btn-outlined:hover{background:hsl(220,30%,94%); border-color:hsl(220,20%,80%);} .ds-btn-outlined:active{background:hsl(220,20%,88%);} .ds-btn-outlined:focus-visible{outline:3px solid rgba(25,118,210,0.5); outline-offset:2px;}"
+      "css": ".ds-btn-outlined{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; font-weight:500; height:40px; padding:0 14px; color:rgba(0,0,0,0.87); background:hsla(220,35%,97%,0.3); border:1px solid hsl(220,20%,88%); border-radius:8px; cursor:pointer; transition:all 100ms ease-in;} .ds-btn-outlined:hover{background:hsl(220,30%,94%); border-color:hsl(220,20%,80%);} .ds-btn-outlined:active{background:hsl(220,20%,88%);} .ds-btn-outlined:focus-visible{outline:3px solid hsl(210,98%,42%); outline-offset:2px;}"
     },
     {
       "name": "Route Tabs",

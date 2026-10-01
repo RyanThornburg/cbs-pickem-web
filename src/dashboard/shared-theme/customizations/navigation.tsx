@@ -142,7 +142,7 @@ export const navigationCustomizations: Components<Theme> = {
           transform: "scaleX(0)",
         },
         "&:focus-visible": {
-          outline: `3px solid ${alpha(brand[500], 0.5)}`,
+          outline: `3px solid ${brand[500]}`,
           outlineOffset: "4px",
           borderRadius: "2px",
         },

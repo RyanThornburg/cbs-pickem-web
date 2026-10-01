@@ -16,14 +16,14 @@ export const inputsCustomizations: Components<Theme> = {
       disableRipple: true,
     },
     styleOverrides: {
-      root: ({ theme }) => ({
+      root: {
         boxSizing: "border-box",
         transition: "all 100ms ease-in",
         "&:focus-visible": {
-          outline: `3px solid ${alpha(theme.palette.primary.main, 0.5)}`,
+          outline: `3px solid ${brand[500]}`,
           outlineOffset: "2px",
         },
-      }),
+      },
     },
   },
   MuiButton: {
@@ -335,7 +335,7 @@ export const inputsCustomizations: Components<Theme> = {
           borderColor: brand[300],
         },
         "&.Mui-focusVisible": {
-          outline: `3px solid ${alpha(brand[500], 0.5)}`,
+          outline: `3px solid ${brand[500]}`,
           outlineOffset: "2px",
           borderColor: brand[400],
         },
@@ -357,7 +357,7 @@ export const inputsCustomizations: Components<Theme> = {
           },
           "&.Mui-focusVisible": {
             borderColor: brand[400],
-            outline: `3px solid ${alpha(brand[500], 0.5)}`,
+            outline: `3px solid ${brand[500]}`,
             outlineOffset: "2px",
           },
         }),
@@ -393,7 +393,7 @@ export const inputsCustomizations: Components<Theme> = {
           borderColor: gray[400],
         },
         [`&.${outlinedInputClasses.focused}`]: {
-          outline: `3px solid ${alpha(brand[500], 0.5)}`,
+          outline: `3px solid ${brand[500]}`,
           borderColor: brand[400],
         },
         ...theme.applyStyles("dark", {
