@@ -562,6 +562,51 @@
           "#f0b3b3",
           "#fbeaea"
         ]
+      },
+      "gc-good-soft": {
+        "role": "neutral",
+        "displayName": "Good Green Soft",
+        "scope": "Games tab (.games-card) only",
+        "tonalRamp": [
+          "#15371c",
+          "#256030",
+          "#348844",
+          "#44b158",
+          "#68c579",
+          "#91d49d",
+          "#bde5c4",
+          "#edf8ef"
+        ]
+      },
+      "gc-info": {
+        "role": "neutral",
+        "displayName": "Edge Blue",
+        "scope": "Games tab (.games-card) only: the CBS edge tag",
+        "tonalRamp": [
+          "#0a2a52",
+          "#0f4280",
+          "#1565c0",
+          "#1e7fe6",
+          "#4d9bed",
+          "#80b8f2",
+          "#b8d7f8",
+          "#eaf3fd"
+        ]
+      },
+      "focus-ring": {
+        "role": "neutral",
+        "displayName": "Focus Ring",
+        "scope": "Keyboard focus outline (3px), app-wide; Games buttons and links set it by hand",
+        "tonalRamp": [
+          "#0a2a52",
+          "#0f4280",
+          "#1565c0",
+          "#1e7fe6",
+          "#4d9bed",
+          "#80b8f2",
+          "#b8d7f8",
+          "#eaf3fd"
+        ]
       }
     },
     "typographyMeta": {
@@ -584,14 +629,6 @@
       "stat": {
         "displayName": "Stat",
         "purpose": "Scoreboard totals and the one big number on a recap card; the largest type in the app."
-      },
-      "gc-body": {
-        "displayName": "Kickoff Body",
-        "purpose": "Games tab body text (Public Sans, tabular)."
-      },
-      "gc-label": {
-        "displayName": "Kickoff Label",
-        "purpose": "Games tab column heads (Oswald, uppercase)."
       },
       "compact": {
         "displayName": "Compact",
@@ -708,12 +745,12 @@
       "refersTo": "gc-team-chip",
       "description": "Games tab only: team abbreviation with a 3px team-color edge and a 14% team-color fill.",
       "html": "<span class=\"ds-gc-chip\" style=\"--c:#241773\">BAL</span> <span class=\"ds-gc-chip\" style=\"--c:#0085ca\">CAR</span>",
-      "css": ".ds-gc-chip{font-family:'Public Sans',system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; min-width:40px; padding:2px 7px; border-radius:5px; font-weight:600; font-size:0.78rem; letter-spacing:0.02em; color:#171b26; border-left:3px solid var(--c); background:color-mix(in srgb,var(--c) 14%,#fff);}"
+      "css": ".ds-gc-chip{font-family:Inter,system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; min-width:40px; padding:2px 7px; border-radius:5px; font-weight:600; font-size:0.8125rem; letter-spacing:0.02em; color:#171b26; border-left:3px solid var(--c); background:color-mix(in srgb,var(--c) 14%,#fff);}"
     }
   ],
   "narrative": {
     "northStar": "The League Office",
-    "overview": "**Creative North Star: \"The League Office\"**\n\nThis is where the pool's record gets kept. It should feel like the back office of a club that's been running since 2013: calm and correct about the numbers, but warm, with trophies on the shelf. The standings, the picks and the box scores are the official record, so they sit on plain white paper in tidy tables with hairline rules. The warmth comes from the clubhouse details around that record: a gold trophy for the defending champ, medal tiles for the paid places, a small flame for a hot streak, a gold 5-0.\n\nDensity is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.\n\nThere are two dialects today, and this file records both without choosing between them. Most of the app speaks **Office**: Inter on MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab speaks **Kickoff Board**, ported from an earlier mockup: Public Sans for body, Oswald for small-caps column heads, tabular numbers, a warm amber accent and a teal for weather, all scoped under `.games-card` with its own `--gc-*` custom properties.",
+    "overview": "**Creative North Star: \"The League Office\"**\n\nThis is where the pool's record gets kept. It should feel like the back office of a club that's been running since 2013: calm and correct about the numbers, but warm, with trophies on the shelf. The standings, the picks and the box scores are the official record, so they sit on plain white paper in tidy tables with hairline rules. The warmth comes from the clubhouse details around that record: a gold trophy for the defending champ, medal tiles for the paid places, a small flame for a hot streak, a gold 5-0.\n\nDensity is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.\n\nThe whole app is set in Inter. Most of it speaks **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab keeps a **Kickoff Board** palette from an earlier mockup (teal and amber for weather, green for covered, blue for the CBS edge, scoped under `.games-card` with its own `--gc-*` custom properties) but shares the app's font and type scale. It used Public Sans and Oswald until 2026-09-30.",
     "keyCharacteristics": [
       "White paper, hairline dividers, no resting shadows.",
       "Tables are the primary container; cards group secondary things.",
@@ -779,7 +816,7 @@
       "**Don't** use gold as a general accent or button color.",
       "**Don't** re-sort games or players by how close or dramatic they are.",
       "**Don't** set type larger than 1.75rem, or put more than one big number on a stat card.",
-      "**Don't** mix the Kickoff Board fonts and `--gc-*` tokens into other tabs, or Inter into `.games-card`, without deciding to unify the two dialects first.",
+      "**Don't** bring a second font family back to any tab, or spread the `--gc-*` tokens into other tabs, without deciding to unify the two palettes first.",
       "**Don't** use a colored side stripe as decoration on cards, list items or alerts. The two identity markers (the Records \"you\" edge and the Games team-chip edge) are the only exceptions."
     ]
   }

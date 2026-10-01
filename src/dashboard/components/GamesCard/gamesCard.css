@@ -11,19 +11,19 @@
   --gc-border: #dde1e9;
   --gc-text: #171b26;
   --gc-text-muted: #626c82;
-  --gc-accent: #a5680f;
+  /* Each hue has one job. Teal = weather, amber = weather caution, red =
+     official alerts and missed streaks, green = covered, blue = the CBS
+     edge. Line moves, venues and best book prices stay ink. */
+  --gc-accent: #8a560a;
   --gc-accent-soft: #f4e6cc;
-  --gc-weather: #1f7a8c;
+  --gc-weather: #176675;
   --gc-weather-soft: #dcf0f3;
   --gc-danger: #b5342a;
   --gc-danger-soft: #f7dedb;
-  --gc-good: #2f7a3d;
+  --gc-good: #276a34;
+  --gc-good-soft: #dcefdf;
+  --gc-info: #1565c0;
 
-  font-family:
-    "Public Sans",
-    system-ui,
-    -apple-system,
-    sans-serif;
   color: var(--gc-text);
   font-variant-numeric: tabular-nums;
   /* App.css's leftover CRA boilerplate sets .App{text-align:center} on the
@@ -31,41 +31,6 @@
      component's unstyled inline elements (e.g. the Books button). Reset it
      here rather than touching the global .App class. */
   text-align: left;
-}
-
-.games-card th,
-.games-card .gc-label {
-  font-family: "Oswald", "Public Sans", system-ui, sans-serif;
-}
-
-.games-card .gc-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  margin: 0 0 16px;
-  padding: 10px 14px;
-  border: 1px solid var(--gc-border);
-  border-radius: 10px;
-  background: var(--gc-surface);
-  font-size: 0.76rem;
-  color: var(--gc-text-muted);
-}
-.games-card .gc-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.games-card .gc-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  flex: none;
-}
-.games-card .gc-swatch.danger {
-  background: var(--gc-danger);
-}
-.games-card .gc-swatch.move {
-  background: var(--gc-weather);
 }
 
 .games-card .gc-tablewrap {
@@ -78,14 +43,12 @@
   border-collapse: collapse;
   table-layout: fixed;
   width: 100%;
-  min-width: 820px;
+  min-width: 800px;
 }
 .games-card thead th {
   text-align: left;
-  font-weight: 500;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.75rem;
   color: var(--gc-text-muted);
   background: var(--gc-surface-2);
   padding: 10px 12px;
@@ -96,13 +59,10 @@
   padding: 10px 12px;
   border-bottom: 1px solid var(--gc-border);
   vertical-align: middle;
-  font-size: 0.88rem;
+  font-size: 0.875rem;
 }
 .games-card tbody tr:last-child td {
   border-bottom: none;
-}
-.games-card tbody tr.gc-row:hover {
-  background: var(--gc-surface-2);
 }
 
 .games-card .gc-matchup {
@@ -117,7 +77,10 @@
 }
 .games-card .gc-mrow .gc-rec {
   color: var(--gc-text-muted);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
+  /* Proportional figures: tabular ones open "2-1" up to "2 - 1". */
+  font-variant-numeric: normal;
+  white-space: nowrap;
 }
 /* Active cover/miss streak of 3+ (from the week's recap). */
 .games-card .gc-streaks {
@@ -127,7 +90,7 @@
   margin-top: 6px;
 }
 .games-card .gc-streak {
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.5;
   border-radius: 4px;
@@ -136,7 +99,7 @@
   flex: none;
 }
 .games-card .gc-streak.cover {
-  background: #dcefdf;
+  background: var(--gc-good-soft);
   color: var(--gc-good);
 }
 .games-card .gc-streak.miss {
@@ -146,7 +109,7 @@
 
 .games-card .gc-final-score {
   margin-left: auto;
-  font-size: 0.88rem;
+  font-size: 0.875rem;
   display: inline-flex;
   align-items: center;
 }
@@ -167,19 +130,9 @@
   text-align: center;
 }
 
-/* Home-perspective spread/CBS-line numbers, colored once a game is final to
-   show which side of that number the actual result landed on. */
-.games-card .gc-num.good {
-  color: var(--gc-good);
-}
-.games-card .gc-num.bad {
-  color: var(--gc-danger);
-}
-
 .games-card .gc-total-hit {
-  color: var(--gc-good);
-  font-weight: 700;
-  margin-left: 4px;
+  font-weight: 600;
+  color: var(--gc-text);
 }
 
 .games-card .gc-chip {
@@ -190,7 +143,7 @@
   padding: 2px 7px;
   border-radius: 5px;
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.02em;
   border-left: 3px solid var(--gc-chip-color, var(--gc-accent));
   background: color-mix(
@@ -211,7 +164,7 @@
 }
 .games-card .gc-kickoff .gc-tv {
   color: var(--gc-text-muted);
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -221,12 +174,13 @@
   align-items: center;
   align-self: flex-start;
   gap: 4px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 0 5px;
   border-radius: 4px;
-  background: var(--gc-accent-soft);
-  color: var(--gc-accent);
+  background: var(--gc-surface);
+  border: 1px solid var(--gc-border);
+  color: var(--gc-text);
 }
 /* Mobile's kickoff block is right-aligned, so the badge follows it there. */
 .games-card .gc-gamecard-top .gc-venuebadge {
@@ -248,16 +202,21 @@
 .games-card .gc-line .gc-num {
   font-weight: 600;
 }
+/* The CBS line: the number the pool scores against, so the biggest one. */
+.games-card .gc-num.gc-hero {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
 .games-card .gc-line .gc-linesub {
   display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   color: var(--gc-text-muted);
 }
 .games-card .gc-line .gc-ou {
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   color: var(--gc-text-muted);
 }
 .games-card .gc-line .gc-ou-num {
@@ -269,12 +228,13 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 0 5px;
   border-radius: 4px;
-  background: var(--gc-weather-soft);
-  color: var(--gc-weather);
+  background: var(--gc-surface);
+  border: 1px solid var(--gc-border);
+  color: var(--gc-text);
   /* Wraps instead of nowrap -- a fixed-width column is narrower than this
      badge's text at some widths, and nowrap let it silently overflow into
      the next column instead of wrapping inside its own cell. */
@@ -282,19 +242,22 @@
   max-width: 100%;
 }
 
-.games-card .gc-valuearrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 0.76rem;
+/* Under the CBS line: who covered it once final (the pool's result), and
+   the "ARI edge" tag when CBS is 1+ point easier on a side than Vegas. */
+.games-card .gc-cover {
+  font-size: 0.75rem;
   font-weight: 700;
-  white-space: nowrap;
-}
-.games-card .gc-valuearrow.good {
   color: var(--gc-good);
 }
-.games-card .gc-valuearrow.bad {
-  color: var(--gc-accent);
+.games-card .gc-cover.push {
+  color: var(--gc-text-muted);
+}
+.games-card .gc-edge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gc-info);
+  white-space: nowrap;
+  position: relative;
 }
 
 .games-card .gc-wx {
@@ -329,10 +292,10 @@
 }
 .games-card .gc-wx .gc-cond {
   color: var(--gc-text-muted);
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
 }
 .games-card .gc-wx .gc-trend {
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--gc-text-muted);
 }
@@ -341,18 +304,20 @@
 }
 .games-card .gc-wx .gc-hours {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   flex: 0 1 auto;
 }
 .games-card .gc-wx .gc-hour {
-  flex: 0 1 44px;
-  min-width: 30px;
+  position: relative;
+  /* One fixed width for every tile, sized for the widest label ("10AM"
+     at 12px), so "9AM" tiles don't come out skinnier. */
+  flex: 0 0 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 4px 2px;
-  border-radius: 6px;
+  padding: 4px 4px;
+  border-radius: 5px;
   background: var(--gc-surface-2);
 }
 .games-card .gc-wx .gc-hour.peak {
@@ -364,12 +329,12 @@
   margin-top: 0;
 }
 .games-card .gc-wx .gc-hour-time {
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   color: var(--gc-text-muted);
   white-space: nowrap;
 }
 .games-card .gc-wx .gc-hour-pct {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--gc-text-muted);
 }
@@ -387,7 +352,7 @@
   align-items: center;
   gap: 6px;
   color: var(--gc-text-muted);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 .games-card .gc-dome svg {
   color: var(--gc-text-muted);
@@ -397,16 +362,22 @@ a.gc-wx-link,
 a.gc-wx-link:visited {
   color: inherit;
   text-decoration: none;
+  /* A 24px-tall hit area around the small temperature/roof label. */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  border-radius: 4px;
 }
 .games-card svg.gc-linkicon {
   color: var(--gc-text-muted);
 }
 a.gc-wx-link:hover .gc-temp,
-a.gc-wx-link:hover.gc-dome {
+.gc-dome a.gc-wx-link:hover {
   text-decoration: underline;
 }
 .games-card a.gc-wx-link:hover svg.gc-linkicon {
-  color: var(--gc-accent);
+  color: var(--gc-text);
 }
 .games-card .gc-flag {
   display: inline-flex;
@@ -414,7 +385,7 @@ a.gc-wx-link:hover.gc-dome {
   gap: 5px;
   padding: 2px 7px;
   border-radius: 5px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -434,17 +405,24 @@ a.gc-wx-link:hover.gc-dome {
   border: 1px solid var(--gc-border);
   background: var(--gc-surface-2);
   color: var(--gc-text);
-  font-family: "Public Sans", sans-serif;
-  font-size: 0.74rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   padding: 5px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
+}
+/* The app's focus ring (3px brand blue at 50%), on the Games tab's own
+   buttons and links. */
+.games-card .gc-expandbtn:focus-visible,
+.games-card a.gc-wx-link:focus-visible {
+  outline: 3px solid hsla(210, 98%, 42%, 0.5);
+  outline-offset: 2px;
 }
 .games-card .gc-expandbtn:hover {
   background: var(--gc-surface-3);
@@ -470,49 +448,48 @@ a.gc-wx-link:hover.gc-dome {
 }
 .games-card .gc-booktable th {
   text-align: left;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.75rem;
   color: var(--gc-text-muted);
-  font-weight: 500;
+  font-weight: 700;
   padding: 5px 8px;
   border-bottom: 1px solid var(--gc-border);
 }
 .games-card .gc-booktable td {
   padding: 5px 8px;
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   border-bottom: 1px solid var(--gc-border);
 }
 .games-card .gc-booktable tr:last-child td {
   border-bottom: none;
 }
-.games-card .gc-booktable td.gc-bestval {
+.games-card .gc-booktable .gc-bestval {
   font-weight: 700;
-  color: var(--gc-accent);
 }
-.games-card .gc-booktable td.gc-bestval::after {
+.games-card .gc-booktable .gc-bestval::after,
+.games-card .gc-bestoffer .gc-pricesub::after {
   content: " \2713";
   font-size: 0.7em;
 }
 .games-card .gc-totalarrow {
   margin-left: 5px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
-.games-card .gc-totalarrow.high {
-  color: var(--gc-weather);
-}
-.games-card .gc-totalarrow.low {
-  color: var(--gc-accent);
+.games-card .gc-totalarrow {
+  color: var(--gc-text-muted);
 }
 .games-card .gc-pricesub {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--gc-text-muted);
   margin-top: 1px;
 }
-.games-card .gc-pricesub.cheapest {
-  color: var(--gc-good);
+.games-card .gc-offer {
+  display: block;
+}
+.games-card .gc-bestoffer .gc-offer-pt,
+.games-card .gc-bestoffer .gc-pricesub {
+  color: var(--gc-text);
   font-weight: 700;
 }
 
@@ -520,7 +497,7 @@ a.gc-wx-link:hover.gc-dome {
 .games-card .gc-mobile-view {
   display: none;
 }
-@media (max-width: 780px) {
+@media (max-width: 900px) {
   .games-card .gc-desktop-view {
     display: none;
   }
@@ -587,33 +564,39 @@ a.gc-wx-link:hover.gc-dome {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.games-card .gc-oddsgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
-  margin-bottom: 12px;
-}
-.games-card .gc-oddsgrid .gc-cell {
+/* Phone card: the CBS line block sits between the teams and the weather. */
+.games-card .gc-cbsblock {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gc-border);
 }
-.games-card .gc-oddsgrid .gc-lbl {
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.games-card .gc-cbsrow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.games-card .gc-cbsblock .gc-linesub {
+  font-size: 0.8125rem;
   color: var(--gc-text-muted);
 }
-.games-card .gc-oddsgrid .gc-val {
+.games-card .gc-nowrap {
+  white-space: nowrap;
+}
+.games-card .gc-lbl {
+  font-size: 0.75rem;
   font-weight: 600;
-  font-size: 0.92rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gc-text-muted);
 }
 .games-card .gc-gamecard .gc-expandbtn {
   width: 100%;
+  min-height: 44px;
 }
 .games-card .gc-bookdetail-mobile {
   margin-top: 12px;
@@ -621,4 +604,26 @@ a.gc-wx-link:hover.gc-dome {
 }
 .games-card .gc-bookdetail-mobile .gc-booktable {
   min-width: 480px;
+}
+
+.games-card .gc-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--gc-text-muted);
+  border: 1px solid var(--gc-border);
+  border-radius: 12px;
+  background: var(--gc-surface);
+}
+/* Text for screen readers only (hour-tile conditions, the edge explanation). */
+.games-card .gc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import {
   Book,
   Forecast,
+  GameStatus,
   HourlyForecast,
   Stadium,
   TeamRecord,
@@ -32,15 +33,34 @@ export const PRECIP_TREND = {
 export const BIG_MOVE_PTS = 2;
 export const CBS_DIVERGE_PTS = 1;
 
+// A real minus sign (U+2212), not a hyphen: with tabular figures Inter gives
+// the hyphen a digit-wide slot, which reads as "- 3.5". The minus fills it
+// the way "+" does.
+const signed = (n: number): string =>
+  n > 0 ? `+${n}` : `\u2212${Math.abs(n)}`;
+
 export const fmtSpread = (n: number | undefined | null): string => {
   if (n == null) return "—";
   if (n === 0) return "PK";
-  return n > 0 ? `+${n}` : `${n}`;
+  return signed(n);
 };
 
 export const fmtMoney = (n: number | undefined | null): string => {
   if (n == null) return "—";
-  return n > 0 ? `+${n}` : `${n}`;
+  return signed(n);
+};
+
+// A home-perspective line as the favorite gives it: +3 at PIT@CLE (CLE
+// getting 3) reads "PIT −3". A bare signed number sat on the away team's
+// row and read as that team's line.
+export const fmtTeamLine = (
+  n: number | undefined | null,
+  game: Pick<GameWithOdds, "home_team" | "away_team">
+): string => {
+  if (n == null) return "—";
+  if (n === 0) return "Pick'em";
+  const favorite = n < 0 ? game.home_team.abbr : game.away_team.abbr;
+  return `${favorite} \u2212${Math.abs(n)}`;
 };
 
 export const merryskyUrl = (stadium?: Stadium): string | null => {
@@ -67,6 +87,35 @@ export const getValueSide = (game: GameWithOdds): "home" | "away" | null => {
   const delta = close - game.cbs_spread;
   if (Math.abs(delta) < CBS_DIVERGE_PTS) return null;
   return delta > 0 ? "away" : "home";
+};
+
+// The team the market moved toward (became more favored or less of an
+// underdog). Home-perspective numbers rise as home gets more points, so a
+// positive move is toward the away team.
+export const moveTowardAbbr = (game: GameWithOdds, move: number): string =>
+  move > 0 ? game.away_team.abbr : game.home_team.abbr;
+
+// Who covered the CBS line (the one the pool scores against) once a game is
+// final, or "Push". coveringTeamId is measured against the CBS line.
+export const cbsCoverNote = (game: GameWithOdds): string | null => {
+  if (game.status !== GameStatus.Final || game.cbs_spread == null) return null;
+  if (game.coveringTeamId == null) return "Push";
+  const team =
+    game.coveringTeamId === game.home_team.id ? game.home_team : game.away_team;
+  return `${team.abbr} covered`;
+};
+
+// The tooltip behind the "ARI edge" tag: how much easier the CBS line is
+// for the value side than the market's.
+export const edgeTitle = (
+  game: GameWithOdds,
+  side: "home" | "away"
+): string => {
+  const diff = Math.abs(
+    (game.market_spread?.close ?? 0) - (game.cbs_spread ?? 0)
+  );
+  const abbr = side === "home" ? game.home_team.abbr : game.away_team.abbr;
+  return `CBS line is ${diff} easier for ${abbr} than Vegas`;
 };
 
 export const getMoveDelta = (game: GameWithOdds): number | null => {
@@ -131,6 +180,34 @@ export const isBest = (
   value: number | null | undefined,
   best: number | null
 ): boolean => value != null && best != null && Math.abs(value - best) < 0.001;
+
+// Which books offer the best bet on one side of a spread or total: the best
+// point first, then the best price among those. "higher" points win for a
+// spread side (+3 beats +2.5, -2 beats -2.5) and the Under; "lower" wins for
+// the Over. Books tied on both get marked alike, since they're the same bet.
+export const bestOfferIndexes = (
+  offers: { point?: number | null; price?: number | null }[],
+  better: "higher" | "lower"
+): Set<number> => {
+  const sign = better === "higher" ? 1 : -1;
+  const points = offers
+    .map((o) => o.point)
+    .filter((p): p is number => p != null)
+    .map((p) => p * sign);
+  if (!points.length) return new Set();
+  const bestPoint = Math.max(...points);
+  const atBestPoint = offers
+    .map((o, i) => ({ o, i }))
+    .filter(
+      ({ o }) => o.point != null && Math.abs(o.point * sign - bestPoint) < 0.001
+    );
+  const bestPrice = bestOf(atBestPoint.map(({ o }) => o.price));
+  return new Set(
+    atBestPoint
+      .filter(({ o }) => bestPrice == null || isBest(o.price, bestPrice))
+      .map(({ i }) => i)
+  );
+};
 
 export interface WeatherFlag {
   label: string;

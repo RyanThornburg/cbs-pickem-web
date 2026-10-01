@@ -3,13 +3,16 @@ import { Book, Forecast, HourlyForecast, WeatherAlert } from "../../types";
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import {
   bestOf,
+  bestOfferIndexes,
   fmtSpread,
+  fmtTeamLine,
   formatRecord,
   getMoveDelta,
   getTotalResult,
   getValueSide,
   isBest,
   modeTotal,
+  moveTowardAbbr,
   weatherFlags,
   weatherTrends,
 } from "./gamesCardUtils";
@@ -319,9 +322,62 @@ describe("odds helpers", () => {
     expect(isBest(-2.5, null)).toBe(false);
   });
 
+  it("fmtTeamLine: names the favorite instead of a bare home-side number", () => {
+    const g = {
+      home_team: { abbr: "CLE" },
+      away_team: { abbr: "PIT" },
+    } as GameWithOdds;
+    expect(fmtTeamLine(3, g)).toBe("PIT \u22123");
+    expect(fmtTeamLine(-6.5, g)).toBe("CLE \u22126.5");
+    expect(fmtTeamLine(0, g)).toBe("Pick'em");
+    expect(fmtTeamLine(null, g)).toBe("—");
+  });
+
+  it("moveTowardAbbr: a rising home number moved toward the away team", () => {
+    const g = {
+      home_team: { abbr: "NYG" },
+      away_team: { abbr: "ARI" },
+    } as GameWithOdds;
+    // ARI @ NYG opened NYG -2.5, closed ARI -2: +4.5 toward ARI.
+    expect(moveTowardAbbr(g, 4.5)).toBe("ARI");
+    expect(moveTowardAbbr(g, -2)).toBe("NYG");
+  });
+
+  it("bestOfferIndexes: best point, then best price, ties all win", () => {
+    // JAC +2.5 everywhere: the -105s win, not every +2.5.
+    const jac = [-105, -110, -106, -105, -105].map((price) => ({
+      point: 2.5,
+      price,
+    }));
+    expect([...bestOfferIndexes(jac, "higher")]).toEqual([0, 3, 4]);
+    // A better point beats a better price.
+    expect([
+      ...bestOfferIndexes(
+        [
+          { point: -2.5, price: -105 },
+          { point: -2, price: -120 },
+        ],
+        "higher"
+      ),
+    ]).toEqual([1]);
+    // Over: the lowest total wins.
+    expect([
+      ...bestOfferIndexes(
+        [
+          { point: 44.5, price: -105 },
+          { point: 43.5, price: -118 },
+        ],
+        "lower"
+      ),
+    ]).toEqual([1]);
+    expect(
+      bestOfferIndexes([{ point: null, price: -110 }], "higher").size
+    ).toBe(0);
+  });
+
   it("formats spreads and records", () => {
     expect(fmtSpread(3.5)).toBe("+3.5");
-    expect(fmtSpread(-7)).toBe("-7");
+    expect(fmtSpread(-7)).toBe("\u22127");
     expect(fmtSpread(0)).toBe("PK");
     expect(fmtSpread(null)).toBe("—");
     expect(formatRecord({ wins: 2, losses: 1, ties: 0 })).toBe("2-1");

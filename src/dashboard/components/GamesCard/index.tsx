@@ -28,32 +28,10 @@ export default function GamesCard({ week, recap }: Props) {
       {!oddsAvailable && games.length > 0 && (
         <Alert severity="warning" sx={{ mb: 1.5 }}>
           Odds unavailable for week {week} right now. Games, CBS lines and
-          weather still show; the market spread, O/U and books will fill in once
+          weather still show; the Vegas line, O/U and books will fill in once
           the odds update.
         </Alert>
       )}
-      <div className="gc-legend">
-        <span className="gc-legend-item">
-          <span className="gc-swatch danger" />
-          Official weather alert
-        </span>
-        <span className="gc-legend-item">
-          <span className="gc-swatch move" />
-          Line movement — open → spread delta
-        </span>
-        <span className="gc-legend-item">
-          <span className="gc-valuearrow good" style={{ fontSize: "0.78rem" }}>
-            ▲
-          </span>
-          /
-          <span className="gc-valuearrow bad" style={{ fontSize: "0.78rem" }}>
-            ▼
-          </span>
-          Value arrow on CBS Line — green up = home is the value side, amber
-          down = value moved to the away team
-        </span>
-      </div>
-
       <div className="gc-desktop-view">
         <GamesTableDesktop games={games} streaks={streaks} />
       </div>

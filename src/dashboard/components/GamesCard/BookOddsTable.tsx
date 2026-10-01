@@ -1,5 +1,11 @@
 import { Book } from "../../types";
-import { bestOf, fmtMoney, fmtSpread, isBest } from "./gamesCardUtils";
+import {
+  bestOf,
+  bestOfferIndexes,
+  fmtMoney,
+  fmtSpread,
+  isBest,
+} from "./gamesCardUtils";
 
 type Props = {
   books: Book[];
@@ -7,28 +13,30 @@ type Props = {
   awayAbbr: string;
 };
 
-// A book's price (the vig/juice) is itself American odds, so the same
-// "bigger number costs less" rule from moneyline applies: -105 costs less
-// than -110, +105 costs less still. Tracked separately from the point
-// number -- a book can have the worst point and still be the cheapest to
-// bet, or vice versa.
-const PriceSub = ({
-  value,
+// One spread or total side for one book: the point, then its price (the
+// vig, itself American odds, so -105 costs less than -110). A best offer
+// (see bestOfferIndexes) gets one check after the price and bold on both.
+const Offer = ({
+  point,
+  price,
   best,
   prefix,
 }: {
-  value: number | null | undefined;
-  best: number | null;
+  point?: string;
+  price: number | null | undefined;
+  best: boolean;
   prefix?: string;
-}) => {
-  if (value == null) return null;
-  return (
-    <span className={`gc-pricesub${isBest(value, best) ? " cheapest" : ""}`}>
-      {prefix}
-      {fmtMoney(value)}
-    </span>
-  );
-};
+}) => (
+  <span className={`gc-offer${best ? " gc-bestoffer" : ""}`}>
+    {point != null && <span className="gc-offer-pt">{point}</span>}
+    {price != null && (
+      <span className="gc-pricesub">
+        {prefix}
+        {fmtMoney(price)}
+      </span>
+    )}
+  </span>
+);
 
 export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
   if (!books.length) {
@@ -36,7 +44,7 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
       <p
         style={{
           margin: "8px 0",
-          fontSize: "0.82rem",
+          fontSize: "0.8125rem",
           color: "var(--gc-text-muted)",
         }}
       >
@@ -45,17 +53,40 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
     );
   }
 
-  const bestHomeSpread = bestOf(books.map((b) => b.spread?.home_point));
-  const bestAwaySpread = bestOf(books.map((b) => b.spread?.away_point));
   const bestMlHome = bestOf(books.map((b) => b.moneyline?.home_price));
   const bestMlAway = bestOf(books.map((b) => b.moneyline?.away_price));
-  const bestHomePrice = bestOf(books.map((b) => b.spread?.home_price));
-  const bestAwayPrice = bestOf(books.map((b) => b.spread?.away_price));
+  const bestAwaySpread = bestOfferIndexes(
+    books.map((b) => ({
+      point: b.spread?.away_point,
+      price: b.spread?.away_price,
+    })),
+    "higher"
+  );
+  const bestHomeSpread = bestOfferIndexes(
+    books.map((b) => ({
+      point: b.spread?.home_point,
+      price: b.spread?.home_price,
+    })),
+    "higher"
+  );
   // Confirmed against the odds_snapshots schema: for market=total, the
   // home_point/home_price pair holds the Over line/price, away holds Under
   // -- reused columns, not a home/away team distinction (totals have none).
-  const bestOverPrice = bestOf(books.map((b) => b.total?.home_price));
-  const bestUnderPrice = bestOf(books.map((b) => b.total?.away_price));
+  // The Over is best at the lowest total, the Under at the highest.
+  const bestOver = bestOfferIndexes(
+    books.map((b) => ({
+      point: b.total?.home_point,
+      price: b.total?.home_price,
+    })),
+    "lower"
+  );
+  const bestUnder = bestOfferIndexes(
+    books.map((b) => ({
+      point: b.total?.away_point,
+      price: b.total?.away_price,
+    })),
+    "higher"
+  );
 
   const totalVals = books
     .map((b) => b.total?.home_point)
@@ -89,7 +120,7 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
         </tr>
       </thead>
       <tbody>
-        {books.map((book) => {
+        {books.map((book, i) => {
           const trend = totalTrend(book.total?.home_point);
           return (
             <tr key={book.bookmaker}>
@@ -112,49 +143,62 @@ export default function BookOddsTable({ books, homeAbbr, awayAbbr }: Props) {
               >
                 {fmtMoney(book.moneyline?.home_price)}
               </td>
-              <td
-                className={
-                  isBest(book.spread?.away_point, bestAwaySpread)
-                    ? "gc-bestval"
-                    : undefined
-                }
-              >
-                {book.spread ? fmtSpread(book.spread.away_point) : "—"}
-                <PriceSub
-                  value={book.spread?.away_price}
-                  best={bestAwayPrice}
-                />
+              <td>
+                {book.spread ? (
+                  <Offer
+                    point={fmtSpread(book.spread.away_point)}
+                    price={book.spread.away_price}
+                    best={bestAwaySpread.has(i)}
+                  />
+                ) : (
+                  "—"
+                )}
               </td>
-              <td
-                className={
-                  isBest(book.spread?.home_point, bestHomeSpread)
-                    ? "gc-bestval"
-                    : undefined
-                }
-              >
-                {book.spread ? fmtSpread(book.spread.home_point) : "—"}
-                <PriceSub
-                  value={book.spread?.home_price}
-                  best={bestHomePrice}
-                />
+              <td>
+                {book.spread ? (
+                  <Offer
+                    point={fmtSpread(book.spread.home_point)}
+                    price={book.spread.home_price}
+                    best={bestHomeSpread.has(i)}
+                  />
+                ) : (
+                  "—"
+                )}
               </td>
               <td>
                 {book.total ? book.total.home_point : "—"}
                 {trend && (
-                  <span className={`gc-totalarrow ${trend}`}>
+                  <span
+                    className="gc-totalarrow"
+                    role="img"
+                    aria-label={
+                      trend === "high"
+                        ? "Highest total of these books"
+                        : "Lowest total of these books"
+                    }
+                    title={
+                      trend === "high"
+                        ? "Highest total of these books"
+                        : "Lowest total of these books"
+                    }
+                  >
                     {trend === "high" ? "▲" : "▼"}
                   </span>
                 )}
-                <PriceSub
-                  value={book.total?.home_price}
-                  best={bestOverPrice}
-                  prefix="o "
-                />
-                <PriceSub
-                  value={book.total?.away_price}
-                  best={bestUnderPrice}
-                  prefix="u "
-                />
+                {book.total && (
+                  <>
+                    <Offer
+                      price={book.total.home_price}
+                      best={bestOver.has(i)}
+                      prefix="o "
+                    />
+                    <Offer
+                      price={book.total.away_price}
+                      best={bestUnder.has(i)}
+                      prefix="u "
+                    />
+                  </>
+                )}
               </td>
             </tr>
           );

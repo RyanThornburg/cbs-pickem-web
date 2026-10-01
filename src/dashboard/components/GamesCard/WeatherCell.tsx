@@ -28,12 +28,18 @@ export default function WeatherCell({ forecast, stadium }: Props) {
   const forecastUrl = merryskyUrl(stadium);
 
   if (!forecast) {
+    // An open-air stadium only lacks a forecast when none was saved (weeks
+    // from before forecasts were collected): say that, not "Open" next to a
+    // dome icon, which reads as a roof type.
+    const openAir = stadium?.roof_type === "Open";
     return (
-      <ForecastLink url={forecastUrl} className="gc-dome">
-        <DomeIcon />
-        {stadium?.roof_type ?? "Enclosed"}
-        {forecastUrl && <ExternalLinkIcon />}
-      </ForecastLink>
+      <div className="gc-dome">
+        {!openAir && <DomeIcon />}
+        <ForecastLink url={forecastUrl}>
+          {openAir ? "No forecast" : (stadium?.roof_type ?? "Enclosed")}
+          {forecastUrl && <ExternalLinkIcon />}
+        </ForecastLink>
+      </div>
     );
   }
 
@@ -42,14 +48,16 @@ export default function WeatherCell({ forecast, stadium }: Props) {
   const hours = duringGameHours(forecast);
 
   return (
-    <ForecastLink url={forecastUrl} className="gc-wx">
+    <div className="gc-wx">
       <div className="gc-wxmain">
         {wxIcon(forecast.condition)}
         <div className="gc-wxtext">
-          <span className="gc-temp">
-            {forecast.temp_f}°F
-            {forecastUrl && <ExternalLinkIcon />}
-          </span>
+          <ForecastLink url={forecastUrl}>
+            <span className="gc-temp">
+              {forecast.temp_f}°F
+              {forecastUrl && <ExternalLinkIcon />}
+            </span>
+          </ForecastLink>
           <span className="gc-cond">
             {forecast.condition} · {forecast.wind_speed_mph}mph{" "}
             {forecast.wind_direction ?? ""}
@@ -75,7 +83,7 @@ export default function WeatherCell({ forecast, stadium }: Props) {
         </div>
       </div>
       {hours.length > 0 && <HourlyStrip hours={hours} />}
-    </ForecastLink>
+    </div>
   );
 }
 
@@ -99,6 +107,7 @@ function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
             title={`${time}: ${h.condition}, ${h.temp_f}°F, ${h.precipitation_pct}% precip, gusts ${h.wind_gust_mph}mph`}
           >
             <span className="gc-hour-time">{time}</span>
+            <span className="gc-sr">{h.condition}</span>
             {wxIconFor(h.icon, h.condition)}
             <span
               className={`gc-hour-pct${notable(h.precipitation_pct) ? " wet" : ""}`}
@@ -114,21 +123,20 @@ function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
 
 type ForecastLinkProps = {
   url: string | null;
-  className: string;
   children: React.ReactNode;
 };
 
-function ForecastLink({ url, className, children }: ForecastLinkProps) {
-  if (!url) {
-    return <div className={className}>{children}</div>;
-  }
+// Only the temperature (or the dome/roof label) links out, so a thumb
+// scrolling past the weather block doesn't open Merry Sky by accident.
+function ForecastLink({ url, children }: ForecastLinkProps) {
+  if (!url) return <>{children}</>;
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${className} gc-wx-link`}
+      className="gc-wx-link"
       title="View forecast on Merry Sky"
     >
       {children}

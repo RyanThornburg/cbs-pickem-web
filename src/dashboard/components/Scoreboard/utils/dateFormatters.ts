@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 
 export const formatGameDate = (gameStart: number): string => {
-  return dayjs(gameStart).format("ddd, MMM DD");
+  return dayjs(gameStart).format("ddd, MMM D");
 };
 
 export const formatGameTime = (gameStart: number): string => {
-  return dayjs(gameStart).format("hh:mm A");
+  return dayjs(gameStart).format("h:mm A");
 };
 
 // Short weekday + time on one line -- for layouts tight on column width
