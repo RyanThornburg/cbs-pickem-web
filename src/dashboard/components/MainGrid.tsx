@@ -160,11 +160,8 @@ export default function MainGrid() {
   // Pipeline status has nothing to do with a week or a player, so the admin
   // page drops the dropdowns and the selected-player header.
   const showPlayerControls = activeTab !== ADMIN_TAB;
-  // The player's picks show on every tab, so the header keeps one shape
-  // and the tab row never moves. The money lines stay off Games (pregame
-  // research) and Records (all-time); the card keeps its width without
-  // them (see UserSelectDropdown).
-  const showMoney = activeTab !== "games" && activeTab !== RECORDS_TAB;
+  // The header (Week pill, player card with its money lines, picks) is the
+  // same on every tab but Admin, so it never changes shape when you switch.
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
@@ -363,7 +360,10 @@ export default function MainGrid() {
                 // fit them, so they drop under it: under the card (right
                 // aligned) from md, full width on phones.
                 role="group"
-                aria-label="Your picks"
+                // The selected player isn't always the viewer (there's no
+                // login), so the visible label stays neutral; the name sits
+                // beside it, but screen readers need it in the group name.
+                aria-label={`${selectedUser.name}'s picks`}
                 sx={{
                   order: { xs: 3, lg: 0 },
                   width: { xs: "100%", lg: "auto" },
@@ -378,16 +378,13 @@ export default function MainGrid() {
                   aria-hidden
                   sx={{
                     flexShrink: 0,
-                    // Two short lines on phones, where the tiles need the
-                    // width.
-                    maxWidth: { xs: "3.5em", sm: "none" },
                     fontSize: "0.75rem",
                     lineHeight: 1.2,
                     fontWeight: 500,
                     color: "text.secondary",
                   }}
                 >
-                  Your picks
+                  Picks
                 </Box>
                 {UserGamePicksStack(
                   selectedUser.picks,
@@ -407,14 +404,12 @@ export default function MainGrid() {
                   },
                 }}
               >
-                {activeTab !== RECORDS_TAB && (
-                  <Skeleton
-                    animation={metaStatus === "failed" ? false : "pulse"}
-                    variant="rounded"
-                    height={40}
-                    sx={{ width: { xs: 72, md: 88 }, borderRadius: "999px" }}
-                  />
-                )}
+                <Skeleton
+                  animation={metaStatus === "failed" ? false : "pulse"}
+                  variant="rounded"
+                  height={40}
+                  sx={{ width: { xs: 72, md: 88 }, borderRadius: "999px" }}
+                />
                 <Skeleton
                   animation={metaStatus === "failed" ? false : "pulse"}
                   variant="rounded"
@@ -427,8 +422,9 @@ export default function MainGrid() {
                 />
               </Box>
             )}
-            {metaReady && showPlayerControls && activeTab !== RECORDS_TAB && (
-              // Records isn't weekly data, so there's no week to pick.
+            {metaReady && showPlayerControls && (
+              // Kept on Records too: it sets the week the header's picks,
+              // place and money are from.
               <WeekDropdown
                 currentWeek={currentWeek}
                 selectedWeek={selectedWeek}
@@ -444,7 +440,7 @@ export default function MainGrid() {
                 onOpenChange={setUserMenuOpen}
                 onMenuClosed={scrollToPendingRow}
                 summary={isDesktop ? "card" : "compact"}
-                standings={showMoney ? moneyStandings : []}
+                standings={moneyStandings}
                 asOfWeek={isCurrentWeek ? undefined : selectedWeek}
               />
             )}
@@ -578,20 +574,18 @@ export default function MainGrid() {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {metaReady &&
-                  activeTab !== RECORDS_TAB &&
-                  activeTab !== ADMIN_TAB && (
-                    <>
-                      Week{" "}
-                      <Box component="span" sx={{ color: "text.primary" }}>
-                        {selectedWeek}
-                      </Box>
-                      {!isCurrentWeek && ", past week"}
-                    </>
-                  )}
+                {metaReady && activeTab !== ADMIN_TAB && (
+                  <>
+                    Week{" "}
+                    <Box component="span" sx={{ color: "text.primary" }}>
+                      {selectedWeek}
+                    </Box>
+                    {!isCurrentWeek && ", past week"}
+                  </>
+                )}
                 {selectedUser &&
                   activeTab !== ADMIN_TAB &&
-                  `${activeTab !== RECORDS_TAB ? " · " : ""}${selectedUser.name}`}
+                  ` · ${selectedUser.name}`}
                 {selectedUser?.place != null && activeTab !== ADMIN_TAB && (
                   <>
                     {" · "}

@@ -138,12 +138,16 @@ export const UserGamePicksStack = (
       }}
       direction="row"
       spacing={{ xs: 0.5, sm: 0.35, md: spacingSize }}
+      // Hairlines between the table's tiles; the header's spaced pills don't
+      // need them (they dropped in and out at fractional offsets).
       divider={
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{ display: { xs: "none", sm: "block" } }}
-        />
+        header ? undefined : (
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ display: { xs: "none", sm: "block" } }}
+          />
+        )
       }
     >
       {picks.map((pick) => (
