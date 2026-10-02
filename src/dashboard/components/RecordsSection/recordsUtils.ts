@@ -35,11 +35,21 @@ export const highestWinningScore = (
   return scores.length ? Math.max(...scores) : undefined;
 };
 
+// All-time points: 10 for a title, 9 for 2nd, down to 1 for 10th, added up
+// over every season. Rewards long good careers as well as peaks, so a single
+// great season doesn't outrank ten solid ones. Display config: retune here.
+export const FINISH_POINTS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+export const finishPoints = (rank: number): number =>
+  FINISH_POINTS[rank - 1] ?? 0;
+
 export interface CareerRow {
   id: number;
   name: string;
   active: boolean;
   seasons: number;
+  // All-time points (see FINISH_POINTS).
+  points: number;
   titles: number;
   top3: number;
   top5: number;
@@ -63,6 +73,7 @@ export const buildCareerRows = (data: HistoricalRecords): CareerRow[] =>
       name: cleanName(career.name),
       active: career.is_active,
       seasons: career.appearances.length,
+      points: ranks.reduce((sum, rank) => sum + finishPoints(rank), 0),
       titles: career.titles,
       top3: ranks.filter((r) => r <= 3).length,
       top5: ranks.filter((r) => r <= 5).length,
@@ -74,6 +85,37 @@ export const buildCareerRows = (data: HistoricalRecords): CareerRow[] =>
       ),
     };
   });
+
+// The all-time order: most points, then more titles, then the better average
+// finish. Also every column's tiebreak in the All-time table (its sort is
+// stable).
+export const byAllTimeRank = (a: CareerRow, b: CareerRow): number =>
+  b.points - a.points ||
+  b.titles - a.titles ||
+  (a.avgFinish ?? Infinity) - (b.avgFinish ?? Infinity);
+
+// Each player's all-time place by byAllTimeRank, with ties sharing a place
+// (standard competition ranking: 1, 2, 2, 4).
+export const allTimePlaces = (
+  rows: CareerRow[]
+): Map<number, { place: number; tied: boolean }> => {
+  const sorted = [...rows].sort(byAllTimeRank);
+  const places = new Map<number, { place: number; tied: boolean }>();
+  sorted.forEach((row, i) => {
+    const prev = sorted[i - 1];
+    const place =
+      prev && byAllTimeRank(prev, row) === 0
+        ? (places.get(prev.id)?.place ?? i + 1)
+        : i + 1;
+    places.set(row.id, { place, tied: false });
+  });
+  const counts = new Map<number, number>();
+  places.forEach(({ place }) =>
+    counts.set(place, (counts.get(place) ?? 0) + 1)
+  );
+  places.forEach((p) => (p.tied = (counts.get(p.place) ?? 0) > 1));
+  return places;
+};
 
 // ---- Records tiles ----
 
@@ -109,9 +151,7 @@ export const buildRecordTiles = (
   );
   if (scored.length) {
     const hi = Math.max(...scored.map((c) => c.score as number));
-    const lo = Math.min(...scored.map((c) => c.score as number));
     const his = scored.filter((c) => c.score === hi);
-    const los = scored.filter((c) => c.score === lo);
     tiles.push({
       label: "Highest winning score",
       value: String(hi),
@@ -119,13 +159,6 @@ export const buildRecordTiles = (
       holders: his.map((c) => ({
         text: `${c.names.map(cleanName).join(", ")} (${c.year})`,
       })),
-    });
-    tiles.push({
-      label: "Lowest winning score",
-      value: String(lo),
-      unit: "pts",
-      holders: [{ text: los.map((c) => c.year).join(", ") }],
-      detail: los.map((c) => c.names.map(cleanName).join(", ")).join(" · "),
     });
   }
 
@@ -152,44 +185,9 @@ export const buildRecordTiles = (
   );
   pushMax(
     "Most top-5 finishes",
-    () => "",
+    (n) => (n === 1 ? "finish" : "finishes"),
     (r) => r.top5
   );
-
-  // Longest run of consecutive seasons finishing top 10.
-  let streak: {
-    length: number;
-    holders: { row: CareerRow; start: number; end: number }[];
-  } = {
-    length: 0,
-    holders: [],
-  };
-  rows.forEach((row) => {
-    let run = 0;
-    let start = 0;
-    years.forEach((year) => {
-      const finish = row.byYear.get(year);
-      if (finish && finish.rank <= 10) {
-        if (run === 0) start = year;
-        run += 1;
-        if (run > streak.length)
-          streak = { length: run, holders: [{ row, start, end: year }] };
-        else if (run === streak.length)
-          streak.holders.push({ row, start, end: year });
-      } else {
-        run = 0;
-      }
-    });
-  });
-  if (streak.length > 0) {
-    tiles.push({
-      label: "Longest top-10 streak",
-      value: String(streak.length),
-      unit: streak.length === 1 ? "season" : "seasons",
-      holders: holdersOf(streak.holders.map((h) => h.row)),
-      detail: streak.holders.map((h) => `${h.start}–${h.end}`).join(", "),
-    });
-  }
 
   // Biggest rank improvement between back-to-back seasons.
   let climb: {
@@ -314,13 +312,13 @@ export const buildSeasonRows = (
 
 // ---- Finishes grid ----
 
-// 1 = champion, 2 = 2nd-3rd, 3 = 4th-5th, 4 = 6th-10th, 5 = 11th and below.
-export type FinishTier = 1 | 2 | 3 | 4 | 5;
+// 1 = champion, 2 = 2nd, 3 = 3rd, 4 = 4th-5th, 5 = 6th-10th, 6 = 11th and
+// below.
+export type FinishTier = 1 | 2 | 3 | 4 | 5 | 6;
 
 export const finishTier = (rank: number): FinishTier => {
-  if (rank === 1) return 1;
-  if (rank <= 3) return 2;
-  if (rank <= 5) return 3;
-  if (rank <= 10) return 4;
-  return 5;
+  if (rank <= 3) return rank as 1 | 2 | 3;
+  if (rank <= 5) return 4;
+  if (rank <= 10) return 5;
+  return 6;
 };

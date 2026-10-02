@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -12,18 +13,38 @@ import { GetHistorical } from "../../data/GetHistorical";
 import TabSkeleton from "../TabSkeleton";
 import { HistoricalRecords } from "../../types";
 import AllTimeTable, { useAllTimeTable } from "./AllTimeTable";
-import ChampionsRow from "./ChampionsRow";
+import ChampionsWall from "./ChampionsWall";
 import FinishesGrid from "./FinishesGrid";
 import RecordTiles from "./RecordTiles";
 import SeasonTable from "./SeasonTable";
+import YourRecord from "./YourRecord";
 import {
+  allTimePlaces,
   buildCareerRows,
   buildRecordTiles,
   closedSeasons,
-  HALVES_FROM_SEASON,
 } from "./recordsUtils";
 
-type TableTab = "all-time" | "season" | "finishes";
+type TableTab = "finishes" | "all-time" | "season";
+const TABLE_TABS: { value: TableTab; label: string }[] = [
+  { value: "finishes", label: "Finishes by year" },
+  { value: "all-time", label: "All-time" },
+  { value: "season", label: "By season" },
+];
+const isTableTab = (v: string | null): v is TableTab =>
+  TABLE_TABS.some((t) => t.value === v);
+
+// The tab links only carry ?week=, so the last table is also remembered
+// here (as Trends does with "trendsView").
+const VIEW_STORAGE_KEY = "recordsView";
+const storedView = (): TableTab | undefined => {
+  try {
+    const v = localStorage.getItem(VIEW_STORAGE_KEY);
+    return isTableTab(v) ? v : undefined;
+  } catch {
+    return undefined;
+  }
+};
 
 type Props = {
   season: number;
@@ -39,10 +60,32 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 
 export default function RecordsSection({ season, userId }: Props) {
   const [data, setData] = useState<HistoricalRecords | undefined>(undefined);
-  const [tab, setTab] = useState<TableTab>("all-time");
-  const [selectedYear, setSelectedYear] = useState<number | undefined>(
-    undefined
-  );
+  // The table and season live in the URL (?view=season&year=2019), so they
+  // survive leaving the tab and can be linked. Finishes is the default.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const viewParam = searchParams.get("view");
+  const tab: TableTab = isTableTab(viewParam)
+    ? viewParam
+    : (storedView() ?? "finishes");
+  const yearParam = Number(searchParams.get("year")) || undefined;
+  const setParams = (next: { view?: TableTab; year?: number }) =>
+    setSearchParams(
+      (params) => {
+        const view = next.view ?? tab;
+        try {
+          localStorage.setItem(VIEW_STORAGE_KEY, view);
+        } catch {
+          // Blocked storage: the URL still carries the choice.
+        }
+        if (view === "finishes") params.delete("view");
+        else params.set("view", view);
+        if (view === "season" && (next.year ?? yearParam))
+          params.set("year", String(next.year ?? yearParam));
+        else params.delete("year");
+        return params;
+      },
+      { replace: true }
+    );
 
   // The poll only repeats every 30 minutes, so a failed first load offers
   // its own retry; bumping `attempt` restarts the poll.
@@ -65,6 +108,7 @@ export default function RecordsSection({ season, userId }: Props) {
     [data, careerRows, season]
   );
   const allTimeTable = useAllTimeTable(careerRows);
+  const places = useMemo(() => allTimePlaces(careerRows), [careerRows]);
 
   if (!data && failed) {
     return (
@@ -90,86 +134,70 @@ export default function RecordsSection({ season, userId }: Props) {
   }
 
   const years = closedSeasons(data);
-  const year = selectedYear ?? years[years.length - 1];
-  const incompleteYears = years.filter(
-    (y) => data.years[String(y)]?.incomplete
-  );
+  const year =
+    yearParam && years.includes(yearParam)
+      ? yearParam
+      : years[years.length - 1];
+  const you = careerRows.find((row) => String(row.id) === userId);
+  const yourPlace = you && places.get(you.id);
 
+  // Option B order (user's call, 2026-10-02): your line, every champion, the
+  // seasons (Finishes first), then the record tiles.
   return (
     // No card around the page: it sits flush like the other tabs.
-    <Box>
-      <Stack spacing={4}>
-        <Stack spacing={1.5}>
-          <SectionTitle>Champions</SectionTitle>
-          <ChampionsRow data={data} currentSeason={season} userId={userId} />
-        </Stack>
+    <Stack spacing={4}>
+      {you && yourPlace && <YourRecord row={you} place={yourPlace} />}
 
-        <Stack spacing={1.5}>
-          <SectionTitle>All-time records</SectionTitle>
-          <RecordTiles tiles={tiles} userId={userId} />
-        </Stack>
+      <ChampionsWall data={data} currentSeason={season} userId={userId} />
 
-        <Stack spacing={1.5}>
-          <Tabs
-            value={tab}
-            onChange={(_, value: TableTab) => setTab(value)}
-            variant="scrollable"
-            scrollButtons="auto"
-            allowScrollButtonsMobile
-            sx={{ borderBottom: 1, borderColor: "divider" }}
-          >
-            <Tab value="all-time" label="All-time" />
-            <Tab value="season" label="By season" />
-            <Tab value="finishes" label="Finishes by year" />
-          </Tabs>
+      <Stack spacing={1.5}>
+        <SectionTitle>Every season</SectionTitle>
+        <Tabs
+          value={tab}
+          onChange={(_, value: TableTab) => setParams({ view: value })}
+          aria-label="Record tables"
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{ borderBottom: 1, borderColor: "divider" }}
+        >
+          {TABLE_TABS.map((t) => (
+            <Tab
+              key={t.value}
+              value={t.value}
+              label={t.label}
+              id={`records-tab-${t.value}`}
+              aria-controls="records-tabpanel"
+            />
+          ))}
+        </Tabs>
 
+        <Box
+          role="tabpanel"
+          id="records-tabpanel"
+          aria-labelledby={`records-tab-${tab}`}
+        >
+          {tab === "finishes" && (
+            <FinishesGrid data={data} rows={careerRows} userId={userId} />
+          )}
           {tab === "all-time" && (
-            <>
-              <AllTimeTable table={allTimeTable} userId={userId} />
-              <Typography
-                variant="caption"
-                sx={{
-                  color: "text.secondary",
-                }}
-              >
-                Avg finish and avg score count every season a player has on
-                record. Click a column to sort.
-              </Typography>
-            </>
+            <AllTimeTable table={allTimeTable} userId={userId} />
           )}
           {tab === "season" && (
             <SeasonTable
               data={data}
               year={year}
-              onYearChange={setSelectedYear}
+              onYearChange={(y) => setParams({ view: "season", year: y })}
               userId={userId}
             />
           )}
-          {tab === "finishes" && (
-            <FinishesGrid
-              data={data}
-              rows={allTimeTable.getRowModel().rows.map((row) => row.original)}
-              userId={userId}
-            />
-          )}
-        </Stack>
-
-        <Typography
-          variant="caption"
-          sx={{
-            color: "text.secondary",
-            bgcolor: "background.default",
-            borderRadius: 1,
-            px: 1.5,
-            py: 1,
-          }}
-        >
-          * Records before {HALVES_FROM_SEASON} are incomplete. First and
-          second-half results start in {HALVES_FROM_SEASON}.
-          {incompleteYears.length > 0 &&
-            ` ${incompleteYears.join(" and ")} ${incompleteYears.length === 1 ? "is" : "are"} missing some players, including the champion.`}{" "}
-        </Typography>
+        </Box>
       </Stack>
-    </Box>
+
+      <Stack spacing={1.5}>
+        <SectionTitle>Pool records</SectionTitle>
+        <RecordTiles tiles={tiles} userId={userId} />
+      </Stack>
+    </Stack>
   );
 }

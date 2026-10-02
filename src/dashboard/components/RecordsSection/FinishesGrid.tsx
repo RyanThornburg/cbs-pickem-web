@@ -1,5 +1,7 @@
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
+  ButtonBase,
   Stack,
   Table,
   TableBody,
@@ -14,46 +16,60 @@ import {
 import { HistoricalRecords } from "../../types";
 import { ordinal } from "../../helper";
 import {
+  byAllTimeRank,
   CareerRow,
   closedSeasons,
   FinishTier,
   finishTier,
 } from "./recordsUtils";
 import {
-  FINISH_TIER_COLORS,
   FINISH_TIER_LABELS,
+  FINISH_TIER_STYLE,
   INCOMPLETE_HATCH,
   youRowSx,
 } from "./recordsTheme";
 
 type Props = {
   data: HistoricalRecords;
-  // Already in the All-time table's sort order.
   rows: CareerRow[];
   userId: string;
 };
 
-const TIERS: FinishTier[] = [1, 2, 3, 4, 5];
+const TIERS: FinishTier[] = [1, 2, 3, 4, 5, 6];
+const SAMPLE_RANK: Record<FinishTier, number> = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 7,
+  6: 14,
+};
 
-const Swatch = ({
-  background,
-  border,
-}: {
-  background: string;
-  border?: boolean;
-}) => (
-  <Box
-    component="i"
-    sx={{
-      width: 14,
-      height: 14,
-      borderRadius: 0.5,
-      display: "inline-block",
-      background,
-      ...(border && { border: 1, borderColor: "divider" }),
-    }}
-  />
-);
+// The legend draws each tier the way the grid does.
+const Sample = ({ tier }: { tier: FinishTier }) => {
+  const s = FINISH_TIER_STYLE[tier];
+  return (
+    <Box
+      component="span"
+      aria-hidden
+      sx={{
+        display: "inline-grid",
+        placeItems: "center",
+        minWidth: 22,
+        height: 18,
+        px: 0.25,
+        borderRadius: "4px",
+        fontSize: "0.75rem",
+        fontWeight: s.weight,
+        bgcolor: s.bg,
+        color: s.fg,
+        boxShadow: s.ring ? `inset 0 0 0 1px ${s.ring}` : undefined,
+      }}
+    >
+      {SAMPLE_RANK[tier]}
+    </Box>
+  );
+};
 
 const stickySx = {
   position: "sticky",
@@ -62,13 +78,25 @@ const stickySx = {
   bgcolor: "background.paper",
 } as const;
 
+// Every player's finish in every season, players in all-time order (fixed,
+// whatever the All-time table is sorted by). Opens scrolled to the newest
+// seasons, so phones see this year's players first. Tapping a finish shows
+// its points in the line above the grid.
 export default function FinishesGrid({ data, rows, userId }: Props) {
   const theme = useTheme();
   const years = closedSeasons(data);
   const incomplete = (year: number) => data.years[String(year)]?.incomplete;
+  const ordered = useMemo(() => [...rows].sort(byAllTimeRank), [rows]);
+  const [detail, setDetail] = useState<string | null>(null);
+
+  const scroller = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = scroller.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, []);
 
   return (
-    <Stack spacing={1.5}>
+    <Stack spacing={1.25}>
       <Stack
         direction="row"
         sx={{
@@ -83,51 +111,65 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
             key={tier}
             direction="row"
             spacing={0.6}
-            sx={{
-              alignItems: "center",
-            }}
+            sx={{ alignItems: "center" }}
           >
-            <Swatch background={FINISH_TIER_COLORS[tier].bg} />
-            <Typography
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-              }}
-            >
+            <Sample tier={tier} />
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {FINISH_TIER_LABELS[tier]}
             </Typography>
           </Stack>
         ))}
-        <Stack
-          direction="row"
-          spacing={0.6}
-          sx={{
-            alignItems: "center",
-          }}
-        >
-          <Swatch background={INCOMPLETE_HATCH} border />
-          <Typography
-            variant="caption"
+        <Stack direction="row" spacing={0.6} sx={{ alignItems: "center" }}>
+          <Box
+            component="span"
+            aria-hidden
             sx={{
-              color: "text.secondary",
+              width: 18,
+              height: 18,
+              borderRadius: "4px",
+              border: 1,
+              borderColor: "divider",
+              backgroundImage: INCOMPLETE_HATCH,
             }}
-          >
-            Incomplete year
+          />
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            Missing some players
           </Typography>
         </Stack>
       </Stack>
 
-      <TableContainer>
+      <Typography
+        variant="body2"
+        aria-live="polite"
+        sx={{ color: "text.secondary", minHeight: "1.43em" }}
+      >
+        {detail ?? "Players in all-time order. Tap a finish for its points."}
+      </Typography>
+
+      <TableContainer
+        ref={scroller}
+        tabIndex={0}
+        role="region"
+        aria-label="Finishes by year, scrolls sideways"
+        sx={{
+          "&:focus-visible": {
+            outline: `3px solid ${theme.palette.primary.main}`,
+            outlineOffset: 2,
+          },
+        }}
+      >
         <Table
           size="small"
+          aria-label="Each player's finish by season"
           sx={{
+            width: "auto",
             "& td, & th": {
               px: 0.4,
               py: 0.4,
               borderBottom: 0,
               textAlign: "center",
             },
-            "& td:first-of-type, & th:first-of-type": {
+            "& tr > :first-of-type": {
               textAlign: "left",
               pr: 1.25,
               pl: 1,
@@ -136,29 +178,39 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
         >
           <TableHead>
             <TableRow
-              sx={{ "& th": { fontSize: "0.7rem", fontWeight: "bold" } }}
+              sx={{
+                "& th": {
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: "text.secondary",
+                },
+              }}
             >
               <TableCell sx={{ ...stickySx, zIndex: 3 }}>Player</TableCell>
               {years.map((year) => (
                 <TableCell
                   key={year}
-                  sx={
-                    incomplete(year)
-                      ? { backgroundImage: INCOMPLETE_HATCH }
-                      : undefined
-                  }
+                  aria-label={String(year)}
+                  sx={{
+                    minWidth: 38,
+                    ...(incomplete(year) && {
+                      backgroundImage: INCOMPLETE_HATCH,
+                    }),
+                  }}
                 >
-                  '{String(year).slice(2)}
+                  ’{String(year).slice(2)}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {ordered.map((row) => {
               const isYou = String(row.id) === userId;
               return (
                 <TableRow key={row.id}>
                   <TableCell
+                    component="th"
+                    scope="row"
                     sx={{
                       ...stickySx,
                       ...(isYou && {
@@ -169,15 +221,32 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                   >
                     <Typography
                       variant="body2"
+                      component="span"
                       sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
                     >
                       {row.name}
+                      {!row.active && (
+                        <Box
+                          component="span"
+                          sx={{
+                            color: "text.secondary",
+                            fontWeight: 400,
+                            fontSize: "0.75rem",
+                            ml: 0.5,
+                          }}
+                        >
+                          former
+                        </Box>
+                      )}
                     </Typography>
                   </TableCell>
                   {years.map((year) => {
                     const finish = row.byYear.get(year);
-                    const colors =
-                      finish && FINISH_TIER_COLORS[finishTier(finish.rank)];
+                    const s =
+                      finish && FINISH_TIER_STYLE[finishTier(finish.rank)];
+                    const text =
+                      finish &&
+                      `${row.name} · ${year}: ${ordinal(finish.rank)}, ${finish.score} pts`;
                     return (
                       <TableCell
                         key={year}
@@ -188,36 +257,46 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                           }),
                         }}
                       >
-                        {finish && colors ? (
+                        {finish && s ? (
                           <Tooltip
-                            title={`${year}: ${ordinal(finish.rank)}, ${finish.score} pts`}
+                            title={`${ordinal(finish.rank)}, ${finish.score} pts`}
                           >
-                            <Box
+                            {/* Out of the tab order (hundreds of cells); the
+                                grid scrolls by keyboard and screen readers
+                                read each cell's label. */}
+                            <ButtonBase
+                              tabIndex={-1}
+                              aria-label={`${year}: ${ordinal(finish.rank)}, ${finish.score} points`}
+                              onClick={() => setDetail(text ?? null)}
                               sx={{
-                                width: 34,
+                                minWidth: 30,
                                 height: 24,
-                                mx: "auto",
-                                borderRadius: 0.5,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "0.72rem",
-                                fontWeight: 600,
+                                borderRadius: "4px",
+                                fontSize: "0.75rem",
+                                fontWeight: s.weight,
                                 fontVariantNumeric: "tabular-nums",
-                                bgcolor: colors.bg,
-                                color: colors.fg,
+                                bgcolor: s.bg,
+                                color: s.fg,
+                                boxShadow: s.ring
+                                  ? `inset 0 0 0 1px ${s.ring}`
+                                  : undefined,
+                                "&.Mui-focusVisible": {
+                                  outline: `3px solid ${theme.palette.primary.main}`,
+                                  outlineOffset: 1,
+                                },
                               }}
                             >
                               {finish.rank}
-                            </Box>
+                            </ButtonBase>
                           </Tooltip>
                         ) : (
-                          <Typography
-                            variant="caption"
-                            sx={{ color: "divider" }}
+                          <Box
+                            component="span"
+                            aria-hidden
+                            sx={{ color: "text.disabled" }}
                           >
                             ·
-                          </Typography>
+                          </Box>
                         )}
                       </TableCell>
                     );
@@ -228,14 +307,6 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography
-        variant="caption"
-        sx={{
-          color: "text.secondary",
-        }}
-      >
-        Players are in the same order as the All-time tab's current sort.
-      </Typography>
     </Stack>
   );
 }

@@ -1,7 +1,6 @@
 import { Fragment, useMemo } from "react";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import {
-  Alert,
   Box,
   Chip,
   Stack,
@@ -22,7 +21,7 @@ import {
   HALVES_FROM_SEASON,
   isUnknownChampion,
 } from "./recordsUtils";
-import { GOLD, youRowSx } from "./recordsTheme";
+import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
 
 type Props = {
   data: HistoricalRecords;
@@ -54,21 +53,30 @@ export default function SeasonTable({
 
   return (
     <Stack spacing={1.5}>
-      <Box sx={{ display: "flex", gap: 0.75, overflowX: "auto", pb: 0.5 }}>
+      {/* Wraps rather than scrolls, so every season is in view. */}
+      <Box
+        role="group"
+        aria-label="Season"
+        sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}
+      >
         {[...years].reverse().map((y) => (
           <Chip
             key={y}
             label={y}
             size="small"
             clickable
+            aria-pressed={y === year}
             color={y === year ? "primary" : "default"}
             variant={y === year ? "filled" : "outlined"}
             onClick={() => onYearChange(y)}
-            sx={
-              data.years[String(y)]?.incomplete
-                ? { borderStyle: "dashed" }
-                : undefined
-            }
+            sx={{
+              height: 28,
+              fontVariantNumeric: "tabular-nums",
+              // Seasons missing players get a dashed edge, but not once
+              // selected (a dashed filled chip looks broken).
+              ...(data.years[String(y)]?.incomplete &&
+                y !== year && { borderStyle: "dashed" }),
+            }}
           />
         ))}
       </Box>
@@ -108,33 +116,29 @@ export default function SeasonTable({
         >
           <Box component="b" sx={{ color: "text.primary" }}>
             {rows.length}
-          </Box>{" "}
-          players on record
-          {rows.length < maxRank ? `, ranks go to ${maxRank}` : ""}
+          </Box>
+          {rows.length < maxRank
+            ? ` of ${maxRank} players on file`
+            : " players"}
         </Typography>
       </Stack>
 
-      {season?.incomplete ? (
-        <Alert severity="warning" variant="outlined">
-          {year} is incomplete: the champion and some players are missing.
-        </Alert>
-      ) : (
-        hasGaps && (
-          <Typography
-            variant="caption"
-            sx={{
-              color: "text.secondary",
-            }}
-          >
-            Some {year} players aren't on file, so ranks skip where they would
-            be.
-          </Typography>
-        )
+      {(season?.incomplete || hasGaps || !halves) && (
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          {season?.incomplete
+            ? `${year} is missing some players, including the champion, so ranks skip where they would be.`
+            : hasGaps
+              ? `Some ${year} players aren't on file, so ranks skip where they would be.`
+              : ""}
+          {!halves &&
+            `${season?.incomplete || hasGaps ? " " : ""}Half-season results start in ${HALVES_FROM_SEASON}.`}
+        </Typography>
       )}
 
-      <TableContainer>
+      <TableContainer sx={{ maxWidth: halves ? 720 : 520 }}>
         <Table
           size="small"
+          aria-label={`${year} standings`}
           sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
         >
           <TableHead>
@@ -168,8 +172,8 @@ export default function SeasonTable({
                         sx={{
                           py: 0.25,
                           bgcolor: "background.default",
-                          color: "text.disabled",
-                          fontSize: "0.7rem",
+                          color: "text.secondary",
+                          fontSize: "0.75rem",
                         }}
                       >
                         {row.missingBefore}{" "}
@@ -178,7 +182,7 @@ export default function SeasonTable({
                       </TableCell>
                     </TableRow>
                   )}
-                  <TableRow hover>
+                  <TableRow hover sx={rowHoverSx}>
                     <TableCell
                       sx={{
                         ...youSx,
@@ -208,6 +212,8 @@ export default function SeasonTable({
                       )}
                     </TableCell>
                     <TableCell
+                      component="th"
+                      scope="row"
                       sx={{ ...youSx, fontWeight: 500, whiteSpace: "nowrap" }}
                     >
                       {row.name}

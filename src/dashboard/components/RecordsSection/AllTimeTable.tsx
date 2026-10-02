@@ -23,8 +23,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { ordinal } from "../../helper";
-import { CareerRow } from "./recordsUtils";
-import { GOLD, youRowSx } from "./recordsTheme";
+import { allTimePlaces, byAllTimeRank, CareerRow } from "./recordsUtils";
+import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
 
 const dash = (
   <Typography
@@ -49,11 +49,35 @@ const columns = [
       a.original.name.localeCompare(b.original.name, undefined, {
         sensitivity: "base",
       }),
-    cell: ({ getValue }) => (
+    cell: ({ getValue, row }) => (
       <Typography
         variant="body2"
+        component="span"
         sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
       >
+        {getValue()}
+        {!row.original.active && (
+          <Box
+            component="span"
+            sx={{
+              color: "text.secondary",
+              fontWeight: 400,
+              fontSize: "0.75rem",
+              ml: 0.5,
+            }}
+          >
+            former
+          </Box>
+        )}
+      </Typography>
+    ),
+  }),
+  columnHelper.accessor("points", {
+    header: "Points",
+    meta: { mobileHeader: "Pts", align: "center" },
+    sortDescFirst: true,
+    cell: ({ getValue }) => (
+      <Typography variant="body2" sx={{ fontWeight: 700 }}>
         {getValue()}
       </Typography>
     ),
@@ -104,14 +128,14 @@ const columns = [
   }),
   columnHelper.accessor("avgFinish", {
     header: "Avg finish",
-    meta: { mobileHeader: "Avg", align: "center" },
+    meta: { mobileHeader: "Avg fin", align: "center" },
     sortDescFirst: false,
     sortUndefined: "last",
     cell: ({ getValue }) => oneDecimal(getValue()),
   }),
   columnHelper.accessor("avgScore", {
     header: "Avg score",
-    meta: { mobileHeader: "Pts", align: "center" },
+    meta: { mobileHeader: "Avg pts", align: "center" },
     sortDescFirst: true,
     sortUndefined: "last",
     cell: ({ getValue }) => oneDecimal(getValue()),
@@ -122,14 +146,6 @@ const columns = [
     sortDescFirst: true,
   }),
 ];
-
-// The default order doubles as every column's tiebreak: TanStack's sort is
-// stable, so rows that tie on the clicked column keep this order.
-const byAllTimeRank = (a: CareerRow, b: CareerRow) =>
-  b.titles - a.titles ||
-  b.top3 - a.top3 ||
-  b.top5 - a.top5 ||
-  (a.avgFinish ?? Infinity) - (b.avgFinish ?? Infinity);
 
 // Lives in RecordsSection so the finishes grid can follow this table's sort.
 export const useAllTimeTable = (rows: CareerRow[]) => {
@@ -161,71 +177,113 @@ type Props = {
 export default function AllTimeTable({ table, userId }: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // Place is fixed by the all-time rule, whatever column the table is
+  // sorted by.
+  const rows = table.options.data;
+  const places = useMemo(() => allTimePlaces(rows), [rows]);
 
   return (
-    <TableContainer>
-      <Table
-        size="small"
-        sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+    <>
+      <Typography
+        variant="body2"
+        sx={{ color: "text.secondary", fontSize: "0.8125rem", mb: 1 }}
       >
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, i) => (
+        Ranked by points: 10 for a title, 9 for 2nd, down to 1 for 10th, added
+        up over every season. Ties go to more titles, then the better average
+        finish. Averages count every season a player has on record. Tap a column
+        heading to sort.
+      </Typography>
+      <TableContainer>
+        <Table
+          size="small"
+          aria-label="All-time standings"
+          sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+        >
+          <TableHead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
                 <TableCell
-                  key={header.id}
-                  align={header.column.columnDef.meta?.align ?? "left"}
-                  sx={{
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
-                  }}
+                  align="center"
+                  sx={{ fontSize: "0.75rem", fontWeight: "bold", width: 48 }}
                 >
-                  <TableSortLabel
-                    active={header.column.getIsSorted() !== false}
-                    direction={header.column.getIsSorted() || "desc"}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {isMobile
-                      ? header.column.columnDef.meta?.mobileHeader
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableSortLabel>
+                  Place
                 </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => {
-            const isYou = row.id === userId;
-            return (
-              <TableRow key={row.id} hover>
-                {row.getVisibleCells().map((cell, i) => (
+                {headerGroup.headers.map((header, i) => (
                   <TableCell
-                    key={cell.id}
-                    align={cell.column.columnDef.meta?.align ?? "left"}
+                    key={header.id}
+                    aria-sort={
+                      header.column.getIsSorted() === "asc"
+                        ? "ascending"
+                        : header.column.getIsSorted() === "desc"
+                          ? "descending"
+                          : undefined
+                    }
+                    align={header.column.columnDef.meta?.align ?? "left"}
                     sx={{
-                      ...(i === 0 ? stickySx : {}),
-                      ...(isYou ? youRowSx : {}),
-                      ...(isYou && i === 0
-                        ? {
-                            boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
-                          }
-                        : {}),
+                      fontSize: "0.75rem",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
                     }}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableSortLabel
+                      active={header.column.getIsSorted() !== false}
+                      direction={header.column.getIsSorted() || "desc"}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {isMobile
+                        ? header.column.columnDef.meta?.mobileHeader
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            ))}
+          </TableHead>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => {
+              const isYou = row.id === userId;
+              const place = places.get(row.original.id);
+              return (
+                <TableRow key={row.id} hover sx={rowHoverSx}>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      fontWeight: 700,
+                      ...(isYou && {
+                        ...youRowSx,
+                        boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
+                      }),
+                    }}
+                  >
+                    {place && `${place.tied ? "T" : ""}${place.place}`}
+                  </TableCell>
+                  {row.getVisibleCells().map((cell, i) => (
+                    <TableCell
+                      key={cell.id}
+                      component={i === 0 ? "th" : "td"}
+                      scope={i === 0 ? "row" : undefined}
+                      align={cell.column.columnDef.meta?.align ?? "left"}
+                      sx={{
+                        ...(i === 0 ? stickySx : {}),
+                        ...(isYou ? youRowSx : {}),
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

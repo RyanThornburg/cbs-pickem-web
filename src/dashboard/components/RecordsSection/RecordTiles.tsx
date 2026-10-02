@@ -12,22 +12,30 @@ export default function RecordTiles({ tiles, userId }: Props) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-        gap: 1.5,
+        // Six tiles: 2 rows of 3 from md, 3 rows of 2 below.
+        gridTemplateColumns: {
+          xs: "repeat(2, minmax(0, 1fr))",
+          md: "repeat(3, minmax(0, 1fr))",
+        },
+        gap: 1,
       }}
     >
       {tiles.map((tile) => (
         <Paper
           key={tile.label}
           variant="outlined"
-          sx={{ p: 1.5, display: "flex", flexDirection: "column", gap: 0.25 }}
+          sx={{
+            p: 1.5,
+            display: "flex",
+            flexDirection: "column",
+            gap: 0.25,
+            minWidth: 0,
+          }}
         >
           <Typography
             sx={{
-              fontSize: "0.7rem",
-              fontWeight: 700,
-              letterSpacing: "0.07em",
-              textTransform: "uppercase",
+              fontSize: "0.75rem",
+              fontWeight: 600,
               color: "text.secondary",
             }}
           >
@@ -35,8 +43,8 @@ export default function RecordTiles({ tiles, userId }: Props) {
           </Typography>
           <Typography
             sx={{
-              fontSize: "1.6rem",
-              fontWeight: 800,
+              fontSize: "1.75rem",
+              fontWeight: 700,
               lineHeight: 1.15,
               fontVariantNumeric: "tabular-nums",
             }}
@@ -59,7 +67,7 @@ export default function RecordTiles({ tiles, userId }: Props) {
                 {holder.text}
                 {holder.userId !== undefined &&
                   String(holder.userId) === userId && (
-                    <Box component="span" sx={{ color: "primary.main" }}>
+                    <Box component="span" sx={{ fontWeight: 700 }}>
                       {" "}
                       (you)
                     </Box>

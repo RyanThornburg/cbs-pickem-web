@@ -5,6 +5,9 @@ import {
 } from "../../types";
 import {
   buildCareerRows,
+  allTimePlaces,
+  byAllTimeRank,
+  finishPoints,
   buildRecordTiles,
   buildSeasonRows,
   finishTier,
@@ -141,6 +144,8 @@ describe("buildCareerRows", () => {
       top5: 2,
       best: 1,
       avgFinish: 4,
+      // 10 for the title, 7 for 4th, 4 for 7th
+      points: 21,
     });
     expect(row.byYear.get(2024)).toEqual({ rank: 4, score: 46 });
   });
@@ -150,6 +155,57 @@ describe("buildCareerRows", () => {
       records([career(1, { 2025: 9 }, { best_finish: 0 })])
     );
     expect(row.best).toBeUndefined();
+  });
+});
+
+describe("finishPoints / byAllTimeRank", () => {
+  it("gives 10 for a title down to 1 for 10th, nothing below", () => {
+    expect(finishPoints(1)).toBe(10);
+    expect(finishPoints(2)).toBe(9);
+    expect(finishPoints(10)).toBe(1);
+    expect(finishPoints(11)).toBe(0);
+  });
+
+  it("ranks a long good career above one great season", () => {
+    const rows = buildCareerRows(
+      records([
+        career(1, { 2025: 3 }), // one season, 3rd: 8 pts
+        career(2, { 2022: 6, 2023: 5, 2024: 7, 2025: 4 }), // 5+6+4+7 = 22
+        career(3, { 2024: 1, 2025: 12 }), // 10 pts, a title
+        career(4, { 2024: 3, 2025: 3 }), // 8+8 = 16
+      ])
+    ).sort(byAllTimeRank);
+    expect(rows.map((r) => r.id)).toEqual([2, 4, 3, 1]);
+  });
+
+  it("gives tied players the same place", () => {
+    const places = allTimePlaces(
+      buildCareerRows(
+        records([
+          career(1, { 2024: 1 }), // 10
+          career(2, { 2024: 4, 2025: 4 }), // 14, avg 4
+          career(3, { 2023: 4, 2025: 4 }), // 14, avg 4
+          career(4, { 2025: 9 }), // 2
+        ])
+      )
+    );
+    expect([1, 2, 3, 4].map((id) => places.get(id))).toEqual([
+      { place: 3, tied: false },
+      { place: 1, tied: true },
+      { place: 1, tied: true },
+      { place: 4, tied: false },
+    ]);
+  });
+
+  it("breaks ties on titles, then average finish", () => {
+    const rows = buildCareerRows(
+      records([
+        career(1, { 2024: 2, 2025: 2 }), // 18 pts, no title, avg 2
+        career(2, { 2024: 1, 2025: 3 }), // 18 pts, a title
+        career(3, { 2023: 4, 2024: 1, 2025: 9 }), // 7+10+2 = 19
+      ])
+    ).sort(byAllTimeRank);
+    expect(rows.map((r) => r.id)).toEqual([3, 2, 1]);
   });
 });
 
@@ -190,16 +246,6 @@ describe("buildRecordTiles", () => {
     ).toEqual([2]);
   });
 
-  it("finds the longest top-10 streak", () => {
-    const data = records([
-      career(1, { 2023: 3, 2024: 12, 2025: 2 }),
-      career(2, { 2023: 9, 2024: 10, 2025: 11 }),
-    ]);
-    const streak = tile(data, "Longest top-10 streak");
-    expect(streak?.value).toBe("2");
-    expect(streak?.detail).toBe("2023–2024");
-  });
-
   it("marks tied record holders", () => {
     const data = records([career(1, { 2023: 1 }), career(2, { 2024: 1 })]);
     expect(tile(data, "Most titles")?.detail).toBe("2-way tie");
@@ -209,7 +255,7 @@ describe("buildRecordTiles", () => {
 describe("finishTier", () => {
   it("buckets ranks", () => {
     expect([1, 2, 3, 4, 5, 6, 10, 11, 30].map(finishTier)).toEqual([
-      1, 2, 2, 3, 3, 4, 4, 5, 5,
+      1, 2, 3, 4, 4, 5, 5, 6, 6,
     ]);
   });
 });
