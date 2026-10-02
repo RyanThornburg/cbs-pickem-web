@@ -25,6 +25,7 @@ import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameDetails } from "../GameDetails";
 import { GameRecapTags } from "../shared/GameRecapTags";
 import { GameTag } from "../../../Recap/recapBadges";
+import { gameAnchorId, JUMP_TARGET_SX } from "../YourPicksStrip";
 
 export interface GameRowProps {
   game: Game;
@@ -64,8 +65,7 @@ const Middle = ({ game }: { game: Game }) => {
           <Box
             component="span"
             sx={{
-              fontWeight: 700,
-              color: live?.down === 4 ? "error.main" : "text.primary",
+              fontWeight: live?.down === 4 ? 800 : 700,
             }}
           >
             {down}
@@ -150,7 +150,7 @@ export const GameRow = memo((props: GameRowProps) => {
         >
           {hasBall(game, side) && <BallIcon />}
         </Box>
-        <AtsTag game={game} side={side} />
+        <AtsTag game={game} side={side} compact />
         <Typography
           sx={{
             ml: "auto",
@@ -160,7 +160,7 @@ export const GameRow = memo((props: GameRowProps) => {
             minWidth: 28,
             textAlign: "right",
             fontVariantNumeric: "tabular-nums",
-            color: final && score < other ? "text.disabled" : "text.primary",
+            color: final && score < other ? "text.secondary" : "text.primary",
           }}
         >
           {started ? score : ""}
@@ -192,11 +192,14 @@ export const GameRow = memo((props: GameRowProps) => {
 
   return (
     <Box
+      id={gameAnchorId(game)}
+      tabIndex={-1}
       sx={[
         (t) => ({
+          ...JUMP_TARGET_SX,
           display: "grid",
           gridTemplateColumns:
-            "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 96px",
+            "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 156px",
           gridTemplateAreas: desktopAreas,
           columnGap: 2,
           rowGap: 1,

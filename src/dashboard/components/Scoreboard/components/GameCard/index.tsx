@@ -31,6 +31,7 @@ import { GameDetails } from "../GameDetails";
 import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameRecapTags } from "../shared/GameRecapTags";
 import { GameTag } from "../../../Recap/recapBadges";
+import { gameAnchorId, JUMP_TARGET_SX } from "../YourPicksStrip";
 
 export interface GameCardProps {
   game: Game;
@@ -65,13 +66,7 @@ const DownDistance = ({ game }: { game: Game }) => {
   }
   if (!live.down_distance_text) return null;
   return (
-    <Box
-      component="span"
-      sx={{
-        fontWeight: 700,
-        color: live.down === 4 ? "error.main" : "text.primary",
-      }}
-    >
+    <Box component="span" sx={{ fontWeight: live.down === 4 ? 800 : 700 }}>
       {live.down_distance_text}
     </Box>
   );
@@ -273,7 +268,7 @@ export const GameCard = memo(
               key={p}
               sx={{
                 textAlign: "center",
-                color: line?.[p] != null ? "text.secondary" : "text.disabled",
+                color: "text.secondary",
                 fontSize: "0.85rem",
               }}
             >
@@ -287,7 +282,7 @@ export const GameCard = memo(
               fontSize: "1.75rem",
               lineHeight: 1,
               fontVariantNumeric: "tabular-nums",
-              color: final && score < other ? "text.disabled" : "text.primary",
+              color: final && score < other ? "text.secondary" : "text.primary",
             }}
           >
             {started ? score : ""}
@@ -299,8 +294,16 @@ export const GameCard = memo(
     return (
       <Card
         variant="outlined"
+        id={gameAnchorId(game)}
+        tabIndex={-1}
         sx={[
-          { p: 1.75, display: "flex", flexDirection: "column", gap: 1.5 },
+          {
+            p: 1.75,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1.5,
+            ...JUMP_TARGET_SX,
+          },
           !border &&
             !!pickSide &&
             ((t) => ({ borderColor: t.palette.primary.main })),
@@ -354,9 +357,9 @@ export const GameCard = memo(
               key={p}
               sx={{
                 textAlign: "center",
-                fontSize: "0.7rem",
+                fontSize: "0.75rem",
                 fontWeight: 600,
-                color: "text.disabled",
+                color: "text.secondary",
               }}
             >
               {p === "ot" ? "OT" : p.slice(1)}
@@ -365,9 +368,9 @@ export const GameCard = memo(
           <Box
             sx={{
               textAlign: "right",
-              fontSize: "0.7rem",
+              fontSize: "0.75rem",
               fontWeight: 600,
-              color: "text.disabled",
+              color: "text.secondary",
             }}
           >
             T

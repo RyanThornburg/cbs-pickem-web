@@ -18,7 +18,7 @@ const readDismissed = () => {
 
 // Shown on User Picks until a player is chosen: picking yourself is what
 // lights up your row, the header summary, the leader cards' "you" row and
-// the Scoreboard's "My picks first". Dismissible for anyone just browsing.
+// the Scoreboard's "Your picks" strip. Dismissible for anyone just browsing.
 export default function PickYourselfHint({
   onChoose,
 }: {

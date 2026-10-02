@@ -6,8 +6,6 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useGameData } from "./hooks/useGameData";
@@ -21,6 +19,7 @@ import {
 } from "./utils/scoreboardUtils";
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
+import { YourPicksStrip } from "./components/YourPicksStrip";
 import { WeekRecap } from "../../types";
 import { gameTagsById } from "../Recap/recapBadges";
 import TabIntro from "../TabIntro";
@@ -28,21 +27,12 @@ import TabSkeleton from "../TabSkeleton";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
-const PICKS_FIRST_KEY = "scoreboardMyPicksFirst";
 
 const readLayout = (): Layout => {
   try {
     return localStorage.getItem(LAYOUT_KEY) === "compact" ? "compact" : "full";
   } catch {
     return "full";
-  }
-};
-
-const readPicksFirst = (): boolean => {
-  try {
-    return localStorage.getItem(PICKS_FIRST_KEY) === "true";
-  } catch {
-    return false;
   }
 };
 
@@ -71,16 +61,6 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const totals = useWeekTotals(week);
   const byes = useMemo(() => byeTeams(games), [games]);
   const [layout, setLayout] = useState<Layout>(readLayout);
-  const [picksFirst, setPicksFirst] = useState(readPicksFirst);
-
-  const changePicksFirst = (next: boolean) => {
-    setPicksFirst(next);
-    try {
-      localStorage.setItem(PICKS_FIRST_KEY, String(next));
-    } catch {
-      // storage blocked -- choice just won't persist
-    }
-  };
 
   const changeLayout = (_: unknown, next: Layout | null) => {
     if (!next) return;
@@ -124,42 +104,29 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
     );
   }
 
-  const groups = groupGames(games, picksFirst ? userId : undefined);
+  const groups = groupGames(games);
   // Re-checked on every games poll (once a minute), which is plenty for a
   // kickoff or the Sunday deadline.
   const now = Date.now();
 
   const controls = (
-    <>
-      <FormControlLabel
-        control={
-          <Switch
-            size="small"
-            checked={picksFirst}
-            onChange={(e) => changePicksFirst(e.target.checked)}
-          />
-        }
-        label="My picks first"
-        sx={{ mr: 0, "& .MuiFormControlLabel-label": { fontSize: "0.875rem" } }}
-      />
-      <ToggleButtonGroup
-        size="small"
-        exclusive
-        value={layout}
-        onChange={changeLayout}
-        aria-label="Scoreboard layout"
-        sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.25 } }}
-      >
-        <ToggleButton value="full" aria-label="Full cards">
-          <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />
-          Full
-        </ToggleButton>
-        <ToggleButton value="compact" aria-label="Compact list">
-          <ViewListIcon fontSize="small" sx={{ mr: 0.5 }} />
-          Compact
-        </ToggleButton>
-      </ToggleButtonGroup>
-    </>
+    <ToggleButtonGroup
+      size="small"
+      exclusive
+      value={layout}
+      onChange={changeLayout}
+      aria-label="Scoreboard layout"
+      sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.25 } }}
+    >
+      <ToggleButton value="full" aria-label="Full cards">
+        <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />
+        Full
+      </ToggleButton>
+      <ToggleButton value="compact" aria-label="Compact list">
+        <ViewListIcon fontSize="small" sx={{ mr: 0.5 }} />
+        Compact
+      </ToggleButton>
+    </ToggleButtonGroup>
   );
 
   // The layout controls sit on the tab's intro row, like every tab's own
@@ -177,6 +144,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
           textAlign: "left",
         }}
       >
+        <YourPicksStrip games={games} userId={userId} />
         {layout === "full" ? (
           groups.map(({ group, games }) => (
             <Box

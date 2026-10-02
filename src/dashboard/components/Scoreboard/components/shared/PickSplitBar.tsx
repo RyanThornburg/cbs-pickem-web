@@ -100,14 +100,15 @@ export const PickSplitBar = ({
       : cover.side === side
         ? "success.main"
         : "error.main";
-  // Each side's label takes the same green/red as its half of the bar:
-  // winning (or won) the pick vs. losing (or lost) it.
+  // Each side's label takes the green/red of its half of the bar, a step
+  // darker so the text stays readable: winning (or won) the pick vs. losing
+  // (or lost) it.
   const labelColor = (side: Side) =>
     !cover || cover.side === null
       ? "text.secondary"
       : cover.side === side
-        ? "success.main"
-        : "error.main";
+        ? "success.dark"
+        : "error.dark";
   const count = (
     side: Side,
     abbr: string,

@@ -5,10 +5,13 @@ import { formatGameShort } from "../../utils/dateFormatters";
 
 export const StatusText = ({ game }: { game: Game }) => {
   const live = game.status === GameStatus.Inprogress;
-  const color = live
-    ? "error.main"
-    : game.status === GameStatus.Halftime || game.status === GameStatus.Delayed
-      ? "warning.main"
+  // Live and halftime read in ink; only the pulsing dot says "live". Red and
+  // green are kept for how the pool's picks are doing.
+  const color =
+    live ||
+    game.status === GameStatus.Halftime ||
+    game.status === GameStatus.Delayed
+      ? "text.primary"
       : "text.secondary";
   const label =
     game.status === GameStatus.Scheduled

@@ -170,6 +170,43 @@ export const getPickState = (game: Game, side: Side): PickState => {
   return ok ? "covering" : "notCovering";
 };
 
+// A cover margin as people say it: 0.5 → "½", 3.5 → "3½", 7 → "7".
+export const formatPts = (pts: number): string => {
+  const whole = Math.floor(pts);
+  const half = pts - whole >= 0.5;
+  return half ? `${whole || ""}½` : `${whole}`;
+};
+
+// The pick's state with its margin, in plain words: "Covering by ½",
+// "Needs 4 to cover", "Won by 3½". `short` is for the compact rows.
+export const pickStateText = (
+  game: Game,
+  side: Side
+): { full: string; short: string } => {
+  const state = getPickState(game, side);
+  const by = getCover(game)?.by ?? 0;
+  switch (state) {
+    case "covering":
+      return {
+        full: `Covering by ${formatPts(by)}`,
+        short: `by ${formatPts(by)}`,
+      };
+    case "notCovering":
+      return {
+        full: `Needs ${swingToFlip(by)} to cover`,
+        short: `needs ${swingToFlip(by)}`,
+      };
+    case "won":
+      return { full: `Won by ${formatPts(by)}`, short: "won" };
+    case "lost":
+      return { full: `Lost by ${formatPts(by)}`, short: "lost" };
+    case "push":
+      return { full: "Push", short: "push" };
+    default:
+      return { full: "Not started", short: "" };
+  }
+};
+
 // The spread from one side's point of view: "+2.5", "−3", "PK".
 export const sideLine = (game: Game, side: Side): string => {
   if (game.cbs_spread == null) return "";
@@ -267,7 +304,7 @@ export const statusLabel = (game: Game): string => {
   }
 };
 
-export type ScoreboardGroup = "Your picks" | "Live" | "Upcoming" | "Final";
+export type ScoreboardGroup = "Live" | "Upcoming" | "Final";
 
 const STATUS_ORDER = (game: Game): number =>
   isLiveStatus(game.status) ? 0 : game.status === GameStatus.Scheduled ? 1 : 2;
@@ -279,27 +316,18 @@ const byStatusThenKickoff = (a: Game, b: Game) =>
 
 // Fixed order, never re-sorted by how close a game is: people learn where to
 // look. Live, then upcoming, then final -- each by kickoff time.
-// `pinUserId` ("My picks first"): that user's games come out into one
-// "Your picks" list on top, in the same order, and the standard groups follow
-// without them.
 export const groupGames = (
-  games: Game[],
-  pinUserId?: string
+  games: Game[]
 ): { group: ScoreboardGroup; games: Game[] }[] => {
-  const pinned = pinUserId
-    ? games.filter((g) => userPickSide(g, pinUserId) !== null)
-    : [];
-  const rest = games.filter((g) => !pinned.includes(g));
   const groups: { group: ScoreboardGroup; games: Game[] }[] = [
-    { group: "Your picks", games: pinned },
-    { group: "Live", games: rest.filter((g) => isLiveStatus(g.status)) },
+    { group: "Live", games: games.filter((g) => isLiveStatus(g.status)) },
     {
       group: "Upcoming",
-      games: rest.filter((g) => g.status === GameStatus.Scheduled),
+      games: games.filter((g) => g.status === GameStatus.Scheduled),
     },
     {
       group: "Final",
-      games: rest.filter((g) => g.status === GameStatus.Final),
+      games: games.filter((g) => g.status === GameStatus.Final),
     },
   ];
   return groups
@@ -308,4 +336,36 @@ export const groupGames = (
       games: [...games].sort(byStatusThenKickoff),
     }))
     .filter(({ games }) => games.length > 0);
+};
+
+// The selected user's games for the "Your picks" strip, in the list's own
+// order (live, upcoming, final). Only picks that are public show up: before
+// a game's picks are revealed its pick lists are empty.
+export const yourPicks = (
+  games: Game[],
+  userId?: string
+): { game: Game; side: Side }[] =>
+  games
+    .map((game) => ({ game, side: userPickSide(game, userId) }))
+    .filter((p): p is { game: Game; side: Side } => p.side !== null)
+    .sort((a, b) => byStatusThenKickoff(a.game, b.game));
+
+// One line for the strip's heading: "1 won · 1 covering · 3 not covering".
+const TALLY_ORDER: [PickState, string][] = [
+  ["won", "won"],
+  ["covering", "covering"],
+  ["push", "push"],
+  ["notCovering", "not covering"],
+  ["lost", "lost"],
+  ["notStarted", "to play"],
+];
+export const pickTally = (picks: { game: Game; side: Side }[]): string => {
+  const counts = new Map<PickState, number>();
+  for (const { game, side } of picks) {
+    const state = getPickState(game, side);
+    counts.set(state, (counts.get(state) ?? 0) + 1);
+  }
+  return TALLY_ORDER.filter(([state]) => counts.has(state))
+    .map(([state, word]) => `${counts.get(state)} ${word}`)
+    .join(" · ");
 };

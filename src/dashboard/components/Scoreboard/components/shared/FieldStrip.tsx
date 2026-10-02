@@ -25,19 +25,25 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
       ? `🏈 ${offense.abbr} ball · ${spot.label}`
       : `🏈 Ball on the ${spot.label}`
     : "";
+  // End zones are labelled only on the taller card strip: on the 16px
+  // compact strip the letters came out 8px, too small to read. The strip is
+  // one image to screen readers, so the labels are decoration either way.
+  const labelled = height >= 20;
   const endZone = (abbr: string) => (
     <Box
+      aria-hidden
       sx={{
         bgcolor: teamColor(abbr),
-        color: "rgba(255,255,255,0.9)",
+        color: "#fff",
         display: "grid",
         placeItems: "center",
-        fontSize: Math.max(8, height * 0.42),
+        fontSize: 10,
         fontWeight: 700,
         lineHeight: 1,
+        overflow: "hidden",
       }}
     >
-      {abbr}
+      {labelled && abbr}
     </Box>
   );
 

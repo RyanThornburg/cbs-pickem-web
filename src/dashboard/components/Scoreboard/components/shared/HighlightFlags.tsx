@@ -11,13 +11,11 @@ const Flag = ({
   <Box
     component="span"
     sx={{
-      fontSize: "0.66rem",
+      fontSize: "0.75rem",
       fontWeight: 700,
-      letterSpacing: "0.05em",
-      textTransform: "uppercase",
       px: "6px",
       py: "3px",
-      borderRadius: "3px",
+      borderRadius: "4px",
       lineHeight: 1,
       whiteSpace: "nowrap",
       bgcolor: kind === "close" ? "warning.main" : "error.main",

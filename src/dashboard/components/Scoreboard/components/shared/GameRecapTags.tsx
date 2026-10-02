@@ -24,11 +24,9 @@ export function GameRecapTags({
           <Box
             component="span"
             sx={{
-              fontSize: "0.66rem",
+              fontSize: "0.75rem",
               fontWeight: 700,
-              letterSpacing: wrap ? "0.01em" : "0.04em",
-              textTransform: "uppercase",
-              borderRadius: 0.5,
+              borderRadius: "4px",
               px: 0.75,
               py: "1px",
               whiteSpace: wrap ? "normal" : "nowrap",

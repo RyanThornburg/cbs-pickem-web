@@ -1,17 +1,21 @@
 import { Game, GameStatus, Possession } from "../../../types";
 import {
   getBallSpot,
+  formatPts,
   getCover,
   getGameHighlight,
   getPickState,
   groupGames,
   highlightBorder,
   pickDeadline,
+  pickStateText,
+  pickTally,
   picksRevealed,
   sideLine,
   swingToFlip,
   teamLineText,
   userPickSide,
+  yourPicks,
 } from "./scoreboardUtils";
 
 const game = (overrides: Partial<Game> = {}): Game => ({
@@ -49,6 +53,41 @@ describe("getCover / swingToFlip", () => {
   it("needs one extra point to flip a whole-number margin (push first)", () => {
     expect(swingToFlip(2.5)).toBe(3);
     expect(swingToFlip(3)).toBe(4);
+  });
+});
+
+describe("formatPts / pickStateText", () => {
+  it("writes half points as ½", () => {
+    expect(formatPts(0.5)).toBe("½");
+    expect(formatPts(3.5)).toBe("3½");
+    expect(formatPts(7)).toBe("7");
+    expect(formatPts(0)).toBe("0");
+  });
+
+  it("names the margin for the picked side", () => {
+    // TB −3.5: up 7–0 covers by 3.5
+    const up = game({ home_score: 7, away_score: 0 });
+    expect(pickStateText(up, "home")).toEqual({
+      full: "Covering by 3½",
+      short: "by 3½",
+    });
+    // MIN needs 4 to take the cover back
+    expect(pickStateText(up, "away")).toEqual({
+      full: "Needs 4 to cover",
+      short: "needs 4",
+    });
+  });
+
+  it("counts the push on a whole-number line", () => {
+    // TB −3, up 6–0: MIN is 3 short, so 3 only pushes and it takes 4
+    const g = game({ cbs_spread: -3, home_score: 6, away_score: 0 });
+    expect(pickStateText(g, "away").full).toBe("Needs 4 to cover");
+  });
+
+  it("says won/lost by the margin once final", () => {
+    const g = game({ status: GameStatus.Final, home_score: 3, away_score: 0 });
+    expect(pickStateText(g, "away").full).toBe("Won by ½");
+    expect(pickStateText(g, "home").full).toBe("Lost by ½");
   });
 });
 
@@ -224,52 +263,60 @@ describe("groupGames", () => {
       ["Final", [1]],
     ]);
   });
+});
 
-  it("pins the user's games on top in the same order, without repeating them", () => {
-    const mine = () => ({ home: [{ id: "7", name: "Me" }], away: [] });
+describe("yourPicks / pickTally", () => {
+  const mine = (side: "home" | "away") =>
+    side === "home"
+      ? { home: [{ id: "7", name: "Me" }], away: [] }
+      : { home: [], away: [{ id: "7", name: "Me" }] };
+
+  it("lists only the user's games, in live, upcoming, final order", () => {
     const games = [
-      game({
-        game_id: 1,
-        status: GameStatus.Final,
-        game_time: 1,
-        picks: mine(),
-      }),
+      game({ game_id: 1, status: GameStatus.Final, picks: mine("home") }),
       game({ game_id: 2, status: GameStatus.Scheduled, game_time: 5 }),
       game({ game_id: 3, status: GameStatus.Halftime, game_time: 3 }),
       game({
         game_id: 4,
         status: GameStatus.Inprogress,
         game_time: 2,
-        picks: mine(),
+        picks: mine("away"),
       }),
       game({
         game_id: 5,
         status: GameStatus.Scheduled,
         game_time: 4,
-        picks: mine(),
+        picks: mine("home"),
       }),
     ];
     expect(
-      groupGames(games, "7").map(({ group, games }) => [
-        group,
-        games.map((g) => g.game_id),
-      ])
+      yourPicks(games, "7").map(({ game, side }) => [game.game_id, side])
     ).toEqual([
-      ["Your picks", [4, 5, 1]],
-      ["Live", [3]],
-      ["Upcoming", [2]],
+      [4, "away"],
+      [5, "home"],
+      [1, "home"],
     ]);
+    expect(yourPicks(games, undefined)).toEqual([]);
   });
 
-  it("leaves the standard order alone when the user has no picks", () => {
-    const games = [
-      game({
-        game_id: 1,
-        status: GameStatus.Final,
-        picks: { home: [], away: [] },
-      }),
+  it("counts each state in a fixed order and skips the empty ones", () => {
+    // TB −3.5
+    const picks = [
+      // TB up 7–0: covering
+      { game: game({ home_score: 7 }), side: "home" as const },
+      // same game, MIN side: not covering
+      { game: game({ home_score: 7 }), side: "away" as const },
+      { game: game({ home_score: 7 }), side: "away" as const },
+      // final, TB up 3: MIN won
+      {
+        game: game({ status: GameStatus.Final, home_score: 3 }),
+        side: "away" as const,
+      },
+      { game: game({ status: GameStatus.Scheduled }), side: "home" as const },
     ];
-    expect(groupGames(games, "7").map(({ group }) => group)).toEqual(["Final"]);
+    expect(pickTally(picks)).toBe(
+      "1 won · 1 covering · 2 not covering · 1 to play"
+    );
   });
 });
 
