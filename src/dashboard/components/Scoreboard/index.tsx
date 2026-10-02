@@ -20,7 +20,7 @@ import {
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
 import { YourPicksStrip } from "./components/YourPicksStrip";
-import { WeekRecap } from "../../types";
+import { Game, WeekRecap } from "../../types";
 import { gameTagsById } from "../Recap/recapBadges";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
@@ -129,6 +129,17 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
     </ToggleButtonGroup>
   );
 
+  const row = (game: Game) => (
+    <GameRow
+      key={game.game_id}
+      game={game}
+      userId={userId}
+      tags={gameTags.get(game.game_id)}
+      picksRevealed={picksRevealed(game, deadline, now)}
+      total={totals.get(game.game_id)}
+    />
+  );
+
   // The layout controls sit on the tab's intro row, like every tab's own
   // controls.
   return (
@@ -161,20 +172,29 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
               >
                 <GroupHeader>{group}</GroupHeader>
               </Box>
-              <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
-                {games.map((game) => (
-                  <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
-                    <GameCard
-                      game={game}
-                      userId={userId}
-                      totalUsers={totalUsers}
-                      tags={gameTags.get(game.game_id)}
-                      picksRevealed={picksRevealed(game, deadline, now)}
-                      total={totals.get(game.game_id)}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+              {/* Upcoming games are rows even in Full: before kickoff a card
+                  has nothing a row doesn't (its linescore is all dashes), and
+                  15 empty cards buried the one result between game days. */}
+              {group === "Upcoming" ? (
+                <Paper variant="outlined" sx={{ overflow: "hidden" }}>
+                  {games.map(row)}
+                </Paper>
+              ) : (
+                <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
+                  {games.map((game) => (
+                    <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
+                      <GameCard
+                        game={game}
+                        userId={userId}
+                        totalUsers={totalUsers}
+                        tags={gameTags.get(game.game_id)}
+                        picksRevealed={picksRevealed(game, deadline, now)}
+                        total={totals.get(game.game_id)}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
             </Box>
           ))
         ) : (
@@ -193,16 +213,7 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
                   >
                     <GroupHeader>{group}</GroupHeader>
                   </Box>
-                  {games.map((game) => (
-                    <GameRow
-                      key={game.game_id}
-                      game={game}
-                      userId={userId}
-                      tags={gameTags.get(game.game_id)}
-                      picksRevealed={picksRevealed(game, deadline, now)}
-                      total={totals.get(game.game_id)}
-                    />
-                  ))}
+                  {games.map(row)}
                 </Box>
               ))}
             </Paper>

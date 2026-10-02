@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { getTeamData } from "../utils/teamAssets";
-import { TeamLogo } from "./Scoreboard/components/shared/TeamLogo";
+import { TeamLogo } from "./shared/TeamLogo";
 
 // "On bye" box at the bottom of Games and Scoreboard. Renders nothing in a
 // week where every team plays.

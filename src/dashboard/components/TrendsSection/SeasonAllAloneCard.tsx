@@ -4,7 +4,7 @@ import { GameCoverResult } from "../../data/weekGames";
 import { SeasonAllAlonePick } from "../../types";
 import UserAvatar from "../UserAvatar";
 import { CoverResultIcon, selectedRowSx } from "./AllAloneCard";
-import TeamLogo from "./TeamLogo";
+import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
   allAlonePicksSeason: SeasonAllAlonePick[];

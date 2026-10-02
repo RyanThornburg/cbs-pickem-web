@@ -14,7 +14,7 @@ import {
   yourPicks,
 } from "../utils/scoreboardUtils";
 import { StatusText } from "./shared/StatusText";
-import { TeamLogo } from "./shared/TeamLogo";
+import { TeamLogo } from "../../shared/TeamLogo";
 
 // The id each game's card/row carries, so a chip can jump to it.
 export const gameAnchorId = (game: Game) => `scoreboard-game-${game.game_id}`;

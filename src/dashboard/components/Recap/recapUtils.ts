@@ -1,4 +1,30 @@
-import { RecapItem } from "../../types";
+import { RecapItem, WeekRecap } from "../../types";
+
+// Week stats that only mean something across several games: "the pool hit
+// 33% (2 of 6)" or "the winner covered all 1 games" after Thursday night
+// reads as noise. These wait for this many finals (frontend config, like the
+// other display thresholds). Events (an upset, a mover, a 5-0) don't wait.
+// The data repo already holds the chaos index back until 8 finals.
+export const MIN_WEEK_STAT_FINALS = 4;
+const WEEK_STAT_KINDS = new Set([
+  "pool_accuracy",
+  "crowd_record",
+  "popular_picks",
+  "spread_mattered",
+  "chaos_index",
+]);
+
+// The recap without week stats built on too few games, for every place
+// that shows recap items (strip, Trends cards and the full list).
+export const withoutThinWeekStats = (recap: WeekRecap): WeekRecap =>
+  recap.games_final >= MIN_WEEK_STAT_FINALS
+    ? recap
+    : {
+        ...recap,
+        items: recap.items.filter(
+          (t) => !(t.scope === "week" && WEEK_STAT_KINDS.has(t.kind))
+        ),
+      };
 
 // How many items the strip rotates through. The list is already ranked,
 // so this is just the top of it.

@@ -4,7 +4,7 @@ import { ordinal } from "../../helper";
 import { AllAlonePick, RankedUser } from "../../types";
 import { Big, CardShell, Sub } from "../Recap/WeekRecapCards";
 import { getWeeklyForm } from "../UsersTable/usersTableUtils";
-import TeamLogo from "./TeamLogo";
+import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
   user: RankedUser;
@@ -27,6 +27,10 @@ export default function YouThisWeekCard({ user, alone, gameResults }: Props) {
     big = { value: `${covering} of ${live}`, suffix: "covering now" };
   else if (user.has_submitted_picks === false)
     big = { value: "No picks", suffix: "yet" };
+  // None of this player's picks has started. Once other games are final,
+  // "no games played yet" reads as broken, so say whose games haven't.
+  else if ([...gameResults.values()].some((game) => game.isFinal))
+    big = { value: "0-0", suffix: "your picks haven't kicked off yet" };
   else big = { value: "0-0", suffix: "no games played yet" };
 
   return (

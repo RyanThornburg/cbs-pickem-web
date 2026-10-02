@@ -1,7 +1,9 @@
-import { RecapItem } from "../../types";
+import { RecapItem, WeekRecap } from "../../types";
 import {
   getSeenItems,
   markItemSeen,
+  MIN_WEEK_STAT_FINALS,
+  withoutThinWeekStats,
   orderForRotation,
   STRIP_SIZE,
 } from "./recapUtils";
@@ -67,5 +69,31 @@ describe("seen storage", () => {
   it("survives bad stored data", () => {
     localStorage.setItem("recapSeen", "not json");
     expect(getSeenItems(2026, 3).size).toBe(0);
+  });
+});
+
+describe("withoutThinWeekStats", () => {
+  const recap = (gamesFinal: number): WeekRecap =>
+    ({
+      games_final: gamesFinal,
+      items: [
+        item("pool_accuracy"),
+        item("upset_of_week"),
+        { ...item("spread_mattered"), scope: "season" },
+        item("crowd_record"),
+      ],
+    }) as unknown as WeekRecap;
+  const kinds = (r: WeekRecap) => r.items.map((t) => `${t.scope}:${t.kind}`);
+
+  it("holds week stats back until enough games are final", () => {
+    expect(kinds(withoutThinWeekStats(recap(1)))).toEqual([
+      "week:upset_of_week",
+      "season:spread_mattered",
+    ]);
+  });
+
+  it("keeps everything once enough games are final", () => {
+    const r = recap(MIN_WEEK_STAT_FINALS);
+    expect(withoutThinWeekStats(r)).toBe(r);
   });
 });

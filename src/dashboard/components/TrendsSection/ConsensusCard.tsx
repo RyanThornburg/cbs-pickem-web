@@ -4,7 +4,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
 import { getTeamData } from "../../utils/teamAssets";
-import TeamLogo from "./TeamLogo";
+import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
   trends: WeekTrends;

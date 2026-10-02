@@ -4,6 +4,7 @@ import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetRecapByWeek } from "../data/GetRecapByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
+import { withoutThinWeekStats } from "./Recap/recapUtils";
 import { GameStatus, RankedUser, WeekRecap } from "../types";
 
 const LIVE_STATUSES = [
@@ -54,7 +55,9 @@ export function useWeekData(season: number, week: number) {
   useEffect(() => {
     setRecap(undefined);
     if (season > 0 && week > 0) {
-      return GetRecapByWeek(season, week, setRecap);
+      return GetRecapByWeek(season, week, (data) =>
+        setRecap(data && withoutThinWeekStats(data))
+      );
     }
   }, [season, week]);
 

@@ -1,18 +1,17 @@
-import { CSSProperties, useId, useState } from "react";
+import { useId, useState } from "react";
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import { GameStatus, RecapCoverStreak } from "../../types";
 import CoverStreaks from "./CoverStreaks";
-import { getTeamData } from "../../utils/teamAssets";
 import { formatGameShort } from "../Scoreboard/utils/dateFormatters";
 import BookOddsTable from "./BookOddsTable";
 import VenueBadge from "./VenueBadge";
+import TeamRow from "./TeamRow";
 import WeatherCell from "./WeatherCell";
 import {
   cbsCoverNote,
   edgePoints,
   edgeTitle,
   fmtTeamLine,
-  formatRecord,
   getMoveDelta,
   getTotalResult,
   getValueSide,
@@ -26,39 +25,6 @@ type Props = {
   // Active cover/miss streaks of 3+, by team id (from the week's recap).
   streaks: Map<number, RecapCoverStreak>;
 };
-
-function TeamRow({
-  team,
-  score,
-  covered,
-}: {
-  team: GameWithOdds["home_team"];
-  score?: number;
-  covered?: boolean;
-}) {
-  const data = getTeamData(team.abbr);
-  const chipStyle = { "--gc-chip-color": `#${data.color}` } as CSSProperties;
-  return (
-    <div className="gc-mrow">
-      <span className="gc-chip" style={chipStyle}>
-        {team.abbr}
-      </span>
-      <span>{data.name}</span>
-      <span className="gc-rec">{formatRecord(team.record)}</span>
-      {score != null && (
-        <span className={`gc-final-score${covered ? " covered" : ""}`}>
-          <span className="gc-score-num">{score}</span>
-          {/* Always rendered, just hidden when not covering -- reserves the
-              same width either way so the number itself stays aligned across
-              rows instead of shifting left when a checkmark is present. */}
-          <span className="gc-score-check" aria-hidden={!covered}>
-            {covered ? "✓" : ""}
-          </span>
-        </span>
-      )}
-    </div>
-  );
-}
 
 // Every line is written as the favorite gives it ("PIT −3"); the feed's
 // numbers are all the home team's. The CBS line (the one the pool scores

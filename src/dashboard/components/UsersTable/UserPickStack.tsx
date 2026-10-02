@@ -107,6 +107,43 @@ export const PickTile = ({
   );
 };
 
+// A player's picks that are still hidden, as one quiet tile filling the rest
+// of the row instead of a "TBD" tile each, so before kickoff the table isn't
+// a wall of TBDs and the columns still line up. No count: CBS lets a player
+// save fewer than five picks, so the feed can't say how many are hidden.
+const HIDDEN_NOTE =
+  "Each pick shows at its game's kickoff or the Sunday 1 PM ET deadline, whichever comes first.";
+
+const HiddenPicksTile = ({ header }: { header: boolean }) => (
+  <Paper
+    title={HIDDEN_NOTE}
+    sx={[
+      {
+        typography: "body2",
+        bgcolor: StatusColor.TBD.bgColor,
+        // Same size steps as the PickTiles beside it.
+        padding: header ? { xs: "0.5px 6px", lg: "0 8px" } : "0.5px 6px",
+        fontSize: header
+          ? { xs: ".75rem", sm: "0.875rem", lg: "0.8125rem", xl: "0.875rem" }
+          : { xs: ".75rem", sm: "0.875rem" },
+        textAlign: "center",
+        color: "text.secondary",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        // Holds the visually hidden note, as PickTile does.
+        position: "relative",
+      },
+      (theme) => theme.applyStyles("dark", { bgcolor: StatusColor.TBD.bgBack }),
+    ]}
+  >
+    Hidden until kickoff
+    <Box component="span" sx={visuallyHidden}>
+      . {HIDDEN_NOTE}
+    </Box>
+  </Paper>
+);
+
 // GetUserByWeek already returns picks in the right order and padded to 5 (real
 // visible picks first, then TBD placeholders, or empty if the user made no picks) --
 // no further filtering/sorting needed here.
@@ -129,12 +166,21 @@ export const UserGamePicksStack = (
     );
   }
 
+  // Two or more hidden picks merge into one tile, in the header and the
+  // table alike. A lone hidden pick stays a normal TBD tile (the label
+  // wouldn't fit one tile's width).
+  const hidden = picks.filter((pick) => !pick.visible);
+  const merge = hidden.length > 1;
+  const tiles = merge ? picks.filter((pick) => pick.visible) : picks;
+
   return (
     <Stack
       sx={{
         justifyContent: "flex-start",
         alignItems: "center",
-        width: { xs: "100%", sm: "auto" },
+        // Table rows with a merged tile fill the column so it lines up; the
+        // header's group stays its own width.
+        width: { xs: "100%", sm: merge && !header ? "100%" : "auto" },
       }}
       direction="row"
       spacing={{ xs: 0.5, sm: 0.35, md: spacingSize }}
@@ -150,7 +196,7 @@ export const UserGamePicksStack = (
         )
       }
     >
-      {picks.map((pick) => (
+      {tiles.map((pick) => (
         <Box
           key={pick.game_id}
           sx={{ flex: { xs: "1 1 0", sm: "none" }, minWidth: 0 }}
@@ -158,6 +204,18 @@ export const UserGamePicksStack = (
           <PickTile pick={pick} header={header} />
         </Box>
       ))}
+      {merge && (
+        <Box
+          sx={{
+            // On phones it takes the hidden picks' share of the row; from
+            // sm up it fills what the shown tiles leave.
+            flex: { xs: `${hidden.length} ${hidden.length} 0`, sm: "1 1 auto" },
+            minWidth: 0,
+          }}
+        >
+          <HiddenPicksTile header={header} />
+        </Box>
+      )}
     </Stack>
   );
 };

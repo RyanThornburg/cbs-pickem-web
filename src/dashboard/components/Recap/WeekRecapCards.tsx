@@ -1,7 +1,7 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { ordinal } from "../../helper";
 import { RecapItem, RecapMove, RecapPerson } from "../../types";
-import TeamLogo from "../TrendsSection/TeamLogo";
+import { TeamLogo } from "../shared/TeamLogo";
 import { CategoryMark } from "./recapCategory";
 import { WeekCard } from "./weekCards";
 

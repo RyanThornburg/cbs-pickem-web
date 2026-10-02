@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { Game, UserId } from "../../../../types";
 import { UserAvatar } from "../../../UserAvatar";
 import { getCover, Side } from "../../utils/scoreboardUtils";
-import { TeamLogo } from "./TeamLogo";
+import { TeamLogo } from "../../../shared/TeamLogo";
 
 interface Props {
   game: Game;

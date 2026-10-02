@@ -4,7 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { GameCoverResult } from "../../data/weekGames";
 import { AllAlonePick } from "../../types";
 import UserAvatar from "../UserAvatar";
-import TeamLogo from "./TeamLogo";
+import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
   allAlonePicks: AllAlonePick[];

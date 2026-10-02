@@ -1,5 +1,7 @@
+import { Fragment } from "react";
 import dayjs from "dayjs";
 import { Forecast, HourlyForecast, Stadium } from "../../types";
+import { conditionText, tempText, weatherParts } from "../../utils/weatherText";
 import {
   duringGameHours,
   merryskyUrl,
@@ -61,13 +63,28 @@ export default function WeatherCell({ forecast, stadium }: Props) {
         <div className="gc-wxtext">
           <ForecastLink url={forecastUrl}>
             <span className="gc-temp">
-              {forecast.temp_f}°F
+              {tempText(forecast.temp_f)}
               {forecastUrl && <ExternalLinkIcon />}
             </span>
           </ForecastLink>
           <span className="gc-cond">
-            {forecast.condition} · {forecast.wind_speed_mph}mph{" "}
-            {forecast.wind_direction ?? ""}
+            {/* Each part stays whole ("Wind 13 mph SSW"), so the line wraps
+                between parts instead of splitting "13 / mph". */}
+            {weatherParts(forecast, { temp: false, precip: false }).map(
+              (part, i, parts) => (
+                <Fragment key={part}>
+                  <span className="gc-cond-part">
+                    {part}
+                    {/* The dot rides with the part before it, so it never
+                        starts a line; phone cards stack the parts instead. */}
+                    {i < parts.length - 1 && (
+                      <span className="gc-cond-sep"> ·</span>
+                    )}
+                  </span>
+                  {i < parts.length - 1 && " "}
+                </Fragment>
+              )
+            )}
           </span>
           {trends.map((trend) => (
             <span
@@ -114,7 +131,7 @@ function HourlyStrip({ hours }: { hours: HourlyForecast[] }) {
           <div
             key={h.time}
             className={`gc-hour${isPeak ? " peak" : ""}`}
-            title={`${time}: ${h.condition}, ${h.temp_f}°F, ${h.precipitation_pct}% precip, gusts ${h.wind_gust_mph}mph`}
+            title={`${time}: ${conditionText(h.condition)}, ${tempText(h.temp_f)}, precip ${h.precipitation_pct}%, gusts ${h.wind_gust_mph} mph`}
           >
             <span className="gc-hour-time">{time}</span>
             <span className="gc-sr">{h.condition}</span>

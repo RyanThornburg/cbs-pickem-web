@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game, GameStatus } from "../../../../types";
+import { weatherLine } from "../../../../utils/weatherText";
 import {
   isLiveStatus,
   getGameHighlight,
@@ -12,7 +13,7 @@ import {
   teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
-import { TeamLogo } from "../shared/TeamLogo";
+import { TeamLogo } from "../../../shared/TeamLogo";
 import { BallIcon } from "../shared/BallIcon";
 import { AtsTag } from "../shared/AtsTag";
 import { FieldStrip } from "../shared/FieldStrip";
@@ -94,7 +95,7 @@ const Middle = ({ game }: { game: Game }) => {
   const f = game.forecast;
   const text =
     f && game.stadium?.roof_type === "Open"
-      ? `${Math.round(f.temp_f)}° · ${f.condition}`
+      ? weatherLine(f, { precip: false })
       : (game.stadium?.name ?? "");
   return (
     <Typography
@@ -199,7 +200,8 @@ export const GameRow = memo((props: GameRowProps) => {
           ...JUMP_TARGET_SX,
           display: "grid",
           gridTemplateColumns:
-            "88px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 156px",
+            // Wide enough for "SUN 12:00 PM" on one line.
+            "108px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 156px",
           gridTemplateAreas: desktopAreas,
           columnGap: 2,
           rowGap: 1,
@@ -213,7 +215,7 @@ export const GameRow = memo((props: GameRowProps) => {
             background: `linear-gradient(90deg, ${t.palette.action.selected}, transparent 45%)`,
           }),
           [t.breakpoints.down("md")]: {
-            gridTemplateColumns: "72px minmax(0, 1fr)",
+            gridTemplateColumns: "100px minmax(0, 1fr)",
             gridTemplateAreas: mobileAreas,
           },
         }),

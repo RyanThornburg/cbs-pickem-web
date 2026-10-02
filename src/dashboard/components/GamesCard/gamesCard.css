@@ -130,22 +130,26 @@
   color: var(--gc-text);
 }
 
-.games-card .gc-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  padding: 2px 7px;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  border-left: 3px solid var(--gc-chip-color, var(--gc-accent));
-  background: color-mix(
-    in srgb,
-    var(--gc-chip-color, var(--gc-accent)) 14%,
-    var(--gc-surface)
-  );
+.games-card .gc-cond-part {
+  white-space: nowrap;
+}
+/* Phone card: the conditions column is narrow, so condition and wind get a
+   line each rather than wrapping around a lone dot. */
+.games-card .gc-gamecard .gc-cond-part {
+  display: block;
+  white-space: normal;
+}
+.games-card .gc-gamecard .gc-cond-sep {
+  display: none;
+}
+.games-card .gc-abbr {
+  font-weight: 700;
+  /* Wide enough for "JAX", so the nicknames line up down the column. */
+  min-width: 2.6em;
+  letter-spacing: 0.01em;
+}
+.games-card .gc-mname {
+  color: var(--gc-text-muted);
 }
 
 .games-card .gc-kickoff {
@@ -589,11 +593,7 @@ a.gc-wx-link:hover .gc-temp,
   min-width: 0;
   gap: 6px;
 }
-.games-card .gc-gamecard .gc-chip {
-  min-width: 36px;
-  padding: 2px 5px;
-}
-.games-card .gc-gamecard .gc-chip,
+.games-card .gc-gamecard .gc-abbr,
 .games-card .gc-gamecard .gc-rec {
   flex: none;
   white-space: nowrap;

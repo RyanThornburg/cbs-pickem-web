@@ -495,7 +495,10 @@ export default function MainGrid() {
               value={activeTab}
               variant="scrollable"
               slotProps={{ list: { role: undefined } }}
-              scrollButtons="auto"
+              // No arrows: with "auto", MUI showed them on some tabs and not
+              // others at the same width, shifting every label sideways on a
+              // tab switch. The row still scrolls on a narrow window.
+              scrollButtons={false}
               sx={{
                 flex: 1,
                 minWidth: 0,

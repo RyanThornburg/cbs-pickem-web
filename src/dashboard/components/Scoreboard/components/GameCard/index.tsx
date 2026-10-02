@@ -7,6 +7,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import PublicIcon from "@mui/icons-material/Public";
 import { Game, GameStatus, LinescoreSide } from "../../../../types";
 import { getVenueBadge } from "../../../../utils/venue";
+import { weatherLine } from "../../../../utils/weatherText";
 import {
   getGameHighlight,
   hasBall,
@@ -17,7 +18,7 @@ import {
   teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
-import { TeamLogo } from "../shared/TeamLogo";
+import { TeamLogo } from "../../../shared/TeamLogo";
 import { BallIcon } from "../shared/BallIcon";
 import { Timeouts } from "../shared/Timeouts";
 import { AtsTag } from "../shared/AtsTag";
@@ -141,10 +142,7 @@ const Situation = ({ game }: { game: Game }) => {
             </span>
           )}
           {weather && (
-            <span>
-              Now: {Math.round(weather.temp_f)}° · {weather.condition} · wind{" "}
-              {Math.round(weather.wind_speed_mph)} mph
-            </span>
+            <span>Now: {weatherLine(weather, { precip: false })}</span>
           )}
         </Box>
       )}
@@ -161,7 +159,7 @@ const PregameLine = ({ game }: { game: Game }) => {
       sx={{ color: "text.secondary", fontSize: "0.82rem" }}
     >
       {f && outdoor
-        ? `Forecast: ${Math.round(f.temp_f)}° · ${f.condition} · wind ${Math.round(f.wind_speed_mph)} mph · ${f.precipitation_pct}% precip`
+        ? `Forecast: ${weatherLine(f)}`
         : `${game.stadium?.name ?? ""}${game.stadium && !outdoor ? ` · ${game.stadium.roof_type.toLowerCase()} roof` : ""}`}
     </Typography>
   );

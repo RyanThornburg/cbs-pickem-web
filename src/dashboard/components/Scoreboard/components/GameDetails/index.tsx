@@ -11,7 +11,7 @@ import { fetchGameDetails } from "../../../../data/GetGameDetails";
 import { poll } from "../../../../../api/pickemApi";
 import { isLiveStatus } from "../../utils/scoreboardUtils";
 import { useCurrentWeek } from "../../../CurrentWeekContext";
-import { TeamLogo } from "../shared/TeamLogo";
+import { TeamLogo } from "../../../shared/TeamLogo";
 import { STAT_BAR_COLORS, teamStatRows } from "../../utils/teamStats";
 
 const LIVE_DETAILS_POLL_MS = 60_000;
