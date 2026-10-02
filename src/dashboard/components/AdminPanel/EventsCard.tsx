@@ -36,6 +36,8 @@ export type Props<T> = {
   columns: Column<T>[];
   rowKey: (row: T) => string;
   emptyText: string;
+  // Anchor id, so the banner and task cards can link here.
+  id?: string;
 };
 
 export function LastSeenCell({
@@ -141,12 +143,17 @@ export default function EventsCard<T>({
   columns,
   rowKey,
   emptyText,
+  id,
 }: Props<T>) {
   // Four columns don't fit a phone: the message got squeezed and pushed
   // Last seen and Count off screen.
   const compact = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   return (
-    <Card variant="outlined" sx={{ height: "100%" }}>
+    <Card
+      variant="outlined"
+      id={id}
+      sx={{ height: "100%", scrollMarginTop: 96 }}
+    >
       <CardContent>
         <Stack
           direction="row"
@@ -161,6 +168,7 @@ export default function EventsCard<T>({
           }}
         >
           <Typography
+            component="h3"
             variant="subtitle1"
             sx={{
               fontWeight: 600,

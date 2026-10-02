@@ -1,4 +1,11 @@
-import { Card, CardContent, Chip, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Chip,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { ReactNode } from "react";
 import {
   formatAgo,
@@ -25,9 +32,16 @@ export type Props = {
   note?: string;
   // Freeform body for a task that doesn't fit the attempt/success shape.
   detail?: ReactNode;
-  // The heartbeat is stale, so this card's health is out of date too: grey it
-  // out rather than keep showing a green "Fresh".
+  // The heartbeat is stale (or the page can't reach meta:admin), so this
+  // card's health is out of date too: grey it out as "Unknown" rather than
+  // keep showing a green "Fresh".
   dimmed?: boolean;
+  // Anchor id, so the banner can link to a problem card.
+  id?: string;
+  // The newest active system event from this task's source, if any.
+  event?: string;
+  // Where that event's row is, e.g. "#admin-events".
+  eventsHref?: string;
 };
 
 export default function TaskCard({
@@ -38,6 +52,9 @@ export default function TaskCard({
   note,
   detail,
   dimmed = false,
+  id,
+  event,
+  eventsHref,
 }: Props) {
   // A problem card gets a colored edge so it stands out in a grid of healthy
   // ones; the chip alone was easy to miss.
@@ -45,8 +62,10 @@ export default function TaskCard({
   return (
     <Card
       variant="outlined"
+      id={id}
       sx={{
         height: "100%",
+        scrollMarginTop: 96,
         // The theme pads the Card itself (CardContent has none); a little
         // less on phones.
         p: { xs: 1.5, sm: 2 },
@@ -73,68 +92,88 @@ export default function TaskCard({
           <Typography variant="subtitle2">{name}</Typography>
           <Chip
             size="small"
-            label={HEALTH_LABEL[health]}
+            label={dimmed ? "Unknown" : HEALTH_LABEL[health]}
             color={dimmed ? "default" : HEALTH_COLOR[health]}
-            variant={health === "idle" || dimmed ? "outlined" : "filled"}
+            variant={
+              health === "idle" || health === "ok" || dimmed
+                ? "outlined"
+                : "filled"
+            }
           />
         </Stack>
         {note && (
-          <Chip
-            size="small"
-            variant="outlined"
-            color="info"
-            label={note}
-            sx={{ mb: 1 }}
-          />
+          <Chip size="small" variant="outlined" label={note} sx={{ mb: 1 }} />
         )}
         <Stack spacing={0.5}>
-          {runs.map((run) => (
-            <div key={run.label ?? "run"}>
-              {/* Wraps to two lines in a narrow card, one line on a phone. */}
-              <Stack
-                direction="row"
-                useFlexGap
-                sx={{ flexWrap: "wrap", alignItems: "baseline", columnGap: 1 }}
-              >
-                <Typography variant="body2">
-                  {run.label && (
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: "text.secondary",
-                      }}
-                    >
-                      {run.label}:{" "}
-                    </Typography>
-                  )}
-                  ok {formatAgo(run.lastSuccessAt, now)}
-                </Typography>
-                <Typography
-                  variant="caption"
+          {runs.map((run) => {
+            // Attempted more recently than it succeeded: lead with how long
+            // it's been since it worked, then the failed try.
+            const failing = isFailing(run.lastAt, run.lastSuccessAt);
+            return (
+              <div key={run.label ?? "run"}>
+                {/* Wraps to two lines in a narrow card, one line on a phone. */}
+                <Stack
+                  direction="row"
+                  useFlexGap
                   sx={{
-                    color: "text.secondary",
+                    flexWrap: "wrap",
+                    alignItems: "baseline",
+                    columnGap: 1,
                   }}
                 >
-                  {formatEt(run.lastSuccessAt)}
-                </Typography>
-              </Stack>
-              {/* Attempted more recently than it succeeded -- the matching
-                  system_events row (same source) should say why. */}
-              {isFailing(run.lastAt, run.lastSuccessAt) && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "error.main",
-                    display: "block",
-                  }}
-                >
-                  last attempt {formatAgo(run.lastAt, now)}
-                </Typography>
-              )}
-            </div>
-          ))}
+                  <Typography variant="body2">
+                    {run.label && (
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        {run.label}:{" "}
+                      </Typography>
+                    )}
+                    {failing ? "last success" : "ok"}{" "}
+                    {formatAgo(run.lastSuccessAt, now)}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    {formatEt(run.lastSuccessAt)}
+                  </Typography>
+                </Stack>
+                {failing && (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "error.dark", display: "block" }}
+                  >
+                    last try {formatAgo(run.lastAt, now)}, failed
+                  </Typography>
+                )}
+              </div>
+            );
+          })}
           {detail}
+          {event && (
+            <Typography
+              variant="caption"
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                fontFamily: "monospace",
+                wordBreak: "break-word",
+                color: "text.secondary",
+              }}
+            >
+              {event}
+            </Typography>
+          )}
+          {event && eventsHref && (
+            <Link href={eventsHref} variant="caption">
+              See System events
+            </Link>
+          )}
         </Stack>
       </CardContent>
     </Card>

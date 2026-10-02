@@ -11,7 +11,7 @@ A Vite + React + TypeScript dashboard for the "Morlocked" NFL pick'em league, li
 - `npm start` — Vite dev server (localhost:3000). `/api/*` is proxied to `http://localhost:8787` (`server.proxy` in `vite.config.ts`), so pair this with `npm run dev` in another terminal to get live API data.
 - `npm run dev` — `wrangler dev --remote`: runs the Worker + static assets locally against the real production KV namespace (there's no separate local/preview namespace — the Worker never writes, so this can't corrupt prod).
 - `npm run build` — typecheck (`tsc -p .`), then the production build to `build/` (the directory `wrangler.jsonc` serves). `npm run preview` serves that build locally.
-- `npm run deploy` — `wrangler deploy`, ships the Worker + `build/` to Cloudflare. Its `predeploy` hook runs `npm run test:all` first, and a failing test stops the deploy (calling `npx wrangler deploy` directly skips the tests). Deploys are fully manual — there's no CI workflow that builds or deploys automatically, so run `npm run build` first.
+- `npm run deploy` — `wrangler deploy`, ships the Worker + `build/` to Cloudflare. Its `predeploy` hook runs `npm run test:all` first, and a failing test stops the deploy (calling `npx wrangler deploy` directly skips the tests). Pushes to `main` also deploy automatically (user, 2026-10-02), so a push is a deploy; a manual deploy still needs `npm run build` first.
 - `npm run tail` — `wrangler tail`, stream production Worker logs.
 - `npm run types` — `wrangler types`, regenerate the `Env` type from `wrangler.jsonc`.
 - `npm test` — Vitest in watch mode, app and Worker together. Two projects in `vite.config.ts`: `app` (`src/**/*.test.ts(x)`, jsdom, global `describe`/`it`/`expect`/`vi`, jest-dom matchers) and `worker` (`worker/*.test.ts`, node). The app project passes `--no-experimental-webstorage` because Node 25's own `localStorage` global shadows jsdom's.
@@ -67,7 +67,7 @@ Vite gotchas: no `require()` in app code (team logos come from `import.meta.glob
 
 ### Deployment
 
-- Hosting is Cloudflare Workers + Static Assets, live at <https://morlocked.rattsnest.com/>. There is no CI/CD — deploys are manual (`npm run build && npm run deploy`). The previous IONOS Deploy Now GitHub Actions workflow has been removed along with IONOS hosting.
+- Hosting is Cloudflare Workers + Static Assets, live at <https://morlocked.rattsnest.com/>. Pushing to `main` deploys automatically; `npm run build && npm run deploy` still works for a manual deploy. The previous IONOS Deploy Now GitHub Actions workflow has been removed along with IONOS hosting.
 
 ## Migration history
 

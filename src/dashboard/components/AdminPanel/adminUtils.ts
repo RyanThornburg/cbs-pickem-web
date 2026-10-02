@@ -20,8 +20,15 @@ export const EVENT_ACTIVE_MS = 24 * 60 * 60_000;
 // means that task has stopped, even if the heartbeat is fine.
 export const EVERY_MINUTE_STALE_MS = 10 * 60_000;
 
+// Live-only tasks have no data-side stale flag. While a game is live, this
+// long without a run (counted from the later of their last run and the first
+// live game's kickoff) means the task has stopped.
+export const LIVE_STALE_MS = 10 * 60_000;
+
+// "idle": a live-only task with no game on. "ok": a task that only runs when
+// data changes, so a long gap means nothing; only a failure counts.
 export type TaskHealth =
-  "fresh" | "stale" | "failing" | "never" | "idle" | "done" | "missed";
+  "fresh" | "stale" | "failing" | "never" | "idle" | "ok" | "done" | "missed";
 
 const toMs = (iso: string | null): number | null =>
   iso ? new Date(iso).getTime() : null;
@@ -54,7 +61,8 @@ export const HEALTH_LABEL: Record<TaskHealth, string> = {
   stale: "Stale",
   failing: "Failing",
   never: "Never run",
-  idle: "Live only",
+  idle: "Idle",
+  ok: "OK",
   done: "Done",
   missed: "Missed",
 };
@@ -68,6 +76,7 @@ export const HEALTH_COLOR: Record<
   failing: "error",
   never: "warning",
   idle: "default",
+  ok: "success",
   done: "success",
   missed: "error",
 };
@@ -188,6 +197,37 @@ export const everyMinuteHealth = (
   return attempt !== null && now - attempt > EVERY_MINUTE_STALE_MS
     ? "stale"
     : "fresh";
+};
+
+// A live-only task: idle with no game on; while one is live, stale after
+// LIVE_STALE_MS without a run. `liveSince` is the earliest kickoff among the
+// games live now (ms), or null when none is.
+export const liveTaskHealth = (
+  lastAt: string | null,
+  lastSuccessAt: string | null,
+  liveSince: number | null,
+  now: number
+): TaskHealth => {
+  const health = taskHealth(lastAt, lastSuccessAt, undefined);
+  if (health !== "idle" || liveSince === null) return health;
+  const since = Math.max(toMs(lastAt) ?? 0, liveSince);
+  return now - since > LIVE_STALE_MS ? "stale" : "fresh";
+};
+
+// A task that only runs when data changes (standings, team profiles), or one
+// this page doesn't know yet: only a failure is a problem.
+export const onChangeHealth = (
+  lastAt: string | null,
+  lastSuccessAt: string | null
+): TaskHealth => {
+  const health = taskHealth(lastAt, lastSuccessAt, undefined);
+  return health === "idle" ? "ok" : health;
+};
+
+// "2026-09-27" -> "9/27", for the deadline sweep's bare date.
+export const formatShortDate = (ymd: string): string => {
+  const [, month, day] = ymd.split("-").map(Number);
+  return month && day ? `${month}/${day}` : ymd;
 };
 
 // Whether a system event is still happening: the data repo's flag when it's

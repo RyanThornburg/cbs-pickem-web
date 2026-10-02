@@ -6,9 +6,13 @@ import {
   dueDeadlineSunday,
   FAILING_GAP_MS,
   formatAgo,
+  formatShortDate,
   healthSeverity,
   isEventActive,
   isFailing,
+  LIVE_STALE_MS,
+  liveTaskHealth,
+  onChangeHealth,
   summarizeHealth,
   taskHealth,
 } from "./adminUtils";
@@ -207,5 +211,51 @@ describe("healthSeverity / summarizeHealth", () => {
       severity: null,
       problems: [],
     });
+  });
+});
+
+describe("liveTaskHealth", () => {
+  const now = Date.parse(T);
+  it("is idle with no game live, however old the last run", () => {
+    expect(
+      liveTaskHealth(plus(T, -86_400_000), plus(T, -86_400_000), null, now)
+    ).toBe("idle");
+  });
+
+  it("counts from kickoff, so a task that hasn't run since last week isn't stale right at kickoff", () => {
+    const old = plus(T, -7 * 86_400_000);
+    expect(liveTaskHealth(old, old, now - 5 * 60_000, now)).toBe("fresh");
+    expect(liveTaskHealth(old, old, now - LIVE_STALE_MS - 1, now)).toBe(
+      "stale"
+    );
+  });
+
+  it("is fresh while it keeps running during a long game", () => {
+    const recent = plus(T, -60_000);
+    expect(liveTaskHealth(recent, recent, now - 3 * 3_600_000, now)).toBe(
+      "fresh"
+    );
+  });
+
+  it("still reports failing and never-run, live or not", () => {
+    expect(liveTaskHealth(T, plus(T, -3_600_000), null, now)).toBe("failing");
+    expect(liveTaskHealth(null, null, now - 60_000, now)).toBe("never");
+  });
+});
+
+describe("onChangeHealth", () => {
+  it("is OK however old the last run, unless it's failing or never ran", () => {
+    expect(
+      onChangeHealth(plus(T, -5 * 86_400_000), plus(T, -5 * 86_400_000))
+    ).toBe("ok");
+    expect(onChangeHealth(T, plus(T, -3_600_000))).toBe("failing");
+    expect(onChangeHealth(null, null)).toBe("never");
+  });
+});
+
+describe("formatShortDate", () => {
+  it("drops the year and leading zeros", () => {
+    expect(formatShortDate("2026-09-27")).toBe("9/27");
+    expect(formatShortDate("2026-10-04")).toBe("10/4");
   });
 });

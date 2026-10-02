@@ -620,6 +620,10 @@ export interface AdminLastRun {
   // when there's something new), with no data-side stale flag.
   scoring_plays_refresh?: AdminLiveTask;
   win_probability_capture?: AdminLiveTask;
+  // Run only when data changes (a game going final; a game's status, line,
+  // score or grades), so long gaps are normal. Timestamps only.
+  standings_refresh?: AdminLiveTask;
+  team_profiles_write?: AdminLiveTask;
   // Bare date ("2026-09-20"), not a timestamp. Runs on the first tick after
   // Sunday 1 PM ET, live games or not.
   deadline_last_synced_sunday: string | null;
