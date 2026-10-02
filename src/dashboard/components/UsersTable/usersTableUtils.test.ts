@@ -1,5 +1,9 @@
 import { GameStatus, UserPick } from "../../types";
-import { getWeeklyForm } from "./usersTableUtils";
+import {
+  getWeeklyForm,
+  playerSummaryText,
+  ShownMoneyStanding,
+} from "./usersTableUtils";
 
 const pick = (
   is_correct: boolean | null,
@@ -66,5 +70,48 @@ describe("getWeeklyForm", () => {
       pick(false),
     ]);
     expect(result).toMatchObject({ form: "cold", lost: 3, covering: 0 });
+  });
+});
+
+describe("playerSummaryText", () => {
+  const user = {
+    name: "Scott Miller",
+    place: 4,
+    second_half_place: null,
+    cumulative_score: 7,
+    trending_score: 2,
+  };
+
+  it("reads place, points and covering picks as words", () => {
+    expect(playerSummaryText(user, [])).toBe(
+      "Scott Miller, 4th, 9 points, 2 covering now"
+    );
+  });
+
+  it("adds each money line and the past week it's as of", () => {
+    expect(
+      playerSummaryText(
+        { ...user, trending_score: 0, cumulative_score: 1 },
+        [
+          {
+            prize: "1st half",
+            inMoney: false,
+            ptsOut: 1,
+            cutoff: 3,
+            weeksLeft: 6,
+          },
+          {
+            prize: "Overall",
+            inMoney: true,
+            ptsOut: 0,
+            cutoff: 5,
+            weeksLeft: 14,
+          },
+        ] as ShownMoneyStanding[],
+        2
+      )
+    ).toBe(
+      "Scott Miller, 4th, 1 point. 1st half: 1 point out, 6 weeks left. Overall: in the money, top 5. As of week 2"
+    );
   });
 });

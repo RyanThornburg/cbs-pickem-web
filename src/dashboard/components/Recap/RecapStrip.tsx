@@ -17,7 +17,7 @@ const ROTATE_MS = 8000;
 
 type Props = {
   recap: WeekRecap | undefined;
-  // False while browsing a past week: its items get tagged "Week N".
+  // False while browsing a past week: its week items go untagged.
   isCurrentWeek: boolean;
 };
 
@@ -102,10 +102,11 @@ export default function RecapStrip({ recap, isCurrentWeek }: Props) {
       <CategoryMark category={current.category} />
       <Box sx={{ minWidth: 0 }}>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 0.25 }}>
-          <ScopeTag
-            scope={current.scope}
-            week={isCurrentWeek ? undefined : week}
-          />
+          {/* On a past week the intro row already says which week, so a
+              week item gets no tag ("This week" would be wrong). */}
+          {(isCurrentWeek || current.scope === "season") && (
+            <ScopeTag scope={current.scope} />
+          )}
           <Typography
             variant="caption"
             sx={{

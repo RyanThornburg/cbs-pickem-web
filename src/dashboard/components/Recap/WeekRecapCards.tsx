@@ -58,7 +58,7 @@ export function CardShell({
       >
         <CategoryMark category={category} />
         <Typography
-          component="h3"
+          component="h4"
           sx={{ fontSize: "0.875rem", fontWeight: 700, flex: 1 }}
         >
           {title}

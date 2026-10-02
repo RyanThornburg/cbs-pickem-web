@@ -122,7 +122,7 @@ export function PhoneTabBar({
             pr: 1,
             borderBottom: 1,
             borderColor: "divider",
-            // DESIGN.md slate-50, the same quiet tone as PastWeekNotice.
+            // DESIGN.md slate-50, a quiet tone, not a warning.
             bgcolor: "hsl(220, 35%, 97%)",
             fontSize: "0.8125rem",
           }}

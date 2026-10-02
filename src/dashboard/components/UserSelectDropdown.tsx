@@ -8,7 +8,10 @@ import { ordinal, visuallyHidden } from "../helper";
 import UserAvatar from "./UserAvatar";
 import { ScoreWithCovering } from "./UsersTable/ScoreWithCovering";
 import { MoneyLines } from "./UsersTable/MoneyLines";
-import { ShownMoneyStanding } from "./UsersTable/usersTableUtils";
+import {
+  ShownMoneyStanding,
+  playerSummaryText,
+} from "./UsersTable/usersTableUtils";
 
 export type Props = {
   userList: RankedUser[];
@@ -54,6 +57,8 @@ export default function UserSelectDropdown({
     onUserChange(event.target.value);
   };
 
+  // The card's facts are laid out without words between them, so screen
+  // readers get a spoken summary instead of the layout.
   const renderValue = (value: string) => {
     const selected = users.find((u) => u.id === value);
     if (!value || !selected) {
@@ -63,6 +68,23 @@ export default function UserSelectDropdown({
         </Box>
       );
     }
+    return (
+      <>
+        <Box component="span" sx={visuallyHidden}>
+          {playerSummaryText(
+            selected,
+            summary === "card" ? standings : [],
+            asOfWeek
+          )}
+        </Box>
+        <Box component="span" aria-hidden sx={{ display: "contents" }}>
+          {renderCard(selected)}
+        </Box>
+      </>
+    );
+  };
+
+  const renderCard = (selected: RankedUser) => {
     const score = (
       <ScoreWithCovering
         total={selected.cumulative_score + selected.trending_score}
@@ -183,6 +205,10 @@ export default function UserSelectDropdown({
           // The card's height with a player in it, so choosing yourself
           // doesn't make the header jump.
           minHeight: summary === "card" ? 59 : 40,
+          // About the card's width with money lines in it, so it doesn't
+          // shrink on tabs that leave them out (it still grows for a long
+          // name).
+          minWidth: summary === "card" ? 360 : undefined,
           borderRadius: summary === "card" ? "10px" : undefined,
           "& .MuiSelect-select": { minWidth: 0 },
         }}

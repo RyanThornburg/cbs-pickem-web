@@ -81,6 +81,7 @@ const places = (users: RankedUser[]) =>
   Object.fromEntries(users.map((u) => [u.name, u.place]));
 
 describe("GetUserByWeek", () => {
+  afterEach(() => vi.useRealTimers());
   const realFetch = global.fetch;
   afterEach(() => {
     global.fetch = realFetch;
@@ -207,6 +208,9 @@ describe("GetUserByWeek", () => {
     });
 
     it("hides every pick until the first kickoff, padding to 5 TBDs for a submitted sheet", async () => {
+      // Before game 1's kickoff time, not just before its status changes.
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-09-27T16:00:00Z"));
       const [ann] = await load(
         [
           user({
@@ -223,6 +227,23 @@ describe("GetUserByWeek", () => {
       // Placeholder ids are negative so they can't collide with real games.
       expect(new Set(ann.picks.map((p) => p.game_id)).size).toBe(5);
       expect(ann.picks.every((p) => p.game_id < 0)).toBe(true);
+    });
+
+    it("reveals picks at kickoff time even while the feed still says SCHEDULED", async () => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-09-27T17:06:00Z"));
+      const [ann] = await load(
+        [
+          user({
+            user_id: 1,
+            name: "Ann",
+            has_submitted_picks: true,
+            picks: [{ game_id: 1, team_id: 11, is_correct: null }],
+          }),
+        ],
+        NOT_STARTED
+      );
+      expect(ann.picks[0]).toMatchObject({ team: "A11", visible: true });
     });
 
     it("tops up a submitted sheet whose picks haven't all joined yet", async () => {

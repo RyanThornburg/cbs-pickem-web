@@ -92,10 +92,21 @@ const compareUsers = (a: RankedUser, b: RankedUser): number => {
 
 // Picks lock and reveal together for the whole week (at the first kickoff), not
 // game-by-game -- otherwise someone with an early bye-week-ish game still shows TBD
-// for it after everyone's picks are already public.
-const isWeekLocked = (games: ApiGame[]): boolean => {
+// for it after everyone's picks are already public. The kickoff time counts as
+// well as the game's status: the feed can keep a game SCHEDULED for several
+// minutes after kickoff (seen live on 2026-10-01's Thursday game, while the
+// leaderboard already carried its picks), the same rule as the Scoreboard's
+// picksRevealed.
+export const isWeekLocked = (
+  games: ApiGame[],
+  now: number = Date.now()
+): boolean => {
   const earliest = findEarliestGame(games);
-  return earliest !== undefined && earliest.status !== GameStatus.Scheduled;
+  return (
+    earliest !== undefined &&
+    (earliest.status !== GameStatus.Scheduled ||
+      now >= Date.parse(earliest.game_time))
+  );
 };
 
 const joinPick = (

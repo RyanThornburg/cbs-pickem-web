@@ -71,7 +71,7 @@ function SectionHeading({
 }) {
   return (
     <Box sx={{ mb: 1.5 }}>
-      <Typography variant="h6" component="h2">
+      <Typography variant="h6" component="h3">
         {children}
       </Typography>
       {note && (
@@ -412,6 +412,7 @@ export default function TrendsSection({
           row: the same segmented control as the Scoreboard's layout. */}
       <TabIntro
         title="Trends"
+        weekly
         actions={
           <ToggleButtonGroup
             size="small"

@@ -136,7 +136,7 @@ function ChartCard({
         minWidth: 0,
       }}
     >
-      <Typography component="h3" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
+      <Typography component="h4" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
         {title}
       </Typography>
       <Box ref={plotRef} sx={{ position: "relative" }}>

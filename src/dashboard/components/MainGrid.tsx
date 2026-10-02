@@ -16,14 +16,13 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import AppShellStatus from "./AppShellStatus";
-import TabIntro from "./TabIntro";
+import TabIntro, { PastWeekContext, PastWeekInfo } from "./TabIntro";
 import TabSkeleton, { TabSkeletonShape } from "./TabSkeleton";
 import GamesCard from "./GamesCard";
 import Scoreboard from "./Scoreboard";
 import TrendsSection from "./TrendsSection";
 import UserSelectDropdown from "./UserSelectDropdown";
 import PickYourselfHint from "./PickYourselfHint";
-import PastWeekNotice from "./PastWeekNotice";
 import WeekDropdown from "./WeekDropdown";
 import {
   ADMIN_TAB,
@@ -161,9 +160,11 @@ export default function MainGrid() {
   // Pipeline status has nothing to do with a week or a player, so the admin
   // page drops the dropdowns and the selected-player header.
   const showPlayerControls = activeTab !== ADMIN_TAB;
-  // Games is pregame research and Records is all-time, so neither shows
-  // the player's picks or money; the picker keeps name, place and score.
-  const showWeekPicks = activeTab !== "games" && activeTab !== RECORDS_TAB;
+  // The player's picks show on every tab, so the header keeps one shape
+  // and the tab row never moves. The money lines stay off Games (pregame
+  // research) and Records (all-time); the card keeps its width without
+  // them (see UserSelectDropdown).
+  const showMoney = activeTab !== "games" && activeTab !== RECORDS_TAB;
 
   // /:tab only matches known routes explicitly (see the "*" catch-all in
   // App.tsx), but the param itself could still be anything -- redirect an
@@ -246,6 +247,32 @@ export default function MainGrid() {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [currentWeek, activeTab]);
+
+  // On a past week each weekly tab's intro row says so (TabIntro, through
+  // PastWeekContext). On phones the same marker joins the tab bar once the
+  // shown tab's marker has scrolled away, so the two never show (with two
+  // "Back" buttons) at once.
+  const [pastNotice, setPastNotice] = useState<HTMLDivElement | null>(null);
+  const [pastNoticeGone, setPastNoticeGone] = useState(false);
+  const pastWeekInfo: PastWeekInfo | null = isCurrentWeek
+    ? null
+    : {
+        currentWeek,
+        onBack: () => onWeekChange(currentWeek),
+        noticeRef: setPastNotice,
+      };
+  useEffect(() => {
+    const notice = pastNotice;
+    setPastNoticeGone(false);
+    if (!notice) return undefined;
+    const observer = new IntersectionObserver(([entry]) =>
+      setPastNoticeGone(
+        !entry.isIntersecting && entry.boundingClientRect.top < 0
+      )
+    );
+    observer.observe(notice);
+    return () => observer.disconnect();
+  }, [pastNotice]);
 
   const onWeekChange = (week: number): void => {
     setSearchParams((params) => {
@@ -330,7 +357,7 @@ export default function MainGrid() {
                 Pick'em
               </Box>
             </Typography>
-            {showPlayerControls && showWeekPicks && selectedUser && (
+            {showPlayerControls && selectedUser && (
               <Box
                 // Beside the Week pill from lg. Below that the row can't
                 // fit them, so they drop under it: under the card (right
@@ -417,7 +444,7 @@ export default function MainGrid() {
                 onOpenChange={setUserMenuOpen}
                 onMenuClosed={scrollToPendingRow}
                 summary={isDesktop ? "card" : "compact"}
-                standings={showWeekPicks ? moneyStandings : []}
+                standings={showMoney ? moneyStandings : []}
                 asOfWeek={isCurrentWeek ? undefined : selectedWeek}
               />
             )}
@@ -559,6 +586,7 @@ export default function MainGrid() {
                       <Box component="span" sx={{ color: "text.primary" }}>
                         {selectedWeek}
                       </Box>
+                      {!isCurrentWeek && ", past week"}
                     </>
                   )}
                 {selectedUser &&
@@ -598,130 +626,126 @@ export default function MainGrid() {
             tabIndex={-1}
             sx={{ outline: "none" }}
           >
-            {!isCurrentWeek &&
-              activeTab !== RECORDS_TAB &&
-              activeTab !== ADMIN_TAB && (
-                <PastWeekNotice
-                  week={selectedWeek}
-                  currentWeek={currentWeek}
-                  onBack={() => onWeekChange(currentWeek)}
-                />
-              )}
-
-            {/* Each tab opens with a TabIntro (its heading and controls):
+            <PastWeekContext.Provider value={pastWeekInfo}>
+              {/* Each tab opens with a TabIntro (its heading and controls):
                 the weekly tab components render their own, since the
                 controls are theirs; the rest are here. */}
-            {!metaReady && (
-              <Box sx={{ mt: 2 }}>
-                <TabIntro title={TAB_TITLES[activeTab]} />
-                <AppShellStatus
-                  metaStatus={metaStatus}
-                  onRetry={retryMeta}
-                  shape={TAB_SKELETONS[activeTab]}
-                  cbsPoolUrl={cbsPoolUrl}
-                />
-              </Box>
-            )}
-            {metaReady && (
-              <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
-                <Grid
-                  size={{ xs: 12, lg: 12 }}
-                  sx={{ display: activeTab === "picks" ? "block" : "none" }}
-                >
-                  <TabIntro title={TAB_TITLES.picks} week={selectedWeek} />
-                  {!user && userList.length > 0 && (
-                    <PickYourselfHint onChoose={openUserMenu} />
-                  )}
-                  {selectedWeek >= secondHalfStartWeek && (
-                    <SecondHalfLeaders
-                      userList={userList}
-                      userId={user}
-                      week={selectedWeek}
-                    />
-                  )}
-                  <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
-                  <UsersTable
-                    userList={userList}
-                    leaderboardStatus={leaderboardStatus}
-                    userId={user}
-                    showSecondHalf={selectedWeek >= secondHalfStartWeek}
-                    week={selectedWeek}
-                    season={season}
-                    recap={recap}
-                    showStreak={isCurrentWeek}
-                    moneyStandings={moneyStandings}
+              {!metaReady && (
+                <Box sx={{ mt: 2 }}>
+                  <TabIntro title={TAB_TITLES[activeTab]} />
+                  <AppShellStatus
+                    metaStatus={metaStatus}
+                    onRetry={retryMeta}
+                    shape={TAB_SKELETONS[activeTab]}
+                    cbsPoolUrl={cbsPoolUrl}
                   />
-                </Grid>
-                <Grid
-                  size={{ xs: 12, lg: 12 }}
-                  sx={{ display: activeTab === "games" ? "block" : "none" }}
-                >
-                  <TabActiveContext.Provider value={activeTab === "games"}>
-                    <GamesCard week={selectedWeek} recap={recap} />
-                  </TabActiveContext.Provider>
-                </Grid>
-                <Grid
-                  size={{ xs: 12, lg: 12 }}
-                  sx={{
-                    display: activeTab === "scoreboard" ? "block" : "none",
-                  }}
-                >
-                  <TabActiveContext.Provider value={activeTab === "scoreboard"}>
-                    <Scoreboard
-                      week={selectedWeek}
-                      userId={user}
-                      totalUsers={userList.length}
-                      recap={recap}
-                    />
-                  </TabActiveContext.Provider>
-                </Grid>
-                <Grid
-                  size={{ xs: 12, lg: 12 }}
-                  sx={{ display: activeTab === "trends" ? "block" : "none" }}
-                >
-                  <TabActiveContext.Provider value={activeTab === "trends"}>
-                    <TrendsSection
-                      season={season}
-                      week={selectedWeek}
-                      recap={recap}
+                </Box>
+              )}
+              {metaReady && (
+                <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
+                  <Grid
+                    size={{ xs: 12, lg: 12 }}
+                    sx={{ display: activeTab === "picks" ? "block" : "none" }}
+                  >
+                    <TabActiveContext.Provider value={activeTab === "picks"}>
+                      <TabIntro title={TAB_TITLES.picks} week={selectedWeek} />
+                    </TabActiveContext.Provider>
+                    {!user && userList.length > 0 && (
+                      <PickYourselfHint onChoose={openUserMenu} />
+                    )}
+                    {selectedWeek >= secondHalfStartWeek && (
+                      <SecondHalfLeaders
+                        userList={userList}
+                        userId={user}
+                        week={selectedWeek}
+                      />
+                    )}
+                    <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
+                    <UsersTable
                       userList={userList}
+                      leaderboardStatus={leaderboardStatus}
                       userId={user}
+                      showSecondHalf={selectedWeek >= secondHalfStartWeek}
+                      week={selectedWeek}
+                      season={season}
+                      recap={recap}
+                      showStreak={isCurrentWeek}
+                      moneyStandings={moneyStandings}
                     />
-                  </TabActiveContext.Provider>
-                </Grid>
-                {activeTab === RECORDS_TAB && (
-                  <Grid size={{ xs: 12, lg: 12 }}>
-                    <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
-                    <Suspense
-                      fallback={
-                        <TabSkeleton
-                          shape="tiles"
-                          label="Loading the records"
-                        />
-                      }
-                    >
-                      <RecordsSection season={season} userId={user} />
-                    </Suspense>
                   </Grid>
-                )}
-                {/* Mounted only while open, so admin data is never polled in the
+                  <Grid
+                    size={{ xs: 12, lg: 12 }}
+                    sx={{ display: activeTab === "games" ? "block" : "none" }}
+                  >
+                    <TabActiveContext.Provider value={activeTab === "games"}>
+                      <GamesCard week={selectedWeek} recap={recap} />
+                    </TabActiveContext.Provider>
+                  </Grid>
+                  <Grid
+                    size={{ xs: 12, lg: 12 }}
+                    sx={{
+                      display: activeTab === "scoreboard" ? "block" : "none",
+                    }}
+                  >
+                    <TabActiveContext.Provider
+                      value={activeTab === "scoreboard"}
+                    >
+                      <Scoreboard
+                        week={selectedWeek}
+                        userId={user}
+                        totalUsers={userList.length}
+                        recap={recap}
+                      />
+                    </TabActiveContext.Provider>
+                  </Grid>
+                  <Grid
+                    size={{ xs: 12, lg: 12 }}
+                    sx={{ display: activeTab === "trends" ? "block" : "none" }}
+                  >
+                    <TabActiveContext.Provider value={activeTab === "trends"}>
+                      <TrendsSection
+                        season={season}
+                        week={selectedWeek}
+                        recap={recap}
+                        userList={userList}
+                        userId={user}
+                      />
+                    </TabActiveContext.Provider>
+                  </Grid>
+                  {activeTab === RECORDS_TAB && (
+                    <Grid size={{ xs: 12, lg: 12 }}>
+                      <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
+                      <Suspense
+                        fallback={
+                          <TabSkeleton
+                            shape="tiles"
+                            label="Loading the records"
+                          />
+                        }
+                      >
+                        <RecordsSection season={season} userId={user} />
+                      </Suspense>
+                    </Grid>
+                  )}
+                  {/* Mounted only while open, so admin data is never polled in the
                 background from the public tabs. */}
-                {activeTab === ADMIN_TAB && (
-                  <Grid size={{ xs: 12, lg: 12 }}>
-                    <Suspense
-                      fallback={
-                        <TabSkeleton
-                          shape="rows"
-                          label="Loading the admin page"
-                        />
-                      }
-                    >
-                      <AdminPanel />
-                    </Suspense>
-                  </Grid>
-                )}
-              </Grid>
-            )}
+                  {activeTab === ADMIN_TAB && (
+                    <Grid size={{ xs: 12, lg: 12 }}>
+                      <Suspense
+                        fallback={
+                          <TabSkeleton
+                            shape="rows"
+                            label="Loading the admin page"
+                          />
+                        }
+                      >
+                        <AdminPanel />
+                      </Suspense>
+                    </Grid>
+                  )}
+                </Grid>
+              )}
+            </PastWeekContext.Provider>
           </Box>
           <PhoneTabBar
             activeTab={activeTab}
@@ -731,6 +755,7 @@ export default function MainGrid() {
             showAdmin={isAdmin || activeTab === ADMIN_TAB}
             pastWeek={
               !isCurrentWeek &&
+              pastNoticeGone &&
               activeTab !== RECORDS_TAB &&
               activeTab !== ADMIN_TAB
                 ? {

@@ -40,17 +40,20 @@ export default function WeekDropdown({
         value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
         onChange={handleChange}
         // One span: the select lays its value out as flex, which would
-        // drop the space between "Week" and the number.
+        // drop the space between "Week" and the number. The word is hidden
+        // from screen readers, since the label already says "Week".
         renderValue={(value) => (
           <span>
             <Box
               component="span"
+              aria-hidden
               sx={{ display: { xs: "none", md: "inline" } }}
             >
               Week{" "}
             </Box>
             <Box
               component="span"
+              aria-hidden
               sx={{ display: { xs: "inline", md: "none" } }}
             >
               Wk{" "}

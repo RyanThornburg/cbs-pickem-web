@@ -53,7 +53,7 @@ export default function WeekRecapSection({
           spacing={1.5}
           sx={{ alignItems: "baseline", flexWrap: "wrap" }}
         >
-          <Typography id={headingId} variant="h6" component="h2">
+          <Typography id={headingId} variant="h6" component="h3">
             {title}
           </Typography>
           {status && (

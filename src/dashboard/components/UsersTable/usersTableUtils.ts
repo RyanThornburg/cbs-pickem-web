@@ -1,4 +1,5 @@
-import { UserPick } from "../../types";
+import { RankedUser, UserPick } from "../../types";
+import { ordinal } from "../../helper";
 
 // Frontend display config, same reasoning as GamesCard's WEATHER_THRESHOLDS --
 // the data repo exposes raw is_correct per pick; what counts as "hot" or
@@ -262,3 +263,45 @@ export const shownMoneyStandings = (
       (standing) =>
         standing.inMoney || standing.ptsOut <= moneyReach(standing.weeksLeft)
     );
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+// What a screen reader hears for the header's player card: the card lays
+// its facts out in a grid with no words between them, so read as text they
+// would run together ("Scott Miller4th · 9 pts1st half…").
+export const playerSummaryText = (
+  user: Pick<
+    RankedUser,
+    | "name"
+    | "place"
+    | "second_half_place"
+    | "cumulative_score"
+    | "trending_score"
+  >,
+  standings: ShownMoneyStanding[],
+  asOfWeek?: number
+): string => {
+  const parts = [user.name];
+  if (user.place != null) parts.push(ordinal(user.place));
+  const total = user.cumulative_score + user.trending_score;
+  parts.push(
+    plural(total, "point") +
+      (user.trending_score > 0 ? `, ${user.trending_score} covering now` : "")
+  );
+  if (user.second_half_place != null) {
+    parts.push(`2nd half ${ordinal(user.second_half_place)}`);
+  }
+  const money = standings.map(
+    (s) =>
+      `${s.prize}: ${
+        s.inMoney
+          ? `in the money, top ${s.cutoff}`
+          : `${plural(s.ptsOut, "point")} out, ${plural(s.weeksLeft, "week")} left`
+      }`
+  );
+  return [
+    parts.join(", "),
+    ...money,
+    ...(asOfWeek != null ? [`As of week ${asOfWeek}`] : []),
+  ].join(". ");
+};

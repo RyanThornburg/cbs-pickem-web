@@ -75,14 +75,9 @@ export function CategoryMark({
   );
 }
 
-// "This week", or "Week N" when the strip is showing a past week's items.
-export function ScopeTag({
-  scope,
-  week: pastWeek,
-}: {
-  scope: "week" | "season";
-  week?: number;
-}) {
+// "This week" or "Season" (the strip leaves week items untagged on a past
+// week).
+export function ScopeTag({ scope }: { scope: "week" | "season" }) {
   const week = scope === "week";
   return (
     <Box
@@ -101,7 +96,7 @@ export function ScopeTag({
         color: week ? "#1565c0" : "text.secondary",
       }}
     >
-      {week ? (pastWeek ? `Week ${pastWeek}` : "This week") : "Season"}
+      {week ? "This week" : "Season"}
     </Box>
   );
 }
