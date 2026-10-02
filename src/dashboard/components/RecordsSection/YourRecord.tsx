@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { ordinal } from "../../helper";
 import { CareerRow } from "./recordsUtils";
 import { YOU_FILL } from "./recordsTheme";
@@ -65,7 +65,7 @@ export default function YourRecord({ row, place }: Props) {
           component="span"
           sx={{ fontSize: "0.875rem", fontWeight: 600, ml: 0.75 }}
         >
-          all-time · {row.points} pts
+          all-time · {row.points} career pts
         </Box>
       </Typography>
       {titleYears.length > 0 ? (
@@ -94,6 +94,43 @@ export default function YourRecord({ row, place }: Props) {
         <Fact>
           <b>{row.top5}</b> top-5 finish{row.top5 === 1 ? "" : "es"}
         </Fact>
+      )}
+    </Box>
+  );
+}
+
+type NoRecordProps = {
+  selected: boolean;
+  season: number;
+  onChoose: () => void;
+};
+
+// Stands in for the all-time line when there isn't one: no one is picked
+// yet, or the picked player has no finished season (a rookie).
+export function NoRecordYet({ selected, season, onChoose }: NoRecordProps) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 1,
+        px: 1.75,
+        py: 1,
+        border: 1,
+        borderColor: "divider",
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="body2" sx={{ flex: "1 1 14rem" }}>
+        {selected
+          ? `Your all-time line starts once the ${season} season closes.`
+          : "Pick your name to see where you rank all\u2011time."}
+      </Typography>
+      {!selected && (
+        <Button variant="outlined" size="small" onClick={onChoose}>
+          Choose your name
+        </Button>
       )}
     </Box>
   );

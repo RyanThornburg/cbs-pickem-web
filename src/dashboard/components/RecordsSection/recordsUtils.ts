@@ -12,6 +12,10 @@ export const HALVES_FROM_SEASON = 2025;
 // "Best average finish" needs a real sample, or one great season wins it.
 export const BEST_AVG_MIN_SEASONS = 5;
 
+// Sorting the All-time table by an average puts shorter careers after
+// everyone else, so a single good season doesn't top the column.
+export const AVG_SORT_MIN_SEASONS = 3;
+
 // A few names in the data carry double spaces ("Omar  Selim").
 export const cleanName = (name: string): string =>
   name.replace(/\s+/g, " ").trim();

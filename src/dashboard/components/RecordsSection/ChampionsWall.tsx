@@ -188,7 +188,6 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
                   columnGap: 1,
                   alignItems: "baseline",
                 },
-                ...(defending && { bgcolor: "hsl(45, 90%, 94%)" }),
                 ...(unknown && { backgroundImage: INCOMPLETE_HATCH }),
                 ...(isYou && {
                   bgcolor: YOU_FILL,

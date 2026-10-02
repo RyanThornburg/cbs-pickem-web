@@ -98,6 +98,7 @@ export function StandingsSkeleton({
     // Still and faded when nothing is loading, so they hold the page's
     // shape without reading as "loading".
     <Box
+      role="status"
       aria-busy={animate}
       aria-label={label}
       sx={{ opacity: animate ? 1 : 0.45 }}

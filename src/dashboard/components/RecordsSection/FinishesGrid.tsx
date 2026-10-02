@@ -11,6 +11,7 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { HistoricalRecords } from "../../types";
@@ -81,13 +82,14 @@ const stickySx = {
 // Every player's finish in every season, players in all-time order (fixed,
 // whatever the All-time table is sorted by). Opens scrolled to the newest
 // seasons, so phones see this year's players first. Tapping a finish shows
-// its points in the line above the grid.
+// its score in the line above the grid.
 export default function FinishesGrid({ data, rows, userId }: Props) {
   const theme = useTheme();
   const years = closedSeasons(data);
   const incomplete = (year: number) => data.years[String(year)]?.incomplete;
   const ordered = useMemo(() => [...rows].sort(byAllTimeRank), [rows]);
   const [detail, setDetail] = useState<string | null>(null);
+  const canHover = useMediaQuery("(hover: hover)");
 
   const scroller = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -143,7 +145,8 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
         aria-live="polite"
         sx={{ color: "text.secondary", minHeight: "1.43em" }}
       >
-        {detail ?? "Players in all-time order. Tap a finish for its points."}
+        {detail ??
+          `Players in all-time order. ${canHover ? "Hover over" : "Tap"} a finish for its score.`}
       </Typography>
 
       <TableContainer

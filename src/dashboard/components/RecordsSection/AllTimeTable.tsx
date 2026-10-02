@@ -23,7 +23,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { ordinal } from "../../helper";
-import { allTimePlaces, byAllTimeRank, CareerRow } from "./recordsUtils";
+import {
+  allTimePlaces,
+  AVG_SORT_MIN_SEASONS,
+  byAllTimeRank,
+  CareerRow,
+} from "./recordsUtils";
 import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
 
 const dash = (
@@ -38,6 +43,19 @@ const dash = (
 );
 const oneDecimal = (n: number | undefined) =>
   n === undefined ? dash : n.toFixed(1);
+
+// Averages over fewer than AVG_SORT_MIN_SEASONS sort as missing (last, either
+// direction) and show muted, though the value is still there.
+const sortableAvg = (row: CareerRow, n: number | undefined) =>
+  row.seasons >= AVG_SORT_MIN_SEASONS ? n : undefined;
+const avgCell = (row: CareerRow, n: number | undefined) =>
+  n !== undefined && row.seasons < AVG_SORT_MIN_SEASONS ? (
+    <Box component="span" sx={{ color: "text.secondary" }}>
+      {n.toFixed(1)}
+    </Box>
+  ) : (
+    oneDecimal(n)
+  );
 
 const columnHelper = createColumnHelper<CareerRow>();
 
@@ -73,8 +91,8 @@ const columns = [
     ),
   }),
   columnHelper.accessor("points", {
-    header: "Points",
-    meta: { mobileHeader: "Pts", align: "center" },
+    header: "Career pts",
+    meta: { mobileHeader: "Career", align: "center" },
     sortDescFirst: true,
     cell: ({ getValue }) => (
       <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -126,19 +144,21 @@ const columns = [
       return best === undefined ? dash : ordinal(best);
     },
   }),
-  columnHelper.accessor("avgFinish", {
+  columnHelper.accessor((row) => sortableAvg(row, row.avgFinish), {
+    id: "avgFinish",
     header: "Avg finish",
     meta: { mobileHeader: "Avg fin", align: "center" },
     sortDescFirst: false,
     sortUndefined: "last",
-    cell: ({ getValue }) => oneDecimal(getValue()),
+    cell: ({ row }) => avgCell(row.original, row.original.avgFinish),
   }),
-  columnHelper.accessor("avgScore", {
+  columnHelper.accessor((row) => sortableAvg(row, row.avgScore), {
+    id: "avgScore",
     header: "Avg score",
     meta: { mobileHeader: "Avg pts", align: "center" },
     sortDescFirst: true,
     sortUndefined: "last",
-    cell: ({ getValue }) => oneDecimal(getValue()),
+    cell: ({ row }) => avgCell(row.original, row.original.avgScore),
   }),
   columnHelper.accessor("seasons", {
     header: "Seasons",
@@ -188,16 +208,20 @@ export default function AllTimeTable({ table, userId }: Props) {
         variant="body2"
         sx={{ color: "text.secondary", fontSize: "0.8125rem", mb: 1 }}
       >
-        Ranked by points: 10 for a title, 9 for 2nd, down to 1 for 10th, added
-        up over every season. Ties go to more titles, then the better average
-        finish. Averages count every season a player has on record. Tap a column
-        heading to sort.
+        Career pts: 10 for a title, down to 1 for 10th, every season. Ties go to
+        titles, then avg finish. Averages sort players with{" "}
+        {AVG_SORT_MIN_SEASONS}+ seasons first.
       </Typography>
       <TableContainer>
+        {/* Sized to its columns rather than the page, so a row stays easy to
+            follow across on wide screens. */}
         <Table
           size="small"
           aria-label="All-time standings"
-          sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+          sx={{
+            width: "auto",
+            "& td, & th": { fontVariantNumeric: "tabular-nums" },
+          }}
         >
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (

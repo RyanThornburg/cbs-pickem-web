@@ -17,7 +17,7 @@ import ChampionsWall from "./ChampionsWall";
 import FinishesGrid from "./FinishesGrid";
 import RecordTiles from "./RecordTiles";
 import SeasonTable from "./SeasonTable";
-import YourRecord from "./YourRecord";
+import YourRecord, { NoRecordYet } from "./YourRecord";
 import {
   allTimePlaces,
   buildCareerRows,
@@ -50,6 +50,8 @@ type Props = {
   season: number;
   // Selected user from the header dropdown -- highlighted everywhere.
   userId: string;
+  // Opens the header's player picker.
+  onChoosePlayer: () => void;
 };
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
@@ -58,7 +60,11 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   </Typography>
 );
 
-export default function RecordsSection({ season, userId }: Props) {
+export default function RecordsSection({
+  season,
+  userId,
+  onChoosePlayer,
+}: Props) {
   const [data, setData] = useState<HistoricalRecords | undefined>(undefined);
   // The table and season live in the URL (?view=season&year=2019), so they
   // survive leaving the tab and can be linked. Finishes is the default.
@@ -146,7 +152,15 @@ export default function RecordsSection({ season, userId }: Props) {
   return (
     // No card around the page: it sits flush like the other tabs.
     <Stack spacing={4}>
-      {you && yourPlace && <YourRecord row={you} place={yourPlace} />}
+      {you && yourPlace ? (
+        <YourRecord row={you} place={yourPlace} />
+      ) : (
+        <NoRecordYet
+          selected={Boolean(userId)}
+          season={season}
+          onChoose={onChoosePlayer}
+        />
+      )}
 
       <ChampionsWall data={data} currentSeason={season} userId={userId} />
 

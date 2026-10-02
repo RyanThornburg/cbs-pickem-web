@@ -717,7 +717,11 @@ export default function MainGrid() {
                           />
                         }
                       >
-                        <RecordsSection season={season} userId={user} />
+                        <RecordsSection
+                          season={season}
+                          userId={user}
+                          onChoosePlayer={openUserMenu}
+                        />
                       </Suspense>
                     </Grid>
                   )}

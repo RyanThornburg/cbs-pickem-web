@@ -26,6 +26,7 @@ export default function TabSkeleton({
   if (shape === "tiles") {
     return (
       <Box
+        role="status"
         aria-busy={animate}
         aria-label={label}
         sx={{ opacity: animate ? 1 : 0.45 }}
@@ -53,6 +54,7 @@ export default function TabSkeleton({
 
   return (
     <Box
+      role="status"
       aria-busy={animate}
       aria-label={label}
       sx={{

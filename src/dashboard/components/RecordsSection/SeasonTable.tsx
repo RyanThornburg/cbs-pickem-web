@@ -66,12 +66,19 @@ export default function SeasonTable({
             size="small"
             clickable
             aria-pressed={y === year}
-            color={y === year ? "primary" : "default"}
             variant={y === year ? "filled" : "outlined"}
             onClick={() => onYearChange(y)}
             sx={{
               height: 28,
               fontVariantNumeric: "tabular-nums",
+              // Selected like the phone tab bar's pill: slate, not blue
+              // (blue means "open" and "you").
+              ...(y === year && {
+                bgcolor: "hsl(220, 20%, 88%)",
+                color: "text.primary",
+                fontWeight: 700,
+                "&:hover": { bgcolor: "hsl(220, 20%, 84%)" },
+              }),
               // Seasons missing players get a dashed edge, but not once
               // selected (a dashed filled chip looks broken).
               ...(data.years[String(y)]?.incomplete &&
