@@ -1,7 +1,12 @@
 import { Fragment } from "react";
 import dayjs from "dayjs";
 import { Forecast, HourlyForecast, Stadium } from "../../types";
-import { conditionText, tempText, weatherParts } from "../../utils/weatherText";
+import {
+  conditionText,
+  roofText,
+  tempText,
+  weatherParts,
+} from "../../utils/weatherText";
 import {
   duringGameHours,
   merryskyUrl,
@@ -43,9 +48,7 @@ export default function WeatherCell({ forecast, stadium }: Props) {
       <div className="gc-dome">
         <DomeIcon />
         <ForecastLink url={forecastUrl}>
-          {stadium?.roof_type === "Retractable"
-            ? "Retractable roof"
-            : (stadium?.roof_type ?? "Enclosed")}
+          {roofText(stadium?.roof_type)}
           {forecastUrl && <ExternalLinkIcon />}
         </ForecastLink>
       </div>

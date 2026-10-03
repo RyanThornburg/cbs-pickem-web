@@ -2,7 +2,7 @@ import { Fragment, memo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game, GameStatus } from "../../../../types";
-import { weatherParts } from "../../../../utils/weatherText";
+import { roofText, weatherParts } from "../../../../utils/weatherText";
 import {
   isLiveStatus,
   getGameHighlight,
@@ -115,13 +115,34 @@ const Middle = ({ game }: { game: Game }) => {
       </Typography>
     );
   }
+  // Indoors: the stadium and its roof, as on the cards and Games. A long
+  // name ellipsizes; the roof always shows.
   return (
     <Typography
       variant="body2"
-      noWrap
-      sx={{ color: "text.secondary", fontSize: "0.82rem" }}
+      sx={{
+        display: "flex",
+        minWidth: 0,
+        color: "text.secondary",
+        fontSize: "0.82rem",
+      }}
     >
-      {game.stadium?.name ?? ""}
+      <Box
+        component="span"
+        sx={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {game.stadium?.name ?? ""}
+      </Box>
+      {game.stadium && game.stadium.roof_type !== "Open" && (
+        <Box component="span" sx={{ flexShrink: 0, whiteSpace: "pre" }}>
+          {game.stadium.name ? " · " : ""}
+          {roofText(game.stadium.roof_type)}
+        </Box>
+      )}
     </Typography>
   );
 };

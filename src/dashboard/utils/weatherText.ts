@@ -48,3 +48,10 @@ export function weatherParts(
     parts.push(precipText(w.precipitation_pct));
   return parts;
 }
+
+// An indoor game's line in place of weather: "Dome", "Retractable roof".
+// Retractable roofs read as closed, since the feed can't tell open from shut.
+export function roofText(roofType: string | null | undefined): string {
+  if (roofType === "Retractable") return "Retractable roof";
+  return roofType || "Enclosed";
+}

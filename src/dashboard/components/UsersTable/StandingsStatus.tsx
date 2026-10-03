@@ -3,14 +3,10 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { LeaderboardStatus } from "../useWeekData";
+import { formatUpdated } from "../../utils/updatedTime";
 
 // Deep trophy gold for text: 5.1:1 on white (DESIGN.md's #a87f12 was 3.7:1).
 export const MONEY_GOLD = "#8a6a0f";
-
-export const timeFormat = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-  minute: "2-digit",
-});
 
 // Shown above the table only when the last refresh failed. A good refresh
 // shows its time in the desktop table's header row instead, and nowhere on
@@ -37,7 +33,7 @@ export function RefreshFailedLine({
       }}
     >
       <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem" }} />
-      {`Couldn't refresh. Showing ${timeFormat.format(updatedAt)}, trying again every minute.`}
+      {`Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`}
     </Typography>
   );
 }

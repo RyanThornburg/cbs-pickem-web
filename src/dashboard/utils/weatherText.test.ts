@@ -1,4 +1,4 @@
-import { conditionText, weatherLine, windText } from "./weatherText";
+import { conditionText, roofText, weatherLine, windText } from "./weatherText";
 
 describe("weatherText", () => {
   it("sentence-cases the feed's Title Case conditions", () => {
@@ -30,5 +30,13 @@ describe("weatherText", () => {
         { temp: false }
       )
     ).toBe("Clear · Wind 3 mph");
+  });
+});
+
+describe("roofText", () => {
+  it("names the roof the same way on every tab", () => {
+    expect(roofText("Dome")).toBe("Dome");
+    expect(roofText("Retractable")).toBe("Retractable roof");
+    expect(roofText(undefined)).toBe("Enclosed");
   });
 });

@@ -420,9 +420,6 @@ export default function TrendsSection({
             value={view}
             onChange={handleViewChange}
             aria-label="Trends for this week or the season"
-            sx={{
-              "& .MuiToggleButton-root": { minHeight: 40, py: 0.5, px: 2 },
-            }}
           >
             <ToggleButton value="week">Week {week}</ToggleButton>
             <ToggleButton value="season">Season</ToggleButton>

@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
+import { formatUpdated } from "../../utils/updatedTime";
 import { ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PickRecord, StandingsTeam } from "../../types";
@@ -160,7 +161,7 @@ export default function StandingsView({
       meta={
         standings &&
         dayjs(standings.updated_at).isValid() &&
-        `${standings.season} season · Updated ${dayjs(standings.updated_at).format("ddd h:mm A")}`
+        `${standings.season} season · Updated ${formatUpdated(standings.updated_at)}`
       }
       actions={intro}
     />
@@ -396,7 +397,6 @@ export default function StandingsView({
         value={layout}
         onChange={(_, next: Layout | null) => next && setLayout(next)}
         aria-label="Standings layout"
-        sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.5 } }}
       >
         <ToggleButton value="divisions">Divisions</ToggleButton>
         <ToggleButton value="league">All 32</ToggleButton>
@@ -408,7 +408,6 @@ export default function StandingsView({
           value={conference}
           onChange={(_, next: Conference | null) => next && setConference(next)}
           aria-label="Conference"
-          sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.5 } }}
         >
           <ToggleButton value="AFC">AFC</ToggleButton>
           <ToggleButton value="NFC">NFC</ToggleButton>

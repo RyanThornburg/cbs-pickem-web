@@ -7,7 +7,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import PublicIcon from "@mui/icons-material/Public";
 import { Game, GameStatus, LinescoreSide } from "../../../../types";
 import { getVenueBadge } from "../../../../utils/venue";
-import { weatherLine } from "../../../../utils/weatherText";
+import { roofText, weatherLine } from "../../../../utils/weatherText";
 import {
   getGameHighlight,
   hasBall,
@@ -161,7 +161,12 @@ const PregameLine = ({ game }: { game: Game }) => {
     >
       {f && outdoor
         ? `Forecast: ${weatherLine(f)}`
-        : `${game.stadium?.name ?? ""}${game.stadium && !outdoor ? ` · ${game.stadium.roof_type.toLowerCase()} roof` : ""}`}
+        : [
+            game.stadium?.name,
+            game.stadium && !outdoor && roofText(game.stadium.roof_type),
+          ]
+            .filter(Boolean)
+            .join(" · ")}
     </Typography>
   );
 };

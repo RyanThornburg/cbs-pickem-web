@@ -11,7 +11,7 @@ import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import Box from "@mui/material/Box";
 import { PaidLineRule } from "./PaidLineRule";
-import { timeFormat } from "./StandingsStatus";
+import { formatUpdated } from "../../utils/updatedTime";
 import { paidLineNote } from "./MoneyLines";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
@@ -85,7 +85,7 @@ const UserDataGrid = ({
                           whiteSpace: "nowrap",
                         }}
                       >
-                        Updated {timeFormat.format(leaderboardStatus.updatedAt)}
+                        Updated {formatUpdated(leaderboardStatus.updatedAt)}
                       </Box>
                     )}
                 </TableCell>

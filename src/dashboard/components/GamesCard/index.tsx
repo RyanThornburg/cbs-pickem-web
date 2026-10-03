@@ -1,5 +1,6 @@
 import { Alert } from "@mui/material";
 import dayjs from "dayjs";
+import { formatUpdated } from "../../utils/updatedTime";
 import { useMemo } from "react";
 import { byeTeams } from "../../data/weekGames";
 import { ByeTeams } from "../ByeTeams";
@@ -62,9 +63,7 @@ export default function GamesCard({ week, recap, viewSwitch }: Props) {
         showOddsTime && (
           <>
             Odds updated{" "}
-            <time dateTime={oddsUpdatedAt}>
-              {dayjs(oddsUpdatedAt).format("ddd, MMM D, h:mm A")}
-            </time>
+            <time dateTime={oddsUpdatedAt}>{formatUpdated(oddsUpdatedAt)}</time>
           </>
         )
       )}

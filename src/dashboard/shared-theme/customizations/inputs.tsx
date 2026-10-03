@@ -1,7 +1,6 @@
 import { alpha, Theme, Components } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { svgIconClasses } from "@mui/material/SvgIcon";
-import { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
 import { toggleButtonClasses } from "@mui/material/ToggleButton";
 import { gray, brand } from "../themePrimitives";
 
@@ -277,18 +276,9 @@ export const inputsCustomizations: Components<Theme> = {
   },
   MuiToggleButtonGroup: {
     styleOverrides: {
-      root: ({ theme }) => ({
+      root: {
         borderRadius: "10px",
-        // brand[500] on the selected grey was 4.3:1; this is 6:1.
-        [`& .${toggleButtonGroupClasses.selected}`]: {
-          color: brand[700],
-        },
-        ...theme.applyStyles("dark", {
-          [`& .${toggleButtonGroupClasses.selected}`]: {
-            color: "#fff",
-          },
-        }),
-      }),
+      },
     },
   },
   MuiToggleButton: {
@@ -298,6 +288,25 @@ export const inputsCustomizations: Components<Theme> = {
         textTransform: "none",
         borderRadius: "10px",
         fontWeight: 500,
+        color: theme.palette.text.secondary,
+        variants: [
+          {
+            // Every segmented control in the app is small, at one height:
+            // 36px, the small button's, so none is a 29px tap target.
+            props: { size: "small" },
+            style: { minHeight: 36, padding: "2px 12px" },
+          },
+        ],
+        // One selected style for every segmented control (NFL views,
+        // Standings, Live's layout, Trends): ink on the slate-200 the phone
+        // tab bar and Records' year chips use. It's set on the button, not
+        // the group, so it can't lose to MUI's own selected rule by load
+        // order (Live and Trends were blue, NFL and Standings ink).
+        [`&.${toggleButtonClasses.selected}`]: {
+          color: theme.palette.text.primary,
+          backgroundColor: gray[200],
+          "&:hover": { backgroundColor: gray[300] },
+        },
         ...theme.applyStyles("dark", {
           color: gray[400],
           boxShadow: "0 4px 16px rgba(0, 0, 0, 0.5)",

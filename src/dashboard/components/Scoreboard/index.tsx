@@ -146,7 +146,6 @@ const Scoreboard = memo((props: Props) => {
       value={layout}
       onChange={changeLayout}
       aria-label="Live layout"
-      sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.25 } }}
     >
       <ToggleButton value="full" aria-label="Full cards">
         <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />

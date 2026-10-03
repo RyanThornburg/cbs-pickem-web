@@ -147,6 +147,11 @@ export default function TabIntro({
           titleBlock
         )}
         {actions && (
+          // On phones the controls always take their own row under the
+          // title, starting at the left edge, so a switch shared by several
+          // views (NFL's Games | Live | Standings) sits in the same spot on
+          // each instead of jumping between right and left as titles change
+          // length. From sm up they sit at the right end of the title row.
           <Box
             sx={{
               display: "flex",
@@ -154,7 +159,8 @@ export default function TabIntro({
               flexWrap: "wrap",
               columnGap: 2,
               rowGap: 1,
-              ml: "auto",
+              flexBasis: { xs: "100%", sm: "auto" },
+              ml: { xs: 0, sm: "auto" },
             }}
           >
             {actions}

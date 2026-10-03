@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import { timeFormat } from "../../UsersTable/StandingsStatus";
+import { formatUpdated } from "../../../utils/updatedTime";
 
 // The Scoreboard's freshness line on the tab intro, at every width: while a
 // game is live, when the scores were last fetched; after a failed refresh,
@@ -32,8 +32,8 @@ export function UpdatedNote({
         <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem" }} />
       )}
       {refreshFailed
-        ? `Couldn't refresh. Showing ${timeFormat.format(updatedAt)}, trying again every minute.`
-        : `Updated ${timeFormat.format(updatedAt)}`}
+        ? `Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`
+        : `Updated ${formatUpdated(updatedAt)}`}
     </Box>
   );
 }

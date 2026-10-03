@@ -28,7 +28,6 @@ export default function NflViewSwitch({
       value={view}
       onChange={(_, next: NflView | null) => next && onChange(next)}
       aria-label="NFL view"
-      sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.5 } }}
     >
       {(Object.keys(LABELS) as NflView[]).map((value) => (
         <ToggleButton key={value} value={value}>
