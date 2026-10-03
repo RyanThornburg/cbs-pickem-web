@@ -1,7 +1,6 @@
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
-  Alert,
   Box,
   Button,
   Skeleton,
@@ -29,6 +28,7 @@ import SeasonTeamTable from "./SeasonTeamTable";
 import YouThisWeekCard from "./YouThisWeekCard";
 import { useTabActive } from "../tabLinks";
 import TabIntro from "../TabIntro";
+import LoadError from "../shared/LoadError";
 
 export type Props = {
   season: number;
@@ -94,11 +94,20 @@ const LoadingRows = ({ label }: { label: string }) => (
   </Stack>
 );
 
-const LoadFailed = ({ what }: { what: string }) => (
-  <Alert severity="error">
-    Couldn't load {what}. This page tries again every 5 minutes, or reload to
-    try now.
-  </Alert>
+const LoadFailed = ({
+  what,
+  every,
+  onRetry,
+}: {
+  what: string;
+  every: string;
+  onRetry: () => void;
+}) => (
+  <LoadError
+    title={`Couldn't load ${what}.`}
+    detail={`Trying again every ${every}.`}
+    onRetry={onRetry}
+  />
 );
 
 export default function TrendsSection({
@@ -117,6 +126,9 @@ export default function TrendsSection({
   const [weekFailed, setWeekFailed] = useState(false);
   const [seasonTrends, setSeasonTrends] = useState<SeasonTrends>();
   const [seasonFailed, setSeasonFailed] = useState(false);
+  // Bumped by "Try now", which restarts that poll at once.
+  const [weekAttempt, setWeekAttempt] = useState(0);
+  const [seasonAttempt, setSeasonAttempt] = useState(0);
   const [gameResults, setGameResults] = useState<Map<number, GameCoverResult>>(
     new Map()
   );
@@ -148,7 +160,7 @@ export default function TrendsSection({
       () => setWeekFailed(true)
     );
     return () => unsubscribe?.();
-  }, [season, week, active]);
+  }, [season, week, active, weekAttempt]);
 
   useEffect(() => {
     setSeasonTrends(undefined);
@@ -166,7 +178,7 @@ export default function TrendsSection({
       () => setSeasonFailed(true)
     );
     return () => unsubscribe?.();
-  }, [season, active]);
+  }, [season, active, seasonAttempt]);
 
   // Grades trend cards against final scores -- see getGameCoverResult for why
   // this uses the ATS cover, not the straight-up winner, as "who won the pick".
@@ -320,7 +332,14 @@ export default function TrendsSection({
       />
 
       {weekFailed && !weekTrends ? (
-        <LoadFailed what={`week ${week}'s pick trends`} />
+        <LoadFailed
+          what={`week ${week}'s pick trends`}
+          every="5 minutes"
+          onRetry={() => {
+            setWeekFailed(false);
+            setWeekAttempt((n) => n + 1);
+          }}
+        />
       ) : !weekTrends ? (
         <LoadingRows label={`Loading week ${week} pick trends`} />
       ) : (
@@ -374,7 +393,14 @@ export default function TrendsSection({
       )}
 
       {seasonFailed && !seasonTrends ? (
-        <LoadFailed what="this season's pick trends" />
+        <LoadFailed
+          what="this season's pick trends"
+          every="30 minutes"
+          onRetry={() => {
+            setSeasonFailed(false);
+            setSeasonAttempt((n) => n + 1);
+          }}
+        />
       ) : !seasonTrends ? (
         <LoadingRows label="Loading season pick trends" />
       ) : (

@@ -40,6 +40,7 @@ import {
   setStoredTab,
 } from "../utils/defaultTab";
 import NflViewSwitch from "./Nfl/NflViewSwitch";
+import { useTrackBackTargets } from "./shared/backTarget";
 import StandingsView from "./Nfl/StandingsView";
 import TeamPage from "./Nfl/TeamPage";
 import {
@@ -95,6 +96,7 @@ const NFL_VIEW_TITLES: Record<NflView, string> = {
 };
 
 export default function MainGrid() {
+  useTrackBackTargets();
   const { metaStatus, retryMeta, currentWeek, season, periods, cbsPoolUrl } =
     useCurrentWeek();
   // Until meta first loads there's no season or week, so the header and
@@ -132,6 +134,7 @@ export default function MainGrid() {
   const {
     userList,
     leaderboardStatus,
+    retryLeaderboard,
     recap,
     hasLiveGame,
     liveKnown,
@@ -776,6 +779,7 @@ export default function MainGrid() {
                     <UsersTable
                       userList={userList}
                       leaderboardStatus={leaderboardStatus}
+                      onRetryLeaderboard={retryLeaderboard}
                       userId={user}
                       week={selectedWeek}
                       season={season}

@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
@@ -26,6 +25,7 @@ import { Game, WeekRecap } from "../../types";
 import { gameTagsById } from "../Recap/recapBadges";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
+import LoadError from "../shared/LoadError";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
@@ -67,7 +67,7 @@ const GroupHeader = ({ children }: { children: string }) => (
 const Scoreboard = memo((props: Props) => {
   const { week, userId, totalUsers, recap, viewSwitch } = props;
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
-  const { games, loading, failed, updatedAt, refreshFailed } =
+  const { games, loading, failed, updatedAt, refreshFailed, retry } =
     useGameData(week);
   const deadline = useMemo(() => pickDeadline(games), [games]);
   const totals = useWeekTotals(week);
@@ -100,6 +100,7 @@ const Scoreboard = memo((props: Props) => {
         <UpdatedNote
           updatedAt={updatedAt}
           refreshFailed={refreshFailed}
+          onRetry={retry}
           live={games.some((game) => isLiveStatus(game.status))}
         />
       }
@@ -117,9 +118,11 @@ const Scoreboard = memo((props: Props) => {
     return (
       <>
         {intro()}
-        <Alert severity="error" sx={{ textAlign: "left" }}>
-          Couldn't load week {week}'s scores. Trying again every minute.
-        </Alert>
+        <LoadError
+          title={`Couldn't load week ${week}'s scores.`}
+          detail="Trying again every minute."
+          onRetry={retry}
+        />
       </>
     );
   }

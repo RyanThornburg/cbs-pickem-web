@@ -19,6 +19,8 @@ export const useGameData = (week: number) => {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [refreshFailed, setRefreshFailed] = useState(false);
   const loadedRef = useRef(false);
+  // Bumped by "Try now", which restarts the poll at once.
+  const [attempt, setAttempt] = useState(0);
 
   // A new week starts from scratch, so the old week's scores never sit
   // under the new week's number while it loads.
@@ -53,7 +55,13 @@ export const useGameData = (week: number) => {
         }
       }
     );
-  }, [week, season, active]);
+  }, [week, season, active, attempt]);
 
-  return { games, loading, failed, updatedAt, refreshFailed };
+  const retry = () => {
+    setFailed(false);
+    setLoading(!loadedRef.current);
+    setAttempt((n) => n + 1);
+  };
+
+  return { games, loading, failed, updatedAt, refreshFailed, retry };
 };

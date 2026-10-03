@@ -1,4 +1,3 @@
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
@@ -21,6 +20,7 @@ import { PickRecord, StandingsTeam } from "../../types";
 import TabIntro from "../TabIntro";
 import { pool } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
+import LoadError from "../shared/LoadError";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { usePlayerSeason } from "../Players/usePlayerData";
@@ -77,7 +77,7 @@ export default function StandingsView({
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
-  const { standings, failed } = useStandings(season);
+  const { standings, failed, retry } = useStandings(season);
   // The standings key carries each team's pool record; an older key
   // without it falls back to the 32 team keys.
   const teamIdsMissingPool = useMemo(
@@ -172,9 +172,11 @@ export default function StandingsView({
       <>
         {header}
         {failed ? (
-          <Alert severity="error" sx={{ textAlign: "left" }}>
-            Couldn't load the standings. Trying again every 5 minutes.
-          </Alert>
+          <LoadError
+            title="Couldn't load the standings."
+            detail="Trying again every 5 minutes."
+            onRetry={retry}
+          />
         ) : (
           <TabSkeleton shape="rows" label="Loading the standings" />
         )}

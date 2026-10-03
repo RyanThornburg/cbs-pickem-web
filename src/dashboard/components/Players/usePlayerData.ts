@@ -7,13 +7,17 @@ import { RankedUser, UserSeasonTrends } from "../../types";
 const seasonCache = new Map<string, UserSeasonTrends>();
 
 // One player's season profile (user:{id}:season:{season}). `missing` once
-// the key 404s or the load fails with nothing to show.
+// the key 404s (no such player this season); `failed` once any load fails
+// with nothing to show, a 404 included.
 export function usePlayerSeason(userId: string | undefined, season: number) {
   const key = `${userId}:${season}`;
   const [trends, setTrends] = useState<UserSeasonTrends | undefined>(() =>
     seasonCache.get(key)
   );
   const [failed, setFailed] = useState(false);
+  const [missing, setMissing] = useState(false);
+  // Bumped by "Try now", which restarts the poll at once.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!userId || season <= 0) {
@@ -22,6 +26,7 @@ export function usePlayerSeason(userId: string | undefined, season: number) {
     }
     setTrends(seasonCache.get(key));
     setFailed(false);
+    setMissing(false);
     return GetUserSeason(
       userId,
       season,
@@ -29,12 +34,16 @@ export function usePlayerSeason(userId: string | undefined, season: number) {
         seasonCache.set(key, data);
         setTrends(data);
         setFailed(false);
+        setMissing(false);
       },
-      () => setFailed(true)
+      (error) => {
+        setFailed(true);
+        setMissing(/responded with 404$/.test(error.message));
+      }
     );
-  }, [userId, season, key]);
+  }, [userId, season, key, attempt]);
 
-  return { trends, failed };
+  return { trends, failed, missing, retry: () => setAttempt((n) => n + 1) };
 }
 
 // Past weeks barely change, so they're kept for 10 minutes across pages;

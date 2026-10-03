@@ -1,10 +1,12 @@
 import Button from "@mui/material/Button";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { backTargetFor } from "./backTarget";
 
-// "← Standings" at the top of a team or player page. Goes back in history
-// when the page was opened from inside the app (so the list keeps its
-// place), or to `fallback` when it was opened from a link or a reload.
+// "← Trends" at the top of a team or player page. When the page was opened
+// from inside the app it goes back in history (so the list keeps its place)
+// and names that page; opened from a link or after a reload, it goes to
+// `fallback` and says `label`.
 export const BackLink = ({
   fallback,
   label,
@@ -13,9 +15,8 @@ export const BackLink = ({
   label: string;
 }) => {
   const navigate = useNavigate();
-  const cameFromApp =
-    typeof window !== "undefined" &&
-    ((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0;
+  const location = useLocation();
+  const target = backTargetFor(location.key);
   return (
     <Button
       size="small"
@@ -24,7 +25,7 @@ export const BackLink = ({
       onClick={(event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey) return;
         event.preventDefault();
-        if (cameFromApp) navigate(-1);
+        if (target) navigate(-1);
         else {
           navigate(fallback);
           window.scrollTo({ top: 0 });
@@ -32,7 +33,7 @@ export const BackLink = ({
       }}
       sx={{ alignSelf: "flex-start", ml: -1 }}
     >
-      {label}
+      {target?.label ?? label}
     </Button>
   );
 };

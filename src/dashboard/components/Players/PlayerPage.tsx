@@ -1,4 +1,3 @@
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -12,6 +11,7 @@ import TabSkeleton from "../TabSkeleton";
 import UserAvatar from "../UserAvatar";
 import { useStandings } from "../Nfl/useNflData";
 import { BackLink } from "../shared/BackLink";
+import LoadError from "../shared/LoadError";
 import TabIntro from "../TabIntro";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import { UserTrendPanel } from "../UsersTable/UserTrendPanel";
@@ -93,7 +93,7 @@ export default function PlayerPage({
   moneyStandings: ShownMoneyStanding[];
   onSelect: (id: string) => void;
 }) {
-  const { trends, failed } = usePlayerSeason(playerId, season);
+  const { trends, failed, missing, retry } = usePlayerSeason(playerId, season);
   const { weeks, loaded: weeksLoaded } = useSeasonWeeks(season, currentWeek);
   const { standings } = useStandings(season);
 
@@ -109,13 +109,26 @@ export default function PlayerPage({
 
   const back = <BackLink fallback="/picks" label="User Picks" />;
 
+  // Only a 404 means there's no such player; any other failure is the
+  // data being unreachable, which mustn't read as "no player".
   if (failed && !trends && !rosterEntry) {
     return (
       <Box sx={{ textAlign: "left" }}>
         {back}
-        <Alert severity="warning" sx={{ mt: 2 }}>
-          There's no player here this season. Pick one from User Picks.
-        </Alert>
+        {missing ? (
+          <LoadError
+            title="There's no player here this season."
+            detail="Pick one from User Picks."
+            sx={{ mt: 2 }}
+          />
+        ) : (
+          <LoadError
+            title="Couldn't load this player."
+            detail="Trying again every 30 minutes."
+            onRetry={retry}
+            sx={{ mt: 2 }}
+          />
+        )}
       </Box>
     );
   }
@@ -361,7 +374,7 @@ export default function PlayerPage({
 
         <Section
           title="Team by team"
-          note="For: picking that team. Vs: picking their opponent. Tinted by the two together."
+          note="For: picking that team. Vs: picking their opponent. Green: right in 60%+ of their games either way; red: 40% or less."
         >
           {standings && trends ? (
             <TeamGrid standings={standings} teams={records?.teams ?? []} />

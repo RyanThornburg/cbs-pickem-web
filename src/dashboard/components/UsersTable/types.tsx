@@ -6,6 +6,8 @@ export type UserGridProps = {
   userList: RankedUser[];
   // Loading, failed and "Updated" state of the userList poll.
   leaderboardStatus: LeaderboardStatus;
+  // Restarts the leaderboard poll now ("Try now").
+  onRetryLeaderboard: () => void;
   userId: string;
   week: number;
   season: number;

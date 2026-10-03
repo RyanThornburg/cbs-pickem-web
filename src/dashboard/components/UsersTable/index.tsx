@@ -9,8 +9,15 @@ import { RefreshFailedLine, StandingsPlaceholder } from "./StandingsStatus";
 import { PinnedPlayerRow } from "./PinnedPlayerRow";
 
 export default function UsersTable(props: UserGridProps) {
-  const { userList, season, userId, week, leaderboardStatus, moneyStandings } =
-    props;
+  const {
+    userList,
+    season,
+    userId,
+    week,
+    leaderboardStatus,
+    onRetryLeaderboard,
+    moneyStandings,
+  } = props;
   const [trends, setTrends] = useState<Record<string, UserSeasonTrends>>({});
 
   // Sorted, joined into one string so the effect only re-runs when the set
@@ -30,13 +37,20 @@ export default function UsersTable(props: UserGridProps) {
 
   if (userList.length === 0) {
     return (
-      <StandingsPlaceholder week={week} leaderboardStatus={leaderboardStatus} />
+      <StandingsPlaceholder
+        week={week}
+        leaderboardStatus={leaderboardStatus}
+        onRetry={onRetryLeaderboard}
+      />
     );
   }
 
   return (
     <>
-      <RefreshFailedLine leaderboardStatus={leaderboardStatus} />
+      <RefreshFailedLine
+        leaderboardStatus={leaderboardStatus}
+        onRetry={onRetryLeaderboard}
+      />
       <Grid
         id="gridUser"
         size={{ xs: 12, sm: 12, xl: 7 }}

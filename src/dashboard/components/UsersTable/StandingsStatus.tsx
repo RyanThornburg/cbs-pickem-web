@@ -1,40 +1,50 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Skeleton from "@mui/material/Skeleton";
-import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { LeaderboardStatus } from "../useWeekData";
 import { formatUpdated } from "../../utils/updatedTime";
+import LoadError from "../shared/LoadError";
 
 // Deep trophy gold for text: 5.1:1 on white (DESIGN.md's #a87f12 was 3.7:1).
 export const MONEY_GOLD = "#8a6a0f";
 
-// Shown above the table only when the last refresh failed. A good refresh
-// shows its time in the desktop table's header row instead, and nowhere on
-// phones, so it never takes a row of its own.
+// Shown above the table only when the last refresh failed (or the page
+// opened on this browser's saved copy and couldn't refresh it). A good
+// refresh shows its time in the desktop table's header row instead, and
+// nowhere on phones, so it never takes a row of its own.
 export function RefreshFailedLine({
   leaderboardStatus,
+  onRetry,
 }: {
   leaderboardStatus: LeaderboardStatus;
+  onRetry: () => void;
 }) {
   const { updatedAt, failed } = leaderboardStatus;
   if (!failed || !updatedAt) return null;
   return (
-    <Typography
-      variant="caption"
+    <Box
       role="status"
       sx={{
         display: "flex",
         alignItems: "center",
-        gap: 0.5,
+        flexWrap: "wrap",
+        columnGap: 1,
         mb: 1,
         px: { xs: 0.5, sm: 2 },
         color: "text.secondary",
+        fontSize: "0.75rem",
         textAlign: "left",
       }}
     >
-      <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem" }} />
-      {`Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`}
-    </Typography>
+      <Box component="span" sx={{ display: "inline-flex", gap: 0.5 }}>
+        <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem", mt: "1px" }} />
+        {`Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`}
+      </Box>
+      <Button size="small" onClick={onRetry} sx={{ minHeight: 32 }}>
+        Try now
+      </Button>
+    </Box>
   );
 }
 
@@ -44,37 +54,25 @@ export function RefreshFailedLine({
 export function StandingsPlaceholder({
   week,
   leaderboardStatus,
+  onRetry,
 }: {
   week: number;
   leaderboardStatus: LeaderboardStatus;
+  onRetry: () => void;
 }) {
   const { updatedAt, failed } = leaderboardStatus;
 
-  if (failed || updatedAt) {
+  if (failed) {
     return (
-      <Box
-        role="status"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          p: 2,
-          border: 1,
-          borderColor: "divider",
-          borderRadius: 2,
-          textAlign: "left",
-        }}
-      >
-        {failed && (
-          <ErrorOutlineIcon aria-hidden sx={{ color: "text.secondary" }} />
-        )}
-        <Typography variant="body2">
-          {failed
-            ? `Couldn't load the week ${week} standings. Trying again every minute.`
-            : `No standings for week ${week} yet.`}
-        </Typography>
-      </Box>
+      <LoadError
+        title={`Couldn't load the week ${week} standings.`}
+        detail="Trying again every minute."
+        onRetry={onRetry}
+      />
     );
+  }
+  if (updatedAt) {
+    return <LoadError title={`No standings for week ${week} yet.`} />;
   }
 
   return <StandingsSkeleton label={`Loading the week ${week} standings`} />;

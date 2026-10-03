@@ -20,6 +20,8 @@ export function useStandings(season: number, enabled = true) {
     standingsCache.get(season)
   );
   const [failed, setFailed] = useState(false);
+  // Bumped by "Try now", which restarts the poll at once.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!enabled || season <= 0) return undefined;
@@ -34,9 +36,9 @@ export function useStandings(season: number, enabled = true) {
       },
       () => setFailed(true)
     );
-  }, [season, enabled]);
+  }, [season, enabled, attempt]);
 
-  return { standings, failed };
+  return { standings, failed, retry: () => setAttempt((n) => n + 1) };
 }
 
 export function useTeamProfile(season: number, teamId: number | undefined) {
@@ -45,6 +47,7 @@ export function useTeamProfile(season: number, teamId: number | undefined) {
     profilesCache.get(key)
   );
   const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (season <= 0 || teamId === undefined) return undefined;
@@ -60,9 +63,9 @@ export function useTeamProfile(season: number, teamId: number | undefined) {
       },
       () => setFailed(true)
     );
-  }, [season, teamId, key]);
+  }, [season, teamId, key, attempt]);
 
-  return { profile, failed };
+  return { profile, failed, retry: () => setAttempt((n) => n + 1) };
 }
 
 // All 32 team keys, for the standings' pool column. Empty until loaded.

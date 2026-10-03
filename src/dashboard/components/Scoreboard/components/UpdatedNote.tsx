@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { formatUpdated } from "../../../utils/updatedTime";
 
@@ -9,10 +10,13 @@ import { formatUpdated } from "../../../utils/updatedTime";
 export function UpdatedNote({
   updatedAt,
   refreshFailed,
+  onRetry,
   live,
 }: {
   updatedAt: Date | null;
   refreshFailed: boolean;
+  // "Try now" after a failed refresh, as on User Picks.
+  onRetry?: () => void;
   live: boolean;
 }) {
   if (!updatedAt || !(live || refreshFailed)) return null;
@@ -23,6 +27,7 @@ export function UpdatedNote({
       sx={{
         display: "inline-flex",
         alignItems: "center",
+        flexWrap: "wrap",
         gap: 0.5,
         fontSize: "0.75rem",
         color: "text.secondary",
@@ -34,6 +39,11 @@ export function UpdatedNote({
       {refreshFailed
         ? `Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`
         : `Updated ${formatUpdated(updatedAt)}`}
+      {refreshFailed && onRetry && (
+        <Button size="small" onClick={onRetry} sx={{ minHeight: 32 }}>
+          Try now
+        </Button>
+      )}
     </Box>
   );
 }

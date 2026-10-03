@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Skeleton from "@mui/material/Skeleton";
 import { PayPeriod, RankedUser } from "../types";
 import { periodName } from "../utils/payPeriods";
 import { ordinal, visuallyHidden } from "../helper";
@@ -65,6 +66,28 @@ export default function UserSelectDropdown({
   // readers get a spoken summary instead of the layout.
   const renderValue = (value: string) => {
     const selected = users.find((u) => u.id === value);
+    // Someone is picked but there's no roster to show them from (still
+    // loading, or the leaderboard is down with nothing saved): a quiet
+    // placeholder, not "Find yourself…", which would invite a re-pick.
+    if (user && users.length === 0) {
+      return (
+        <Box
+          component="span"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <Skeleton
+            variant="circular"
+            width={26}
+            height={26}
+            animation={false}
+          />
+          <Skeleton variant="text" width={110} animation={false} />
+          <Box component="span" sx={visuallyHidden}>
+            Your player, waiting for the standings
+          </Box>
+        </Box>
+      );
+    }
     if (!value || !selected) {
       return (
         <Box component="span" sx={{ color: "text.secondary" }}>
@@ -220,7 +243,9 @@ export default function UserSelectDropdown({
         }}
         labelId="user-select-label"
         id="user-drop-down"
-        value={user ?? ""}
+        // Out of the roster (not loaded yet, or the leaderboard is down):
+        // shown as no one, without un-picking them.
+        value={user && users.some((u) => u.id === user) ? user : ""}
         onChange={handleChange}
         open={open}
         onOpen={() => onOpenChange(true)}

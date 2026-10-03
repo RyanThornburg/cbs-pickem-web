@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  Alert,
-  Box,
-  Button,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { GetHistorical } from "../../data/GetHistorical";
 import TabSkeleton from "../TabSkeleton";
+import LoadError from "../shared/LoadError";
 import { HistoricalRecords } from "../../types";
 import AllTimeTable, { useAllTimeTable } from "./AllTimeTable";
 import ChampionsWall from "./ChampionsWall";
@@ -118,21 +111,11 @@ export default function RecordsSection({
 
   if (!data && failed) {
     return (
-      <Alert
-        severity="error"
-        sx={{ textAlign: "left" }}
-        action={
-          <Button
-            color="inherit"
-            size="small"
-            onClick={() => setAttempt((n) => n + 1)}
-          >
-            Try again
-          </Button>
-        }
-      >
-        Couldn't load the records.
-      </Alert>
+      <LoadError
+        title="Couldn't load the records."
+        detail="Trying again every 30 minutes."
+        onRetry={() => setAttempt((n) => n + 1)}
+      />
     );
   }
   if (!data) {

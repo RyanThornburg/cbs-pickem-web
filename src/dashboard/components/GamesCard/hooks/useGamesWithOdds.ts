@@ -14,6 +14,8 @@ export const useGamesWithOdds = (week: number) => {
   // refresh keeps showing the last good data and the next poll retries.
   const [failed, setFailed] = useState(false);
   const loadedRef = useRef(false);
+  // Bumped by "Try now", which restarts the poll at once.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     // A new week starts from scratch, so the previous week's games never sit
@@ -57,7 +59,13 @@ export const useGamesWithOdds = (week: number) => {
         unsubscribe();
       }
     };
-  }, [week, season, active]);
+  }, [week, season, active, attempt]);
 
-  return { games, loading, failed, oddsAvailable, oddsUpdatedAt };
+  const retry = () => {
+    setFailed(false);
+    setLoading(true);
+    setAttempt((n) => n + 1);
+  };
+
+  return { games, loading, failed, oddsAvailable, oddsUpdatedAt, retry };
 };

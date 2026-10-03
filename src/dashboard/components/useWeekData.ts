@@ -4,6 +4,10 @@ import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
 import { GetRecapByWeek } from "../data/GetRecapByWeek";
 import { GetUserByWeek } from "../data/GetUserByWeek";
+import {
+  readCachedLeaderboard,
+  writeCachedLeaderboard,
+} from "../data/leaderboardCache";
 import { withoutThinWeekStats } from "./Recap/recapUtils";
 import { GameStatus, RankedUser, WeekRecap } from "../types";
 
@@ -36,24 +40,46 @@ export function useWeekData(season: number, week: number) {
   const [liveKnown, setLiveKnown] = useState(false);
   const [weekComplete, setWeekComplete] = useState(false);
 
+  // Bumped by "Try now", which restarts the poll at once.
+  const [leaderboardAttempt, setLeaderboardAttempt] = useState(0);
+
   // Switching weeks clears the old week first, so its standings never sit
-  // under the new week's number while the new ones load. A failed poll
-  // keeps the last good standings and only flags the failure.
+  // under the new week's number while the new ones load. The new week
+  // starts from its last good copy in this browser, if any, so an outage
+  // (or a reload during one) still shows the standings, the selected
+  // player and their money as of then; User Picks says how old they are
+  // once a refresh fails. A failed poll keeps the last good standings and
+  // only flags the failure.
   useEffect(() => {
-    setUserList([]);
-    setLeaderboardStatus({ updatedAt: null, failed: false });
+    const cached =
+      season > 0 && week > 0 ? readCachedLeaderboard(season, week) : undefined;
+    setUserList(cached?.users ?? []);
+    setLeaderboardStatus({
+      updatedAt: cached ? new Date(cached.at) : null,
+      failed: false,
+    });
+  }, [season, week]);
+
+  useEffect(() => {
     if (season > 0 && week > 0) {
       return GetUserByWeek(
         season,
         week,
         (users) => {
+          const at = new Date();
           setUserList(users);
-          setLeaderboardStatus({ updatedAt: new Date(), failed: false });
+          setLeaderboardStatus({ updatedAt: at, failed: false });
+          writeCachedLeaderboard({ season, week, at: at.getTime(), users });
         },
         () => setLeaderboardStatus((status) => ({ ...status, failed: true }))
       );
     }
-  }, [season, week]);
+  }, [season, week, leaderboardAttempt]);
+
+  const retryLeaderboard = () => {
+    setLeaderboardStatus((status) => ({ ...status, failed: false }));
+    setLeaderboardAttempt((n) => n + 1);
+  };
 
   useEffect(() => {
     setRecap(undefined);
@@ -89,6 +115,7 @@ export function useWeekData(season: number, week: number) {
   return {
     userList,
     leaderboardStatus,
+    retryLeaderboard,
     recap,
     hasLiveGame,
     liveKnown,
@@ -97,24 +124,37 @@ export function useWeekData(season: number, week: number) {
 }
 
 // The selected user, persisted to localStorage under "user". Cleared if the
-// stored id isn't in the browsed week's roster.
+// stored id isn't in the browsed week's roster, but only once a roster has
+// loaded: an empty list means "not loaded" (or the leaderboard is down), and
+// that mustn't un-pick anyone.
 export function useSelectedUser(userList: RankedUser[]) {
-  const [user, setUser] = useState<string>("");
+  const [user, setUser] = useState<string>(() => readStoredUser());
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    setUser(
-      storedUser && userList.some((u) => u.id === storedUser) ? storedUser : ""
-    );
+    if (userList.length === 0) return;
+    const storedUser = readStoredUser();
+    setUser(userList.some((u) => u.id === storedUser) ? storedUser : "");
   }, [userList]);
 
   const onUserChange = (userId: string) => {
-    localStorage.setItem("user", userId);
+    try {
+      localStorage.setItem("user", userId);
+    } catch {
+      // Blocked storage: the choice still holds for this visit.
+    }
     setUser(userId);
   };
 
   return [user, onUserChange] as const;
 }
+
+const readStoredUser = () => {
+  try {
+    return localStorage.getItem("user") ?? "";
+  } catch {
+    return "";
+  }
+};
 
 export function useIsAdmin() {
   const [isAdmin, setIsAdmin] = useState(false);

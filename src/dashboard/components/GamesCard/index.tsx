@@ -12,6 +12,7 @@ import GamesTableDesktop from "./GamesTableDesktop";
 import { useGamesWithOdds } from "./hooks/useGamesWithOdds";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
+import LoadError from "../shared/LoadError";
 
 type Props = {
   week: number;
@@ -23,7 +24,7 @@ type Props = {
 
 export default function GamesCard({ week, recap, viewSwitch }: Props) {
   const streaks = useMemo(() => coverStreaksByTeamId(recap), [recap]);
-  const { games, loading, failed, oddsAvailable, oddsUpdatedAt } =
+  const { games, loading, failed, oddsAvailable, oddsUpdatedAt, retry } =
     useGamesWithOdds(week);
 
   const intro = (meta?: React.ReactNode) => (
@@ -43,10 +44,11 @@ export default function GamesCard({ week, recap, viewSwitch }: Props) {
     return (
       <>
         {intro()}
-        <Alert severity="error" sx={{ textAlign: "left" }}>
-          Couldn't load week {week}'s games. This page tries again every 5
-          minutes, or reload to try now.
-        </Alert>
+        <LoadError
+          title={`Couldn't load week ${week}'s games.`}
+          detail="Trying again every 5 minutes."
+          onRetry={retry}
+        />
       </>
     );
   }

@@ -36,7 +36,7 @@ const hasGames = (entry?: UserTeamRecord) =>
   !!entry && entry.picked.picks + entry.against.picks > 0;
 
 // One team's tile: the player's record picking them ("For") and picking
-// their opponent ("Vs"), tinted by the two together.
+// their opponent ("Vs"), tinted by the two added together (toneOf).
 const TeamTile = ({
   team,
   entry,

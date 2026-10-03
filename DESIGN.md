@@ -283,6 +283,9 @@ The signature element of the app: five small rounded rectangles, one per pick, h
 - **Border:** 1px hairline.
 - **Internal padding:** 16px, with a 16px gap.
 
+### Load errors
+Every "couldn't load" is one component, `components/shared/LoadError.tsx`: a quiet bordered box on paper (divider border, 8px radius, muted error-outline icon), a bold line saying what failed, a muted line with the automatic retry ("Trying again every 5 minutes."), and an outlined "Try now" that restarts the poll at once. Never an orange or red `Alert`: nothing the viewer did is wrong. The same box without a button (and with an info icon) is the not-found note ("There's no team at …"). A refresh that fails while older data is still on screen is a one-line note instead ("Couldn't refresh. Showing 5:38 PM, trying again every minute." plus a text "Try now"), on User Picks and the Live intro row. The browsed week's leaderboard is saved in localStorage (`leaderboardCache`, the last 3 weeks), so a leaderboard outage, or a reload during one, keeps the standings, the header's player card and its money lines as of the last success. The selected player is only cleared once a loaded roster leaves them out; with no roster at all, the picker shows a still placeholder rather than "Find yourself…".
+
 ### Segmented controls
 Every view switch (NFL's Games | Live | Standings, Standings' Divisions | All 32 and AFC | NFC, Live's Full | Compact, Trends' Week | Season) is a small `ToggleButtonGroup` at one 36px height. Unselected segments are muted ink; the selected one is ink on slate-200, the same fill as the phone tab bar's selected pill and the Records year chips. The style lives on `MuiToggleButton` in the theme, so no page sets its own. On the tab intro row the controls sit at the right from `sm` up; on phones they always take their own row under the title, starting at the left edge, so a switch shared by several views stays in one spot.
 

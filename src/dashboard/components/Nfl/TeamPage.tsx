@@ -1,4 +1,3 @@
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -34,6 +33,7 @@ import {
   formatWinLoss,
 } from "./standingsUtils";
 import { useStandings, useTeamProfile } from "./useNflData";
+import LoadError from "../shared/LoadError";
 
 // How many believers or faders show before "Show all".
 const PEOPLE_SHOWN = 8;
@@ -351,9 +351,17 @@ export default function TeamPage({
   userId?: string;
   userName?: string;
 }) {
-  const { standings, failed: standingsFailed } = useStandings(season);
+  const {
+    standings,
+    failed: standingsFailed,
+    retry: retryStandings,
+  } = useStandings(season);
   const placed = standings ? findTeamBySlug(standings, slug) : undefined;
-  const { profile, failed } = useTeamProfile(season, placed?.row.team.id);
+  const {
+    profile,
+    failed,
+    retry: retryProfile,
+  } = useTeamProfile(season, placed?.row.team.id);
   const { trends } = usePlayerSeason(userId || undefined, season);
 
   const back = <BackLink fallback="/nfl?view=standings" label="Standings" />;
@@ -368,9 +376,11 @@ export default function TeamPage({
     return (
       <Box sx={{ textAlign: "left" }}>
         {back}
-        <Alert severity="warning" sx={{ mt: 2 }}>
-          There's no team at “{slug}”. Pick one from the standings.
-        </Alert>
+        <LoadError
+          title={`There's no team at “${slug}”.`}
+          detail="Pick one from the standings."
+          sx={{ mt: 2 }}
+        />
       </Box>
     );
   }
@@ -380,9 +390,12 @@ export default function TeamPage({
       <Box sx={{ textAlign: "left" }}>
         {back}
         {failed || standingsFailed ? (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            Couldn't load this team. Trying again every 5 minutes.
-          </Alert>
+          <LoadError
+            title="Couldn't load this team."
+            detail="Trying again every 5 minutes."
+            onRetry={standingsFailed ? retryStandings : retryProfile}
+            sx={{ mt: 2 }}
+          />
         ) : (
           <TabSkeleton shape="cards" label="Loading the team" />
         )}
