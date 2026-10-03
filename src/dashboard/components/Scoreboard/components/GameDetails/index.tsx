@@ -13,8 +13,12 @@ import { isLiveStatus } from "../../utils/scoreboardUtils";
 import { useCurrentWeek } from "../../../CurrentWeekContext";
 import { TeamLogo } from "../../../shared/TeamLogo";
 import { STAT_BAR_COLORS, teamStatRows } from "../../utils/teamStats";
+import { GameFlow } from "./GameFlow";
 
-const LIVE_DETAILS_POLL_MS = 60_000;
+// The details key is rewritten at most every 15 seconds while a game is
+// live (its win probability curve grows with each snapshot), so an open
+// panel polls at that pace.
+const LIVE_DETAILS_POLL_MS = 15_000;
 
 // "38/52, 280 YDS, 2 TD" -- zero TD/INT counts are left off.
 const statLine = (parts: [unknown, string, boolean?][]): string =>
@@ -331,34 +335,37 @@ export const GameDetails = ({
 
   const live = isLiveStatus(game.status);
 
-  // A live game's team stats keep changing, so refetch them every minute
+  // A live game's stats and win probability keep changing, so refetch them
   // while the panel is open (leaders and scoring plays already update with
-  // the scoreboard's own poll). Once final, one fetch is enough.
+  // the scoreboard's own poll). A finished game keeps polling only while its
+  // curve is still the live one, until ESPN's final curve replaces it
+  // (usually a minute or two); then nothing changes again.
   useEffect(() => {
     let cancelled = false;
+    let stop = () => {};
     const load = () =>
       fetchGameDetails(season, game.game_id)
         .then((data) => {
           if (cancelled) return;
           setDetails(data);
           setState("done");
+          if (!live && data.win_probability_source !== "live") stop();
         })
-        // Keep the last good stats on a failed refresh
-        .catch(
-          () => !cancelled && setState((s) => (s === "done" ? s : "missing"))
-        );
-    if (!live) {
-      load();
-      return () => {
-        cancelled = true;
-      };
-    }
-    const stop = poll(load, LIVE_DETAILS_POLL_MS);
+        // Keep the last good stats on a failed refresh. A finished game
+        // with no key (404) has nothing coming, so it stops.
+        .catch(() => {
+          if (cancelled) return;
+          setState((s) => (s === "done" ? s : "missing"));
+          if (!live) stop();
+        });
+    stop = poll(load, LIVE_DETAILS_POLL_MS);
     return () => {
       cancelled = true;
       stop();
     };
   }, [season, game.game_id, live]);
+
+  const curve = details?.win_probability ?? [];
 
   const nothing =
     !game.leaders &&
@@ -381,6 +388,11 @@ export const GameDetails = ({
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
           No stats for this game yet.
         </Typography>
+      )}
+      {curve.length > 1 && (
+        <Box sx={{ gridColumn: "1 / -1", minWidth: 0 }}>
+          <GameFlow game={game} points={curve} final={!live} />
+        </Box>
       )}
       <Box
         sx={{ display: "flex", flexDirection: "column", gap: 1.5, minWidth: 0 }}

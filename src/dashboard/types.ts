@@ -174,7 +174,24 @@ export interface GameDetails {
     home: Record<string, PlayerLine[]>;
     away: Record<string, PlayerLine[]>;
   } | null;
-  win_probability: unknown[] | null;
+  // Chronological. Filled from 15-second snapshots while the game is live
+  // ("live"), then replaced by ESPN's per-play curve shortly after it ends
+  // ("final"). The two don't line up point for point.
+  win_probability: WinProbabilityPoint[] | null;
+  // Missing on keys written before the live curve shipped.
+  win_probability_source?: "live" | "final" | null;
+}
+
+export interface WinProbabilityPoint {
+  // 1-4, 5 = OT; 0 = ESPN's pre-kickoff point (final curve only).
+  period: number;
+  // Time left in the period, "8:28"; null on the pre-kickoff point.
+  clock: string | null;
+  home_win_pct: number; // 0-100
+  home_score: number;
+  away_score: number;
+  // Live curve: the score changed since the previous point.
+  scoring_play: boolean;
 }
 
 export interface Game {
