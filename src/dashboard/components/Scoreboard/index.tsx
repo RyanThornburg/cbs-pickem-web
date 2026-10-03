@@ -150,13 +150,19 @@ const Scoreboard = memo((props: Props) => {
       onChange={changeLayout}
       aria-label="Live layout"
     >
+      {/* Icons only on phones, so the toggle fits on the NFL switch's row
+          instead of taking a row of its own; the aria-labels name them. */}
       <ToggleButton value="full" aria-label="Full cards">
-        <ViewModuleIcon fontSize="small" sx={{ mr: 0.5 }} />
-        Full
+        <ViewModuleIcon fontSize="small" sx={{ mr: { xs: 0, sm: 0.5 } }} />
+        <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+          Full
+        </Box>
       </ToggleButton>
       <ToggleButton value="compact" aria-label="Compact list">
-        <ViewListIcon fontSize="small" sx={{ mr: 0.5 }} />
-        Compact
+        <ViewListIcon fontSize="small" sx={{ mr: { xs: 0, sm: 0.5 } }} />
+        <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+          Compact
+        </Box>
       </ToggleButton>
     </ToggleButtonGroup>
   );

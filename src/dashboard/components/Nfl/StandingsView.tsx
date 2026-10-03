@@ -7,6 +7,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
+import Button from "@mui/material/Button";
+import Popover from "@mui/material/Popover";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
@@ -98,6 +101,7 @@ export default function StandingsView({
   const [layout, setLayout] = useState<Layout>("divisions");
   const [conference, setConference] = useState<Conference>("AFC");
   const [sortKey, setSortKey] = useState<StandingsSortKey>("record");
+  const [keyAnchor, setKeyAnchor] = useState<HTMLElement | null>(null);
 
   const playerRecords = trends?.current_season.records?.teams;
   const playerRecord = (teamId: number): PickRecord | undefined =>
@@ -345,6 +349,8 @@ export default function StandingsView({
     </TableContainer>
   );
 
+  // Under the controls from sm up; behind the Key button on phones, where
+  // its three lines pushed the first division down.
   const legend = (
     <Typography
       variant="caption"
@@ -352,10 +358,11 @@ export default function StandingsView({
       sx={{
         color: "text.secondary",
         display: "flex",
+        flexDirection: isPhone ? "column" : "row",
         flexWrap: "wrap",
         columnGap: 2,
-        rowGap: 0.25,
-        mb: 1.5,
+        rowGap: isPhone ? 0.75 : 0.25,
+        mb: isPhone ? 0 : 1.5,
         fontSize: "0.75rem",
       }}
     >
@@ -393,27 +400,69 @@ export default function StandingsView({
         mb: 1.5,
       }}
     >
-      <ToggleButtonGroup
-        size="small"
-        exclusive
-        value={layout}
-        onChange={(_, next: Layout | null) => next && setLayout(next)}
-        aria-label="Standings layout"
-      >
-        <ToggleButton value="divisions">Divisions</ToggleButton>
-        <ToggleButton value="league">All 32</ToggleButton>
-      </ToggleButtonGroup>
-      {isPhone && layout === "divisions" && (
+      {isPhone ? (
+        // Phones: one control. AFC and NFC show that conference's
+        // divisions; All 32 is the league table.
         <ToggleButtonGroup
           size="small"
           exclusive
-          value={conference}
-          onChange={(_, next: Conference | null) => next && setConference(next)}
-          aria-label="Conference"
+          value={layout === "league" ? "league" : conference}
+          onChange={(_, next: Conference | "league" | null) => {
+            if (!next) return;
+            if (next === "league") {
+              setLayout("league");
+            } else {
+              setLayout("divisions");
+              setConference(next);
+            }
+          }}
+          aria-label="Standings"
         >
           <ToggleButton value="AFC">AFC</ToggleButton>
           <ToggleButton value="NFC">NFC</ToggleButton>
+          <ToggleButton value="league">All 32</ToggleButton>
         </ToggleButtonGroup>
+      ) : (
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          value={layout}
+          onChange={(_, next: Layout | null) => next && setLayout(next)}
+          aria-label="Standings layout"
+        >
+          <ToggleButton value="divisions">Divisions</ToggleButton>
+          <ToggleButton value="league">All 32</ToggleButton>
+        </ToggleButtonGroup>
+      )}
+      {isPhone && (
+        <>
+          <Button
+            size="small"
+            startIcon={<HelpOutlineIcon />}
+            aria-haspopup="dialog"
+            aria-expanded={Boolean(keyAnchor)}
+            onClick={(event) => setKeyAnchor(event.currentTarget)}
+            sx={{ minHeight: 36, color: "text.secondary" }}
+          >
+            Key
+          </Button>
+          <Popover
+            open={Boolean(keyAnchor)}
+            anchorEl={keyAnchor}
+            onClose={() => setKeyAnchor(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            slotProps={{
+              paper: {
+                role: "dialog",
+                "aria-label": "What the columns mean",
+                sx: { p: 2, maxWidth: "calc(100vw - 32px)", textAlign: "left" },
+              },
+            }}
+          >
+            {legend}
+          </Popover>
+        </>
       )}
     </Box>
   );
@@ -468,7 +517,7 @@ export default function StandingsView({
     <Box sx={{ textAlign: "left" }}>
       {header}
       {controls}
-      {legend}
+      {!isPhone && legend}
       {body}
     </Box>
   );
