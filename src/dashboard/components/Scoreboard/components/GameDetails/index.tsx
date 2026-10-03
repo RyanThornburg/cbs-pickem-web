@@ -14,6 +14,7 @@ import { useCurrentWeek } from "../../../CurrentWeekContext";
 import { TeamLogo } from "../../../shared/TeamLogo";
 import { STAT_BAR_COLORS, teamStatRows } from "../../utils/teamStats";
 import { GameFlow } from "./GameFlow";
+import { PlayerStats } from "./PlayerStats";
 
 // The details key is rewritten at most every 15 seconds while a game is
 // live (its win probability curve grows with each snapshot), so an open
@@ -404,6 +405,11 @@ export const GameDetails = ({
         {state === "loading" && !details && <CircularProgress size={18} />}
         {details && <BoxScore game={game} details={details} />}
       </Box>
+      {details?.players && (
+        <Box sx={{ gridColumn: "1 / -1", minWidth: 0 }}>
+          <PlayerStats game={game} players={details.players} />
+        </Box>
+      )}
     </Box>
   );
 };
