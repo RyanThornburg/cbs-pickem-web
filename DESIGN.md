@@ -28,6 +28,9 @@ colors:
   away-blue: "#1f77d0"
   home-orange: "#f28c28"
   turf-green: "#2f7a45"
+  pool-violet: "#5b45c2"
+  pool-violet-ink: "#4a36a8"
+  pool-violet-tint: "#f4f2fd"
   slate-900: "hsl(220, 35%, 3%)"
   slate-700: "hsl(220, 20%, 25%)"
   slate-200: "hsl(220, 20%, 88%)"
@@ -173,6 +176,10 @@ The palette is ink on white paper, a traffic-light status set for results, and o
 - **Box score pair**: `away-blue` and `home-orange` are fixed stat-bar colors for away and home in every game, chosen because team colors clashed (ARI/SF, BAL/DAL). `turf-green` is the Scoreboard field strip.
 - **Team colors**: the logo fallback disc and the drive band use each team's own color from `team_data.json`, applied inline.
 
+### The pool's color
+- **Pool Violet** (`pool-violet`, the `pool` scale in `themePrimitives.ts`): anything that counts the pool's picks. The Pool and selected-player columns on Standings (tinted `pool-violet-tint`, headers in `pool-violet-ink`), "Times picked" bars on Trends › Season, the "Where the pool wins and loses" bars, both season charts, the team page's "The pool on them" card and its schedule's Pool bars. Violet because no status color sits near it, so it can't be misread as won, lost, open or honored. Marks use 500 (6.8:1 on white), text uses 700 (8:1 on the tint). Added 2026-10-02 (user's pick, option B of <https://claude.ai/artifact/5CabMDU8E5VD5zfvqR5eTT>); until then those spots were MUI blue or gray, and blue meant four things at once.
+- **Team band**: a team page opens on its team's own color with white text and the alternate color as a 4px stripe under it (`teamBandColors` in `utils/teamAssets.ts`, which darkens light team colors such as NO, CIN and TEN until white text reads at 4.5:1, and swaps a white alternate for a darker shade). It's the one place a team color fills a surface; everywhere else team color stays in the logos.
+
 ### Neutral
 - **Ink** (`ink`), **Muted Ink** (`ink-muted`), **Faint Ink** (`ink-faint`): primary, secondary and disabled text. Muted Ink (`text.secondary`) is by far the most used color in the components.
 - **Paper** (`paper`) and **Hairline** (`hairline`): page background and every divider.
@@ -182,7 +189,7 @@ The palette is ink on white paper, a traffic-light status set for results, and o
 Games uses the app palette: its `--gc-*` CSS names in `gamesCard.css` all point at theme variables (`--template-palette-*`, since `AppTheme` sets `cssVarPrefix: "template"`) or the slate scale. Ink and muted ink for text, the divider for rules, white paper, slate-100 for chips and the wettest hourly tile. **Covered green** (`success.dark`, green-50 fill) is "Browns covered" and the final-score ✓, as on every tab. **Office blue** is only the "ATL edge" tag. **Caution** is the app's warning orange: an official weather alert is a solid orange flag with near-black ink (like the Scoreboard's "Close" flag), and a weather flag ("Gusts 22 mph", "↑ Rain 43% by 4PM") is an orange tint with dark amber ink (`#8a560a`, 5.4:1). Weather has no hue of its own: condition icons are muted ink. Line moves, venues and streaks are slate-100 chips (10px radius: a pill at one line); the Books button uses the outlined-button slate-50. The table sits on the page with no box and an untinted bold-ink header, like User Picks; phone cards are the Scoreboard's outlined card (divider border, 8px radius, 14px padding). Team colors appear only in logos. In the Books table the best offer per column is bold ink with one ✓, with no color: for a spread or total, the best point first and then the best price among books at that point (the Over is best at the lowest total, the Under at the highest); for a moneyline, the best price.
 
 ### Named Rules
-**The Earned Color Rule.** Every color on the page says something: won, lost, open, honored, or a team. If a colored element isn't carrying one of those meanings, make it neutral.
+**The Earned Color Rule.** Every color on the page says something: won, lost, open, honored, the pool, or a team. If a colored element isn't carrying one of those meanings, make it neutral.
 
 **The Gold Is An Honor Rule.** Trophy gold marks champions, medals, 5-0 weeks and the Records tab, and nothing else. Never use it for a generic highlight or button.
 

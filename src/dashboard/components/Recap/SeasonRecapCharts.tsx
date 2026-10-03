@@ -1,7 +1,7 @@
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useWidth } from "../shared/useWidth";
 import { useState } from "react";
-import { focusRingColor } from "../../shared-theme/themePrimitives";
+import { focusRingColor, pool } from "../../shared-theme/themePrimitives";
 import {
   RecapChaosPoint,
   RecapPoolAccuracyPoint,
@@ -260,7 +260,7 @@ function PoolAccuracyChart({
   const last = pts[pts.length - 1];
   const markY = H - 14;
   const text = theme.palette.text.secondary;
-  const line = theme.palette.primary.main;
+  const line = pool[500];
 
   return (
     <ChartCard
@@ -462,7 +462,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
   const y = (v: number) => PAD.top + ((10 - v) / 10) * PLOT_H;
   const barW = Math.min(48, g.band * 0.6);
   const text = theme.palette.text.secondary;
-  const bar = theme.palette.primary.main;
+  const bar = pool[500];
   const base = y(0);
   const last = series[series.length - 1];
 

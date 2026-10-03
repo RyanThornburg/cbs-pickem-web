@@ -18,6 +18,7 @@ import { ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PickRecord, StandingsTeam } from "../../types";
 import TabIntro from "../TabIntro";
+import { pool } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
@@ -42,7 +43,7 @@ type Conference = "AFC" | "NFC";
 // The pool's own columns (everyone's record on the team, the selected
 // player's) get a faint brand tint: they're what a general standings page
 // can't show.
-const POOL_TINT = "rgba(25, 118, 210, 0.05)";
+const POOL_TINT = pool[50];
 
 interface Column {
   key: StandingsSortKey | "streak" | "team";
@@ -271,7 +272,7 @@ export default function StandingsView({
                   sx={{
                     fontSize: "0.75rem",
                     fontWeight: column.pool ? 700 : 500,
-                    color: column.pool ? "primary.dark" : "text.secondary",
+                    color: column.pool ? pool[700] : "text.secondary",
                     bgcolor: column.pool ? POOL_TINT : undefined,
                   }}
                 >
@@ -362,14 +363,14 @@ export default function StandingsView({
         record against the CBS line
       </span>
       <span>
-        <Box component="b" sx={{ color: "text.primary" }}>
+        <Box component="b" sx={{ color: pool[700] }}>
           Pool
         </Box>{" "}
         everyone's record picking them
       </span>
       {userId && userName && (
         <span>
-          <Box component="b" sx={{ color: "text.primary" }}>
+          <Box component="b" sx={{ color: pool[700] }}>
             {playerLabel}
           </Box>{" "}
           {userName} picking them

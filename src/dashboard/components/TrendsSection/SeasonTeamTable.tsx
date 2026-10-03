@@ -29,6 +29,7 @@ import {
 } from "../../types";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
+import { pool } from "../../shared-theme/themePrimitives";
 
 export type Props = {
   teamPickTotals: TeamPickTotal[];
@@ -153,7 +154,7 @@ const buildColumns = (maxPicks: number) => [
             height: 4,
             mt: 0.25,
             borderRadius: 2,
-            bgcolor: "action.hover",
+            bgcolor: pool[100],
             overflow: "hidden",
           }}
         >
@@ -161,9 +162,9 @@ const buildColumns = (maxPicks: number) => [
             sx={{
               width: `${maxPicks > 0 ? (row.original.picks / maxPicks) * 100 : 0}%`,
               height: "100%",
-              // Neutral: a team color reads as that team (TB red, PIT black)
-              // and red/green are kept for pick results.
-              bgcolor: "text.secondary",
+              // The pool's color: this counts the pool's picks. A team color
+              // would read as that team, and red/green are pick results.
+              bgcolor: pool[500],
             }}
           />
         </Box>

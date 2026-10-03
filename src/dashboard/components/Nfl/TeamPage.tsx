@@ -16,7 +16,8 @@ import dayjs from "dayjs";
 import { ReactNode, useEffect, useState } from "react";
 import { ordinal, visuallyHidden } from "../../helper";
 import { AtsSplit, PoolPicker, TeamGame, TeamProfile } from "../../types";
-import { getTeamFullName } from "../../utils/teamAssets";
+import { getTeamFullName, teamBandColors } from "../../utils/teamAssets";
+import { gray, pool } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
 import { BackLink } from "../shared/BackLink";
 import TabIntro from "../TabIntro";
@@ -50,14 +51,18 @@ export const formatLine = (line: number | null): string => {
   return `${line > 0 ? "+" : "−"}${text}`;
 };
 
+// `highlight` is the selected player (lime, as on every tab); `pool` is the
+// pool's own violet, for the card that counts the pool's picks.
 const StatCard = ({
   title,
   children,
   highlight = false,
+  tone,
 }: {
   title: string;
   children: ReactNode;
   highlight?: boolean;
+  tone?: "pool";
 }) => (
   <Paper
     variant="outlined"
@@ -70,9 +75,17 @@ const StatCard = ({
         gap: 1,
       },
       highlight && selectedRowSx,
+      tone === "pool" && { bgcolor: pool[50], borderColor: pool[200] },
     ]}
   >
-    <Typography component="h3" sx={{ fontSize: "0.8125rem", fontWeight: 600 }}>
+    <Typography
+      component="h3"
+      sx={{
+        fontSize: "0.8125rem",
+        fontWeight: 600,
+        color: tone === "pool" ? pool[700] : undefined,
+      }}
+    >
       {title}
     </Typography>
     {children}
@@ -188,13 +201,13 @@ const PoolSplit = ({ game }: { game: TeamGame }) => {
           height: 6,
           borderRadius: 3,
           overflow: "hidden",
-          bgcolor: "hsl(220, 20%, 88%)",
+          bgcolor: pool[100],
         }}
       >
         <Box
           sx={{
             width: `${(game.pool_picked / total) * 100}%`,
-            bgcolor: "hsl(220, 20%, 25%)",
+            bgcolor: pool[500],
           }}
         />
       </Box>
@@ -413,23 +426,57 @@ function TeamPageBody({
   back: ReactNode;
 }) {
   const { row, division } = placed;
-  const { ats, pool } = profile;
+  const { ats, pool: poolRecord } = profile;
   const abbr = row.team.abbr;
+  const { band, stripe } = teamBandColors(abbr);
 
   return (
     <Box sx={{ textAlign: "left" }}>
-      <TabIntro
-        back={back}
-        leading={<TeamLogo abbr={abbr} size={56} decorative />}
-        title={getTeamFullName(abbr)}
-        subtitle={
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {ordinal(row.rank)} in {division} · {formatWinLoss(row)}
-            {row.streak && ` · ${row.streak}`} · {row.points_for}–
-            {row.points_against} pts
-          </Typography>
-        }
-      />
+      {/* The team's own colors open its page: white text on the team color
+          (darkened where it's light), the alternate color as a stripe. */}
+      <Box
+        sx={{
+          bgcolor: `#${band}`,
+          color: "#fff",
+          borderRadius: 2,
+          borderBottom: `4px solid #${stripe}`,
+          px: { xs: 1.5, sm: 2 },
+          pt: 1.5,
+          pb: 0.5,
+          mb: 2.5,
+          "& .MuiButton-root": { color: "inherit" },
+        }}
+      >
+        <TabIntro
+          back={back}
+          leading={
+            <Box
+              sx={{
+                width: 56,
+                height: 56,
+                flex: "none",
+                borderRadius: "50%",
+                bgcolor: "#fff",
+                display: "grid",
+                placeItems: "center",
+              }}
+            >
+              <TeamLogo abbr={abbr} size={40} decorative />
+            </Box>
+          }
+          title={getTeamFullName(abbr)}
+          subtitle={
+            <Typography
+              variant="body2"
+              sx={{ color: "rgba(255, 255, 255, 0.85)" }}
+            >
+              {ordinal(row.rank)} in {division} · {formatWinLoss(row)}
+              {row.streak && ` · ${row.streak}`} · {row.points_for}–
+              {row.points_against} pts
+            </Typography>
+          }
+        />
+      </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
         <Grid container spacing={1.5}>
           <Grid size={{ xs: 12, md: 4 }}>
@@ -457,16 +504,16 @@ function TeamPageBody({
             </StatCard>
           </Grid>
           <Grid size={{ xs: 12, sm: userId ? 6 : 12, md: 4 }}>
-            <StatCard title="The pool on them">
+            <StatCard title="The pool on them" tone="pool">
               <Pair
                 items={[
                   {
-                    value: formatPickRecord(pool.picked) ?? "–",
-                    label: `picking them (${pool.picked.picks})`,
+                    value: formatPickRecord(poolRecord.picked) ?? "–",
+                    label: `picking them (${poolRecord.picked.picks})`,
                   },
                   {
-                    value: formatPickRecord(pool.against) ?? "–",
-                    label: `picking against (${pool.against.picks})`,
+                    value: formatPickRecord(poolRecord.against) ?? "–",
+                    label: `picking against (${poolRecord.against.picks})`,
                   },
                 ]}
               />
@@ -554,18 +601,22 @@ function TeamPageBody({
                     ) : (
                       <TableRow
                         key={game.game_id}
+                        // This week: a slate-50 row in bold, with "this week" spoken
+                        // after the week number.
                         sx={
                           game.week_number === currentWeek
-                            ? {
-                                bgcolor: "hsl(210, 80%, 97%)",
-                                "& td:first-of-type": {
-                                  boxShadow: "inset 2px 0 0 hsl(210, 98%, 42%)",
-                                },
-                              }
+                            ? { bgcolor: gray[50], "& td": { fontWeight: 600 } }
                             : undefined
                         }
                       >
-                        <TableCell>{game.week_number}</TableCell>
+                        <TableCell>
+                          {game.week_number}
+                          {game.week_number === currentWeek && (
+                            <Box component="span" sx={visuallyHidden}>
+                              , this week
+                            </Box>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Box
                             sx={{
@@ -633,13 +684,13 @@ function TeamPageBody({
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <People
                 title="Believers"
-                people={pool.believers}
+                people={poolRecord.believers}
                 empty="No one has picked them yet."
                 userId={userId}
               />
               <People
                 title="Faders"
-                people={pool.faders}
+                people={poolRecord.faders}
                 empty="No one has picked against them yet."
                 userId={userId}
               />

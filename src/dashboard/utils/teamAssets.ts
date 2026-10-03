@@ -43,3 +43,48 @@ export const getTeamFullName = (abbr: string): string => {
   const entry = TeamData[normalizeTeamAbbr(abbr) as keyof typeof TeamData];
   return entry?.displayName ?? abbr;
 };
+
+// sRGB relative luminance of a "rrggbb" hex, for the contrast check below.
+const luminance = (hex: string): number => {
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const darken = (hex: string, amount: number): string =>
+  [0, 2, 4]
+    .map((i) =>
+      Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - amount))
+        .toString(16)
+        .padStart(2, "0")
+    )
+    .join("");
+
+// The team page's header band: the team's color behind white text,
+// darkened just enough for 4.5:1 where the team color is light (NO gold,
+// CIN orange, TEN powder blue), and the alternate color as a stripe under
+// it. Hex without "#", like team_data.json.
+export const teamBandColors = (
+  abbr: string
+): { band: string; stripe: string } => {
+  const data = TeamData[normalizeTeamAbbr(abbr) as keyof typeof TeamData] as
+    { color: string; alternateColor?: string } | undefined;
+  let band = data?.color ?? FALLBACK_TEAM_DATA(abbr).color;
+  for (
+    let step = 0;
+    step < 20 && 1.05 / (luminance(band) + 0.05) < 4.5;
+    step++
+  ) {
+    band = darken(band, 0.08);
+  }
+  const alt = data?.alternateColor;
+  // A white or near-band alternate would vanish; fall back to the band's
+  // own darker shade.
+  const stripe =
+    alt && alt.toLowerCase() !== "ffffff" && alt.toLowerCase() !== band
+      ? alt
+      : darken(band, 0.35);
+  return { band, stripe };
+};

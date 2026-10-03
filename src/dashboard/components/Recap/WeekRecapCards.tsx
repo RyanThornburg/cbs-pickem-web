@@ -4,6 +4,7 @@ import { RecapItem, RecapMove, RecapPerson } from "../../types";
 import { TeamLogo } from "../shared/TeamLogo";
 import { CategoryMark } from "./recapCategory";
 import { WeekCard } from "./weekCards";
+import { pool } from "../../shared-theme/themePrimitives";
 
 // Renderers for the Trends recap cards (Week and Season). Each reads its
 // items' `data` (shapes per the data repo's recap reference, version 3);
@@ -516,7 +517,7 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
                   height: 6,
                   mt: 0.25,
                   borderRadius: 1,
-                  bgcolor: "action.hover",
+                  bgcolor: pool[100],
                   overflow: "hidden",
                 }}
               >
@@ -526,9 +527,10 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
                     inset: 0,
                     width: `${p * 100}%`,
                     borderRadius: 1,
-                    // Neutral: the 50% tick says above or below; red and
-                    // green are kept for pick results.
-                    bgcolor: "text.secondary",
+                    // The pool's color: this is the pool's record. The 50%
+                    // tick says above or below; red and green are kept for
+                    // pick results.
+                    bgcolor: pool[500],
                   }}
                 />
                 <Box
