@@ -3,6 +3,7 @@ import {
   NflStandings,
   PickRecord,
   StandingsTeam,
+  TeamProfile,
   WinLoss,
 } from "../../types";
 import { teamSlug } from "./nflView";
@@ -33,6 +34,21 @@ export const findTeamBySlug = (
   flattenStandings(standings).find(
     ({ row }) => teamSlug(row.team.abbr) === slug.toLowerCase()
   );
+
+// Each team's pool record (picking them), from the standings key, or from
+// the team's own key for a standings key written before it carried `pool`.
+export const poolRecordsById = (
+  standings: NflStandings | undefined,
+  profiles: Record<number, TeamProfile>
+): Map<number, PickRecord> => {
+  const byId = new Map<number, PickRecord>();
+  if (!standings) return byId;
+  flattenStandings(standings).forEach(({ row }) => {
+    const picked = row.pool?.picked ?? profiles[row.team.id]?.pool.picked;
+    if (picked) byId.set(row.team.id, picked);
+  });
+  return byId;
+};
 
 // 3-1, or 3-1-1 with a tie.
 export const formatWinLoss = (record: WinLoss): string =>

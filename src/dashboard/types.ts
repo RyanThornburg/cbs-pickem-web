@@ -646,6 +646,10 @@ export interface StandingsTeam extends WinLoss {
   // "W3", "L1", "T1"; null before the first game.
   streak: string | null;
   ats: AtsSplit;
+  // The pool's record picking this team / their opponents, the same numbers
+  // as the team key's pool. Added 2026-10-02, so optional until every
+  // standings key in KV has been rewritten with it.
+  pool?: { picked: PickRecord; against: PickRecord };
 }
 
 export interface StandingsDivision {

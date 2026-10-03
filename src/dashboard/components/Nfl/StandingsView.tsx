@@ -16,7 +16,7 @@ import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
 import { ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PickRecord, StandingsTeam, TeamProfile } from "../../types";
+import { PickRecord, StandingsTeam } from "../../types";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import { TeamLink } from "../shared/TeamLink";
@@ -31,6 +31,7 @@ import {
   formatDiff,
   formatPickRecord,
   formatWinLoss,
+  poolRecordsById,
   sortValue,
 } from "./standingsUtils";
 import { useAllTeamProfiles, useStandings } from "./useNflData";
@@ -75,14 +76,22 @@ export default function StandingsView({
   const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const { standings, failed } = useStandings(season);
-  const teamIds = useMemo(
+  // The standings key carries each team's pool record; an older key
+  // without it falls back to the 32 team keys.
+  const teamIdsMissingPool = useMemo(
     () =>
       standings
-        ? flattenStandings(standings).map(({ row }) => row.team.id)
+        ? flattenStandings(standings)
+            .filter(({ row }) => !row.pool)
+            .map(({ row }) => row.team.id)
         : [],
     [standings]
   );
-  const profiles = useAllTeamProfiles(season, teamIds);
+  const profiles = useAllTeamProfiles(season, teamIdsMissingPool);
+  const poolById = useMemo(
+    () => poolRecordsById(standings, profiles),
+    [standings, profiles]
+  );
   const { trends } = usePlayerSeason(userId || undefined, season);
   const [layout, setLayout] = useState<Layout>("divisions");
   const [conference, setConference] = useState<Conference>("AFC");
@@ -92,8 +101,8 @@ export default function StandingsView({
   const playerRecord = (teamId: number): PickRecord | undefined =>
     playerRecords?.find((entry) => entry.team.id === teamId)?.picked;
   const poolRecord = (teamId: number): PickRecord | undefined =>
-    (profiles as Record<number, TeamProfile>)[teamId]?.pool.picked;
-  const poolLoaded = Object.keys(profiles).length > 0;
+    poolById.get(teamId);
+  const poolLoaded = poolById.size > 0;
   const playerLabel = userName ? firstName(userName) : "";
 
   const allColumns: Column[] = [

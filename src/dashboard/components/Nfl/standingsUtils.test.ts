@@ -6,8 +6,10 @@ import {
   formatDiff,
   formatPickRecord,
   formatWinLoss,
+  poolRecordsById,
   sortValue,
 } from "./standingsUtils";
+import { TeamProfile } from "../../types";
 
 const row = (
   abbr: string,
@@ -38,7 +40,15 @@ const standings: NflStandings = {
     {
       name: "American Football Conference",
       abbr: "AFC",
-      divisions: [{ name: "AFC South", teams: [row("JAX"), row("IND")] }],
+      divisions: [
+        {
+          name: "AFC South",
+          teams: [
+            row("JAX"),
+            row("IND", { team: { id: 30, abbr: "IND", name: "IND" } }),
+          ],
+        },
+      ],
     },
     {
       name: "National Football Conference",
@@ -77,6 +87,38 @@ describe("standings helpers", () => {
     ).toBe("2-1");
     expect(firstName("bill morlok")).toBe("bill");
     expect(firstName("Ryan Thornburg")).toBe("Ryan");
+  });
+
+  it("takes the pool record from standings, else the team's key", () => {
+    const rec = (wins: number) => ({
+      picks: wins,
+      wins,
+      losses: 0,
+      win_pct: 1,
+    });
+    const withPool: NflStandings = {
+      ...standings,
+      conferences: standings.conferences.map((c) => ({
+        ...c,
+        divisions: c.divisions.map((d) => ({
+          ...d,
+          teams: d.teams.map((t) =>
+            t.team.abbr === "JAX"
+              ? { ...t, pool: { picked: rec(5), against: rec(0) } }
+              : t
+          ),
+        })),
+      })),
+    };
+    const ind = withPool.conferences[0].divisions[0].teams[1].team.id;
+    const profiles = {
+      [ind]: { pool: { picked: rec(2) } } as unknown as TeamProfile,
+    };
+    const byId = poolRecordsById(withPool, profiles);
+    expect(byId.get(3)?.wins).toBe(5); // JAX, from standings
+    expect(byId.get(ind)?.wins).toBe(2); // IND, from its team key
+    expect(byId.has(2)).toBe(false); // LA, neither
+    expect(poolRecordsById(undefined, profiles).size).toBe(0);
   });
 
   it("sorts by rate, then volume, with nothing to compare last", () => {
