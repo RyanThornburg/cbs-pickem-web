@@ -156,29 +156,6 @@ export const navigationCustomizations: Components<Theme> = {
       }),
     },
   },
-  MuiDrawer: {
-    styleOverrides: {
-      paper: ({ theme }) => ({
-        backgroundColor: theme.palette.background.default,
-      }),
-    },
-  },
-  MuiPaginationItem: {
-    styleOverrides: {
-      root: ({ theme }) => ({
-        "&.Mui-selected": {
-          color: "white",
-          backgroundColor: theme.palette.grey[900],
-        },
-        ...theme.applyStyles("dark", {
-          "&.Mui-selected": {
-            color: "black",
-            backgroundColor: theme.palette.grey[50],
-          },
-        }),
-      }),
-    },
-  },
   MuiTabs: {
     styleOverrides: {
       root: { minHeight: "fit-content" },
@@ -220,68 +197,6 @@ export const navigationCustomizations: Components<Theme> = {
             color: "#fff",
           },
         }),
-      }),
-    },
-  },
-  MuiStepConnector: {
-    styleOverrides: {
-      line: ({ theme }) => ({
-        borderTop: "1px solid",
-        borderColor: theme.palette.divider,
-        flex: 1,
-        borderRadius: "99px",
-      }),
-    },
-  },
-  MuiStepIcon: {
-    styleOverrides: {
-      root: ({ theme }) => ({
-        color: "transparent",
-        border: `1px solid ${gray[400]}`,
-        width: 12,
-        height: 12,
-        borderRadius: "50%",
-        "& text": {
-          display: "none",
-        },
-        "&.Mui-active": {
-          border: "none",
-          color: theme.palette.primary.main,
-        },
-        "&.Mui-completed": {
-          border: "none",
-          color: theme.palette.success.main,
-        },
-        ...theme.applyStyles("dark", {
-          border: `1px solid ${gray[700]}`,
-          "&.Mui-active": {
-            border: "none",
-            color: theme.palette.primary.light,
-          },
-          "&.Mui-completed": {
-            border: "none",
-            color: theme.palette.success.light,
-          },
-        }),
-        variants: [
-          {
-            props: { completed: true },
-            style: {
-              width: 12,
-              height: 12,
-            },
-          },
-        ],
-      }),
-    },
-  },
-  MuiStepLabel: {
-    styleOverrides: {
-      label: ({ theme }) => ({
-        "&.Mui-completed": {
-          opacity: 0.6,
-          ...theme.applyStyles("dark", { opacity: 0.5 }),
-        },
       }),
     },
   },

@@ -149,7 +149,7 @@ The whole app is set in Inter and speaks one voice, **Office**: MUI's light them
 - Color means state (won, lost, open, honored), never decoration.
 - Gold is the clubhouse color: trophies, medals, 5-0, the Records tab.
 - Friendly details (identicon avatars, pill badges, medal tiles) live at the edges of the record, not in it.
-- Light only. `themePrimitives.ts` defines dark schemes, but they aren't wired in.
+- Light only. There are no dark color schemes; the `applyStyles("dark", …)` blocks left in the theme overrides are inert.
 
 ## Colors
 

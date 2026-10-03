@@ -5,9 +5,9 @@ import { alpha } from "@mui/material/styles";
 import MainGrid from "./components/MainGrid";
 import AppTheme from "./shared-theme/AppTheme";
 
-export default function Dashboard(props: { disableCustomTheme?: boolean }) {
+export default function Dashboard() {
   return (
-    <AppTheme {...props}>
+    <AppTheme>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex" }}>
         {/* Main content */}
