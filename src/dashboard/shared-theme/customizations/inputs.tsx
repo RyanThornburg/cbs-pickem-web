@@ -279,7 +279,6 @@ export const inputsCustomizations: Components<Theme> = {
     styleOverrides: {
       root: ({ theme }) => ({
         borderRadius: "10px",
-        boxShadow: `0 4px 16px ${alpha(gray[400], 0.2)}`,
         // brand[500] on the selected grey was 4.3:1; this is 6:1.
         [`& .${toggleButtonGroupClasses.selected}`]: {
           color: brand[700],
@@ -288,7 +287,6 @@ export const inputsCustomizations: Components<Theme> = {
           [`& .${toggleButtonGroupClasses.selected}`]: {
             color: "#fff",
           },
-          boxShadow: `0 4px 16px ${alpha(brand[700], 0.5)}`,
         }),
       }),
     },

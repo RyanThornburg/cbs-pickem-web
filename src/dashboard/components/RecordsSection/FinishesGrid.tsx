@@ -72,11 +72,24 @@ const Sample = ({ tier }: { tier: FinishTier }) => {
   );
 };
 
+// The pinned name column. Its right edge fades out, so tiles scrolling
+// under it vanish instead of showing as colored slivers.
 const stickySx = {
   position: "sticky",
   left: 0,
   zIndex: 1,
   bgcolor: "background.paper",
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: -10,
+    width: 10,
+    pointerEvents: "none",
+    background:
+      "linear-gradient(to right, var(--template-palette-background-paper, #fff), transparent)",
+  },
 } as const;
 
 // Every player's finish in every season, players in all-time order (fixed,

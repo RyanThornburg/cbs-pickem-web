@@ -52,7 +52,13 @@ interface Props {
 const GroupHeader = ({ children }: { children: string }) => (
   <Typography
     variant="overline"
-    sx={{ fontWeight: 700, color: "text.secondary", letterSpacing: "0.08em" }}
+    component="h3"
+    sx={{
+      display: "block",
+      fontWeight: 700,
+      color: "text.secondary",
+      letterSpacing: "0.08em",
+    }}
   >
     {children}
   </Typography>

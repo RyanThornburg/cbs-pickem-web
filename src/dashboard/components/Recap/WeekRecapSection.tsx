@@ -35,6 +35,9 @@ export default function WeekRecapSection({
     [items, hasLead]
   );
 
+  // Never fewer than 3 columns, so one or two cards don't stretch wide.
+  const rowColumns = Math.min(4, Math.max(3, cards.length + (lead ? 1 : 0)));
+
   return (
     <Box component="section" aria-labelledby={headingId}>
       <Stack
@@ -102,11 +105,12 @@ export default function WeekRecapSection({
       <Box
         sx={{
           display: "grid",
-          // 1, 2, then 4 across: 4 cards never wrap 3 + 1.
+          // 1, 2, then one row across: 4 cards never wrap 3 + 1, and 3
+          // cards fill the row instead of leaving an empty fourth slot.
           gridTemplateColumns: {
             xs: "minmax(0, 1fr)",
             sm: "repeat(2, minmax(0, 1fr))",
-            lg: "repeat(4, minmax(0, 1fr))",
+            lg: `repeat(${rowColumns}, minmax(0, 1fr))`,
           },
           gap: 1.5,
           alignItems: "start",

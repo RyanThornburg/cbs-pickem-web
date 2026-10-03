@@ -1,8 +1,8 @@
 import TeamData from "./team_data.json";
+import { normalizeTeamAbbr } from "../../../utils/teamAssets";
 
-// Team abbreviations are normalized to team_data.json's keys upstream (see
-// src/dashboard/data/weekGames.ts's toTeam) -- this is just the last-resort fallback
-// for a team that's still missing from team_data.json entirely.
+// The last-resort fallback for a team still missing from team_data.json
+// after normalizing its abbreviation.
 const FALLBACK_TEAM_DATA = {
   icon: undefined as string | undefined,
   color: "666666",
@@ -10,7 +10,9 @@ const FALLBACK_TEAM_DATA = {
 };
 
 export const getTeamData = (abbr: string) => {
-  const teamData = TeamData[abbr as keyof typeof TeamData];
+  // Feeds that skip weekGames.ts (standings, team profiles) still send
+  // JAX and LA, so normalize here too.
+  const teamData = TeamData[normalizeTeamAbbr(abbr) as keyof typeof TeamData];
   if (!teamData) {
     console.warn(`No team_data.json entry for team abbreviation "${abbr}"`);
     return FALLBACK_TEAM_DATA;
