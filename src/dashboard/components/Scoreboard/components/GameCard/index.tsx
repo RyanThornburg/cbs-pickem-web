@@ -215,7 +215,11 @@ export const GameCard = memo(
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: 700, fontSize: "1.05rem", lineHeight: 1.2 }}
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "1.125rem",
+                    lineHeight: 1.2,
+                  }}
                 >
                   {team.abbr}
                 </Typography>

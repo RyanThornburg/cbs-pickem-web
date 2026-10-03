@@ -526,7 +526,9 @@ function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
                     inset: 0,
                     width: `${p * 100}%`,
                     borderRadius: 1,
-                    bgcolor: p < 0.5 ? "error.main" : "success.main",
+                    // Neutral: the 50% tick says above or below; red and
+                    // green are kept for pick results.
+                    bgcolor: "text.secondary",
                   }}
                 />
                 <Box

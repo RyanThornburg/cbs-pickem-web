@@ -1,38 +1,38 @@
-/* Ported from the Kickoff Board design mockup (https://claude.ai/artifact/9RUv8sNPhsKgaRaW8r92sg).
-   Scoped under .games-card so it can't leak into or collide with the rest
-   of the MUI-themed app. Light palette only -- the app's own dark-mode
-   toggle isn't wired up anywhere else, so a dark variant here would just
-   be inconsistent with everything around it. */
+/* The Games tab, in the app's own palette (DESIGN.md's League Office):
+   every --gc-* name below points at a theme token (the theme emits them as
+   --template-palette-*: AppTheme sets cssVarPrefix "template") or the slate scale, so
+   Games reads like User Picks and Scoreboard. Only team colors (logos) are
+   unique per team. Scoped under .games-card so it can't leak. */
 .games-card {
-  --gc-bg: #f4f5f8;
-  --gc-surface: #ffffff;
-  --gc-surface-2: #eef0f5;
-  --gc-surface-3: #e5e8f0;
-  --gc-border: #dde1e9;
-  --gc-text: #171b26;
-  --gc-text-muted: #626c82;
-  /* Each hue has one job. Teal = weather, amber = weather caution, red =
-     official alerts and missed streaks, green = covered, blue = the CBS
-     edge. Line moves, venues and best book prices stay ink. */
+  --gc-surface: var(--template-palette-background-paper);
+  /* slate-100 / slate-200 (themePrimitives gray[100] / gray[200]): the
+     app's chip and selected-pill fills. */
+  --gc-surface-2: hsl(220, 30%, 94%);
+  --gc-surface-3: hsl(220, 20%, 88%);
+  --gc-border: var(--template-palette-divider);
+  --gc-text: var(--template-palette-text-primary);
+  --gc-text-muted: var(--template-palette-text-secondary);
+  /* Green is a cover, as on every tab (the dark shade for small text). */
+  --gc-good: var(--template-palette-success-dark);
+  --gc-good-soft: #e8f5e9;
+  /* The app's blue, for the CBS edge tag. */
+  --gc-info: var(--template-palette-primary-main);
+  /* Caution is the app's warning orange, as on the Scoreboard's "Close"
+     flag: solid for an official alert, a tint with dark amber ink for a
+     weather flag (5.4:1). Weather itself has no hue of its own: icons are
+     muted ink and the wettest hour is a slate tile. */
+  --gc-caution: var(--template-palette-warning-main);
+  --gc-caution-ink: #1b1300;
   --gc-accent: #8a560a;
-  --gc-accent-soft: #f4e6cc;
-  --gc-weather: #176675;
-  --gc-weather-soft: #dcf0f3;
-  --gc-danger: #b5342a;
-  --gc-danger-soft: #f7dedb;
-  --gc-good: #276a34;
-  --gc-good-soft: #dcefdf;
-  --gc-info: #1565c0;
+  --gc-accent-soft: #fbe9d7;
 
   color: var(--gc-text);
   font-variant-numeric: tabular-nums;
 }
 
 .games-card .gc-tablewrap {
-  border: 1px solid var(--gc-border);
-  border-radius: 12px;
+  /* No box around it: the table sits on the page like User Picks'. */
   overflow-x: auto;
-  background: var(--gc-surface);
 }
 .games-card table {
   border-collapse: collapse;
@@ -44,8 +44,7 @@
   text-align: left;
   font-weight: 700;
   font-size: 0.75rem;
-  color: var(--gc-text-muted);
-  background: var(--gc-surface-2);
+  color: var(--gc-text);
   padding: 10px 12px;
   border-bottom: 1px solid var(--gc-border);
   white-space: nowrap;
@@ -88,18 +87,14 @@
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.5;
-  border-radius: 4px;
-  padding: 0 5px;
+  border-radius: 999px;
+  padding: 0 8px;
   white-space: nowrap;
   flex: none;
 }
-.games-card .gc-streak.cover {
-  background: var(--gc-good-soft);
-  color: var(--gc-good);
-}
-.games-card .gc-streak.miss {
-  background: var(--gc-danger-soft);
-  color: var(--gc-danger);
+.games-card .gc-streak {
+  background: var(--gc-surface-2);
+  color: var(--gc-text);
 }
 
 .games-card .gc-final-score {
@@ -175,10 +170,13 @@
   gap: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0 5px;
-  border-radius: 4px;
-  background: var(--gc-surface);
-  border: 1px solid var(--gc-border);
+  /* The app's default chip: a slate-100 pill, like the Scoreboard's venue
+     chip. */
+  padding: 1px 8px;
+  /* A full pill at one line (20px tall); a two-line "London, England"
+     stays a rounded box instead of a lozenge. */
+  border-radius: 10px;
+  background: var(--gc-surface-2);
   color: var(--gc-text);
 }
 /* Mobile's kickoff block is right-aligned, so the badge follows it there. */
@@ -232,10 +230,13 @@
   gap: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0 5px;
-  border-radius: 4px;
-  background: var(--gc-surface);
-  border: 1px solid var(--gc-border);
+  /* The app's default chip: a slate-100 pill, like the Scoreboard's venue
+     chip. */
+  padding: 1px 8px;
+  /* A full pill at one line (20px tall); a two-line "London, England"
+     stays a rounded box instead of a lozenge. */
+  border-radius: 10px;
+  background: var(--gc-surface-2);
   color: var(--gc-text);
   /* Wraps instead of nowrap -- a fixed-width column is narrower than this
      badge's text at some widths, and nowrap let it silently overflow into
@@ -284,7 +285,7 @@
 }
 .games-card .gc-wx svg {
   flex: none;
-  color: var(--gc-weather);
+  color: var(--gc-text-muted);
   margin-top: 1px;
 }
 .games-card .gc-wx .gc-wxtext {
@@ -334,9 +335,9 @@
 }
 /* Only the wettest hour gets a tile, so it stands out from the row. */
 .games-card .gc-wx .gc-hour.peak {
-  background: var(--gc-weather-soft);
+  background: var(--gc-surface-2);
 }
-/* Muted gray on the teal tile was 4.47:1; ink clears 4.5:1. */
+/* Ink on the slate tile, so the wettest hour reads first. */
 .games-card .gc-wx .gc-hour.peak .gc-hour-time {
   color: var(--gc-text);
 }
@@ -356,7 +357,7 @@
   color: var(--gc-text-muted);
 }
 .games-card .gc-wx .gc-hour-pct.wet {
-  color: var(--gc-weather);
+  color: var(--gc-text);
 }
 /* Full width under the conditions and strip, indented to the text past the
    20px condition icon and its 8px gap. */
@@ -410,8 +411,8 @@ a.gc-wx-link:hover .gc-temp,
   width: fit-content;
 }
 .games-card .gc-flag.danger {
-  background: var(--gc-danger-soft);
-  color: var(--gc-danger);
+  background: var(--gc-caution);
+  color: var(--gc-caution-ink);
 }
 .games-card .gc-flag.warn {
   background: var(--gc-accent-soft);
@@ -421,7 +422,8 @@ a.gc-wx-link:hover .gc-temp,
 .games-card .gc-expandbtn {
   appearance: none;
   border: 1px solid var(--gc-border);
-  background: var(--gc-surface-2);
+  /* The app's outlined button fill (slate-50). */
+  background: hsl(220, 35%, 97%);
   color: var(--gc-text);
   font-family: inherit;
   font-size: 0.8125rem;
@@ -439,7 +441,7 @@ a.gc-wx-link:hover .gc-temp,
    tab's own buttons and links. */
 .games-card .gc-expandbtn:focus-visible,
 .games-card a.gc-wx-link:focus-visible {
-  outline: 3px solid hsl(210, 98%, 42%);
+  outline: 3px solid hsl(210, 98%, 42%); /* themePrimitives focusRingColor */
   outline-offset: 2px;
 }
 .games-card .gc-expandbtn:hover {
@@ -549,10 +551,11 @@ a.gc-wx-link:hover .gc-temp,
 .games-card .gc-gamecard {
   display: flex;
   flex-direction: column;
+  /* The Scoreboard's outlined card: divider border, 8px radius, 14px. */
   border: 1px solid var(--gc-border);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--gc-surface);
-  padding: 14px 14px 12px;
+  padding: 14px;
 }
 .games-card .gc-gamecard-top {
   display: grid;
@@ -591,7 +594,9 @@ a.gc-wx-link:hover .gc-temp,
 }
 .games-card .gc-gamecard .gc-mrow {
   min-width: 0;
-  gap: 6px;
+  /* 4px, not 6: with the logo, a final game's "Steelers 2-1 24" needs the
+     room in a three-across card. */
+  gap: 4px;
 }
 .games-card .gc-gamecard .gc-abbr,
 .games-card .gc-gamecard .gc-rec {
@@ -712,7 +717,7 @@ a.gc-wx-link:hover .gc-temp,
   text-align: center;
   color: var(--gc-text-muted);
   border: 1px solid var(--gc-border);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--gc-surface);
 }
 /* Text for screen readers only (hour-tile conditions, the edge explanation). */

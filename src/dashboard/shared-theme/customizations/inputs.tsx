@@ -18,6 +18,10 @@ export const inputsCustomizations: Components<Theme> = {
     styleOverrides: {
       root: {
         boxSizing: "border-box",
+        // A <button> doesn't inherit the page font, so bare ButtonBase
+        // elements (User Picks name cells, the Records heatmap) rendered in
+        // Arial. Button and Tab set their own typography, which wins.
+        fontFamily: "inherit",
         transition: "all 100ms ease-in",
         "&:focus-visible": {
           outline: `3px solid ${brand[500]}`,

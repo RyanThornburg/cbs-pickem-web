@@ -14,6 +14,10 @@ export const useGameData = (week: number) => {
   // Only a failure with nothing loaded yet: once the week has loaded, a
   // failed refresh keeps the last good scores and the next poll retries.
   const [failed, setFailed] = useState(false);
+  // When the shown scores were fetched, and whether the latest refresh
+  // after that failed (the scores on screen are then older than a poll).
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [refreshFailed, setRefreshFailed] = useState(false);
   const loadedRef = useRef(false);
 
   // A new week starts from scratch, so the old week's scores never sit
@@ -21,6 +25,8 @@ export const useGameData = (week: number) => {
   useEffect(() => {
     setGames([]);
     setFailed(false);
+    setUpdatedAt(null);
+    setRefreshFailed(false);
     setLoading(week > 0 && season > 0);
     loadedRef.current = false;
   }, [week, season]);
@@ -35,15 +41,19 @@ export const useGameData = (week: number) => {
         setGames(newGames);
         setFailed(false);
         setLoading(false);
+        setUpdatedAt(new Date());
+        setRefreshFailed(false);
       },
       () => {
         if (!loadedRef.current) {
           setFailed(true);
           setLoading(false);
+        } else {
+          setRefreshFailed(true);
         }
       }
     );
   }, [week, season, active]);
 
-  return { games, loading, failed };
+  return { games, loading, failed, updatedAt, refreshFailed };
 };

@@ -130,7 +130,7 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
           gap: 1,
         }}
       >
-        <Typography component="h3" variant="h6" sx={{ fontWeight: 700 }}>
+        <Typography component="h3" variant="h6">
           Champions
         </Typography>
         {currentSeason > defendingYear && (

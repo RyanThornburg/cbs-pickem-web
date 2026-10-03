@@ -14,9 +14,11 @@ import { byeTeams } from "../../data/weekGames";
 import { ByeTeams } from "../ByeTeams";
 import {
   groupGames,
+  isLiveStatus,
   pickDeadline,
   picksRevealed,
 } from "./utils/scoreboardUtils";
+import { UpdatedNote } from "./components/UpdatedNote";
 import { GameCard } from "./components/GameCard";
 import { GameRow } from "./components/GameRow";
 import { YourPicksStrip } from "./components/YourPicksStrip";
@@ -56,7 +58,8 @@ const GroupHeader = ({ children }: { children: string }) => (
 
 const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
-  const { games, loading, failed } = useGameData(week);
+  const { games, loading, failed, updatedAt, refreshFailed } =
+    useGameData(week);
   const deadline = useMemo(() => pickDeadline(games), [games]);
   const totals = useWeekTotals(week);
   const byes = useMemo(() => byeTeams(games), [games]);
@@ -73,7 +76,18 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
   };
 
   const intro = (actions?: React.ReactNode) => (
-    <TabIntro title="Scoreboard" week={week} actions={actions} />
+    <TabIntro
+      title="Scoreboard"
+      week={week}
+      actions={actions}
+      meta={
+        <UpdatedNote
+          updatedAt={updatedAt}
+          refreshFailed={refreshFailed}
+          live={games.some((game) => isLiveStatus(game.status))}
+        />
+      }
+    />
   );
   if (loading) {
     return (

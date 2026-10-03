@@ -120,7 +120,7 @@ const Chip = ({ game, side }: { game: Game; side: Side }) => {
           alignItems: "center",
           gap: 0.75,
           fontWeight: 700,
-          fontSize: "1rem",
+          fontSize: "1.125rem",
           lineHeight: 1.3,
           whiteSpace: "nowrap",
         }}

@@ -33,19 +33,8 @@ colors:
   slate-200: "hsl(220, 20%, 88%)"
   slate-100: "hsl(220, 30%, 94%)"
   slate-50: "hsl(220, 35%, 97%)"
-  gc-bg: "#f4f5f8"
-  gc-surface-2: "#eef0f5"
-  gc-border: "#dde1e9"
-  gc-text: "#171b26"
-  gc-text-muted: "#626c82"
-  gc-amber: "#8a560a"
-  gc-amber-soft: "#f4e6cc"
-  gc-weather-teal: "#176675"
-  gc-weather-soft: "#dcf0f3"
-  gc-danger: "#b5342a"
-  gc-good: "#276a34"
-  gc-good-soft: "#dcefdf"
-  gc-info: "#1565c0"
+  caution-ink: "#8a560a"
+  caution-tint: "#fbe9d7"
   focus-ring: "hsl(210, 98%, 42%)"
 typography:
   headline:
@@ -152,7 +141,7 @@ This is where the pool's record gets kept. It should feel like the back office o
 
 Density is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.
 
-The whole app is set in Inter. Most of it speaks **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab keeps a **Kickoff Board** palette from an earlier mockup (teal and amber for weather, green for covered, blue for the CBS edge, scoped under `.games-card` with its own `--gc-*` custom properties) but shares the app's font and type scale. It used Public Sans and Oswald until 2026-09-30.
+The whole app is set in Inter and speaks one voice, **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab once had its own Kickoff Board palette and fonts; since 2026-10-02 its `--gc-*` names point at the same theme tokens, so only team logos differ from tab to tab.
 
 **Key Characteristics:**
 - White paper, hairline dividers, no resting shadows.
@@ -189,8 +178,8 @@ The palette is ink on white paper, a traffic-light status set for results, and o
 - **Paper** (`paper`) and **Hairline** (`hairline`): page background and every divider.
 - **Slate scale** (`slate-*`, the `gray` scale in `themePrimitives.ts`): tab hover fills, chip fills, select borders, the default card fill and the contained button.
 
-### Kickoff Board palette (Games tab only)
-Warm slate paper (`gc-bg`) with white table surfaces, a cooler tinted header row (`gc-surface-2`), and near-black ink (`gc-text`) with muted slate (`gc-text-muted`). Each hue has one job. **Weather Teal** (`gc-weather-teal`) is weather: icons and the wettest hourly tile. **Amber** (`gc-amber`, with `gc-amber-soft` fills) is weather caution: gust and precipitation flags and "↑ Rain" trend notes. **Danger Brick** (`gc-danger`) is official weather alerts and miss streaks. **Good Green** (`gc-good`, `gc-good-soft` fills) is covered: final scores, "Falcons covered" and cover streaks. **Edge Blue** (`gc-info`) is only the "ATL edge" tag under the CBS line. Line moves and venue badges are white chips with a hairline border and ink text, and in the Books table the best offer per column is bold ink with one ✓, with no color: for a spread or total, the best point first and then the best price among books at that point (the Over is best at the lowest total, the Under at the highest); for a moneyline, the best price. Every colored pair passes 4.5:1 (cover streak 5.5:1, weather flags 5.0:1).
+### Games palette
+Games uses the app palette: its `--gc-*` CSS names in `gamesCard.css` all point at theme variables (`--template-palette-*`, since `AppTheme` sets `cssVarPrefix: "template"`) or the slate scale. Ink and muted ink for text, the divider for rules, white paper, slate-100 for chips and the wettest hourly tile. **Covered green** (`success.dark`, green-50 fill) is "Browns covered" and the final-score ✓, as on every tab. **Office blue** is only the "ATL edge" tag. **Caution** is the app's warning orange: an official weather alert is a solid orange flag with near-black ink (like the Scoreboard's "Close" flag), and a weather flag ("Gusts 22 mph", "↑ Rain 43% by 4PM") is an orange tint with dark amber ink (`#8a560a`, 5.4:1). Weather has no hue of its own: condition icons are muted ink. Line moves, venues and streaks are slate-100 chips (10px radius: a pill at one line); the Books button uses the outlined-button slate-50. The table sits on the page with no box and an untinted bold-ink header, like User Picks; phone cards are the Scoreboard's outlined card (divider border, 8px radius, 14px padding). Team colors appear only in logos. In the Books table the best offer per column is bold ink with one ✓, with no color: for a spread or total, the best point first and then the best price among books at that point (the Over is best at the lowest total, the Under at the highest); for a moneyline, the best price.
 
 ### Named Rules
 **The Earned Color Rule.** Every color on the page says something: won, lost, open, honored, or a team. If a colored element isn't carrying one of those meanings, make it neutral.
@@ -207,15 +196,16 @@ One family everywhere, Games tab included.
 **Character:** Inter is a friendly, even workhorse that keeps a dense table legible at 13–14px on a phone.
 
 ### Hierarchy
-- **Headline** (600, 1.25rem, h5): the app title "Morlocked Pick'em" and section heads. The theme's h1–h4 sizes (3rem–1.5rem) exist but aren't used on screen.
-- **Title** (600, 1.125rem): card titles such as "Week N recap" and the leader cards.
+- **Headline** (600, 1.25rem): each tab's title, the `TabIntro` h2 ("Games · Week 4"). The site name in the header is deliberately quieter (700, 0.875rem). The theme's h1–h4 sizes (3rem–1.5rem) exist but aren't used on screen.
+- **Title** (600, 1.125rem, h6 variant): section headings inside a tab (h3: "Season so far", "Champions", Admin groups), one step under the tab title. Scoreboard team abbreviations use this size in bold (data, not a heading).
+- **Card title** (700, 0.875rem): h4 card and chart titles ("Popular picks"); body size, set apart by weight.
 - **Body** (400, 0.875rem, 1.43): everything in tables, cards and panels. The theme sets both body1 and body2 to 14px.
 - **Compact** (400, 0.8125rem): where 14px is a hair too wide: phone tabs, the header summary and its pick tiles from `lg` to `xl`, player names in the table.
 - **Label** (500, 0.75rem): captions, column heads, chip labels, badge text, "Since week 10" subtitles.
-- **Stat** (700, 1.75rem): the biggest type in the app, used for Scoreboard final totals and the one big number on each recap card (Records tiles use it too). The losing final score is set in muted ink (`text.secondary`, 4.6:1; it was faint `text.disabled`, 2.7:1, until 2026-10-02).
+- **Stat** (700, 1.75rem): the biggest type in the app, used for Scoreboard final totals (compact rows use the headline size, 1.25rem) and the one big number on each recap card (Records tiles use it too). The losing final score is set in muted ink (`text.secondary`, 4.6:1; it was faint `text.disabled`, 2.7:1, until 2026-10-02).
 - **Small caps label** (600–700, 0.75rem, 0.04–0.07em tracking, uppercase): short labels over a number, such as Records tiles and the Games phone card's Open / Spread / Total / CBS Line. Column heads stay in sentence case (bold 0.75rem).
 
-Nothing goes below 0.75rem (12px), including the Games hourly strip.
+Nothing goes below 0.75rem (12px), including the Games hourly strip and the leader cards' place discs (a pill for "T12"). Every bare `<button>` (MUI ButtonBase) inherits the page font from the theme; browsers default buttons to Arial.
 
 ### Named Rules
 **The Tabular Numbers Rule.** Any column of numbers (scores, places, spreads, percentages, records) uses tabular figures so digits line up down the table. Games sets it on the whole `.games-card`; Leaders and other score columns set `fontVariantNumeric: "tabular-nums"` locally. Signed numbers use a real minus (−, U+2212), because Inter's tabular hyphen sits in a digit-wide slot and reads as "- 3.5". Win-loss records ("2-1") are short labels, not a column, so they use proportional figures.
@@ -226,7 +216,7 @@ Nothing goes below 0.75rem (12px), including the Games hourly strip.
 
 The page is one centered column: the header, then a row of route tabs (User Picks, Games, Scoreboard, Trends, then after a divider Records and, for the admin, Admin), then the tab's content. MUI's v2 `Grid` handles columns with breakpoints at `sm` 600, `md` 900, `lg` 1200 and `xl` 1536.
 
-- **Header, desktop (`md` and up):** a small "Morlocked Pick'em" label (15px bold, with "Pick'em" in muted ink) on the left, then the browsed week's pick tiles, the Week pill and the player card. The player card is the player picker itself: avatar, name, "13th · 7 pts" (plus the 2nd-half place from week 10) and, after a divider, the money lines. From `md` to `lg` the pick tiles drop to their own row under the header.
+- **Header, desktop (`md` and up):** a small "Morlocked Pick'em" label (14px bold, with "Pick'em" in muted ink) on the left, then the browsed week's pick tiles, the Week pill and the player card. The player card is the player picker itself: avatar, name, "13th · 7 pts" (plus the 2nd-half place from week 10) and, after a divider, the money lines. From `md` to `lg` the pick tiles drop to their own row under the header.
 - **Header, phones (under `md`):** no visible site name (it stays as a visually hidden h1, and every page's browser title is "User Picks · Morlocked Pick'em" and so on). One row holds a "Wk 3" pill and the player picker showing "Ryan Thornburg · **13th** · 7", then the pick tiles fill a row below. That's about 50px less header than a visible title row.
 - The header is identical on every tab except Admin, Records included (its Week pill sets the week the header's picks and place are from).
 
@@ -299,7 +289,7 @@ The tabs are real routes, and switching tabs always starts the new one at its to
 From the second-half start week only, two cards: Overall and 2nd half. There are none before then, since the table with its paid lines already shows the same standings. Each row is a medal tile (gold, silver, bronze, then a neutral place number), the avatar and name, and the score with a green "+N" for picks covering now. No gap to 1st: the order already shows who's ahead. The selected player's row uses Selected Lime, and they get their own row below a "···" if they're outside the paid places.
 
 ### Paid lines
-A dashed 1.5px rule in Deep Trophy Gold under the last paid place, with a small 12px gold label on the right ("Paid · top 5 overall (8 with the tie)"). In the User Picks table it appears only in rank order: by place (overall, plus the 1st half until the 2nd half starts, since both rank the same points) or by 2nd-half place. Everyone tied at a cutoff sits above the line. The place column marks 1st–3rd with the leader cards' gold, silver and bronze medals; other places are plain numbers, since the line, not the marker color, says who's paid.
+A dashed 1.5px rule in Deep Trophy Gold under the last paid place, with a small 12px gold label on the right ("Paid · top 5 overall (8 with the tie)"). In the User Picks table it appears only in rank order: by place (overall, plus the 1st half until the 2nd half starts, since both rank the same points) or by 2nd-half place. Everyone tied at a cutoff sits above the line. The place column marks 1st–3rd with the leader cards' gold, silver and bronze medals; other places are plain numbers, since the line, not the marker color, says who's paid. A gold "?" after the label opens "How prizes work" (`PrizesHelp`): 1 point per pick that covers the CBS line, each prize's span and paid places from meta, and that ties split a place's prize. CBS lines are always half points, so pushes aren't mentioned.
 
 ### Money standing
 Shown only for prizes the selected player is in, or within reach of. Within reach means a gap of at most `round(1.6 × √weeks left)` points (`MONEY_REACH_PTS` in `usersTableUtils.ts`): 4 pts with 6 weeks left, 2 with 1. Weeks left count the browsed week until all its games are final; the 1st half ends the week before `second_half_start_week`, and the 2nd half and overall end at `REGULAR_SEASON_WEEKS` (18). A prize out of reach is left out rather than reported as "N pts out", so someone far back sees just their place. It's measured on the same displayed scores and ranks as the paid lines, and tying the last paid score counts as in.
@@ -319,10 +309,16 @@ Every tab draws a team the same way: the logo (`components/shared/TeamLogo.tsx`,
 ### Weather wording
 One order and wording everywhere, from `utils/weatherText.ts`: "68°F · Partly cloudy · Wind 5 mph SSW · Precip 0%". Conditions are sentence case (the feed sends Title Case), units take a space. Games shows the temperature as its own link and the condition and wind under it (each part kept whole; phone cards stack them); Scoreboard's pregame line prefixes "Forecast:", and the live line "Now:" without precip.
 
-### Kickoff Board table (Games)
-White table in a 12px rounded wrapper with a 1px border. The header row is tinted, with bold 12px sentence-case labels like User Picks. Teams use the app-wide team mark (logo, bold abbreviation, muted nickname; see Team mark). Weather flags are small amber or brick pills in sentence case, label then number ("High wind 22 mph", "Precip 60%"; visibility only at dense-fog levels, ¼ mile or less), on their own full-width line under the conditions and the hourly strip, and there's an hourly strip of time, icon and precipitation per hour, with no box behind each hour: only the wettest hour gets a teal tile. A precipitation flag shows only when there's no hourly strip, since the strip already shows the wettest hour. Lines always name the favorite ("PIT −3", "Pick'em" at 0), never a bare home-side number. **CBS line** comes first and biggest (1.125rem bold), since it's the line the pool scores against, with "Falcons covered" (the nickname: "NO covered" read as "no one covered") or "Push" once final and an "ATL edge 2" tag; cover streaks read "BUF: 3 straight covers" / "PHI: 3 straight without a cover"; (points easier, in the tag so phones see it) when CBS is 1+ point easier on a side than Vegas. **Vegas** follows as the comparison: current line, "Opened …" only when the open differs from the current line, a "Moved 4.5 to ARI" badge on 2+ point moves, then "O/U 44.5 · Over". On phones the CBS line block sits between the teams and the weather, with Vegas as one line under it, and kickoff reads "Sun 1:00 PM" over the network, as on desktop (no month and day; every game is in the browsed week). No legend: every label explains itself. The table only shows from 1180px; below that the CBS line wraps and the weather text runs under the hourly strip. Below 1180px Games uses phone-width cards (about 310–420px): one per row under 700px, two from 700px, three from 1000px, with Books pinned to the bottom so cards in a row line up. In the weather cell the conditions cap at 15rem, so on wide screens the hourly strip sits right after them; when fewer than 6rem would be left for the conditions (320px phones, or a 5–6 hour strip) the strip wraps onto its own line, and a strip wider than the whole cell scrolls inside it. On the cards, Books opens as one small table per bet type (Moneyline, Spread, Total) with the books down the side, so nothing scrolls sideways. Only the temperature (or the roof label) links to the forecast, as a 24px-tall target; the phone Books control is a plain 44px row on the card's bottom divider (no fill, so it doesn't outweigh the CBS line); Games buttons and links use the app's 3px solid brand-blue focus ring (4.9:1 on white; it was 50% alpha, 2.2:1, until 2026-09-30). A muted "Odds updated Wed, Sep 30, 9:47 PM" line sits above the table, from the odds feed's `updated_at`. A game with no book data shows "No books" on desktop and no Books row on phones; an open-air game with no saved forecast says "No forecast" with no link. If the week's games fail to load, the tab says so and retries on the next poll instead of spinning. The Games tab is for pregame and odds research only: no pool picks or "you" markers here (those live on User Picks and Scoreboard).
+### Games table
+The table sits on the page with no wrapper, and its header row is untinted bold 12px ink, like User Picks. Teams use the app-wide team mark (logo, bold abbreviation, muted nickname; see Team mark). Weather flags are small caution chips (an orange tint, or solid orange for an official alert) in sentence case, label then number ("High wind 22 mph", "Precip 60%"; visibility only at dense-fog levels, ¼ mile or less), on their own full-width line under the conditions and the hourly strip, and there's an hourly strip of time, icon and precipitation per hour, with no box behind each hour: only the wettest hour gets a slate tile. A precipitation flag shows only when there's no hourly strip, since the strip already shows the wettest hour. Lines always name the favorite ("PIT −3", "Pick'em" at 0), never a bare home-side number. **CBS line** comes first and biggest (1.125rem bold), since it's the line the pool scores against, with "Falcons covered" (the nickname: "NO covered" read as "no one covered") or "Push" once final and an "ATL edge 2" tag; cover streaks read "▲ BUF: 3 straight covers" / "▼ PHI: 3 straight without a cover"; (points easier, in the tag so phones see it) when CBS is 1+ point easier on a side than Vegas. **Vegas** follows as the comparison: current line, "Opened …" only when the open differs from the current line, a "Moved 4.5 to ARI" badge on 2+ point moves, then "O/U 44.5 · Over". On phones the CBS line block sits between the teams and the weather, with Vegas as one line under it, and kickoff reads "Sun 1:00 PM" over the network, as on desktop (no month and day; every game is in the browsed week). No legend: every label explains itself. The table only shows from 1180px; below that the CBS line wraps and the weather text runs under the hourly strip. Below 1180px Games uses phone-width cards (about 310–420px): one per row under 700px, two from 700px, three from 1000px, with Books pinned to the bottom so cards in a row line up. In the weather cell the conditions cap at 15rem, so on wide screens the hourly strip sits right after them; when fewer than 6rem would be left for the conditions (320px phones, or a 5–6 hour strip) the strip wraps onto its own line, and a strip wider than the whole cell scrolls inside it. On the cards, Books opens as one small table per bet type (Moneyline, Spread, Total) with the books down the side, so nothing scrolls sideways. Only the temperature (or the roof label) links to the forecast, as a 24px-tall target; the phone Books control is a plain 44px row on the card's bottom divider (no fill, so it doesn't outweigh the CBS line); Games buttons and links use the app's 3px solid brand-blue focus ring (4.9:1 on white; it was 50% alpha, 2.2:1, until 2026-09-30). A muted "Odds updated Wed, Sep 30, 9:47 PM" line sits above the table, from the odds feed's `updated_at`. A game with no book data shows "No books" on desktop and no Books row on phones; an open-air game with no saved forecast says "No forecast" with no link. If the week's games fail to load, the tab says so and retries on the next poll instead of spinning. The Games tab is for pregame and odds research only: no pool picks or "you" markers here (those live on User Picks and Scoreboard).
 
 ## Do's and Don'ts
+
+### Red And Green Mean Picks
+Red and green are for pick results only (won/lost, covering/not covering), plus the mover arrows. Everything else that only compares (team streaks, the pool's split rates against 50%, how often a team was picked, the pool split bar) is neutral: `text.secondary` fills, `text.disabled` for the smaller side, slate chips. Team colors stay in logos and the drive band, not in bars, where TB would read as red and PIT as black.
+
+### Freshness
+User Picks shows "Updated 7:19 PM" in the desktop table header only (the user's call) and a "Couldn't refresh…" line when a poll fails. The Scoreboard shows the same note on its tab intro at every width, but only while a game is live or after a failed refresh; on a quiet day it shows nothing.
 
 ### Do:
 - **Do** keep the record in tables on white paper with hairline dividers; use cards for grouped secondary content.
@@ -339,5 +335,5 @@ White table in a 12px rounded wrapper with a 1px border. The header row is tinte
 - **Don't** use gold as a general accent or button color.
 - **Don't** re-sort games or players by how close or dramatic they are.
 - **Don't** set type larger than 1.75rem, or put more than one big number on a stat card.
-- **Don't** bring a second font family back to any tab, or spread the `--gc-*` tokens into other tabs, without deciding to unify the two palettes first.
+- **Don't** bring a second font family or a tab-only palette back to any tab; Games' `--gc-*` names must keep pointing at theme tokens.
 - **Don't** use a colored side stripe as decoration on cards, list items or alerts. The Records "you" edge is the only exception.

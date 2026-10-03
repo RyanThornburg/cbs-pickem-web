@@ -24,7 +24,8 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
       sx={[
         {
           display: "grid",
-          gridTemplateColumns: "28px minmax(0, 1fr) auto",
+          // Wide enough for a "T12" pill.
+          gridTemplateColumns: "32px minmax(0, 1fr) auto",
           gap: 1,
           alignItems: "center",
           px: 0.5,
@@ -37,13 +38,18 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
     >
       <Box
         sx={{
-          width: 24,
+          // A disc for "1" or "12", a pill for "T12": the label holds the
+          // 12px floor instead of shrinking to fit a fixed circle.
+          minWidth: 24,
           height: 24,
-          borderRadius: "50%",
+          px: 0.5,
+          boxSizing: "border-box",
+          justifySelf: "start",
+          borderRadius: 12,
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: row.placeLabel.length > 2 ? "0.6rem" : "0.7rem",
+          fontSize: "0.75rem",
           fontWeight: 800,
           bgcolor: medal?.bg ?? "action.hover",
           color: medal?.fg ?? "text.secondary",

@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import { MONEY_GOLD } from "./StandingsStatus";
 import { selectedRowSx } from "./selectedRowSx";
+import { PrizesHelp } from "./PrizesHelp";
 
 // Deep trophy gold: the prize color, dark enough for 12px text (5.1:1).
 const PAID_GOLD = MONEY_GOLD;
@@ -19,32 +20,41 @@ export function PaidLineRule({
 }) {
   return (
     <>
-      <Box
-        role="separator"
-        aria-label={label}
-        sx={{
-          position: "relative",
-          borderTop: `1.5px dashed ${PAID_GOLD}`,
-          my: 1.25,
-        }}
-      >
+      {/* The label and its "?" sit beside the separator, not inside it: a
+          separator's children are presentational, which would hide the
+          button from screen readers. */}
+      <Box sx={{ position: "relative", my: 1.25 }}>
         <Box
-          component="span"
-          aria-hidden
+          role="separator"
+          aria-label={label}
+          sx={{ borderTop: `1.5px dashed ${PAID_GOLD}` }}
+        />
+        <Box
           sx={{
             position: "absolute",
             right: 0,
             top: -10,
+            display: "flex",
+            alignItems: "center",
+            gap: 0.25,
             pl: 1,
             bgcolor: "background.paper",
-            color: PAID_GOLD,
-            fontSize: "0.75rem",
-            fontWeight: 600,
-            lineHeight: "20px",
-            whiteSpace: "nowrap",
           }}
         >
-          {label}
+          <Box
+            component="span"
+            aria-hidden
+            sx={{
+              color: PAID_GOLD,
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              lineHeight: "20px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {label}
+          </Box>
+          <PrizesHelp />
         </Box>
       </Box>
       {note && (

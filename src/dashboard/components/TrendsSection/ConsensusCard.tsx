@@ -3,7 +3,6 @@ import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
-import { getTeamData } from "../../utils/teamAssets";
 import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
@@ -85,7 +84,8 @@ const buildGameConsensus = (trends: WeekTrends): GameConsensus[] => {
 };
 
 // One row per game: the less-picked side on the left, the more-picked side
-// on the right, a bar in the teams' colors between them, and the bigger
+// on the right, a neutral bar between them (darker for the bigger side;
+// red, green and team colors would read as a result), and the bigger
 // side's share of the pool on the far right (bold when the data calls it a
 // one-sided game). Once a game is final the side that covered gets a ✓ and
 // the other fades.
@@ -180,8 +180,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                     <Box
                       sx={{
                         flexGrow: Math.max(trailer.pct, 0.02),
-                        bgcolor: `#${getTeamData(trailer.abbr).color}`,
-                        opacity: 0.55,
+                        bgcolor: "text.disabled",
                       }}
                     />
                   </Tooltip>
@@ -190,7 +189,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                   <Box
                     sx={{
                       flexGrow: Math.max(leader.pct, 0.02),
-                      bgcolor: `#${getTeamData(leader.abbr).color}`,
+                      bgcolor: "text.secondary",
                     }}
                   />
                 </Tooltip>

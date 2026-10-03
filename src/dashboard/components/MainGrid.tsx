@@ -339,7 +339,7 @@ export default function MainGrid() {
               component="h1"
               sx={(theme) => ({
                 mr: "auto",
-                fontSize: "0.9375rem",
+                fontSize: "0.875rem",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
                 whiteSpace: "nowrap",

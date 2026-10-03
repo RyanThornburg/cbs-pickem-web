@@ -67,7 +67,8 @@ export default function TabIntro({
       >
         <Typography
           component="h2"
-          sx={{ fontSize: "1.125rem", fontWeight: 600, lineHeight: 1.3 }}
+          // The headline step (1.25rem), one above the 1.125rem section titles.
+          sx={{ fontSize: "1.25rem", fontWeight: 600, lineHeight: 1.3 }}
         >
           {title}
           {week != null && (

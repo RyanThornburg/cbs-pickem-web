@@ -1,8 +1,8 @@
-import { memo, useState } from "react";
+import { Fragment, memo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game, GameStatus } from "../../../../types";
-import { weatherLine } from "../../../../utils/weatherText";
+import { weatherParts } from "../../../../utils/weatherText";
 import {
   isLiveStatus,
   getGameHighlight,
@@ -93,17 +93,34 @@ const Middle = ({ game }: { game: Game }) => {
     );
   }
   const f = game.forecast;
-  const text =
-    f && game.stadium?.roof_type === "Open"
-      ? weatherLine(f, { precip: false })
-      : (game.stadium?.name ?? "");
+  if (f && game.stadium?.roof_type === "Open") {
+    // Each part stays whole and the line wraps between parts, so a narrow
+    // column shows "Wind 5 mph W" on a second line instead of "Wind 5 m…".
+    const parts = weatherParts(f, { precip: false });
+    return (
+      <Typography
+        variant="body2"
+        sx={{ color: "text.secondary", fontSize: "0.82rem" }}
+      >
+        {parts.map((part, i) => (
+          <Fragment key={part}>
+            <Box component="span" sx={{ whiteSpace: "nowrap" }}>
+              {part}
+              {i < parts.length - 1 && " ·"}
+            </Box>
+            {i < parts.length - 1 && " "}
+          </Fragment>
+        ))}
+      </Typography>
+    );
+  }
   return (
     <Typography
       variant="body2"
       noWrap
       sx={{ color: "text.secondary", fontSize: "0.82rem" }}
     >
-      {text}
+      {game.stadium?.name ?? ""}
     </Typography>
   );
 };
@@ -156,7 +173,7 @@ export const GameRow = memo((props: GameRowProps) => {
           sx={{
             ml: "auto",
             fontWeight: 700,
-            fontSize: "1.2rem",
+            fontSize: "1.25rem",
             lineHeight: 1,
             minWidth: 28,
             textAlign: "right",

@@ -1,638 +1,510 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-30T20:15:23.275014+00:00",
+  "generatedAt": "2026-10-03T00:32:10+00:00",
   "title": "Design System: Morlocked Pick'em",
   "extensions": {
     "colorMeta": {
       "ink": {
         "role": "neutral",
-        "displayName": "Ink"
+        "displayName": "Ink",
+        "tonalRamp": [
+          "hsl(220, 0%, 15%)",
+          "hsl(220, 0%, 25%)",
+          "hsl(220, 0%, 35%)",
+          "hsl(220, 0%, 45%)",
+          "hsl(220, 0%, 58%)",
+          "hsl(220, 0%, 72%)",
+          "hsl(220, 0%, 85%)",
+          "hsl(220, 0%, 95%)"
+        ]
       },
       "ink-muted": {
         "role": "neutral",
-        "displayName": "Muted Ink"
+        "displayName": "Muted Ink",
+        "tonalRamp": [
+          "hsl(220, 0%, 15%)",
+          "hsl(220, 0%, 25%)",
+          "hsl(220, 0%, 35%)",
+          "hsl(220, 0%, 45%)",
+          "hsl(220, 0%, 58%)",
+          "hsl(220, 0%, 72%)",
+          "hsl(220, 0%, 85%)",
+          "hsl(220, 0%, 95%)"
+        ]
       },
       "ink-faint": {
         "role": "neutral",
-        "displayName": "Faint Ink"
+        "displayName": "Faint Ink",
+        "tonalRamp": [
+          "hsl(220, 0%, 15%)",
+          "hsl(220, 0%, 25%)",
+          "hsl(220, 0%, 35%)",
+          "hsl(220, 0%, 45%)",
+          "hsl(220, 0%, 58%)",
+          "hsl(220, 0%, 72%)",
+          "hsl(220, 0%, 85%)",
+          "hsl(220, 0%, 95%)"
+        ]
       },
       "paper": {
         "role": "neutral",
         "displayName": "Paper",
         "tonalRamp": [
-          "#262626",
-          "#424242",
-          "#5e5e5e",
-          "#7a7a7a",
-          "#969696",
-          "#b2b2b2",
-          "#d1d1d1",
-          "#f2f2f2"
+          "hsl(0, 0%, 15%)",
+          "hsl(0, 0%, 25%)",
+          "hsl(0, 0%, 35%)",
+          "hsl(0, 0%, 45%)",
+          "hsl(0, 0%, 58%)",
+          "hsl(0, 0%, 72%)",
+          "hsl(0, 0%, 85%)",
+          "hsl(0, 0%, 95%)"
         ]
       },
       "hairline": {
         "role": "neutral",
-        "displayName": "Hairline"
+        "displayName": "Hairline",
+        "tonalRamp": [
+          "hsl(220, 0%, 15%)",
+          "hsl(220, 0%, 25%)",
+          "hsl(220, 0%, 35%)",
+          "hsl(220, 0%, 45%)",
+          "hsl(220, 0%, 58%)",
+          "hsl(220, 0%, 72%)",
+          "hsl(220, 0%, 85%)",
+          "hsl(220, 0%, 95%)"
+        ]
       },
       "office-blue": {
         "role": "primary",
         "displayName": "Office Blue",
         "tonalRamp": [
-          "#082644",
-          "#0e4376",
-          "#145fa9",
-          "#1a7bdb",
-          "#4497e9",
-          "#76b3ef",
-          "#add1f5",
-          "#e8f2fc"
+          "hsl(210, 79%, 15%)",
+          "hsl(210, 79%, 25%)",
+          "hsl(210, 79%, 35%)",
+          "hsl(210, 79%, 45%)",
+          "hsl(210, 79%, 58%)",
+          "hsl(210, 79%, 72%)",
+          "hsl(210, 79%, 85%)",
+          "hsl(210, 79%, 95%)"
         ]
       },
       "covered-green": {
         "role": "tertiary",
         "displayName": "Covered Green",
         "tonalRamp": [
-          "#153816",
-          "#246127",
-          "#338a37",
-          "#42b348",
-          "#66c76b",
-          "#8fd693",
-          "#bce6be",
-          "#ecf8ed"
+          "hsl(123, 46%, 15%)",
+          "hsl(123, 46%, 25%)",
+          "hsl(123, 46%, 35%)",
+          "hsl(123, 46%, 45%)",
+          "hsl(123, 46%, 58%)",
+          "hsl(123, 46%, 72%)",
+          "hsl(123, 46%, 85%)",
+          "hsl(123, 46%, 95%)"
         ]
       },
       "missed-red": {
         "role": "tertiary",
         "displayName": "Missed Red",
         "tonalRamp": [
-          "#3f0d0d",
-          "#6d1717",
-          "#9c2121",
-          "#ca2b2b",
-          "#da5252",
-          "#e48181",
-          "#efb3b3",
-          "#fbeaea"
+          "hsl(0, 65%, 15%)",
+          "hsl(0, 65%, 25%)",
+          "hsl(0, 65%, 35%)",
+          "hsl(0, 65%, 45%)",
+          "hsl(0, 65%, 58%)",
+          "hsl(0, 65%, 72%)",
+          "hsl(0, 65%, 85%)",
+          "hsl(0, 65%, 95%)"
         ]
       },
       "caution-orange": {
         "role": "tertiary",
         "displayName": "Caution Orange",
         "tonalRamp": [
-          "#4c2301",
-          "#833c01",
-          "#bb5502",
-          "#f36f02",
-          "#fd8c30",
-          "#feab67",
-          "#fecda4",
-          "#fff1e6"
+          "hsl(27, 98%, 15%)",
+          "hsl(27, 98%, 25%)",
+          "hsl(27, 98%, 35%)",
+          "hsl(27, 98%, 45%)",
+          "hsl(27, 98%, 58%)",
+          "hsl(27, 98%, 72%)",
+          "hsl(27, 98%, 85%)",
+          "hsl(27, 98%, 95%)"
         ]
       },
       "trophy-gold": {
         "role": "secondary",
         "displayName": "Trophy Gold",
         "tonalRamp": [
-          "#453407",
-          "#785a0d",
-          "#aa8012",
-          "#dda718",
-          "#ebbc42",
-          "#f0ce75",
-          "#f6e2ac",
-          "#fdf7e8"
+          "hsl(43, 80%, 15%)",
+          "hsl(43, 80%, 25%)",
+          "hsl(43, 80%, 35%)",
+          "hsl(43, 80%, 45%)",
+          "hsl(43, 80%, 58%)",
+          "hsl(43, 80%, 72%)",
+          "hsl(43, 80%, 85%)",
+          "hsl(43, 80%, 95%)"
         ]
       },
       "trophy-gold-deep": {
         "role": "secondary",
         "displayName": "Deep Trophy Gold",
         "tonalRamp": [
-          "#453407",
-          "#785b0d",
-          "#aa8112",
-          "#dda718",
-          "#ebbd42",
-          "#f0ce75",
-          "#f6e2ac",
-          "#fdf7e8"
+          "hsl(44, 80%, 15%)",
+          "hsl(44, 80%, 25%)",
+          "hsl(44, 80%, 35%)",
+          "hsl(44, 80%, 45%)",
+          "hsl(44, 80%, 58%)",
+          "hsl(44, 80%, 72%)",
+          "hsl(44, 80%, 85%)",
+          "hsl(44, 80%, 95%)"
         ]
       },
       "medal-silver": {
         "role": "secondary",
         "displayName": "Medal Silver",
         "tonalRamp": [
-          "#22252a",
-          "#3b404a",
-          "#545b69",
-          "#6d7688",
-          "#8b93a2",
-          "#aab0bb",
-          "#cccfd6",
-          "#f1f2f4"
+          "hsl(220, 11%, 15%)",
+          "hsl(220, 11%, 25%)",
+          "hsl(220, 11%, 35%)",
+          "hsl(220, 11%, 45%)",
+          "hsl(220, 11%, 58%)",
+          "hsl(220, 11%, 72%)",
+          "hsl(220, 11%, 85%)",
+          "hsl(220, 11%, 95%)"
         ]
       },
       "medal-bronze": {
         "role": "secondary",
         "displayName": "Medal Bronze",
         "tonalRamp": [
-          "#3c2311",
-          "#673c1d",
-          "#93562a",
-          "#be7036",
-          "#d18d5c",
-          "#ddac88",
-          "#ebcdb8",
-          "#f9f1eb"
+          "hsl(25, 56%, 15%)",
+          "hsl(25, 56%, 25%)",
+          "hsl(25, 56%, 35%)",
+          "hsl(25, 56%, 45%)",
+          "hsl(25, 56%, 58%)",
+          "hsl(25, 56%, 72%)",
+          "hsl(25, 56%, 85%)",
+          "hsl(25, 56%, 95%)"
         ]
       },
       "selected-lime": {
         "role": "tertiary",
         "displayName": "Selected Lime",
         "tonalRamp": [
-          "#3c410c",
-          "#697015",
-          "#959f1d",
-          "#c1cf26",
-          "#d3df4e",
-          "#dfe77e",
-          "#ecf1b1",
-          "#fafbe9"
+          "hsl(65, 69%, 15%)",
+          "hsl(65, 69%, 25%)",
+          "hsl(65, 69%, 35%)",
+          "hsl(65, 69%, 45%)",
+          "hsl(65, 69%, 58%)",
+          "hsl(65, 69%, 72%)",
+          "hsl(65, 69%, 85%)",
+          "hsl(65, 69%, 95%)"
         ]
       },
       "streak-flame": {
         "role": "tertiary",
         "displayName": "Streak Flame",
         "tonalRamp": [
-          "#4c1200",
-          "#852000",
-          "#bd2d00",
-          "#f53b00",
-          "#ff602e",
-          "#ff8b66",
-          "#ffb9a3",
-          "#ffece5"
-        ]
-      },
-      "pick-won-fill": {
-        "role": "tertiary",
-        "displayName": "Pick Won Fill",
-        "tonalRamp": [
-          "#173519",
-          "#285c2c",
-          "#39843f",
-          "#4aab52",
-          "#6dc074",
-          "#94d199",
-          "#bfe3c2",
-          "#edf7ee"
-        ]
-      },
-      "pick-won-edge": {
-        "role": "tertiary",
-        "displayName": "Pick Won Edge",
-        "tonalRamp": [
-          "#183519",
-          "#295c2b",
-          "#3a833d",
-          "#4ba950",
-          "#6ebf72",
-          "#95d098",
-          "#bfe3c1",
-          "#edf7ee"
-        ]
-      },
-      "pick-lost-fill": {
-        "role": "tertiary",
-        "displayName": "Pick Lost Fill",
-        "tonalRamp": [
-          "#4c0008",
-          "#85000d",
-          "#bd0013",
-          "#f50018",
-          "#ff2e43",
-          "#ff6675",
-          "#ffa3ac",
-          "#ffe5e8"
-        ]
-      },
-      "pick-lost-edge": {
-        "role": "tertiary",
-        "displayName": "Pick Lost Edge",
-        "tonalRamp": [
-          "#460806",
-          "#790d0b",
-          "#ad1310",
-          "#e01815",
-          "#ed433f",
-          "#f27573",
-          "#f7acab",
-          "#fde8e8"
-        ]
-      },
-      "pick-open-fill": {
-        "role": "tertiary",
-        "displayName": "Pick Open Fill",
-        "tonalRamp": [
-          "#052b47",
-          "#094b7c",
-          "#0d6bb0",
-          "#108be4",
-          "#3ca4f1",
-          "#70bdf5",
-          "#a9d7f9",
-          "#e7f4fd"
-        ]
-      },
-      "pick-open-edge": {
-        "role": "tertiary",
-        "displayName": "Pick Open Edge",
-        "tonalRamp": [
-          "#042a49",
-          "#07497e",
-          "#0967b3",
-          "#0c86e8",
-          "#38a0f4",
-          "#6ebaf7",
-          "#a8d5fa",
-          "#e7f3fe"
-        ]
-      },
-      "away-blue": {
-        "role": "tertiary",
-        "displayName": "Away Blue",
-        "tonalRamp": [
-          "#0a2643",
-          "#114273",
-          "#185ea4",
-          "#207ad5",
-          "#4996e4",
-          "#7ab2eb",
-          "#afd1f3",
-          "#e9f2fc"
-        ]
-      },
-      "home-orange": {
-        "role": "tertiary",
-        "displayName": "Home Orange",
-        "tonalRamp": [
-          "#482604",
-          "#7d4208",
-          "#b25e0b",
-          "#e7790e",
-          "#f3963a",
-          "#f6b26f",
-          "#fad1a8",
-          "#fef2e7"
-        ]
-      },
-      "turf-green": {
-        "role": "tertiary",
-        "displayName": "Turf Green",
-        "tonalRamp": [
-          "#15371f",
-          "#256036",
-          "#34884d",
-          "#44b164",
-          "#68c583",
-          "#91d4a4",
-          "#bde5c9",
-          "#edf8f0"
-        ]
-      },
-      "slate-900": {
-        "role": "neutral",
-        "displayName": "Slate 900",
-        "tonalRamp": [
-          "#192234",
-          "#2b3b5a",
-          "#3d537f",
-          "#506ca5",
-          "#728abb",
-          "#98aacd",
-          "#c1cce1",
-          "#eef1f7"
-        ]
-      },
-      "slate-700": {
-        "role": "neutral",
-        "displayName": "Slate 700",
-        "tonalRamp": [
-          "#1f242e",
-          "#353e50",
-          "#4b5871",
-          "#627293",
-          "#828fab",
-          "#a3adc2",
-          "#c8ceda",
-          "#f0f1f5"
-        ]
-      },
-      "slate-200": {
-        "role": "neutral",
-        "displayName": "Slate 200",
-        "tonalRamp": [
-          "#1f242e",
-          "#353e50",
-          "#4b5871",
-          "#627293",
-          "#828fab",
-          "#a3adc2",
-          "#c8ceda",
-          "#f0f1f5"
-        ]
-      },
-      "slate-100": {
-        "role": "neutral",
-        "displayName": "Slate 100",
-        "tonalRamp": [
-          "#1b2232",
-          "#2e3c56",
-          "#42557b",
-          "#566e9f",
-          "#778cb6",
-          "#9cabc9",
-          "#c3cddf",
-          "#eef1f6"
-        ]
-      },
-      "slate-50": {
-        "role": "neutral",
-        "displayName": "Slate 50",
-        "tonalRamp": [
-          "#192234",
-          "#2b3b5a",
-          "#3d537f",
-          "#506ca5",
-          "#728abb",
-          "#98aacd",
-          "#c1cce1",
-          "#eef1f7"
-        ]
-      },
-      "gc-bg": {
-        "role": "neutral",
-        "displayName": "Gc Bg",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#1e222f",
-          "#343b51",
-          "#495473",
-          "#5f6d96",
-          "#7f8bae",
-          "#a2aac3",
-          "#c7ccdb",
-          "#eff1f5"
-        ]
-      },
-      "gc-surface-2": {
-        "role": "neutral",
-        "displayName": "Gc Surface 2",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#1c2230",
-          "#313b53",
-          "#465477",
-          "#5b6d9a",
-          "#7b8bb2",
-          "#9faac6",
-          "#c5ccdd",
-          "#eff1f6"
-        ]
-      },
-      "gc-border": {
-        "role": "neutral",
-        "displayName": "Gc Border",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#1e242e",
-          "#343e51",
-          "#4a5873",
-          "#607295",
-          "#808fad",
-          "#a2adc3",
-          "#c7cedb",
-          "#f0f1f5"
-        ]
-      },
-      "gc-text": {
-        "role": "neutral",
-        "displayName": "Gc Text",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#1d2230",
-          "#323b53",
-          "#475476",
-          "#5c6c98",
-          "#7d8ab0",
-          "#a0aac5",
-          "#c6ccdc",
-          "#eff1f5"
-        ]
-      },
-      "gc-text-muted": {
-        "role": "neutral",
-        "displayName": "Gc Text Muted",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#21242c",
-          "#393f4c",
-          "#51596c",
-          "#69748c",
-          "#8891a5",
-          "#a8aebd",
-          "#cbcfd8",
-          "#f0f2f4"
-        ]
-      },
-      "gc-amber": {
-        "role": "neutral",
-        "displayName": "Kickoff Amber",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#462c06",
-          "#7a4d0b",
-          "#ad6d10",
-          "#e08d14",
-          "#eea73f",
-          "#f2be73",
-          "#f7d8ab",
-          "#fdf4e8"
-        ]
-      },
-      "gc-amber-soft": {
-        "role": "neutral",
-        "displayName": "Gc Amber Soft",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#3f2e0e",
-          "#6d4f18",
-          "#9b7121",
-          "#c9922b",
-          "#daab53",
-          "#e4c181",
-          "#efdab3",
-          "#faf5ea"
-        ]
-      },
-      "gc-weather-teal": {
-        "role": "neutral",
-        "displayName": "Weather Teal",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#0e373f",
-          "#185f6d",
-          "#22879a",
-          "#2cafc8",
-          "#54c3d9",
-          "#82d3e3",
-          "#b4e5ee",
-          "#eaf8fa"
-        ]
-      },
-      "gc-weather-soft": {
-        "role": "neutral",
-        "displayName": "Gc Weather Soft",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#143439",
-          "#225a63",
-          "#30808d",
-          "#3fa7b6",
-          "#63bcca",
-          "#8dced8",
-          "#bbe2e8",
-          "#ecf7f8"
-        ]
-      },
-      "gc-danger": {
-        "role": "neutral",
-        "displayName": "Danger Brick",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#3e120e",
-          "#6c1f19",
-          "#992c24",
-          "#c7392e",
-          "#d85f55",
-          "#e28a83",
-          "#eeb9b4",
-          "#faebea"
-        ]
-      },
-      "gc-good": {
-        "role": "neutral",
-        "displayName": "Good Green",
-        "scope": "Games tab (.games-card) only",
-        "tonalRamp": [
-          "#15371c",
-          "#256030",
-          "#348844",
-          "#44b158",
-          "#68c579",
-          "#91d49d",
-          "#bde5c4",
-          "#edf8ef"
+          "hsl(14, 100%, 15%)",
+          "hsl(14, 100%, 25%)",
+          "hsl(14, 100%, 35%)",
+          "hsl(14, 100%, 45%)",
+          "hsl(14, 100%, 58%)",
+          "hsl(14, 100%, 72%)",
+          "hsl(14, 100%, 85%)",
+          "hsl(14, 100%, 95%)"
         ]
       },
       "streak-pill": {
         "role": "tertiary",
         "displayName": "Streak Pill",
         "tonalRamp": [
-          "#481405",
-          "#7d2308",
-          "#b2320b",
-          "#e6410e",
-          "#f3663a",
-          "#f68f6f",
-          "#fabca9",
-          "#fdece7"
+          "hsl(14, 88%, 15%)",
+          "hsl(14, 88%, 25%)",
+          "hsl(14, 88%, 35%)",
+          "hsl(14, 88%, 45%)",
+          "hsl(14, 88%, 58%)",
+          "hsl(14, 88%, 72%)",
+          "hsl(14, 88%, 85%)",
+          "hsl(14, 88%, 95%)"
         ]
       },
       "streak-pill-end": {
         "role": "tertiary",
         "displayName": "Streak Pill End",
         "tonalRamp": [
-          "#400d0d",
-          "#6e1616",
-          "#9d2020",
-          "#cc2929",
-          "#dc5151",
-          "#e58080",
-          "#f0b3b3",
-          "#fbeaea"
+          "hsl(0, 66%, 15%)",
+          "hsl(0, 66%, 25%)",
+          "hsl(0, 66%, 35%)",
+          "hsl(0, 66%, 45%)",
+          "hsl(0, 66%, 58%)",
+          "hsl(0, 66%, 72%)",
+          "hsl(0, 66%, 85%)",
+          "hsl(0, 66%, 95%)"
         ]
       },
-      "gc-good-soft": {
-        "role": "neutral",
-        "displayName": "Good Green Soft",
-        "scope": "Games tab (.games-card) only",
+      "pick-won-fill": {
+        "role": "tertiary",
+        "displayName": "Won Fill",
         "tonalRamp": [
-          "#15371c",
-          "#256030",
-          "#348844",
-          "#44b158",
-          "#68c579",
-          "#91d49d",
-          "#bde5c4",
-          "#edf8ef"
+          "hsl(125, 39%, 15%)",
+          "hsl(125, 39%, 25%)",
+          "hsl(125, 39%, 35%)",
+          "hsl(125, 39%, 45%)",
+          "hsl(125, 39%, 58%)",
+          "hsl(125, 39%, 72%)",
+          "hsl(125, 39%, 85%)",
+          "hsl(125, 39%, 95%)"
         ]
       },
-      "gc-info": {
-        "role": "neutral",
-        "displayName": "Edge Blue",
-        "scope": "Games tab (.games-card) only: the CBS edge tag",
+      "pick-won-edge": {
+        "role": "tertiary",
+        "displayName": "Won Edge",
         "tonalRamp": [
-          "#0a2a52",
-          "#0f4280",
-          "#1565c0",
-          "#1e7fe6",
-          "#4d9bed",
-          "#80b8f2",
-          "#b8d7f8",
-          "#eaf3fd"
+          "hsl(123, 38%, 15%)",
+          "hsl(123, 38%, 25%)",
+          "hsl(123, 38%, 35%)",
+          "hsl(123, 38%, 45%)",
+          "hsl(123, 38%, 58%)",
+          "hsl(123, 38%, 72%)",
+          "hsl(123, 38%, 85%)",
+          "hsl(123, 38%, 95%)"
+        ]
+      },
+      "pick-lost-fill": {
+        "role": "tertiary",
+        "displayName": "Lost Fill",
+        "tonalRamp": [
+          "hsl(354, 100%, 15%)",
+          "hsl(354, 100%, 25%)",
+          "hsl(354, 100%, 35%)",
+          "hsl(354, 100%, 45%)",
+          "hsl(354, 100%, 58%)",
+          "hsl(354, 100%, 72%)",
+          "hsl(354, 100%, 85%)",
+          "hsl(354, 100%, 95%)"
+        ]
+      },
+      "pick-lost-edge": {
+        "role": "tertiary",
+        "displayName": "Lost Edge",
+        "tonalRamp": [
+          "hsl(1, 83%, 15%)",
+          "hsl(1, 83%, 25%)",
+          "hsl(1, 83%, 35%)",
+          "hsl(1, 83%, 45%)",
+          "hsl(1, 83%, 58%)",
+          "hsl(1, 83%, 72%)",
+          "hsl(1, 83%, 85%)",
+          "hsl(1, 83%, 95%)"
+        ]
+      },
+      "pick-open-fill": {
+        "role": "tertiary",
+        "displayName": "Open Fill",
+        "tonalRamp": [
+          "hsl(205, 87%, 15%)",
+          "hsl(205, 87%, 25%)",
+          "hsl(205, 87%, 35%)",
+          "hsl(205, 87%, 45%)",
+          "hsl(205, 87%, 58%)",
+          "hsl(205, 87%, 72%)",
+          "hsl(205, 87%, 85%)",
+          "hsl(205, 87%, 95%)"
+        ]
+      },
+      "pick-open-edge": {
+        "role": "tertiary",
+        "displayName": "Open Edge",
+        "tonalRamp": [
+          "hsl(207, 90%, 15%)",
+          "hsl(207, 90%, 25%)",
+          "hsl(207, 90%, 35%)",
+          "hsl(207, 90%, 45%)",
+          "hsl(207, 90%, 58%)",
+          "hsl(207, 90%, 72%)",
+          "hsl(207, 90%, 85%)",
+          "hsl(207, 90%, 95%)"
+        ]
+      },
+      "away-blue": {
+        "role": "tertiary",
+        "displayName": "Away Blue",
+        "tonalRamp": [
+          "hsl(210, 74%, 15%)",
+          "hsl(210, 74%, 25%)",
+          "hsl(210, 74%, 35%)",
+          "hsl(210, 74%, 45%)",
+          "hsl(210, 74%, 58%)",
+          "hsl(210, 74%, 72%)",
+          "hsl(210, 74%, 85%)",
+          "hsl(210, 74%, 95%)"
+        ]
+      },
+      "home-orange": {
+        "role": "tertiary",
+        "displayName": "Home Orange",
+        "tonalRamp": [
+          "hsl(30, 89%, 15%)",
+          "hsl(30, 89%, 25%)",
+          "hsl(30, 89%, 35%)",
+          "hsl(30, 89%, 45%)",
+          "hsl(30, 89%, 58%)",
+          "hsl(30, 89%, 72%)",
+          "hsl(30, 89%, 85%)",
+          "hsl(30, 89%, 95%)"
+        ]
+      },
+      "turf-green": {
+        "role": "tertiary",
+        "displayName": "Turf Green",
+        "tonalRamp": [
+          "hsl(138, 44%, 15%)",
+          "hsl(138, 44%, 25%)",
+          "hsl(138, 44%, 35%)",
+          "hsl(138, 44%, 45%)",
+          "hsl(138, 44%, 58%)",
+          "hsl(138, 44%, 72%)",
+          "hsl(138, 44%, 85%)",
+          "hsl(138, 44%, 95%)"
+        ]
+      },
+      "slate-900": {
+        "role": "neutral",
+        "displayName": "Slate 900",
+        "tonalRamp": [
+          "hsl(220, 35%, 15%)",
+          "hsl(220, 35%, 25%)",
+          "hsl(220, 35%, 35%)",
+          "hsl(220, 35%, 45%)",
+          "hsl(220, 35%, 58%)",
+          "hsl(220, 35%, 72%)",
+          "hsl(220, 35%, 85%)",
+          "hsl(220, 35%, 95%)"
+        ]
+      },
+      "slate-700": {
+        "role": "neutral",
+        "displayName": "Slate 700",
+        "tonalRamp": [
+          "hsl(220, 20%, 15%)",
+          "hsl(220, 20%, 25%)",
+          "hsl(220, 20%, 35%)",
+          "hsl(220, 20%, 45%)",
+          "hsl(220, 20%, 58%)",
+          "hsl(220, 20%, 72%)",
+          "hsl(220, 20%, 85%)",
+          "hsl(220, 20%, 95%)"
+        ]
+      },
+      "slate-200": {
+        "role": "neutral",
+        "displayName": "Slate 200",
+        "tonalRamp": [
+          "hsl(220, 20%, 15%)",
+          "hsl(220, 20%, 25%)",
+          "hsl(220, 20%, 35%)",
+          "hsl(220, 20%, 45%)",
+          "hsl(220, 20%, 58%)",
+          "hsl(220, 20%, 72%)",
+          "hsl(220, 20%, 85%)",
+          "hsl(220, 20%, 95%)"
+        ]
+      },
+      "slate-100": {
+        "role": "neutral",
+        "displayName": "Slate 100",
+        "tonalRamp": [
+          "hsl(220, 30%, 15%)",
+          "hsl(220, 30%, 25%)",
+          "hsl(220, 30%, 35%)",
+          "hsl(220, 30%, 45%)",
+          "hsl(220, 30%, 58%)",
+          "hsl(220, 30%, 72%)",
+          "hsl(220, 30%, 85%)",
+          "hsl(220, 30%, 95%)"
+        ]
+      },
+      "slate-50": {
+        "role": "neutral",
+        "displayName": "Slate 50",
+        "tonalRamp": [
+          "hsl(220, 35%, 15%)",
+          "hsl(220, 35%, 25%)",
+          "hsl(220, 35%, 35%)",
+          "hsl(220, 35%, 45%)",
+          "hsl(220, 35%, 58%)",
+          "hsl(220, 35%, 72%)",
+          "hsl(220, 35%, 85%)",
+          "hsl(220, 35%, 95%)"
+        ]
+      },
+      "caution-ink": {
+        "role": "tertiary",
+        "displayName": "Caution Ink",
+        "tonalRamp": [
+          "hsl(36, 86%, 15%)",
+          "hsl(36, 86%, 25%)",
+          "hsl(36, 86%, 35%)",
+          "hsl(36, 86%, 45%)",
+          "hsl(36, 86%, 58%)",
+          "hsl(36, 86%, 72%)",
+          "hsl(36, 86%, 85%)",
+          "hsl(36, 86%, 95%)"
+        ]
+      },
+      "caution-tint": {
+        "role": "tertiary",
+        "displayName": "Caution Tint",
+        "tonalRamp": [
+          "hsl(30, 82%, 15%)",
+          "hsl(30, 82%, 25%)",
+          "hsl(30, 82%, 35%)",
+          "hsl(30, 82%, 45%)",
+          "hsl(30, 82%, 58%)",
+          "hsl(30, 82%, 72%)",
+          "hsl(30, 82%, 85%)",
+          "hsl(30, 82%, 95%)"
         ]
       },
       "focus-ring": {
-        "role": "neutral",
+        "role": "tertiary",
         "displayName": "Focus Ring",
-        "scope": "Keyboard focus outline (3px), app-wide; Games buttons and links set it by hand",
         "tonalRamp": [
-          "#0a2a52",
-          "#0f4280",
-          "#1565c0",
-          "#1e7fe6",
-          "#4d9bed",
-          "#80b8f2",
-          "#b8d7f8",
-          "#eaf3fd"
+          "hsl(210, 98%, 15%)",
+          "hsl(210, 98%, 25%)",
+          "hsl(210, 98%, 35%)",
+          "hsl(210, 98%, 45%)",
+          "hsl(210, 98%, 58%)",
+          "hsl(210, 98%, 72%)",
+          "hsl(210, 98%, 85%)",
+          "hsl(210, 98%, 95%)"
         ]
       }
     },
     "typographyMeta": {
       "headline": {
         "displayName": "Headline",
-        "purpose": "App title and section heads (MUI h5)."
+        "purpose": "Each tab's title (TabIntro h2, \"Games · Week 4\")."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Card titles (MUI h6)."
+        "purpose": "Section headings inside a tab (h3); Scoreboard team abbreviations in bold."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "All table, card and panel text; 14px."
-      },
-      "label": {
-        "displayName": "Label",
-        "purpose": "Captions, column heads, chip and badge text."
-      },
-      "stat": {
-        "displayName": "Stat",
-        "purpose": "Scoreboard totals and the one big number on a recap card; the largest type in the app."
+        "purpose": "Everything in tables, cards and panels."
       },
       "compact": {
         "displayName": "Compact",
-        "purpose": "13px where 14px is a hair too wide: phone tabs, header summary and its tiles (lg–xl), table names."
+        "purpose": "Phone tabs, the header summary, player names in the table."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions, column heads, chip and badge text; the 12px floor."
+      },
+      "stat": {
+        "displayName": "Stat",
+        "purpose": "The one big number on a stat card and Scoreboard final totals."
       }
     },
     "shadows": [
@@ -640,6 +512,11 @@
         "name": "float",
         "value": "hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px",
         "purpose": "Dropdown menus and popovers only; the record itself is flat."
+      },
+      {
+        "name": "tab-row-stuck",
+        "value": "0 6px 14px -8px hsla(220, 30%, 5%, 0.25)",
+        "purpose": "The desktop tab row once it sticks to the top of the window (and, upward, the phone tab bar and pinned player row)."
       }
     ],
     "motion": [
@@ -649,14 +526,14 @@
         "purpose": "Buttons, cards and other state changes; ripples are disabled."
       },
       {
-        "name": "link-underline",
-        "value": "transform 0.3s ease, opacity 0.3s ease",
-        "purpose": "Text-link underline shrinks from the left on hover."
+        "name": "tab-row-shadow",
+        "value": "box-shadow 150ms ease-out",
+        "purpose": "The tab row's float shadow appearing as it sticks."
       },
       {
         "name": "recap-rotate",
         "value": "8s interval",
-        "purpose": "Recap strip rotation; pauses on hover or tap."
+        "purpose": "Recap strip rotation; pauses on hover, focus or tap."
       }
     ],
     "breakpoints": [
@@ -679,6 +556,18 @@
       {
         "name": "xl",
         "value": "1536px"
+      },
+      {
+        "name": "games-2up",
+        "value": "700px"
+      },
+      {
+        "name": "games-3up",
+        "value": "1000px"
+      },
+      {
+        "name": "games-table",
+        "value": "1180px"
       }
     ]
   },
@@ -711,17 +600,17 @@
       "name": "Pick Tiles",
       "kind": "custom",
       "refersTo": "pick-won",
-      "description": "Signature element: one tile per pick; fill = result, edge = game state (none / dashed+italic live / solid final). A ✓/✕ (or trend arrow while live) repeats the result.",
-      "html": "<div class=\"ds-picks\"><span class=\"ds-pick ds-pick-won is-final\">BAL ✓</span><span class=\"ds-pick ds-pick-lost is-final\">CAR ✕</span><span class=\"ds-pick ds-pick-won is-live\">MIN</span><span class=\"ds-pick ds-pick-lost is-live\">TEN</span><span class=\"ds-pick ds-pick-open\">TBD</span></div>",
-      "css": ".ds-picks{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:flex; gap:8px;} .ds-pick{box-sizing:border-box; width:70px; padding:4px; text-align:center; font-size:14px; color:rgba(0,0,0,0.87); border-radius:4px;} .ds-pick-won{background:#e8f5e9;} .ds-pick-lost{background:#ffcdd2;} .ds-pick-open{background:#e3f2fd;} .ds-pick-won.is-final{border:thin solid #66bb6a;} .ds-pick-lost.is-final{border:thin solid #ef5350;} .ds-pick.is-live{font-style:italic; border-width:3px; border-style:dashed;} .ds-pick-won.is-live{border-color:#00e676;} .ds-pick-lost.is-live{border-color:#ff1744;}"
+      "description": "Five tiles per player: fill = result, edge = game state (none before kickoff, dashed italic live, solid final), icon repeats the result. Two or more hidden picks merge into one quiet tile.",
+      "html": "<div class=\"ds-picks\"><span class=\"ds-pick ds-pick-won is-final\">BAL ✓</span><span class=\"ds-pick ds-pick-lost is-final\">CAR ✕</span><span class=\"ds-pick ds-pick-won is-live\">MIN</span><span class=\"ds-pick ds-pick-lost is-live\">TEN</span></div><div class=\"ds-picks\" style=\"margin-top:8px\"><span class=\"ds-pick ds-pick-lost is-final\">PIT ✕</span><span class=\"ds-pick-hidden\">Hidden until kickoff</span></div>",
+      "css": ".ds-picks{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:flex; gap:8px;} .ds-pick{box-sizing:border-box; width:70px; padding:4px; text-align:center; font-size:14px; color:rgba(0,0,0,0.87); border-radius:4px;} .ds-pick-won{background:#e8f5e9;} .ds-pick-lost{background:#ffcdd2;} .ds-pick-open{background:#e3f2fd;} .ds-pick-won.is-final{border:thin solid #66bb6a;} .ds-pick-lost.is-final{border:thin solid #ef5350;} .ds-pick.is-live{font-style:italic; border-width:3px; border-style:dashed;} .ds-pick-won.is-live{border-color:#00e676;} .ds-pick-lost.is-live{border-color:#ff1744;} .ds-pick-hidden{flex:1; min-width:0; padding:4px 6px; text-align:center; font-size:14px; color:rgba(0,0,0,0.6); background:#e3f2fd; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}"
     },
     {
       "name": "Name Badges",
       "kind": "chip",
       "refersTo": "chip-default",
-      "description": "Small clubhouse marks beside a player's name: mover arrows, hot streak, defending champ, 5-0.",
-      "html": "<span class=\"ds-name\">Finley Knoll <span class=\"ds-badge ds-up\">▲3</span><span class=\"ds-badge ds-down\">▼4</span><span class=\"ds-badge ds-flame\">🔥 2</span><span class=\"ds-badge ds-gold\">5-0</span></span>",
-      "css": ".ds-name{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; color:rgba(0,0,0,0.87); display:inline-flex; align-items:center; gap:6px;} .ds-badge{font-size:11px; font-weight:700; padding:1px 5px; border-radius:999px; line-height:1.4;} .ds-up{color:#2e7d32; background:#e8f5e9;} .ds-down{color:#c62828; background:#ffebee;} .ds-flame{color:#fff; background:linear-gradient(90deg,#bf360c,#c62828);} .ds-gold{color:#3d2c05; background:#d4a017;}"
+      "description": "Tiny inline marks after a player's name: mover arrows, the hot-streak pill with its unit, the gold 5-0. 12px, never louder than the name.",
+      "html": "<span class=\"ds-name\">Finley Knoll <span class=\"ds-badge ds-up\">▲3</span><span class=\"ds-badge ds-down\">▼4</span><span class=\"ds-badge ds-flame\">🔥 2 wks</span><span class=\"ds-badge ds-gold\">5-0</span></span>",
+      "css": ".ds-name{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size:14px; color:rgba(0,0,0,0.87); display:inline-flex; align-items:center; gap:6px;} .ds-badge{font-size:12px; font-weight:700; padding:1px 6px; border-radius:999px; line-height:1.4;} .ds-up{color:#1b5e20; background:#e8f5e9;} .ds-down{color:#c62828; background:#ffebee;} .ds-flame{color:#fff; background:linear-gradient(90deg,#bf360c,#c62828);} .ds-gold{color:hsl(35,80%,28%); background:hsl(45,100%,90%);}"
     },
     {
       "name": "Your-Pick Badge",
@@ -735,22 +624,38 @@
       "name": "Leader Row",
       "kind": "custom",
       "refersTo": "medal-gold",
-      "description": "Leader card row: medal tile, name, score with covering-now +N, gap to 1st; selected row in lime.",
-      "html": "<div class=\"ds-leaders\"><div class=\"ds-lrow\"><span class=\"ds-medal ds-m1\">1</span><span>Gale Zephyr</span><span class=\"ds-score\">11 <em>+2</em></span><span class=\"ds-gap\">—</span></div><div class=\"ds-lrow is-me\"><span class=\"ds-medal ds-m2\">2</span><span>Finley Knoll</span><span class=\"ds-score\">10 <em>+1</em></span><span class=\"ds-gap\">−1</span></div><div class=\"ds-lrow\"><span class=\"ds-medal ds-m3\">3</span><span>Iggy North</span><span class=\"ds-score\">9</span><span class=\"ds-gap\">−2</span></div></div>",
-      "css": ".ds-leaders{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; width:300px; padding:16px; background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:8px; font-size:14px;} .ds-lrow{display:grid; grid-template-columns:28px minmax(0,1fr) auto 40px; gap:8px; align-items:center; padding:3px 4px; border-radius:8px; font-variant-numeric:tabular-nums; color:rgba(0,0,0,0.87);} .ds-lrow.is-me{background:#f0f4c3;} .ds-medal{width:22px; height:22px; display:grid; place-items:center; border-radius:5px; font-size:12px; font-weight:700;} .ds-m1{background:#d4a017; color:#3d2c05;} .ds-m2{background:#c3c7cf; color:#262c38;} .ds-m3{background:#d9a27a; color:#4a2a12;} .ds-score em{font-style:normal; color:#2e7d32; font-weight:600;} .ds-gap{text-align:right; color:rgba(0,0,0,0.6);}"
+      "description": "Leader cards from the second-half start week: medal place (a pill for a tie), avatar and name, score with green +N covering now. Selected player in Selected Lime.",
+      "html": "<div class=\"ds-leaders\"><div class=\"ds-lrow\"><span class=\"ds-medal ds-m1\">1</span><span>Gale Zephyr</span><span class=\"ds-score\">11 <em>+2</em></span></div><div class=\"ds-lrow\"><span class=\"ds-medal ds-m2\">T2</span><span>Ash Corvid</span><span class=\"ds-score\">10</span></div><div class=\"ds-lrow is-me\"><span class=\"ds-medal ds-m2\">T2</span><span>Finley Knoll</span><span class=\"ds-score\">10 <em>+1</em></span></div><div class=\"ds-lrow\"><span class=\"ds-medal\">T12</span><span>Rowan Pike</span><span class=\"ds-score\">7</span></div></div>",
+      "css": ".ds-leaders{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; width:300px; padding:16px; background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:8px; font-size:14px;} .ds-lrow{display:grid; grid-template-columns:32px minmax(0,1fr) auto; gap:8px; align-items:center; padding:3px 4px; border-radius:8px; font-variant-numeric:tabular-nums; color:rgba(0,0,0,0.87);} .ds-lrow.is-me{background:#f0f4c3; font-weight:700;} .ds-medal{min-width:24px; height:24px; padding:0 4px; box-sizing:border-box; justify-self:start; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; font-size:12px; font-weight:800; background:rgba(0,0,0,0.04); color:rgba(0,0,0,0.6);} .ds-m1{background:#d4a017; color:#3d2c05;} .ds-m2{background:#c3c7cf; color:#2a2d33;} .ds-score{font-weight:700;} .ds-score em{font-style:normal; color:#1b5e20; font-weight:600; margin-left:4px;}"
     },
     {
-      "name": "Kickoff Board Team Chip",
+      "name": "Paid Line",
+      "kind": "custom",
+      "refersTo": "tab-records",
+      "description": "Dashed Deep Trophy Gold rule under the last paid place, a 12px gold label, and a gold ? that opens How prizes work.",
+      "html": "<div class=\"ds-paid\"><span class=\"ds-paid-label\">Paid · top 5 overall (8 with the tie)<button class=\"ds-paid-help\" aria-label=\"How prizes work\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M11 18h2v-2h-2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4\"/></svg></button></span></div>",
+      "css": ".ds-paid{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; position:relative; width:420px; border-top:1.5px dashed #8a6a0f; margin:16px 0;} .ds-paid-label{position:absolute; right:0; top:-11px; display:inline-flex; align-items:center; gap:2px; padding-left:8px; background:#fff; color:#8a6a0f; font-size:12px; font-weight:600; line-height:20px;} .ds-paid-help{display:inline-grid; place-items:center; width:24px; height:24px; border:0; border-radius:50%; background:none; color:#8a6a0f; cursor:pointer;} .ds-paid-help:hover{background:hsl(220,30%,94%);} .ds-paid-help:focus-visible{outline:3px solid hsl(210,98%,42%); outline-offset:2px;}"
+    },
+    {
+      "name": "Team Mark",
+      "kind": "custom",
+      "refersTo": "chip-default",
+      "description": "Every tab draws a team the same way: logo (team-color disc as fallback), bold abbreviation, muted nickname.",
+      "html": "<div class=\"ds-team\"><span class=\"ds-logo\" style=\"--c:#241773\">BAL</span><b>BAL</b><span class=\"ds-nick\">Ravens</span><span class=\"ds-rec\">2-1</span></div><div class=\"ds-team\"><span class=\"ds-logo\" style=\"--c:#0085ca\">CAR</span><b>CAR</b><span class=\"ds-nick\">Panthers</span><span class=\"ds-rec\">1-2</span></div>",
+      "css": ".ds-team{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:flex; align-items:center; gap:6px; font-size:14px; color:rgba(0,0,0,0.87); margin:4px 0;} .ds-logo{width:20px; height:20px; border-radius:50%; background:var(--c); color:#fff; font-size:7px; font-weight:700; display:grid; place-items:center;} .ds-team b{min-width:2.6em; font-weight:700;} .ds-nick{color:rgba(0,0,0,0.6);} .ds-rec{color:rgba(0,0,0,0.6); font-size:13px;}"
+    },
+    {
+      "name": "Caution Flags and Chips",
       "kind": "chip",
-      "refersTo": "gc-team-chip",
-      "description": "Games tab only: team abbreviation with a 3px team-color edge and a 14% team-color fill.",
-      "html": "<span class=\"ds-gc-chip\" style=\"--c:#241773\">BAL</span> <span class=\"ds-gc-chip\" style=\"--c:#0085ca\">CAR</span>",
-      "css": ".ds-gc-chip{font-family:Inter,system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center; min-width:40px; padding:2px 7px; border-radius:5px; font-weight:600; font-size:0.8125rem; letter-spacing:0.02em; color:#171b26; border-left:3px solid var(--c); background:color-mix(in srgb,var(--c) 14%,#fff);}"
+      "refersTo": "chip-default",
+      "description": "Games and Scoreboard share one caution voice: a solid warning-orange flag for an official alert or a close game, an orange tint with dark amber ink for weather flags; plain slate chips for venues, line moves and streaks.",
+      "html": "<span class=\"ds-flag ds-flag-solid\">⚠ Flood Watch</span> <span class=\"ds-flag ds-flag-solid\">Close</span> <span class=\"ds-flag ds-flag-tint\">Gusts 22 mph</span> <span class=\"ds-chip\">Moved 5 to ARI</span> <span class=\"ds-chip\">▲ CLE: 3 straight covers</span>",
+      "css": ".ds-flag{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:inline-flex; align-items:center; gap:5px; padding:2px 7px; border-radius:4px; font-size:12px; font-weight:600;} .ds-flag-solid{background:#ed6c02; color:#1b1300;} .ds-flag-tint{background:#fbe9d7; color:#8a560a;} .ds-chip{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:inline-flex; align-items:center; padding:1px 8px; border-radius:10px; font-size:12px; font-weight:600; background:hsl(220,30%,94%); color:rgba(0,0,0,0.87);}"
     }
   ],
   "narrative": {
     "northStar": "The League Office",
-    "overview": "**Creative North Star: \"The League Office\"**\n\nThis is where the pool's record gets kept. It should feel like the back office of a club that's been running since 2013: calm and correct about the numbers, but warm, with trophies on the shelf. The standings, the picks and the box scores are the official record, so they sit on plain white paper in tidy tables with hairline rules. The warmth comes from the clubhouse details around that record: a gold trophy for the defending champ, medal tiles for the paid places, a small flame for a hot streak, a gold 5-0.\n\nDensity is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.\n\nThe whole app is set in Inter. Most of it speaks **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab keeps a **Kickoff Board** palette from an earlier mockup (teal and amber for weather, green for covered, blue for the CBS edge, scoped under `.games-card` with its own `--gc-*` custom properties) but shares the app's font and type scale. It used Public Sans and Oswald until 2026-09-30.",
+    "overview": "This is where the pool's record gets kept. It should feel like the back office of a club that's been running since 2013: calm and correct about the numbers, but warm, with trophies on the shelf. The standings, the picks and the box scores are the official record, so they sit on plain white paper in tidy tables with hairline rules. The warmth comes from the clubhouse details around that record: a gold trophy for the defending champ, medal tiles for the paid places, a small flame for a hot streak, a gold 5-0.\n\nDensity is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.\n\nThe whole app is set in Inter and speaks one voice, **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab once had its own Kickoff Board palette and fonts; since 2026-10-02 its `--gc-*` names point at the same theme tokens, so only team logos differ from tab to tab.",
     "keyCharacteristics": [
       "White paper, hairline dividers, no resting shadows.",
       "Tables are the primary container; cards group secondary things.",
@@ -777,7 +682,7 @@
       },
       {
         "name": "The Tabular Numbers Rule",
-        "body": "Any column of numbers (scores, places, spreads, percentages, records) uses tabular figures so digits line up down the table. Games sets it on the whole `.games-card`; Leaders and other score columns set `fontVariantNumeric: \"tabular-nums\"` locally.",
+        "body": "Any column of numbers (scores, places, spreads, percentages, records) uses tabular figures so digits line up down the table. Games sets it on the whole `.games-card`; Leaders and other score columns set `fontVariantNumeric: \"tabular-nums\"` locally. Signed numbers use a real minus (−, U+2212), because Inter's tabular hyphen sits in a digit-wide slot and reads as \"- 3.5\". Win-loss records (\"2-1\") are short labels, not a column, so they use proportional figures.",
         "section": "typography"
       },
       {
@@ -799,6 +704,16 @@
         "name": "The Flat Record Rule",
         "body": "Nothing that is part of the record (tables, cards, tiles) casts a shadow at rest. Only things that float above it (menus, popovers, tooltips) do.",
         "section": "elevation"
+      },
+      {
+        "name": "Red And Green Mean Picks",
+        "body": "Red and green are for pick results only (won/lost, covering/not covering), plus the mover arrows. Everything else that only compares (team streaks, the pool's split rates against 50%, how often a team was picked, the pool split bar) is neutral: `text.secondary` fills, `text.disabled` for the smaller side, slate chips. Team colors stay in logos and the drive band, not in bars, where TB would read as red and PIT as black.",
+        "section": "colors"
+      },
+      {
+        "name": "Freshness",
+        "body": "User Picks shows \"Updated 7:19 PM\" in the desktop table header only (the user's call) and a \"Couldn't refresh…\" line when a poll fails. The Scoreboard shows the same note on its tab intro at every width, but only while a game is live or after a failed refresh; on a quiet day it shows nothing.",
+        "section": "layout"
       }
     ],
     "dos": [
@@ -816,8 +731,8 @@
       "**Don't** use gold as a general accent or button color.",
       "**Don't** re-sort games or players by how close or dramatic they are.",
       "**Don't** set type larger than 1.75rem, or put more than one big number on a stat card.",
-      "**Don't** bring a second font family back to any tab, or spread the `--gc-*` tokens into other tabs, without deciding to unify the two palettes first.",
-      "**Don't** use a colored side stripe as decoration on cards, list items or alerts. The two identity markers (the Records \"you\" edge and the Games team-chip edge) are the only exceptions."
+      "**Don't** bring a second font family or a tab-only palette back to any tab; Games' `--gc-*` names must keep pointing at theme tokens.",
+      "**Don't** use a colored side stripe as decoration on cards, list items or alerts. The Records \"you\" edge is the only exception."
     ]
   }
 }

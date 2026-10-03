@@ -28,7 +28,6 @@ import {
   TeamBelieversFaders,
   TeamPickTotal,
 } from "../../types";
-import { getTeamData } from "../../utils/teamAssets";
 import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
@@ -162,7 +161,9 @@ const buildColumns = (maxPicks: number) => [
             sx={{
               width: `${maxPicks > 0 ? (row.original.picks / maxPicks) * 100 : 0}%`,
               height: "100%",
-              bgcolor: `#${getTeamData(row.original.abbr).color}`,
+              // Neutral: a team color reads as that team (TB red, PIT black)
+              // and red/green are kept for pick results.
+              bgcolor: "text.secondary",
             }}
           />
         </Box>

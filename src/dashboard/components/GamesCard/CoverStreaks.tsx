@@ -16,6 +16,9 @@ export default function CoverStreaks({
         <span key={s.team.id} className={`gc-streak ${s.streak_type}`}>
           {/* "missed 3 straight" could mean anything; say what didn't
               happen. Both start "N straight" so they line up side by side. */}
+          {/* Neutral chip with an arrow, like the mover marks: red and green
+              are kept for pick results. */}
+          <span aria-hidden>{s.streak_type === "cover" ? "▲ " : "▼ "}</span>
           {s.streak_type === "cover"
             ? `${s.team.abbr}: ${s.length} straight covers`
             : `${s.team.abbr}: ${s.length} straight without a cover`}
