@@ -7,16 +7,16 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TableCell from "@mui/material/TableCell";
-import Collapse from "@mui/material/Collapse";
 import { grey } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { PaidLineRule } from "./PaidLineRule";
 import { paidLineNote } from "./MoneyLines";
-import { UserTrendPanel } from "./UserTrendPanel";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
+import { useNavigate } from "react-router-dom";
+import { playerPath } from "../shared/PlayerLink";
 
 const StyledTableCellHeader = styled(TableCell)(() => ({
   "&.MuiTableCell-head": {
@@ -45,7 +45,12 @@ export default function UserDataMobile({
   trends,
   moneyStandings,
 }: UserGridWithTrendsProps) {
-  const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
+  const navigate = useNavigate();
+  const openPlayer = (id: string) => {
+    navigate(playerPath(id));
+    window.scrollTo({ top: 0 });
+  };
+  const { table, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     showSecondHalf,
@@ -102,14 +107,13 @@ export default function UserDataMobile({
             const mainCells = cells.filter(
               (cell) => cell.column.id !== "picks"
             );
-            const isExpanded = expandedId === row.id;
             const isSelected = row.id === userId;
 
             return (
               <Fragment key={row.id}>
                 <TableRow
                   data-user-row={row.id}
-                  onClick={() => toggleExpanded(row.id)}
+                  onClick={() => openPlayer(row.id)}
                   sx={[
                     { borderTop: `2px solid ${grey[300]}`, cursor: "pointer" },
                     isSelected && selectedRowSx,
@@ -135,7 +139,10 @@ export default function UserDataMobile({
                   ))}
                 </TableRow>
                 {picksCell && (
-                  <TableRow sx={[isSelected && selectedRowSx]}>
+                  <TableRow
+                    onClick={() => openPlayer(row.id)}
+                    sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
+                  >
                     <StyledTableCell
                       style={{ paddingBottom: "10px", paddingTop: "4px" }}
                       colSpan={mainCells.length}
@@ -147,16 +154,6 @@ export default function UserDataMobile({
                     </StyledTableCell>
                   </TableRow>
                 )}
-                <TableRow>
-                  <StyledTableCell
-                    colSpan={mainCells.length}
-                    sx={{ py: 0, border: isExpanded ? undefined : 0 }}
-                  >
-                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                      <UserTrendPanel trends={trends[row.id]} />
-                    </Collapse>
-                  </StyledTableCell>
-                </TableRow>
                 {paidLinesAfter(rowIndex).map((line) => (
                   <TableRow key={line.label}>
                     <StyledTableCell

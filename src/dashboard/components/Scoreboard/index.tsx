@@ -45,6 +45,8 @@ interface Props {
   totalUsers?: number;
   // This week's recap, for the "Upset of the week" / "Won, didn't cover" tags.
   recap?: WeekRecap;
+  // The NFL tab's view switch, first on the intro row.
+  viewSwitch?: React.ReactNode;
 }
 
 const GroupHeader = ({ children }: { children: string }) => (
@@ -56,7 +58,8 @@ const GroupHeader = ({ children }: { children: string }) => (
   </Typography>
 );
 
-const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
+const Scoreboard = memo((props: Props) => {
+  const { week, userId, totalUsers, recap, viewSwitch } = props;
   const gameTags = useMemo(() => gameTagsById(recap), [recap]);
   const { games, loading, failed, updatedAt, refreshFailed } =
     useGameData(week);
@@ -79,7 +82,14 @@ const Scoreboard = memo(({ week, userId, totalUsers, recap }: Props) => {
     <TabIntro
       title="Scoreboard"
       week={week}
-      actions={actions}
+      actions={
+        viewSwitch || actions ? (
+          <>
+            {viewSwitch}
+            {actions}
+          </>
+        ) : undefined
+      }
       meta={
         <UpdatedNote
           updatedAt={updatedAt}

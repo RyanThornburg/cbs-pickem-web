@@ -1,5 +1,6 @@
 import { GameWithOdds } from "../../data/GetGamesTabData";
 import { getTeamData } from "../../utils/teamAssets";
+import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { formatRecord } from "./gamesCardUtils";
 
@@ -17,9 +18,11 @@ export default function TeamRow({
   const data = getTeamData(team.abbr);
   return (
     <div className="gc-mrow">
-      <TeamLogo abbr={team.abbr} size={20} decorative />
-      <span className="gc-abbr">{team.abbr}</span>
-      <span className="gc-mname">{data.name}</span>
+      <TeamLink abbr={team.abbr} sx={{ gap: "inherit", flex: "0 1 auto" }}>
+        <TeamLogo abbr={team.abbr} size={20} decorative />
+        <span className="gc-abbr">{team.abbr}</span>
+        <span className="gc-mname">{data.name}</span>
+      </TeamLink>
       <span className="gc-rec">{formatRecord(team.record)}</span>
       {score != null && (
         <span className={`gc-final-score${covered ? " covered" : ""}`}>

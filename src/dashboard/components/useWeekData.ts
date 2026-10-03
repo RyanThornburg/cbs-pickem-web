@@ -31,6 +31,9 @@ export function useWeekData(season: number, week: number) {
   );
   const [recap, setRecap] = useState<WeekRecap | undefined>(undefined);
   const [hasLiveGame, setHasLiveGame] = useState(false);
+  // Whether the games poll has answered yet (or failed), so the NFL tab can
+  // wait for it before choosing between Games and Live.
+  const [liveKnown, setLiveKnown] = useState(false);
   const [weekComplete, setWeekComplete] = useState(false);
 
   // Switching weeks clears the old week first, so its standings never sit
@@ -63,20 +66,34 @@ export function useWeekData(season: number, week: number) {
 
   useEffect(() => {
     setWeekComplete(false);
+    setLiveKnown(false);
     if (season > 0 && week > 0) {
-      return GetGameDataByWeek(season, week, (games) => {
-        setHasLiveGame(
-          games.some((game) => LIVE_STATUSES.includes(game.status))
-        );
-        setWeekComplete(
-          games.length > 0 &&
-            games.every((game) => game.status === GameStatus.Final)
-        );
-      });
+      return GetGameDataByWeek(
+        season,
+        week,
+        (games) => {
+          setHasLiveGame(
+            games.some((game) => LIVE_STATUSES.includes(game.status))
+          );
+          setWeekComplete(
+            games.length > 0 &&
+              games.every((game) => game.status === GameStatus.Final)
+          );
+          setLiveKnown(true);
+        },
+        () => setLiveKnown(true)
+      );
     }
   }, [season, week]);
 
-  return { userList, leaderboardStatus, recap, hasLiveGame, weekComplete };
+  return {
+    userList,
+    leaderboardStatus,
+    recap,
+    hasLiveGame,
+    liveKnown,
+    weekComplete,
+  };
 }
 
 // The selected user, persisted to localStorage under "user". Cleared if the

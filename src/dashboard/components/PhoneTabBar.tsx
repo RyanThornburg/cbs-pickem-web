@@ -6,11 +6,16 @@ import { useEffect } from "react";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import ScoreboardIcon from "@mui/icons-material/ScoreboardOutlined";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutlined";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import SportsFootballIcon from "@mui/icons-material/SportsFootballOutlined";
 import { SvgIconComponent } from "@mui/icons-material";
-import { ADMIN_TAB, AppTab, RECORDS_TAB } from "../utils/defaultTab";
+import {
+  ADMIN_TAB,
+  AppTab,
+  PLAYERS_TAB,
+  RECORDS_TAB,
+} from "../utils/defaultTab";
 import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
 import { followTabLink, tabHref } from "./tabLinks";
 import { focusRingColor } from "../shared-theme/themePrimitives";
@@ -38,7 +43,8 @@ interface Item {
 }
 
 // Below md the tabs live in a bar fixed to the bottom of the screen, so any
-// tab is one thumb tap away mid-scroll. "Scoreboard" reads "Live" here.
+// tab is one thumb tap away mid-scroll. You opens the selected player's page
+// (or the list to pick one).
 export function PhoneTabBar({
   activeTab,
   onChange,
@@ -47,7 +53,8 @@ export function PhoneTabBar({
   showAdmin,
   pastWeek,
 }: {
-  activeTab: AppTab;
+  // null when the page isn't one of the tabs (another player's page).
+  activeTab: AppTab | null;
   onChange: (value: AppTab) => void;
   // The browsed week's ?week=, carried into each tab's link.
   search: string;
@@ -71,8 +78,7 @@ export function PhoneTabBar({
 
   const items: Item[] = [
     { value: "picks", label: "Picks", Icon: FormatListBulletedIcon },
-    { value: "games", label: "Games", Icon: SportsFootballIcon },
-    { value: "scoreboard", label: "Live", Icon: ScoreboardIcon },
+    { value: "nfl", label: "NFL", Icon: SportsFootballIcon },
     { value: "trends", label: "Trends", Icon: ShowChartIcon },
     {
       value: RECORDS_TAB,
@@ -80,6 +86,7 @@ export function PhoneTabBar({
       Icon: EmojiEventsIcon,
       color: MONEY_GOLD,
     },
+    { value: PLAYERS_TAB, label: "You", Icon: PersonOutlineIcon },
     ...(showAdmin
       ? [
           {
@@ -157,7 +164,7 @@ export function PhoneTabBar({
       >
         {items.map(({ value, label, Icon, color }) => {
           const selected = value === activeTab;
-          const live = value === "scoreboard" && hasLiveGame && !selected;
+          const live = value === "nfl" && hasLiveGame && !selected;
           return (
             <ButtonBase
               key={value}

@@ -10,6 +10,8 @@ export interface UserPick {
   trending_status?: string;
   game_status: GameStatus;
   visible: boolean;
+  // The picked team's CBS line (-3.5 = gave 3.5), when the game has one.
+  line?: number;
 }
 
 export interface RankedUser {
@@ -558,6 +560,159 @@ export interface UserSeasonCurrent {
   worst_week: WeekScore | null;
   consistency: ConsistencyStats | null;
   clutch: ClutchStats;
+  // Added 2026-09-30; null for a user with no picks yet. Optional so an
+  // older profile without it still parses.
+  records?: UserPickRecords | null;
+}
+
+// A plain win-loss record, shared by user profiles and team keys. `picks`
+// counts every pick; wins/losses only graded ones (the gap is games not
+// graded yet). CBS lines carry a half point, so there are no pushes.
+// win_pct is a 0-1 fraction, null when nothing is graded.
+export interface PickRecord {
+  picks: number;
+  wins: number;
+  losses: number;
+  win_pct: number | null;
+}
+
+export interface SideRoleRecord extends PickRecord {
+  side: "home" | "away";
+  role: "favorite" | "underdog";
+}
+
+export type SpreadBucket =
+  | "big_favorite"
+  | "mid_favorite"
+  | "small_favorite"
+  | "pickem"
+  | "small_underdog"
+  | "mid_underdog"
+  | "big_underdog";
+
+export interface SpreadBucketRecord extends PickRecord {
+  bucket: SpreadBucket;
+}
+
+export interface UserTeamRecord {
+  team: TeamRef;
+  // Picking this team / picking their opponent.
+  picked: PickRecord;
+  against: PickRecord;
+}
+
+// current_season.records on user:{id}:season:{season}. side_roles (always 4,
+// home fav, home dog, away fav, away dog) and spread_buckets (always 7, big
+// favorite to big underdog) were added 2026-10-02, so read both as optional.
+// A team the user never picked or faced is missing from `teams`.
+export interface UserPickRecords {
+  home: PickRecord;
+  away: PickRecord;
+  favorite: PickRecord;
+  underdog: PickRecord;
+  side_roles?: SideRoleRecord[];
+  spread_buckets?: SpreadBucketRecord[];
+  teams: UserTeamRecord[];
+}
+
+// season:{season}:standings and team:{season}:{id}. Team ids are the same
+// internal ids the games key uses.
+export interface WinLoss {
+  wins: number;
+  losses: number;
+  ties: number;
+}
+
+// Record against the CBS line the pool picks with.
+export interface AtsSplit {
+  covers: number;
+  losses: number;
+  cover_pct: number | null;
+}
+
+export interface StandingsTeam extends WinLoss {
+  // 1-4 within the division; the array is already in this order.
+  rank: number;
+  team: TeamRef;
+  // A tie counts as half a win; null before a team's first game.
+  win_pct: number | null;
+  points_for: number;
+  points_against: number;
+  point_diff: number;
+  home: WinLoss;
+  road: WinLoss;
+  division_record: WinLoss;
+  conference_record: WinLoss;
+  // "W3", "L1", "T1"; null before the first game.
+  streak: string | null;
+  ats: AtsSplit;
+}
+
+export interface StandingsDivision {
+  // Includes the conference: "AFC East".
+  name: string;
+  teams: StandingsTeam[];
+}
+
+export interface StandingsConference {
+  name: string;
+  abbr: string;
+  divisions: StandingsDivision[];
+}
+
+// AFC then NFC, each East/North/South/West. No playoff seeding.
+export interface NflStandings {
+  season: number;
+  updated_at: string;
+  conferences: StandingsConference[];
+}
+
+export interface PoolPicker extends PickRecord {
+  user_id: number;
+  name: string;
+}
+
+export interface TeamGame {
+  game_id: number;
+  week_number: number;
+  game_time: string;
+  side: "home" | "away";
+  opponent: TeamRef;
+  // This team's own CBS line (-7.5 = gave 7.5); null until CBS sets it.
+  line: number | null;
+  status: string;
+  // Final only: null until the game is final, even while it's live.
+  score: number | null;
+  opponent_score: number | null;
+  result: "W" | "L" | "T" | null;
+  covered: boolean | null;
+  // How many in the pool took this team / the opponent. Grows during the
+  // week as picks reveal.
+  pool_picked: number;
+  pool_against: number;
+}
+
+export interface TeamProfile {
+  season: number;
+  updated_at: string;
+  team: TeamRef & { conference: string; division: string };
+  record: WinLoss;
+  ats: {
+    overall: AtsSplit;
+    home: AtsSplit;
+    away: AtsSplit;
+    favorite: AtsSplit;
+    underdog: AtsSplit;
+  };
+  pool: {
+    picked: PickRecord;
+    against: PickRecord;
+    // Most picks first.
+    believers: PoolPicker[];
+    faders: PoolPicker[];
+  };
+  // The whole regular season in kickoff order, played and unplayed.
+  games: TeamGame[];
 }
 
 export interface UserSeasonTrends {

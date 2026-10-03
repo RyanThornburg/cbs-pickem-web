@@ -16,15 +16,17 @@ type Props = {
   week: number;
   // This week's recap, for the cover-streak labels next to teams.
   recap?: WeekRecap;
+  // The NFL tab's view switch, on the intro row.
+  viewSwitch?: React.ReactNode;
 };
 
-export default function GamesCard({ week, recap }: Props) {
+export default function GamesCard({ week, recap, viewSwitch }: Props) {
   const streaks = useMemo(() => coverStreaksByTeamId(recap), [recap]);
   const { games, loading, failed, oddsAvailable, oddsUpdatedAt } =
     useGamesWithOdds(week);
 
   const intro = (meta?: React.ReactNode) => (
-    <TabIntro title="Games" week={week} meta={meta} />
+    <TabIntro title="Games" week={week} meta={meta} actions={viewSwitch} />
   );
 
   if (loading) {

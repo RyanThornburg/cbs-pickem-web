@@ -19,12 +19,10 @@ interface UseUsersTableArgs {
   showStreak: boolean;
 }
 
-// Shared sort + expand state for both the desktop and mobile UsersTable
-// variants -- each renders its own markup (widths, abbreviated mobile
-// headers) off the same table instance so sorting logic isn't duplicated.
-// Row expansion (for UserTrendPanel) is plain local state rather than
-// tanstack's row-expansion feature, since only one row is ever open at a
-// time -- a Set/tree model would be more than this needs.
+// Shared sort state for both the desktop and mobile UsersTable variants --
+// each renders its own markup (widths, abbreviated mobile headers) off the
+// same table instance so sorting logic isn't duplicated. A row opens the
+// player's page (it used to expand a trend panel, now on that page).
 export const useUsersTable = ({
   userList,
   trends,
@@ -35,10 +33,6 @@ export const useUsersTable = ({
   const [sorting, setSorting] = useState<SortingState>([
     { id: "place", desc: false },
   ]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const toggleExpanded = (id: string) => {
-    setExpandedId((current) => (current === id ? null : id));
-  };
 
   const data = useMemo(() => {
     const movers = moversByUserId(recap);
@@ -67,8 +61,6 @@ export const useUsersTable = ({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.id,
-    // Read by the name cell's expand button (usersTableColumns.tsx).
-    meta: { expandedId, toggleExpanded },
   });
 
   const { paidPlaces } = useCurrentWeek();
@@ -82,5 +74,5 @@ export const useUsersTable = ({
   // Paid lines to draw under the row at this index in the sorted rows.
   const paidLinesAfter = (rowIndex: number) => lines.get(rowIndex) ?? [];
 
-  return { table, expandedId, toggleExpanded, paidLinesAfter };
+  return { table, paidLinesAfter };
 };

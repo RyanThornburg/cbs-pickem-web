@@ -7,16 +7,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Collapse from "@mui/material/Collapse";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import Box from "@mui/material/Box";
 import { PaidLineRule } from "./PaidLineRule";
 import { timeFormat } from "./StandingsStatus";
 import { paidLineNote } from "./MoneyLines";
-import { UserTrendPanel } from "./UserTrendPanel";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
+import { useNavigate } from "react-router-dom";
+import { playerPath } from "../shared/PlayerLink";
 
 const UserDataGrid = ({
   userList,
@@ -28,7 +28,12 @@ const UserDataGrid = ({
   moneyStandings,
   leaderboardStatus,
 }: UserGridWithTrendsProps) => {
-  const { table, expandedId, toggleExpanded, paidLinesAfter } = useUsersTable({
+  const navigate = useNavigate();
+  const openPlayer = (id: string) => {
+    navigate(playerPath(id));
+    window.scrollTo({ top: 0 });
+  };
+  const { table, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     showSecondHalf,
@@ -90,7 +95,6 @@ const UserDataGrid = ({
         </TableHead>
         <TableBody>
           {table.getRowModel().rows.map((row, rowIndex) => {
-            const isExpanded = expandedId === row.id;
             const isSelected = row.id === userId;
 
             return (
@@ -98,7 +102,7 @@ const UserDataGrid = ({
                 <TableRow
                   hover
                   data-user-row={row.id}
-                  onClick={() => toggleExpanded(row.id)}
+                  onClick={() => openPlayer(row.id)}
                   sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -112,16 +116,6 @@ const UserDataGrid = ({
                       )}
                     </TableCell>
                   ))}
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    colSpan={row.getVisibleCells().length}
-                    sx={{ py: 0, border: isExpanded ? undefined : 0 }}
-                  >
-                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                      <UserTrendPanel trends={trends[row.id]} />
-                    </Collapse>
-                  </TableCell>
                 </TableRow>
                 {paidLinesAfter(rowIndex).map((line) => (
                   <TableRow key={line.label}>

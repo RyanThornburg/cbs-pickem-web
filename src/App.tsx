@@ -16,6 +16,8 @@ function App() {
       <CurrentWeekProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/nfl/teams/:teamSlug" element={<Dashboard />} />
+            <Route path="/players/:playerId?" element={<Dashboard />} />
             <Route path="/:tab" element={<Dashboard />} />
             <Route
               path="/"

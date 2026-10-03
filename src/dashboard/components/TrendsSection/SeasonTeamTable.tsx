@@ -10,7 +10,6 @@ import {
 import {
   Box,
   Button,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -28,6 +27,7 @@ import {
   TeamBelieversFaders,
   TeamPickTotal,
 } from "../../types";
+import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 
 export type Props = {
@@ -119,10 +119,10 @@ const buildColumns = (maxPicks: number) => [
     header: "Team",
     meta: { mobileHeader: "Team" },
     cell: ({ getValue }) => (
-      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-        <TeamLogo abbr={getValue()} size={20} />
+      <TeamLink abbr={getValue()} sx={{ gap: 1 }}>
+        <TeamLogo abbr={getValue()} size={20} decorative />
         <Typography variant="body2">{getValue()}</Typography>
-      </Stack>
+      </TeamLink>
     ),
   }),
   columnHelper.accessor("picks", {

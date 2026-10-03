@@ -13,6 +13,7 @@ import {
   teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
+import { TeamLink } from "../../../shared/TeamLink";
 import { TeamLogo } from "../../../shared/TeamLogo";
 import { BallIcon } from "../shared/BallIcon";
 import { AtsTag } from "../shared/AtsTag";
@@ -146,10 +147,15 @@ export const GameRow = memo((props: GameRowProps) => {
           minWidth: 0,
         }}
       >
-        <TeamLogo abbr={team.abbr} size={22} />
-        <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>
-          {team.abbr}
-        </Typography>
+        <TeamLink
+          abbr={team.abbr}
+          sx={{ gap: { xs: 0.5, md: 1 }, flexShrink: 0 }}
+        >
+          <TeamLogo abbr={team.abbr} size={22} decorative />
+          <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>
+            {team.abbr}
+          </Typography>
+        </TeamLink>
         <Box
           component="span"
           sx={{

@@ -13,7 +13,12 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 import AppShellStatus from "./AppShellStatus";
 import TabIntro, { PastWeekContext, PastWeekInfo } from "./TabIntro";
@@ -27,11 +32,25 @@ import WeekDropdown from "./WeekDropdown";
 import {
   ADMIN_TAB,
   AppTab,
+  LEGACY_NFL_TABS,
+  PLAYERS_TAB,
   RECORDS_TAB,
   getInitialTab,
   isPrimaryTab,
   setStoredTab,
 } from "../utils/defaultTab";
+import NflViewSwitch from "./Nfl/NflViewSwitch";
+import StandingsView from "./Nfl/StandingsView";
+import TeamPage from "./Nfl/TeamPage";
+import {
+  NflView,
+  defaultNflView,
+  isNflView,
+  readNflChoice,
+  saveNflChoice,
+} from "./Nfl/nflView";
+import PlayerChooser from "./Players/PlayerChooser";
+import PlayerPage from "./Players/PlayerPage";
 import UsersTable from "./UsersTable";
 import { UserGamePicksStack } from "./UsersTable/UserPickStack";
 import { useMoneyStandings } from "./UsersTable/useMoneyStandings";
@@ -52,20 +71,26 @@ const AdminPanel = lazy(() => import("./AdminPanel"));
 // What each tab's loading placeholder looks like (see TabSkeleton).
 const TAB_SKELETONS: Record<AppTab, TabSkeletonShape> = {
   picks: "rows",
-  games: "cards",
-  scoreboard: "cards",
+  nfl: "cards",
   trends: "cards",
   [RECORDS_TAB]: "tiles",
   [ADMIN_TAB]: "rows",
+  [PLAYERS_TAB]: "rows",
 };
 
 const TAB_TITLES: Record<AppTab, string> = {
   picks: "User Picks",
-  games: "Games",
-  scoreboard: "Scoreboard",
+  nfl: "NFL",
   trends: "Trends",
   [RECORDS_TAB]: "Records",
   [ADMIN_TAB]: "Admin",
+  [PLAYERS_TAB]: "You",
+};
+
+const NFL_VIEW_TITLES: Record<NflView, string> = {
+  games: "Games",
+  live: "Scoreboard",
+  standings: "Standings",
 };
 
 export default function MainGrid() {
@@ -80,7 +105,19 @@ export default function MainGrid() {
   // Until meta first loads there's no season or week, so the header and
   // tabs render around placeholders instead of the page staying blank.
   const metaReady = metaStatus === "ready";
-  const { tab } = useParams<{ tab: string }>();
+  const { tab, teamSlug, playerId } = useParams<{
+    tab: string;
+    teamSlug: string;
+    playerId: string;
+  }>();
+  const { pathname } = useLocation();
+  // Team pages (/nfl/teams/buf) sit under the NFL tab; player pages
+  // (/players/:id, and /players for the selected player) are the You tab's.
+  const routeTab = teamSlug
+    ? "nfl"
+    : pathname.startsWith("/players")
+      ? PLAYERS_TAB
+      : tab;
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   // The browsed week lives in the URL (?week=3), so a reload or a shared
@@ -94,8 +131,14 @@ export default function MainGrid() {
   // The hot streak badge is season data as of now, with no week-by-week
   // history, so it only shows while browsing the current week.
   const isCurrentWeek = selectedWeek === currentWeek;
-  const { userList, leaderboardStatus, recap, hasLiveGame, weekComplete } =
-    useWeekData(season, selectedWeek);
+  const {
+    userList,
+    leaderboardStatus,
+    recap,
+    hasLiveGame,
+    liveKnown,
+    weekComplete,
+  } = useWeekData(season, selectedWeek);
   const [user, onUserChange] = useSelectedUser(userList);
   const selectedUser = user
     ? userList.find((entry) => entry.id === user)
@@ -152,11 +195,61 @@ export default function MainGrid() {
   };
   const isAdmin = useIsAdmin();
 
-  const activeTab: AppTab | null = isPrimaryTab(tab)
-    ? tab
-    : tab === ADMIN_TAB || tab === RECORDS_TAB
-      ? tab
+  const activeTab: AppTab | null = isPrimaryTab(routeTab)
+    ? routeTab
+    : routeTab === ADMIN_TAB ||
+        routeTab === RECORDS_TAB ||
+        routeTab === PLAYERS_TAB
+      ? routeTab
       : null;
+  // The player whose page is open: /players/:id, or the selected player on
+  // plain /players. The You tab is only lit on the selected player's page.
+  const pagePlayerId =
+    activeTab === PLAYERS_TAB ? (playerId ?? user) || undefined : undefined;
+  const navTab: AppTab | null =
+    activeTab === PLAYERS_TAB && playerId && playerId !== user
+      ? null
+      : activeTab;
+
+  // The NFL tab's view lives in ?view=. Plain /nfl picks one: a view
+  // chosen by hand earlier in the visit, else the day's rule (Live while a
+  // game is on or from the Sunday deadline through Monday, Games
+  // otherwise), which waits for the live check unless the clock already
+  // says Live.
+  const viewParam = searchParams.get("view");
+  const urlNflView = isNflView(viewParam) ? viewParam : null;
+  const onNflList = activeTab === "nfl" && !teamSlug;
+  const ruleView =
+    liveKnown || defaultNflView(new Date(), false) === "live"
+      ? defaultNflView(new Date(), hasLiveGame)
+      : null;
+  const pendingNflView = readNflChoice() ?? ruleView;
+  const nflView: NflView | null = urlNflView ?? pendingNflView;
+  useEffect(() => {
+    if (!onNflList || urlNflView || !pendingNflView) return;
+    setSearchParams(
+      (params) => {
+        params.set("view", pendingNflView);
+        return params;
+      },
+      { replace: true }
+    );
+  }, [onNflList, urlNflView, pendingNflView, setSearchParams]);
+  const changeNflView = (view: NflView) => {
+    saveNflChoice(view);
+    setSearchParams((params) => {
+      params.set("view", view);
+      return params;
+    });
+    window.scrollTo({ top: 0 });
+  };
+  const viewSwitch = (view: NflView) => (
+    <NflViewSwitch
+      view={view}
+      onChange={changeNflView}
+      hasLiveGame={hasLiveGame}
+    />
+  );
   // Pipeline status has nothing to do with a week or a player, so the admin
   // page drops the dropdowns and the selected-player header.
   const showPlayerControls = activeTab !== ADMIN_TAB;
@@ -167,19 +260,34 @@ export default function MainGrid() {
   // App.tsx), but the param itself could still be anything -- redirect an
   // unrecognized value back through "/" so it re-resolves to the stored
   // tab (or the cold-start default) instead of rendering a blank tab.
+  // The old Games and Scoreboard tabs land on the matching NFL view, with
+  // the browsed week.
   useEffect(() => {
-    if (activeTab === null) {
-      navigate(`/${getInitialTab()}`, { replace: true });
+    if (activeTab !== null) return;
+    const legacyView = tab ? LEGACY_NFL_TABS[tab] : undefined;
+    if (legacyView) {
+      const params = new URLSearchParams(searchParams);
+      params.set("view", legacyView);
+      navigate(`/nfl?${params}`, { replace: true });
+      return;
     }
-  }, [activeTab, navigate]);
+    navigate(`/${getInitialTab()}`, { replace: true });
+  }, [activeTab, navigate, tab, searchParams]);
 
   // Phones don't show the site name, so the browser tab carries it, and a
   // tab change reads as a page change.
+  // Team and player pages name themselves once their data is in.
+  const pageTitle =
+    activeTab === "nfl" && nflView && !teamSlug
+      ? NFL_VIEW_TITLES[nflView]
+      : activeTab !== null && !teamSlug && !pagePlayerId
+        ? TAB_TITLES[activeTab]
+        : null;
   useEffect(() => {
-    if (activeTab !== null) {
-      document.title = `${TAB_TITLES[activeTab]} · Morlocked Pick'em`;
+    if (pageTitle) {
+      document.title = `${pageTitle} · Morlocked Pick'em`;
     }
-  }, [activeTab]);
+  }, [pageTitle]);
 
   // A ?week= that isn't a past week (out of range, not a number, or the
   // current week itself) shows the current week, so the URL drops it rather
@@ -213,7 +321,7 @@ export default function MainGrid() {
     role: undefined,
     tabIndex: 0,
     "aria-selected": undefined,
-    "aria-current": activeTab === value ? ("page" as const) : undefined,
+    "aria-current": navTab === value ? ("page" as const) : undefined,
   });
 
   // Skips the header and tab row to the active tab's content.
@@ -492,7 +600,7 @@ export default function MainGrid() {
             }}
           >
             <Tabs
-              value={activeTab}
+              value={navTab ?? false}
               variant="scrollable"
               slotProps={{ list: { role: undefined } }}
               // No arrows: with "auto", MUI showed them on some tabs and not
@@ -509,25 +617,25 @@ export default function MainGrid() {
               }}
             >
               <Tab label="User Picks" {...navTabProps("picks")} />
-              <Tab label="Games" {...navTabProps("games")} />
               <Tab
                 label={
                   <Badge
                     color="error"
                     variant="dot"
-                    invisible={!hasLiveGame || activeTab === "scoreboard"}
+                    invisible={!hasLiveGame || activeTab === "nfl"}
                   >
-                    Scoreboard
-                    {hasLiveGame && activeTab !== "scoreboard" && (
+                    NFL
+                    {hasLiveGame && activeTab !== "nfl" && (
                       <Box component="span" sx={visuallyHidden}>
                         , games in progress
                       </Box>
                     )}
                   </Badge>
                 }
-                {...navTabProps("scoreboard")}
+                {...navTabProps("nfl")}
               />
               <Tab label="Trends" {...navTabProps("trends")} />
+              <Tab label="You" {...navTabProps(PLAYERS_TAB)} />
               {/* Set apart like Admin: all-time data, not this week's. */}
               <Tab
                 label="Records"
@@ -670,31 +778,91 @@ export default function MainGrid() {
                       moneyStandings={moneyStandings}
                     />
                   </Grid>
+                  {/* NFL: Games and Live stay mounted while hidden (their
+                      polls pause), like the other weekly tabs; Standings and
+                      team pages mount only while open. */}
                   <Grid
                     size={{ xs: 12, lg: 12 }}
-                    sx={{ display: activeTab === "games" ? "block" : "none" }}
+                    sx={{ display: onNflList ? "block" : "none" }}
                   >
-                    <TabActiveContext.Provider value={activeTab === "games"}>
-                      <GamesCard week={selectedWeek} recap={recap} />
-                    </TabActiveContext.Provider>
-                  </Grid>
-                  <Grid
-                    size={{ xs: 12, lg: 12 }}
-                    sx={{
-                      display: activeTab === "scoreboard" ? "block" : "none",
-                    }}
-                  >
-                    <TabActiveContext.Provider
-                      value={activeTab === "scoreboard"}
+                    {onNflList && nflView === null && (
+                      <>
+                        <TabIntro title="NFL" week={selectedWeek} />
+                        <TabSkeleton shape="cards" label="Loading" />
+                      </>
+                    )}
+                    <Box
+                      sx={{ display: nflView === "games" ? "block" : "none" }}
                     >
-                      <Scoreboard
-                        week={selectedWeek}
+                      <TabActiveContext.Provider
+                        value={onNflList && nflView === "games"}
+                      >
+                        <GamesCard
+                          week={selectedWeek}
+                          recap={recap}
+                          viewSwitch={viewSwitch("games")}
+                        />
+                      </TabActiveContext.Provider>
+                    </Box>
+                    <Box
+                      sx={{ display: nflView === "live" ? "block" : "none" }}
+                    >
+                      <TabActiveContext.Provider
+                        value={onNflList && nflView === "live"}
+                      >
+                        <Scoreboard
+                          week={selectedWeek}
+                          userId={user}
+                          totalUsers={userList.length}
+                          recap={recap}
+                          viewSwitch={viewSwitch("live")}
+                        />
+                      </TabActiveContext.Provider>
+                    </Box>
+                    {onNflList && nflView === "standings" && (
+                      <StandingsView
+                        season={season}
                         userId={user}
-                        totalUsers={userList.length}
-                        recap={recap}
+                        userName={selectedUser?.name}
+                        intro={viewSwitch("standings")}
                       />
-                    </TabActiveContext.Provider>
+                    )}
                   </Grid>
+                  {activeTab === "nfl" && teamSlug && (
+                    <Grid size={{ xs: 12, lg: 12 }}>
+                      <TeamPage
+                        season={season}
+                        slug={teamSlug}
+                        currentWeek={currentWeek}
+                        userId={user}
+                        userName={selectedUser?.name}
+                      />
+                    </Grid>
+                  )}
+                  {activeTab === PLAYERS_TAB && (
+                    <Grid size={{ xs: 12, lg: 12 }}>
+                      {pagePlayerId ? (
+                        <PlayerPage
+                          key={pagePlayerId}
+                          season={season}
+                          currentWeek={currentWeek}
+                          secondHalfStartWeek={secondHalfStartWeek}
+                          playerId={pagePlayerId}
+                          selectedId={user}
+                          userList={userList}
+                          onSelect={onUserChange}
+                        />
+                      ) : (
+                        <PlayerChooser
+                          userList={userList}
+                          onChoose={(id) => {
+                            onUserChange(id);
+                            window.scrollTo({ top: 0 });
+                          }}
+                        />
+                      )}
+                    </Grid>
+                  )}
                   <Grid
                     size={{ xs: 12, lg: 12 }}
                     sx={{ display: activeTab === "trends" ? "block" : "none" }}
@@ -749,7 +917,7 @@ export default function MainGrid() {
             </PastWeekContext.Provider>
           </Box>
           <PhoneTabBar
-            activeTab={activeTab}
+            activeTab={navTab}
             onChange={goToTab}
             search={weekSearch}
             hasLiveGame={hasLiveGame}
@@ -758,7 +926,9 @@ export default function MainGrid() {
               !isCurrentWeek &&
               pastNoticeGone &&
               activeTab !== RECORDS_TAB &&
-              activeTab !== ADMIN_TAB
+              activeTab !== ADMIN_TAB &&
+              activeTab !== PLAYERS_TAB &&
+              !teamSlug
                 ? {
                     week: selectedWeek,
                     currentWeek,

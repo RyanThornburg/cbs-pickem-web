@@ -1,5 +1,6 @@
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useWidth } from "../shared/useWidth";
+import { useState } from "react";
 import { focusRingColor } from "../../shared-theme/themePrimitives";
 import {
   RecapChaosPoint,
@@ -55,23 +56,6 @@ const geom = (W: number, n: number): Geom => {
     labelled: (i) =>
       i === n - 1 || ((n - 1 - i) % every === 0 && n - 1 - i >= every),
   };
-};
-
-// Width of the chart's container, for drawing at 1:1.
-const useWidth = (fallback: number) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(fallback);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const update = () =>
-      setWidth(Math.max(240, Math.round(el.getBoundingClientRect().width)));
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return [ref, width] as const;
 };
 
 // Tooltip anchored over a column (x/y in chart pixels).

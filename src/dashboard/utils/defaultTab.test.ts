@@ -10,8 +10,15 @@ describe("getInitialTab", () => {
   });
 
   it("returns whatever tab was last stored", () => {
-    setStoredTab("scoreboard");
-    expect(getInitialTab()).toBe("scoreboard");
+    setStoredTab("trends");
+    expect(getInitialTab()).toBe("trends");
+  });
+
+  it("lands a stored Games or Scoreboard tab on the NFL tab", () => {
+    localStorage.setItem("activeTab", "scoreboard");
+    expect(getInitialTab()).toBe("nfl");
+    localStorage.setItem("activeTab", "games");
+    expect(getInitialTab()).toBe("nfl");
   });
 
   it("ignores a garbage stored value and falls back to picks", () => {
@@ -21,15 +28,15 @@ describe("getInitialTab", () => {
 });
 
 describe("isPrimaryTab", () => {
-  it("accepts the four known tabs", () => {
+  it("accepts the three known tabs", () => {
     expect(isPrimaryTab("picks")).toBe(true);
-    expect(isPrimaryTab("games")).toBe(true);
-    expect(isPrimaryTab("scoreboard")).toBe(true);
+    expect(isPrimaryTab("nfl")).toBe(true);
     expect(isPrimaryTab("trends")).toBe(true);
   });
 
   it("rejects anything else", () => {
     expect(isPrimaryTab("odds")).toBe(false);
+    expect(isPrimaryTab("scoreboard")).toBe(false);
     expect(isPrimaryTab(undefined)).toBe(false);
   });
 });

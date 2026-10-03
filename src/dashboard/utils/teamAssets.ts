@@ -37,3 +37,9 @@ export const getTeamLogoSrc = (abbr: string): string | undefined => {
   const icon = getTeamData(abbr).icon;
   return icon ? TEAM_ICONS[`../icons/${icon}`] : undefined;
 };
+
+// "Buffalo Bills", for a team page heading; the abbreviation if unknown.
+export const getTeamFullName = (abbr: string): string => {
+  const entry = TeamData[normalizeTeamAbbr(abbr) as keyof typeof TeamData];
+  return entry?.displayName ?? abbr;
+};

@@ -124,6 +124,14 @@ const joinPick = (
         ? awayTeam.abbr
         : "";
   const game_status = (game?.status as GameStatus) ?? GameStatus.Scheduled;
+  // cbs_spread is the home team's line; the away side gets the mirror.
+  const homeLine = game?.cbs_spread;
+  const line =
+    homeLine == null || !team
+      ? undefined
+      : homeTeam?.id === pick.team_id
+        ? homeLine
+        : -homeLine;
 
   return {
     game_id: pick.game_id,
@@ -132,6 +140,7 @@ const joinPick = (
     trending_status: pick.trending_status,
     game_status,
     visible: weekLocked,
+    ...(line === undefined ? {} : { line: line === 0 ? 0 : line }),
   };
 };
 
@@ -197,6 +206,35 @@ const toRankedUser = (
   };
 };
 
+// One fetch of a week's standings and picks, ranked and joined. Polled by
+// GetUserByWeek; the player page loads past weeks with it once.
+export const loadUsersByWeek = async (
+  season: number,
+  week: number
+): Promise<RankedUser[]> => {
+  const [leaderboard, weekGames] = await Promise.all([
+    fetchLeaderboard(season, week),
+    fetchWeekGames(season, week),
+  ]);
+
+  const gamesById = buildGamesById(weekGames.games);
+  const weekLocked = isWeekLocked(weekGames.games);
+  const overallRanks = rankByScore(
+    leaderboard.users,
+    (user) => user.cumulative_score + user.trending_score
+  );
+  const secondHalfRanks = rankByScore(leaderboard.users, (user) =>
+    user.second_half_score == null
+      ? null
+      : user.second_half_score + user.trending_score
+  );
+  return leaderboard.users
+    .map((user) =>
+      toRankedUser(user, gamesById, weekLocked, overallRanks, secondHalfRanks)
+    )
+    .sort(compareUsers);
+};
+
 export const GetUserByWeek = (
   season: number,
   week: number,
@@ -208,29 +246,7 @@ export const GetUserByWeek = (
     return;
   }
 
-  const load = async (): Promise<RankedUser[]> => {
-    const [leaderboard, weekGames] = await Promise.all([
-      fetchLeaderboard(season, week),
-      fetchWeekGames(season, week),
-    ]);
-
-    const gamesById = buildGamesById(weekGames.games);
-    const weekLocked = isWeekLocked(weekGames.games);
-    const overallRanks = rankByScore(
-      leaderboard.users,
-      (user) => user.cumulative_score + user.trending_score
-    );
-    const secondHalfRanks = rankByScore(leaderboard.users, (user) =>
-      user.second_half_score == null
-        ? null
-        : user.second_half_score + user.trending_score
-    );
-    return leaderboard.users
-      .map((user) =>
-        toRankedUser(user, gamesById, weekLocked, overallRanks, secondHalfRanks)
-      )
-      .sort(compareUsers);
-  };
+  const load = () => loadUsersByWeek(season, week);
 
   return pollAsync(load, POLL_INTERVAL_MS, callback, (error) => {
     console.error("Failed to fetch week leaderboard", error);

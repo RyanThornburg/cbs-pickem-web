@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { getTeamData } from "../utils/teamAssets";
+import { TeamLink } from "./shared/TeamLink";
 import { TeamLogo } from "./shared/TeamLogo";
 
 // "On bye" box at the bottom of Games and Scoreboard. Renders nothing in a
@@ -27,11 +28,8 @@ export const ByeTeams = ({ teams }: { teams: string[] }) => {
         sx={{ display: "flex", flexWrap: "wrap", columnGap: 2.5, rowGap: 1 }}
       >
         {teams.map((abbr) => (
-          <Box
-            key={abbr}
-            sx={{ display: "flex", alignItems: "center", gap: 0.75 }}
-          >
-            <TeamLogo abbr={abbr} size={22} />
+          <TeamLink key={abbr} abbr={abbr} sx={{ gap: 0.75 }}>
+            <TeamLogo abbr={abbr} size={22} decorative />
             <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
               {abbr}
             </Typography>
@@ -44,7 +42,7 @@ export const ByeTeams = ({ teams }: { teams: string[] }) => {
             >
               {getTeamData(abbr).name}
             </Typography>
-          </Box>
+          </TeamLink>
         ))}
       </Box>
     </Paper>

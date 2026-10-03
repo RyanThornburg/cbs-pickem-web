@@ -18,6 +18,7 @@ import {
   teamLineText,
   userPickSide,
 } from "../../utils/scoreboardUtils";
+import { TeamLink } from "../../../shared/TeamLink";
 import { TeamLogo } from "../../../shared/TeamLogo";
 import { BallIcon } from "../shared/BallIcon";
 import { Timeouts } from "../shared/Timeouts";
@@ -204,7 +205,9 @@ export const GameCard = memo(
               minWidth: 0,
             }}
           >
-            <TeamLogo abbr={team.abbr} size={30} />
+            <TeamLink abbr={team.abbr} sx={{ flexShrink: 0 }}>
+              <TeamLogo abbr={team.abbr} size={30} />
+            </TeamLink>
             <Box sx={{ minWidth: 0 }}>
               <Box
                 sx={{
@@ -214,27 +217,32 @@ export const GameCard = memo(
                   minWidth: 0,
                 }}
               >
-                <Typography
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: "1.125rem",
-                    lineHeight: 1.2,
-                  }}
+                <TeamLink
+                  abbr={team.abbr}
+                  sx={{ alignItems: "baseline", gap: 0.75 }}
                 >
-                  {team.abbr}
-                </Typography>
-                {team.name && (
                   <Typography
-                    noWrap
                     sx={{
-                      color: "text.secondary",
-                      fontSize: "0.8rem",
-                      display: { xs: "none", sm: "block" },
+                      fontWeight: 700,
+                      fontSize: "1.125rem",
+                      lineHeight: 1.2,
                     }}
                   >
-                    {team.name}
+                    {team.abbr}
                   </Typography>
-                )}
+                  {team.name && (
+                    <Typography
+                      noWrap
+                      sx={{
+                        color: "text.secondary",
+                        fontSize: "0.8rem",
+                        display: { xs: "none", sm: "block" },
+                      }}
+                    >
+                      {team.name}
+                    </Typography>
+                  )}
+                </TeamLink>
               </Box>
               <Box
                 sx={{

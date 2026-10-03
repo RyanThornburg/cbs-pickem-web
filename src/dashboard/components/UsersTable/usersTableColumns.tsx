@@ -1,11 +1,10 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import Box from "@mui/material/Box";
-import ButtonBase from "@mui/material/ButtonBase";
 import Stack from "@mui/material/Stack";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RankedUser, RecapMove, UserSeasonTrends } from "../../types";
 import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import UserAvatar from "../UserAvatar";
+import { PlayerLink } from "../shared/PlayerLink";
 import { PlaceCell } from "./PlaceCell";
 import { StreakBadge } from "./StreakBadge";
 import { ScoreWithCovering } from "./ScoreWithCovering";
@@ -79,60 +78,9 @@ declare module "@tanstack/react-table" {
     mobileHeader?: string;
     align?: "left" | "center";
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface TableMeta<TData> {
-    expandedId: string | null;
-    toggleExpanded: (id: string) => void;
-  }
 }
 
 const columnHelper = createColumnHelper<UsersTableRow>();
-
-const ExpandButton = ({
-  name,
-  userId,
-  expanded,
-  onToggle,
-}: {
-  name: string;
-  userId: string;
-  expanded: boolean;
-  onToggle: () => void;
-}) => (
-  <ButtonBase
-    aria-expanded={expanded}
-    aria-label={`${name}: season trends`}
-    onClick={(event) => {
-      // The row's own click handler would toggle it straight back.
-      event.stopPropagation();
-      onToggle();
-    }}
-    sx={{
-      gap: 0.25,
-      minWidth: 0,
-      maxWidth: "100%",
-      borderRadius: 1,
-      textAlign: "left",
-    }}
-  >
-    <UserAvatar
-      userName={name}
-      userId={userId}
-      fontSize="0.8125rem"
-      size={26}
-    />
-    <ExpandMoreIcon
-      aria-hidden
-      sx={{
-        fontSize: "1rem",
-        flexShrink: 0,
-        color: "text.secondary",
-        transition: "transform 150ms ease-out",
-        transform: expanded ? "rotate(180deg)" : "none",
-      }}
-    />
-  </ButtonBase>
-);
 
 // Columns hold different value types, so TanStack's own docs type the array
 // with `any` for the value.
@@ -174,15 +122,16 @@ export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
             rowGap: 0.25,
           }}
         >
-          {/* The whole row also toggles on click; this button is the
-              keyboard and screen-reader way in, and the chevron shows
-              sighted users that rows open. */}
-          <ExpandButton
-            name={info.getValue()}
-            userId={row.id}
-            expanded={info.table.options.meta?.expandedId === row.id}
-            onToggle={() => info.table.options.meta?.toggleExpanded(row.id)}
-          />
+          {/* The whole row opens the player's page too; the link is the
+              keyboard and screen-reader way in. */}
+          <PlayerLink id={row.id} sx={{ maxWidth: "100%" }}>
+            <UserAvatar
+              userName={info.getValue()}
+              userId={row.id}
+              fontSize="0.8125rem"
+              size={26}
+            />
+          </PlayerLink>
           {hasBadges && (
             <Stack
               direction="row"
