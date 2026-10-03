@@ -45,6 +45,8 @@ describe("worker routes", () => {
       ["/api/weeks/2026/3/recap", "week:2026:03:recap"],
       ["/api/weeks/2026/12/recap", "week:2026:12:recap"],
       ["/api/season/2026/trends", "season:2026:trends"],
+      ["/api/season/2026/standings", "season:2026:standings"],
+      ["/api/teams/2026/20", "team:2026:20"],
       ["/api/users/35/season/2026", "user:35:season:2026"],
       ["/api/games/2026/43/details", "game:2026:43:details"],
     ];
@@ -84,6 +86,8 @@ describe("worker routes", () => {
       "/api/weeks/x/3/games",
       "/api/nope",
       "/api/meta/extra",
+      "/api/teams/2026/BUF",
+      "/api/season/2026/nope",
     ]) {
       const { get, reads } = setup();
       assert.equal((await get(path)).status, 404, path);

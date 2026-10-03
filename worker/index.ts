@@ -2,7 +2,8 @@ import { verifyAdmin } from "./access.ts";
 
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
-const SEASON_TRENDS_PATTERN = /^\/api\/season\/(\d+)\/trends$/;
+const SEASON_RESOURCE_PATTERN = /^\/api\/season\/(\d+)\/(trends|standings)$/;
+const TEAM_PROFILE_PATTERN = /^\/api\/teams\/(\d+)\/(\d+)$/;
 const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 const GAME_DETAILS_PATTERN = /^\/api\/games\/(\d+)\/(\d+)\/details$/;
 // KV caches reads at the edge for 60s by default. The games key carries live
@@ -55,10 +56,16 @@ export default {
         );
       }
 
-      const seasonTrendsMatch = pathname.match(SEASON_TRENDS_PATTERN);
-      if (seasonTrendsMatch) {
-        const [, season] = seasonTrendsMatch;
-        return await respondWithKvJson(env, `season:${season}:trends`);
+      const seasonMatch = pathname.match(SEASON_RESOURCE_PATTERN);
+      if (seasonMatch) {
+        const [, season, resource] = seasonMatch;
+        return await respondWithKvJson(env, `season:${season}:${resource}`);
+      }
+
+      const teamMatch = pathname.match(TEAM_PROFILE_PATTERN);
+      if (teamMatch) {
+        const [, season, teamId] = teamMatch;
+        return await respondWithKvJson(env, `team:${season}:${teamId}`);
       }
 
       const userSeasonMatch = pathname.match(USER_SEASON_PATTERN);
