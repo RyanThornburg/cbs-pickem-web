@@ -2,6 +2,7 @@ import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { useWidth } from "../shared/useWidth";
 import { useState } from "react";
 import { focusRingColor, pool } from "../../shared-theme/themePrimitives";
+import { MIN_WEEK_STAT_FINALS } from "./recapUtils";
 import {
   RecapChaosPoint,
   RecapPoolAccuracyPoint,
@@ -234,19 +235,63 @@ function Names({
   );
 }
 
+// Shown for a week a chart has no point for yet (its column stays, so the
+// two charts' weeks line up).
+const WaitingTooltip = ({ week, finals }: { week: number; finals: number }) => (
+  <>
+    <b>Week {week}</b>
+    <Box sx={{ color: "text.secondary" }}>
+      Shows once {finals} games are final
+    </Box>
+  </>
+);
+
+// Both charts share one list of weeks, so a week sits in the same column in
+// each even when one of them hasn't got it yet.
+function WeekLabels({
+  g,
+  weeks,
+  color,
+}: {
+  g: Geom;
+  weeks: number[];
+  color: string;
+}) {
+  return (
+    <>
+      {weeks.map((week, i) =>
+        g.labelled(i) ? (
+          <text
+            key={week}
+            x={g.x(i)}
+            y={H - 28}
+            textAnchor="middle"
+            fontSize="11"
+            fill={color}
+          >
+            Wk {week}
+          </text>
+        ) : null
+      )}
+    </>
+  );
+}
+
 function PoolAccuracyChart({
   series,
+  weeks,
   inProgressWeek,
   selectedUserId,
 }: {
   series: RecapPoolAccuracyPoint[];
+  weeks: number[];
   inProgressWeek: number | null;
   selectedUserId?: string;
 }) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
-  const n = series.length;
+  const n = weeks.length;
   const g = geom(W, n);
   const accs = series.map((p) => p.accuracy);
   // Whole 10% steps around the data, always including the 50% line.
@@ -256,7 +301,11 @@ function PoolAccuracyChart({
   const ticks: number[] = [];
   for (let v = lo; v <= hi + 1e-9; v += 0.1)
     ticks.push(Math.round(v * 10) / 10);
-  const pts = series.map((p, i) => ({ x: g.x(i), y: y(p.accuracy), p }));
+  const pts = series.map((p) => {
+    const i = weeks.indexOf(p.week);
+    return { i, x: g.x(i), y: y(p.accuracy), p };
+  });
+  const activePt = active == null ? undefined : pts.find((q) => q.i === active);
   const last = pts[pts.length - 1];
   const markY = H - 14;
   const text = theme.palette.text.secondary;
@@ -352,7 +401,7 @@ function PoolAccuracyChart({
           strokeWidth={2}
           strokeLinejoin="round"
         />
-        {pts.map(({ x, y: py, p }, i) => {
+        {pts.map(({ i, x, y: py, p }) => {
           const hollow = p.week === inProgressWeek;
           return (
             <circle
@@ -378,20 +427,7 @@ function PoolAccuracyChart({
             {pct(last.p.accuracy)}
           </text>
         )}
-        {pts.map(({ x, p }, i) =>
-          g.labelled(i) ? (
-            <text
-              key={p.week}
-              x={x}
-              y={H - 28}
-              textAnchor="middle"
-              fontSize="11"
-              fill={text}
-            >
-              Wk {p.week}
-            </text>
-          ) : null
-        )}
+        <WeekLabels g={g} weeks={weeks} color={text} />
         {pts.map(({ x, p }) => (
           <g key={`m${p.week}`}>
             {p.perfect.length > 0 && (
@@ -414,35 +450,45 @@ function PoolAccuracyChart({
         ))}
         <HitColumns
           g={g}
-          labels={series.map((p) => `Week ${p.week}: ${pct(p.accuracy)}`)}
+          labels={weeks.map((week) => {
+            const p = series.find((q) => q.week === week);
+            return p
+              ? `Week ${week}: ${pct(p.accuracy)}`
+              : `Week ${week}: shows once ${MIN_WEEK_STAT_FINALS} games are final`;
+          })}
           active={active}
           onActive={setActive}
         />
       </svg>
-      {active != null && pts[active] && (
-        <ChartTooltip x={pts[active].x} y={pts[active].y} W={W}>
+      {active != null && !activePt && (
+        <ChartTooltip x={g.x(active)} y={PAD.top + PLOT_H / 2} W={W}>
+          <WaitingTooltip week={weeks[active]} finals={MIN_WEEK_STAT_FINALS} />
+        </ChartTooltip>
+      )}
+      {activePt && (
+        <ChartTooltip x={activePt.x} y={activePt.y} W={W}>
           <b>
-            Week {pts[active].p.week}
-            {pts[active].p.week === inProgressWeek ? " (so far)" : ""}:{" "}
-            {pct(pts[active].p.accuracy)}
+            Week {activePt.p.week}
+            {activePt.p.week === inProgressWeek ? " (so far)" : ""}:{" "}
+            {pct(activePt.p.accuracy)}
           </b>
           <Box sx={{ color: "text.secondary" }}>
-            {pts[active].p.correct} of {pts[active].p.graded} picks
+            {activePt.p.correct} of {activePt.p.graded} picks
           </Box>
-          {pts[active].p.perfect.length > 0 && (
+          {activePt.p.perfect.length > 0 && (
             <Box>
               5-0:{" "}
               <Names
-                people={pts[active].p.perfect}
+                people={activePt.p.perfect}
                 selectedUserId={selectedUserId}
               />
             </Box>
           )}
-          {pts[active].p.winless.length > 0 && (
+          {activePt.p.winless.length > 0 && (
             <Box>
               0-5:{" "}
               <Names
-                people={pts[active].p.winless}
+                people={activePt.p.winless}
                 selectedUserId={selectedUserId}
               />
             </Box>
@@ -453,11 +499,23 @@ function PoolAccuracyChart({
   );
 }
 
-function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
+// The data repo holds the week in progress back until this many finals.
+const CHAOS_MIN_FINALS = 8;
+
+function ChaosChart({
+  series,
+  weeks,
+}: {
+  series: RecapChaosPoint[];
+  weeks: number[];
+}) {
   const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
-  const n = series.length;
+  const n = weeks.length;
+  const col = (p: RecapChaosPoint) => weeks.indexOf(p.week);
+  const activeP =
+    active == null ? undefined : series.find((p) => col(p) === active);
   const g = geom(W, n);
   const y = (v: number) => PAD.top + ((10 - v) / 10) * PLOT_H;
   const barW = Math.min(48, g.band * 0.6);
@@ -515,7 +573,8 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
             </text>
           </g>
         ))}
-        {series.map((p, i) => {
+        {series.map((p) => {
+          const i = col(p);
           const x = g.x(i) - barW / 2;
           const top = y(p.index);
           const h = Math.max(0, base - top);
@@ -536,7 +595,7 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
         })}
         {last && (
           <text
-            x={g.x(n - 1)}
+            x={g.x(col(last))}
             y={y(last.index) - 7}
             textAnchor="middle"
             fontSize="12"
@@ -546,39 +605,35 @@ function ChaosChart({ series }: { series: RecapChaosPoint[] }) {
             {last.index.toFixed(1)}
           </text>
         )}
-        {series.map((p, i) =>
-          g.labelled(i) ? (
-            <text
-              key={p.week}
-              x={g.x(i)}
-              y={H - 28}
-              textAnchor="middle"
-              fontSize="11"
-              fill={text}
-            >
-              Wk {p.week}
-            </text>
-          ) : null
-        )}
+        <WeekLabels g={g} weeks={weeks} color={text} />
         <HitColumns
           g={g}
-          labels={series.map((p) => `Week ${p.week}: ${p.index.toFixed(1)}`)}
+          labels={weeks.map((week) => {
+            const p = series.find((q) => q.week === week);
+            return p
+              ? `Week ${week}: ${p.index.toFixed(1)}`
+              : `Week ${week}: shows once ${CHAOS_MIN_FINALS} games are final`;
+          })}
           active={active}
           onActive={setActive}
         />
       </svg>
-      {active != null && series[active] && (
-        <ChartTooltip x={g.x(active)} y={y(series[active].index)} W={W}>
+      {active != null && !activeP && (
+        <ChartTooltip x={g.x(active)} y={PAD.top + PLOT_H / 2} W={W}>
+          <WaitingTooltip week={weeks[active]} finals={CHAOS_MIN_FINALS} />
+        </ChartTooltip>
+      )}
+      {active != null && activeP && (
+        <ChartTooltip x={g.x(active)} y={y(activeP.index)} W={W}>
           <b>
-            Week {series[active].week}: {series[active].index.toFixed(1)}
-            {series[active].partial
-              ? ` so far (${series[active].games_final} of ${series[active].games_total} final)`
+            Week {activeP.week}: {activeP.index.toFixed(1)}
+            {activeP.partial
+              ? ` so far (${activeP.games_final} of ${activeP.games_total} final)`
               : ""}
           </b>
           <Box sx={{ color: "text.secondary" }}>
-            Underdogs covered {series[active].underdog_covers} of{" "}
-            {series[active].ats_decided} · {series[active].outright_upsets}{" "}
-            outright upsets
+            Underdogs covered {activeP.underdog_covers} of {activeP.ats_decided}{" "}
+            · {activeP.outright_upsets} outright upsets
           </Box>
         </ChartTooltip>
       )}
@@ -593,10 +648,19 @@ export default function SeasonRecapCharts({
   recap: WeekRecap | undefined;
   selectedUserId?: string;
 }) {
-  const accuracy = recap?.series.pool_accuracy ?? [];
+  const inProgressWeek = recap && !recap.week_complete ? recap.week : null;
+  // The week in progress waits for MIN_WEEK_STAT_FINALS finals, like the
+  // week's accuracy card: 1 of 16 games final isn't a week's accuracy.
+  const tooEarly =
+    inProgressWeek != null && recap!.games_final < MIN_WEEK_STAT_FINALS;
+  const accuracy = (recap?.series.pool_accuracy ?? []).filter(
+    (p) => !(tooEarly && p.week === inProgressWeek)
+  );
   const chaos = recap?.series.chaos ?? [];
   if (accuracy.length === 0 && chaos.length === 0) return null;
-  const inProgressWeek = recap && !recap.week_complete ? recap.week : null;
+  const weeks = [...new Set([...accuracy, ...chaos].map((p) => p.week))].sort(
+    (a, b) => a - b
+  );
   return (
     <Box
       sx={{
@@ -611,11 +675,12 @@ export default function SeasonRecapCharts({
       {accuracy.length > 0 && (
         <PoolAccuracyChart
           series={accuracy}
+          weeks={weeks}
           inProgressWeek={inProgressWeek}
           selectedUserId={selectedUserId}
         />
       )}
-      {chaos.length > 0 && <ChaosChart series={chaos} />}
+      {chaos.length > 0 && <ChaosChart series={chaos} weeks={weeks} />}
     </Box>
   );
 }

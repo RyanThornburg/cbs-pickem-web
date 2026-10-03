@@ -9,17 +9,26 @@ const GOLD = "#d4a017";
 const INK = "hsl(220, 20%, 25%)";
 const MUTED = "rgba(0, 0, 0, 0.6)";
 
+// Width of the "So far" slot for the season in progress.
+const NOW_SLOT = 52;
+
 // Finish by season, 1st at the top, with each finish written over its dot
-// (so nothing hides in a tooltip). This season's place so far is the hollow
-// blue dot at the end, joined by a dashed line since it isn't final.
+// (so nothing hides in a tooltip). This season's place so far isn't a
+// finish, so it sits apart: its own "So far" slot past a dashed divider,
+// a hollow dot not joined to the career line.
 export function FinishesChart({ points }: { points: FinishPoint[] }) {
   const [ref, width] = useWidth(560);
   const maxRank = Math.max(10, ...points.map((p) => p.rank));
-  const plotW = width - PAD.left - PAD.right;
+  const closed = points.filter((p) => !p.current);
+  const current = points.find((p) => p.current);
+  const lineRight = width - PAD.right - (current ? NOW_SLOT : 0);
+  const plotW = lineRight - PAD.left;
   const plotH = HEIGHT - PAD.top - PAD.bottom;
-  const x = (i: number) =>
+  const closedX = (i: number) =>
     PAD.left +
-    (points.length === 1 ? plotW / 2 : (i * plotW) / (points.length - 1));
+    (closed.length === 1 ? plotW / 2 : (i * plotW) / (closed.length - 1));
+  const nowX = width - PAD.right - NOW_SLOT / 2 + 4;
+  const x = (p: FinishPoint) => (p.current ? nowX : closedX(closed.indexOf(p)));
   const y = (rank: number) => PAD.top + ((rank - 1) / (maxRank - 1)) * plotH;
   const ticks = [
     1,
@@ -28,9 +37,7 @@ export function FinishesChart({ points }: { points: FinishPoint[] }) {
     ...(maxRank > 15 ? [Math.ceil(maxRank / 5) * 5] : []),
   ];
   // Thin the year labels when columns get narrow.
-  const step = plotW / Math.max(1, points.length - 1) < 34 ? 2 : 1;
-  const closed = points.filter((p) => !p.current);
-  const current = points.find((p) => p.current);
+  const step = plotW / Math.max(1, closed.length - 1) < 34 ? 2 : 1;
 
   return (
     <Box ref={ref} sx={{ width: "100%", maxWidth: 640 }}>
@@ -70,34 +77,31 @@ export function FinishesChart({ points }: { points: FinishPoint[] }) {
             fill="none"
             stroke={INK}
             strokeWidth={1.5}
-            points={closed
-              .map((p) => `${x(points.indexOf(p))},${y(p.rank)}`)
-              .join(" ")}
+            points={closed.map((p) => `${x(p)},${y(p.rank)}`).join(" ")}
           />
         )}
         {current && closed.length > 0 && (
           <line
-            x1={x(points.length - 2)}
-            y1={y(closed[closed.length - 1].rank)}
-            x2={x(points.length - 1)}
-            y2={y(current.rank)}
-            stroke={INK}
-            strokeWidth={1.5}
+            x1={lineRight + 12}
+            x2={lineRight + 12}
+            y1={PAD.top - 12}
+            y2={HEIGHT - PAD.bottom + 8}
+            stroke="rgba(0, 0, 0, 0.2)"
             strokeDasharray="3 3"
           />
         )}
-        {points.map((p, i) => (
+        {points.map((p) => (
           <g key={p.season}>
             <circle
-              cx={x(i)}
+              cx={x(p)}
               cy={y(p.rank)}
               r={p.current ? 4.5 : 4}
               fill={p.current ? "#fff" : p.rank === 1 ? GOLD : INK}
-              stroke={p.current ? "hsl(210, 98%, 42%)" : "#fff"}
+              stroke={p.current ? INK : "#fff"}
               strokeWidth={p.current ? 2 : 1}
             />
             <text
-              x={x(i)}
+              x={x(p)}
               y={y(p.rank) - 9}
               textAnchor="middle"
               fontSize={11}
@@ -106,15 +110,17 @@ export function FinishesChart({ points }: { points: FinishPoint[] }) {
             >
               {p.rank}
             </text>
-            {i % step === (points.length - 1) % step && (
+            {(p.current ||
+              closed.indexOf(p) % step === (closed.length - 1) % step) && (
               <text
-                x={x(i)}
+                x={x(p)}
                 y={HEIGHT - 6}
                 textAnchor="middle"
                 fontSize={11}
+                fontWeight={p.current ? 600 : 400}
                 fill={MUTED}
               >
-                ’{String(p.season).slice(2)}
+                {p.current ? "So far" : `’${String(p.season).slice(2)}`}
               </text>
             )}
           </g>

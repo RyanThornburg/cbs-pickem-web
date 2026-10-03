@@ -236,31 +236,34 @@ export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   const showSweetSpot =
     sweet_spot_team && !isRedundantSpot(lucky_team, sweet_spot_team);
 
+  // Neutral icons: these are tendencies, not pick results, and red and
+  // green mean won/lost (DESIGN.md "Red And Green Mean Picks"). The shapes
+  // (sad/happy face, eye shut/open) still tell the pairs apart.
   const matchupCards: TrendCardProps[] = [];
   if (trap_team) {
     matchupCards.push({
-      icon: <SentimentVeryDissatisfiedIcon fontSize="small" color="error" />,
+      icon: <SentimentVeryDissatisfiedIcon fontSize="small" color="action" />,
       label: "Trap team",
       value: volumeWeightedTeamText(trap_team),
     });
   }
   if (lucky_team) {
     matchupCards.push({
-      icon: <SentimentVerySatisfiedIcon fontSize="small" color="success" />,
+      icon: <SentimentVerySatisfiedIcon fontSize="small" color="action" />,
       label: "Lucky team",
       value: volumeWeightedTeamText(lucky_team),
     });
   }
   if (showBlindSpot) {
     matchupCards.push({
-      icon: <VisibilityOffIcon fontSize="small" color="error" />,
+      icon: <VisibilityOffIcon fontSize="small" color="action" />,
       label: "Blind spot team",
       value: spotTeamText(blind_spot_team as SpotTeam),
     });
   }
   if (showSweetSpot) {
     matchupCards.push({
-      icon: <VisibilityIcon fontSize="small" color="success" />,
+      icon: <VisibilityIcon fontSize="small" color="action" />,
       label: "Sweet spot team",
       value: spotTeamText(sweet_spot_team as SpotTeam),
     });

@@ -347,7 +347,7 @@ export default function PlayerPage({
               title="Finishes"
               note={
                 now
-                  ? `The hollow dot is ${season} so far (${ordinal(now.place)}).`
+                  ? `So far: ${ordinal(now.place)} in ${season}, not final yet.`
                   : undefined
               }
             >
