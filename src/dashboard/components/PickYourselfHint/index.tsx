@@ -62,8 +62,7 @@ export default function PickYourselfHint({
         variant="body2"
         sx={{ flex: "1 1 12rem", minWidth: 0, color: "text.primary" }}
       >
-        Pick your name to highlight your row and picks here and on the
-        Scoreboard.
+        Pick your name to highlight your row and picks on every tab.
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: "auto" }}>
         <Button variant="outlined" size="small" onClick={onChoose}>

@@ -90,7 +90,7 @@ const TAB_TITLES: Record<AppTab, string> = {
 
 const NFL_VIEW_TITLES: Record<NflView, string> = {
   games: "Games",
-  live: "Scoreboard",
+  live: "Live",
   standings: "Standings",
 };
 

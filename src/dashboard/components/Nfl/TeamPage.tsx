@@ -19,6 +19,7 @@ import { AtsSplit, PoolPicker, TeamGame, TeamProfile } from "../../types";
 import { getTeamFullName } from "../../utils/teamAssets";
 import TabSkeleton from "../TabSkeleton";
 import { BackLink } from "../shared/BackLink";
+import TabIntro from "../TabIntro";
 import { PlayerLink } from "../shared/PlayerLink";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
@@ -416,240 +417,236 @@ function TeamPageBody({
   const abbr = row.team.abbr;
 
   return (
-    <Box
-      sx={{
-        textAlign: "left",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2.5,
-      }}
-    >
-      {back}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <TeamLogo abbr={abbr} size={56} decorative />
-        <Box sx={{ minWidth: 0 }}>
-          <Typography
-            component="h2"
-            sx={{ fontSize: "1.25rem", fontWeight: 700, lineHeight: 1.3 }}
-          >
-            {getTeamFullName(abbr)}
-          </Typography>
+    <Box sx={{ textAlign: "left" }}>
+      <TabIntro
+        back={back}
+        leading={<TeamLogo abbr={abbr} size={56} decorative />}
+        title={getTeamFullName(abbr)}
+        subtitle={
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {ordinal(row.rank)} in {division} · {formatWinLoss(row)}
             {row.streak && ` · ${row.streak}`} · {row.points_for}–
             {row.points_against} pts
           </Typography>
-        </Box>
-      </Box>
-
-      <Grid container spacing={1.5}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <StatCard title="Against the CBS line">
-            <BigRecord
-              value={formatAts(ats.overall)}
-              note={
-                ats.overall.cover_pct == null
-                  ? undefined
-                  : `${pct(ats.overall.cover_pct)} covered`
-              }
-            />
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                gap: 1,
-              }}
-            >
-              <Split label="Home" ats={ats.home} />
-              <Split label="Road" ats={ats.away} />
-              <Split label="Favored" ats={ats.favorite} />
-              <Split label="Underdog" ats={ats.underdog} />
-            </Box>
-          </StatCard>
-        </Grid>
-        <Grid size={{ xs: 12, sm: userId ? 6 : 12, md: 4 }}>
-          <StatCard title="The pool on them">
-            <Pair
-              items={[
-                {
-                  value: formatPickRecord(pool.picked) ?? "–",
-                  label: `picking them (${pool.picked.picks})`,
-                },
-                {
-                  value: formatPickRecord(pool.against) ?? "–",
-                  label: `picking against (${pool.against.picks})`,
-                },
-              ]}
-            />
-          </StatCard>
-        </Grid>
-        {userId && userName && (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <StatCard title={userName} highlight>
-              {playerRecord &&
-              playerRecord.picked.picks + playerRecord.against.picks > 0 ? (
-                <Pair
-                  items={[
-                    {
-                      value: formatPickRecord(playerRecord.picked) ?? "–",
-                      label: `picking them (${playerRecord.picked.picks})`,
-                    },
-                    {
-                      value: formatPickRecord(playerRecord.against) ?? "–",
-                      label: `picking against (${playerRecord.against.picks})`,
-                    },
-                  ]}
-                />
-              ) : (
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Hasn't picked their games yet.
-                </Typography>
-              )}
+        }
+      />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+        <Grid container spacing={1.5}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <StatCard title="Against the CBS line">
+              <BigRecord
+                value={formatAts(ats.overall)}
+                note={
+                  ats.overall.cover_pct == null
+                    ? undefined
+                    : `${pct(ats.overall.cover_pct)} covered`
+                }
+              />
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                  gap: 1,
+                }}
+              >
+                <Split label="Home" ats={ats.home} />
+                <Split label="Road" ats={ats.away} />
+                <Split label="Favored" ats={ats.favorite} />
+                <Split label="Underdog" ats={ats.underdog} />
+              </Box>
             </StatCard>
           </Grid>
-        )}
-      </Grid>
+          <Grid size={{ xs: 12, sm: userId ? 6 : 12, md: 4 }}>
+            <StatCard title="The pool on them">
+              <Pair
+                items={[
+                  {
+                    value: formatPickRecord(pool.picked) ?? "–",
+                    label: `picking them (${pool.picked.picks})`,
+                  },
+                  {
+                    value: formatPickRecord(pool.against) ?? "–",
+                    label: `picking against (${pool.against.picks})`,
+                  },
+                ]}
+              />
+            </StatCard>
+          </Grid>
+          {userId && userName && (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+              <StatCard title={userName} highlight>
+                {playerRecord &&
+                playerRecord.picked.picks + playerRecord.against.picks > 0 ? (
+                  <Pair
+                    items={[
+                      {
+                        value: formatPickRecord(playerRecord.picked) ?? "–",
+                        label: `picking them (${playerRecord.picked.picks})`,
+                      },
+                      {
+                        value: formatPickRecord(playerRecord.against) ?? "–",
+                        label: `picking against (${playerRecord.against.picks})`,
+                      },
+                    ]}
+                  />
+                ) : (
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    Hasn't picked their games yet.
+                  </Typography>
+                )}
+              </StatCard>
+            </Grid>
+          )}
+        </Grid>
 
-      <Grid container columnSpacing={3} rowSpacing={2.5}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Typography
-            component="h3"
-            sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
-          >
-            Schedule
-          </Typography>
-          <TableContainer>
-            <Table
-              size="small"
-              aria-label={`${abbr} schedule`}
-              sx={{
-                "& td, & th": {
-                  px: { xs: 0.5, sm: 1 },
-                  whiteSpace: "nowrap",
-                  fontVariantNumeric: "tabular-nums",
-                },
-                "& th": { fontSize: "0.75rem", color: "text.secondary" },
-              }}
+        <Grid container columnSpacing={3} rowSpacing={2.5}>
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <Typography
+              component="h3"
+              sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>Wk</TableCell>
-                  <TableCell>Opp</TableCell>
-                  <TableCell align="right">Line</TableCell>
-                  <TableCell align="right">Result</TableCell>
-                  <TableCell align="right">ATS</TableCell>
-                  <TableCell
-                    align="right"
-                    title="Pool picks of them vs. the opponent"
-                  >
-                    Pool
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {withByes(profile.games).map((game) =>
-                  "bye" in game ? (
-                    <TableRow key={`bye-${game.bye}`}>
-                      <TableCell>{game.bye}</TableCell>
-                      <TableCell colSpan={5} sx={{ color: "text.secondary" }}>
-                        Bye
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <TableRow
-                      key={game.game_id}
-                      sx={
-                        game.week_number === currentWeek
-                          ? {
-                              bgcolor: "hsl(210, 80%, 97%)",
-                              "& td:first-of-type": {
-                                boxShadow: "inset 2px 0 0 hsl(210, 98%, 42%)",
-                              },
-                            }
-                          : undefined
-                      }
+              Schedule
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", display: "block", mb: 1 }}
+            >
+              Line is their CBS line. Pool is how many picked them vs. their
+              opponent; it grows as picks show at kickoff.
+            </Typography>
+            <TableContainer>
+              <Table
+                size="small"
+                aria-label={`${abbr} schedule`}
+                sx={{
+                  "& td, & th": {
+                    px: { xs: 0.5, sm: 1 },
+                    whiteSpace: "nowrap",
+                    fontVariantNumeric: "tabular-nums",
+                  },
+                  "& th": { fontSize: "0.75rem", color: "text.secondary" },
+                }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Wk</TableCell>
+                    <TableCell>Opp</TableCell>
+                    <TableCell align="right">Line</TableCell>
+                    <TableCell align="right">Result</TableCell>
+                    <TableCell align="right">ATS</TableCell>
+                    <TableCell
+                      align="right"
+                      title="Pool picks of them vs. the opponent"
                     >
-                      <TableCell>{game.week_number}</TableCell>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 0.75,
-                          }}
-                        >
+                      Pool
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {withByes(profile.games).map((game) =>
+                    "bye" in game ? (
+                      <TableRow key={`bye-${game.bye}`}>
+                        <TableCell>{game.bye}</TableCell>
+                        <TableCell colSpan={5} sx={{ color: "text.secondary" }}>
+                          Bye
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      <TableRow
+                        key={game.game_id}
+                        sx={
+                          game.week_number === currentWeek
+                            ? {
+                                bgcolor: "hsl(210, 80%, 97%)",
+                                "& td:first-of-type": {
+                                  boxShadow: "inset 2px 0 0 hsl(210, 98%, 42%)",
+                                },
+                              }
+                            : undefined
+                        }
+                      >
+                        <TableCell>{game.week_number}</TableCell>
+                        <TableCell>
                           <Box
-                            component="span"
                             sx={{
-                              color: "text.secondary",
-                              width: 18,
-                              fontSize: "0.75rem",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 0.75,
                             }}
                           >
-                            {game.side === "home" ? "vs" : "@"}
-                          </Box>
-                          <TeamLink
-                            abbr={game.opponent.abbr}
-                            sx={{ gap: 0.75 }}
-                          >
-                            <TeamLogo
-                              abbr={game.opponent.abbr}
-                              size={20}
-                              decorative
-                            />
-                            <Box component="span" sx={{ fontWeight: 600 }}>
-                              {game.opponent.abbr}
+                            <Box
+                              component="span"
+                              sx={{
+                                color: "text.secondary",
+                                width: 18,
+                                fontSize: "0.75rem",
+                              }}
+                            >
+                              {game.side === "home" ? "vs" : "@"}
                             </Box>
-                          </TeamLink>
-                        </Box>
-                      </TableCell>
-                      <TableCell align="right">
-                        {formatLine(game.line)}
-                      </TableCell>
-                      <TableCell align="right">{resultText(game)}</TableCell>
-                      <TableCell align="right">
-                        <Covered covered={game.covered} />
-                      </TableCell>
-                      <TableCell align="right">
-                        <PoolSplit game={game} />
-                      </TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Typography
-            variant="caption"
-            sx={{ color: "text.secondary", display: "block", mt: 1 }}
-          >
-            Line is their CBS line. Pool is how many picked them vs. their
-            opponent; it grows as picks show at kickoff.
-          </Typography>
+                            <TeamLink
+                              abbr={game.opponent.abbr}
+                              sx={{ gap: 0.75 }}
+                            >
+                              <TeamLogo
+                                abbr={game.opponent.abbr}
+                                size={20}
+                                decorative
+                              />
+                              <Box component="span" sx={{ fontWeight: 600 }}>
+                                {game.opponent.abbr}
+                              </Box>
+                            </TeamLink>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">
+                          {formatLine(game.line)}
+                        </TableCell>
+                        <TableCell align="right">{resultText(game)}</TableCell>
+                        <TableCell align="right">
+                          <Covered covered={game.covered} />
+                        </TableCell>
+                        <TableCell align="right">
+                          <PoolSplit game={game} />
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <Typography
+              component="h3"
+              sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
+            >
+              Who's picked them
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", display: "block", mb: 1 }}
+            >
+              Believers picked them, faders picked their opponent. One player
+              can be both over a season.
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <People
+                title="Believers"
+                people={pool.believers}
+                empty="No one has picked them yet."
+                userId={userId}
+              />
+              <People
+                title="Faders"
+                people={pool.faders}
+                empty="No one has picked against them yet."
+                userId={userId}
+              />
+            </Box>
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Typography
-            component="h3"
-            sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
-          >
-            Who's picked them
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <People
-              title="Believers"
-              people={pool.believers}
-              empty="No one has picked them yet."
-              userId={userId}
-            />
-            <People
-              title="Faders"
-              people={pool.faders}
-              empty="No one has picked against them yet."
-              userId={userId}
-            />
-          </Box>
-        </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 }

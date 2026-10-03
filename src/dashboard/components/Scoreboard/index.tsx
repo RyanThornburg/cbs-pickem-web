@@ -80,7 +80,7 @@ const Scoreboard = memo((props: Props) => {
 
   const intro = (actions?: React.ReactNode) => (
     <TabIntro
-      title="Scoreboard"
+      title="Live"
       week={week}
       actions={
         viewSwitch || actions ? (
@@ -139,7 +139,7 @@ const Scoreboard = memo((props: Props) => {
       exclusive
       value={layout}
       onChange={changeLayout}
-      aria-label="Scoreboard layout"
+      aria-label="Live layout"
       sx={{ "& .MuiToggleButton-root": { py: 0.25, px: 1.25 } }}
     >
       <ToggleButton value="full" aria-label="Full cards">

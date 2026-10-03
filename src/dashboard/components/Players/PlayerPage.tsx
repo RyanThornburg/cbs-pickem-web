@@ -12,6 +12,7 @@ import TabSkeleton from "../TabSkeleton";
 import UserAvatar from "../UserAvatar";
 import { useStandings } from "../Nfl/useNflData";
 import { BackLink } from "../shared/BackLink";
+import TabIntro from "../TabIntro";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import { UserTrendPanel } from "../UsersTable/UserTrendPanel";
 import { FinishesChart } from "./FinishesChart";
@@ -121,31 +122,19 @@ export default function PlayerPage({
   const segmentPlace = segment && now?.periods[segment.key]?.place;
 
   return (
-    <Box
-      sx={{
-        textAlign: "left",
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-      }}
-    >
-      <Box>{back}</Box>
-      <Box
-        sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}
-      >
-        <UserAvatar
-          userId={playerId}
-          userName={name}
-          size={56}
-          includeName={false}
-        />
-        <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography
-            component="h2"
-            sx={{ fontSize: "1.25rem", fontWeight: 700, lineHeight: 1.3 }}
-          >
-            {name ?? <Skeleton width={180} />}
-          </Typography>
+    <Box sx={{ textAlign: "left" }}>
+      <TabIntro
+        back={back}
+        leading={
+          <UserAvatar
+            userId={playerId}
+            userName={name}
+            size={56}
+            includeName={false}
+          />
+        }
+        title={name ?? <Skeleton width={180} />}
+        subtitle={
           <Typography
             variant="body2"
             component="div"
@@ -188,166 +177,177 @@ export default function PlayerPage({
               </Fact>
             )}
           </Typography>
-        </Box>
-        {!isSelected && name && (
-          // Picking a player here is the same as picking them in the
-          // header: their picks get highlighted on every tab.
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => onSelect(playerId)}
-          >
-            This is me
-          </Button>
-        )}
-      </Box>
-
-      <Grid container columnSpacing={4} rowSpacing={3}>
-        <Grid size={{ xs: 12, md: 7 }}>
-          <Section title="Week by week">
-            {!weeksLoaded && myWeeks.length === 0 ? (
-              <TabSkeleton shape="rows" label="Loading the weeks" />
-            ) : (
-              <Box component="ol" sx={{ listStyle: "none", m: 0, p: 0 }}>
-                {myWeeks.map(({ week, user }) => {
-                  const live = week === currentWeek;
-                  return (
-                    <Box
-                      component="li"
-                      key={week}
-                      sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                          xs: "60px 28px minmax(0, 1fr)",
-                          sm: "72px 36px minmax(0, 1fr)",
-                        },
-                        alignItems: "center",
-                        columnGap: 1,
-                        py: 1,
-                        borderBottom: 1,
-                        borderColor: "hsl(220, 30%, 94%)",
-                        "&:last-of-type": { borderBottom: 0 },
-                      }}
-                    >
-                      <Box sx={{ lineHeight: 1.25 }}>
-                        <Typography
-                          sx={{ fontSize: "0.8125rem", fontWeight: 600 }}
-                        >
-                          Week {week}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          {live ? "this week" : `${ordinal(user.place)} after`}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        aria-label={`${user.weekly_score + (live ? user.trending_score : 0)} points`}
+        }
+        actions={
+          !isSelected && name ? (
+            // Picking a player here is the same as picking them in the
+            // header: their picks get highlighted on every tab.
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => onSelect(playerId)}
+            >
+              This is me
+            </Button>
+          ) : undefined
+        }
+      />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Grid container columnSpacing={4} rowSpacing={3}>
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Section title="Week by week">
+              {!weeksLoaded && myWeeks.length === 0 ? (
+                <TabSkeleton shape="rows" label="Loading the weeks" />
+              ) : (
+                <Box component="ol" sx={{ listStyle: "none", m: 0, p: 0 }}>
+                  {myWeeks.map(({ week, user }) => {
+                    const live = week === currentWeek;
+                    return (
+                      <Box
+                        component="li"
+                        key={week}
                         sx={{
-                          fontSize: "1.125rem",
-                          fontWeight: 700,
-                          textAlign: "center",
-                          fontVariantNumeric: "tabular-nums",
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "60px 28px minmax(0, 1fr)",
+                            sm: "72px 36px minmax(0, 1fr)",
+                          },
+                          alignItems: "center",
+                          columnGap: 1,
+                          py: 1,
+                          borderBottom: 1,
+                          borderColor: "hsl(220, 30%, 94%)",
+                          "&:last-of-type": { borderBottom: 0 },
                         }}
                       >
-                        {user.weekly_score + (live ? user.trending_score : 0)}
-                      </Typography>
-                      <Box sx={{ minWidth: 0 }}>
-                        {UserGamePicksStack(
-                          user.picks,
-                          false,
-                          user.has_submitted_picks
-                        ) ?? <NotYet>No picks shown yet.</NotYet>}
+                        <Box sx={{ lineHeight: 1.25 }}>
+                          <Typography
+                            sx={{ fontSize: "0.8125rem", fontWeight: 600 }}
+                          >
+                            Week {week}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            {live
+                              ? "this week"
+                              : `${ordinal(user.place)} overall`}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          aria-label={`${user.weekly_score + (live ? user.trending_score : 0)} points`}
+                          sx={{
+                            fontSize: "1.125rem",
+                            fontWeight: 700,
+                            textAlign: "center",
+                            fontVariantNumeric: "tabular-nums",
+                          }}
+                        >
+                          {user.weekly_score + (live ? user.trending_score : 0)}
+                        </Typography>
+                        <Box sx={{ minWidth: 0 }}>
+                          {UserGamePicksStack(
+                            user.picks,
+                            false,
+                            user.has_submitted_picks
+                          ) ?? <NotYet>No picks shown yet.</NotYet>}
+                        </Box>
                       </Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-            )}
-          </Section>
-        </Grid>
-        <Grid size={{ xs: 12, md: 5 }}>
-          <Section
-            title="Home or road, favorite or underdog"
-            note="Win-loss on each kind of pick this season. Green from 60%, red at 40% or less, from 3 graded picks."
-          >
-            {records?.side_roles ? (
-              <SideRoleGrid sideRoles={records.side_roles} />
-            ) : trends ? (
-              <NotYet>Not enough picks yet.</NotYet>
-            ) : (
-              <Skeleton variant="rounded" height={150} sx={{ maxWidth: 440 }} />
-            )}
-          </Section>
-        </Grid>
-      </Grid>
-
-      <Section
-        title="By the line"
-        note="The picked team's CBS line. The edges sit at 3 and 7, the most common final margins."
-      >
-        {records?.spread_buckets ? (
-          <SpreadLadder buckets={records.spread_buckets} />
-        ) : trends ? (
-          <NotYet>Not enough picks yet.</NotYet>
-        ) : (
-          <Skeleton variant="rounded" height={170} sx={{ maxWidth: 640 }} />
-        )}
-      </Section>
-
-      <Section
-        title="Team by team"
-        note="For: picking that team. Vs: picking their opponent. Tinted by the two together."
-      >
-        {standings && trends ? (
-          <TeamGrid standings={standings} teams={records?.teams ?? []} />
-        ) : (
-          <Skeleton variant="rounded" height={220} />
-        )}
-      </Section>
-
-      <Grid container columnSpacing={4} rowSpacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Section title="Notes">
-            {trends ? (
-              <Box sx={{ mx: { xs: -1, sm: -1.5 }, mt: { xs: -1, sm: -1.5 } }}>
-                <UserTrendPanel trends={trends} />
-              </Box>
-            ) : (
-              <Skeleton variant="rounded" height={120} />
-            )}
-          </Section>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Section
-            title="Finishes"
-            note={
-              now
-                ? `The hollow dot is ${season} so far (${ordinal(now.place)}).`
-                : undefined
-            }
-          >
-            {career ? (
-              career.season_history.length > 0 || now ? (
-                <FinishesChart
-                  points={finishPoints(
-                    career.season_history,
-                    season,
-                    now?.place
-                  )}
-                />
+                    );
+                  })}
+                </Box>
+              )}
+            </Section>
+          </Grid>
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Section
+              title="Home or road, favorite or underdog"
+              note="Win-loss on each kind of pick this season. Green from 60%, red at 40% or less, from 3 graded picks."
+            >
+              {records?.side_roles ? (
+                <SideRoleGrid sideRoles={records.side_roles} />
+              ) : trends ? (
+                <NotYet>Not enough picks yet.</NotYet>
               ) : (
-                <NotYet>
-                  First season. Finishes start once {season} closes.
-                </NotYet>
-              )
-            ) : (
-              <Skeleton variant="rounded" height={170} />
-            )}
-          </Section>
+                <Skeleton
+                  variant="rounded"
+                  height={150}
+                  sx={{ maxWidth: 440 }}
+                />
+              )}
+            </Section>
+          </Grid>
         </Grid>
-      </Grid>
+
+        <Section
+          title="By the line"
+          note="The picked team's CBS line. The edges sit at 3 and 7, the most common final margins."
+        >
+          {records?.spread_buckets ? (
+            <SpreadLadder buckets={records.spread_buckets} />
+          ) : trends ? (
+            <NotYet>Not enough picks yet.</NotYet>
+          ) : (
+            <Skeleton variant="rounded" height={170} sx={{ maxWidth: 640 }} />
+          )}
+        </Section>
+
+        <Section
+          title="Team by team"
+          note="For: picking that team. Vs: picking their opponent. Tinted by the two together."
+        >
+          {standings && trends ? (
+            <TeamGrid standings={standings} teams={records?.teams ?? []} />
+          ) : (
+            <Skeleton variant="rounded" height={220} />
+          )}
+        </Section>
+
+        <Grid container columnSpacing={4} rowSpacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Section title="Notes">
+              {trends ? (
+                <Box
+                  sx={{ mx: { xs: -1, sm: -1.5 }, mt: { xs: -1, sm: -1.5 } }}
+                >
+                  <UserTrendPanel trends={trends} />
+                </Box>
+              ) : (
+                <Skeleton variant="rounded" height={120} />
+              )}
+            </Section>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Section
+              title="Finishes"
+              note={
+                now
+                  ? `The hollow dot is ${season} so far (${ordinal(now.place)}).`
+                  : undefined
+              }
+            >
+              {career ? (
+                career.season_history.length > 0 || now ? (
+                  <FinishesChart
+                    points={finishPoints(
+                      career.season_history,
+                      season,
+                      now?.place
+                    )}
+                  />
+                ) : (
+                  <NotYet>
+                    First season. Finishes start once {season} closes.
+                  </NotYet>
+                )
+              ) : (
+                <Skeleton variant="rounded" height={170} />
+              )}
+            </Section>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 }
