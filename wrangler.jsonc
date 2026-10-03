@@ -3,9 +3,10 @@
   "name": "cbs-pickem-web",
   "main": "worker/index.ts",
   "compatibility_date": "2026-09-10",
-  // Only reachable through morlocked.rattsnest.com, where Cloudflare Access
-  // guards /admin and /api/admin/*. A workers.dev or preview URL would be a
-  // second hostname with no Access in front of it.
+  // Served on two custom domains, morlocked.rattsnest.com and
+  // morlocked.rattplex.com; one Cloudflare Access app guards /admin and
+  // /api/admin/* on both (same AUD below). A workers.dev or preview URL
+  // would be another hostname with no Access in front of it.
   "workers_dev": false,
   "preview_urls": false,
   "assets": {
