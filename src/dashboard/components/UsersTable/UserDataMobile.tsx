@@ -39,7 +39,7 @@ const StyledTableCell = styled(TableCell)(() => ({
 export default function UserDataMobile({
   userList,
   userId,
-  showSecondHalf,
+  week,
   recap,
   showStreak,
   trends,
@@ -53,7 +53,7 @@ export default function UserDataMobile({
   const { table, paidLinesAfter } = useUsersTable({
     userList,
     trends,
-    showSecondHalf,
+    week,
     recap,
     showStreak,
   });
@@ -162,7 +162,7 @@ export default function UserDataMobile({
                     >
                       <PaidLineRule
                         label={line.label}
-                        note={paidLineNote(moneyStandings, line.prize)}
+                        note={paidLineNote(moneyStandings, line.key)}
                       />
                     </StyledTableCell>
                   </TableRow>

@@ -1,4 +1,5 @@
 import { GameStatus, RankedUser } from "../types";
+import { HALVES } from "../utils/testPeriods";
 import { GetUserByWeek } from "./GetUserByWeek";
 import { ApiGame } from "./weekGames";
 
@@ -9,8 +10,9 @@ type ApiUser = {
   trending_score?: number;
   cumulative_score?: number;
   place?: number;
+  // Shorthand for periods.second_half.score.
   second_half_score?: number | null;
-  second_half_place?: number | null;
+  first_half_score?: number | null;
   has_submitted_picks?: boolean;
   picks?: {
     game_id: number;
@@ -20,15 +22,26 @@ type ApiUser = {
   }[];
 };
 
-const user = (u: ApiUser) => ({
+const apiStanding = (score: number | null) => ({
+  score,
+  place: 99, // the API's own rank, which GetUserByWeek replaces
+  in_money: false,
+  last_place_eligible: score == null ? null : true,
+  in_money_last_place: false,
+});
+
+const user = ({ second_half_score, first_half_score, ...u }: ApiUser) => ({
   weekly_score: 0,
   trending_score: 0,
   cumulative_score: 0,
   place: 99,
-  second_half_score: null,
-  second_half_place: null,
   picks: [],
   ...u,
+  periods: {
+    overall: apiStanding(u.cumulative_score ?? 0),
+    first_half: apiStanding(first_half_score ?? u.cumulative_score ?? 0),
+    second_half: apiStanding(second_half_score ?? null),
+  },
 });
 
 const game = (
@@ -56,11 +69,13 @@ const NOT_STARTED = STARTED.map((g) => ({ ...g, status: "SCHEDULED" }));
 // resolves with what the callback received.
 const load = (
   users: ReturnType<typeof user>[],
-  games: ApiGame[] = STARTED
+  games: ApiGame[] = STARTED,
+  // The leaderboard's own week, which decides the periods being played.
+  week = 3
 ): Promise<RankedUser[]> => {
   global.fetch = vi.fn((path: string) => {
     const body = path.endsWith("/leaderboard")
-      ? { week: 3, second_half_start_week: 10, users }
+      ? { week, periods: HALVES, users }
       : { week: 3, updated_at: "2026-09-27T21:00:00Z", games };
     return Promise.resolve({
       ok: true,
@@ -125,48 +140,93 @@ describe("GetUserByWeek", () => {
     });
 
     it("breaks ties in display order by second-half place, then name", async () => {
-      const users = await load([
-        user({ user_id: 1, name: "zed", cumulative_score: 5 }),
-        user({ user_id: 2, name: "Amy", cumulative_score: 5 }),
-        user({
-          user_id: 3,
-          name: "Bea",
-          cumulative_score: 5,
-          second_half_score: 3,
-        }),
-        user({
-          user_id: 4,
-          name: "Cy",
-          cumulative_score: 5,
-          second_half_score: 4,
-        }),
-      ]);
+      const users = await load(
+        [
+          user({ user_id: 1, name: "zed", cumulative_score: 5 }),
+          user({ user_id: 2, name: "Amy", cumulative_score: 5 }),
+          user({
+            user_id: 3,
+            name: "Bea",
+            cumulative_score: 5,
+            second_half_score: 3,
+          }),
+          user({
+            user_id: 4,
+            name: "Cy",
+            cumulative_score: 5,
+            second_half_score: 4,
+          }),
+        ],
+        STARTED,
+        12
+      );
       // Users without a second-half score sort first (null counts as 0),
       // then by name, ignoring case.
       expect(users.map((u) => u.name)).toEqual(["Amy", "zed", "Cy", "Bea"]);
     });
 
     it("re-ranks the second half the same way, leaving it null without a second-half score", async () => {
-      const users = await load([
-        user({
-          user_id: 1,
-          name: "Ann",
-          second_half_score: 4,
-          trending_score: 0,
-        }),
-        user({
-          user_id: 2,
-          name: "Bob",
-          second_half_score: 3,
-          trending_score: 1,
-        }),
-        user({ user_id: 3, name: "Cal", second_half_score: 2 }),
-        user({ user_id: 4, name: "Dee", second_half_score: null }),
-      ]);
+      const users = await load(
+        [
+          user({
+            user_id: 1,
+            name: "Ann",
+            second_half_score: 4,
+            trending_score: 0,
+          }),
+          user({
+            user_id: 2,
+            name: "Bob",
+            second_half_score: 3,
+            trending_score: 1,
+          }),
+          user({ user_id: 3, name: "Cal", second_half_score: 2 }),
+          user({ user_id: 4, name: "Dee", second_half_score: null }),
+        ],
+        STARTED,
+        12
+      );
       const secondHalf = Object.fromEntries(
-        users.map((u) => [u.name, u.second_half_place])
+        users.map((u) => [u.name, u.periods.second_half.place])
       );
       expect(secondHalf).toEqual({ Ann: 1, Bob: 1, Cal: 3, Dee: null });
+      expect(users.find((u) => u.name === "Ann")?.periods.second_half).toEqual({
+        score: 4,
+        place: 1,
+        in_money: true,
+        last_place_eligible: true,
+        in_money_last_place: false,
+      });
+    });
+
+    it("leaves the live bonus out of a period that's already over", async () => {
+      // Week 12: Bob's covering pick counts toward overall and the 2nd half,
+      // not the finished 1st half.
+      const users = await load(
+        [
+          user({
+            user_id: 1,
+            name: "Ann",
+            cumulative_score: 20,
+            first_half_score: 12,
+            second_half_score: 8,
+          }),
+          user({
+            user_id: 2,
+            name: "Bob",
+            cumulative_score: 19,
+            first_half_score: 11,
+            second_half_score: 8,
+            trending_score: 1,
+          }),
+        ],
+        STARTED,
+        12
+      );
+      const bob = users.find((u) => u.name === "Bob")!;
+      expect(bob.place).toBe(1);
+      expect(bob.periods.second_half.place).toBe(1);
+      expect(bob.periods.first_half.place).toBe(2);
     });
   });
 

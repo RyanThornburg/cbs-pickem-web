@@ -4,17 +4,20 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { RankedUser } from "../../types";
+import { PayPeriod, RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { UserAvatar } from "../UserAvatar";
 import { selectedRowSx } from "../UsersTable/selectedRowSx";
 import { LeaderBoard, LeaderList, LeaderRow, leaderList } from "./leadersUtils";
 import { MEDAL } from "./medals";
+import { overallPeriod, periodName } from "../../utils/payPeriods";
 
 type Props = {
   userList: RankedUser[];
   userId?: string;
   week: number;
+  // The shown segment (shownSegment), never overall.
+  segment: PayPeriod;
 };
 
 const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
@@ -137,13 +140,19 @@ const CardHead = ({ title, sub }: { title: string; sub: string }) => (
   </Box>
 );
 
-// Overall and 2nd-half paid places, at the top of User Picks from the
-// second-half start week. Two cards side by side; one card with tabs on
-// phones.
-export default function SecondHalfLeaders({ userList, userId, week }: Props) {
-  const { paidPlaces, secondHalfStartWeek } = useCurrentWeek();
+// Overall and the shown segment's paid places (the 2nd half today), at the
+// top of User Picks while a segment that didn't start with the season is
+// being played. Two cards side by side; one card with tabs on phones.
+export default function SegmentLeaders({
+  userList,
+  userId,
+  week,
+  segment,
+}: Props) {
+  const { periods } = useCurrentWeek();
   const [tab, setTab] = useState<LeaderBoard>("overall");
-  if (!userList.length) return null;
+  const overall = overallPeriod(periods);
+  if (!userList.length || !overall) return null;
 
   const boards: {
     key: LeaderBoard;
@@ -154,14 +163,14 @@ export default function SecondHalfLeaders({ userList, userId, week }: Props) {
     {
       key: "overall",
       title: "Overall",
-      sub: `Week ${week} · top ${paidPlaces.overall} paid`,
-      list: leaderList(userList, "overall", paidPlaces.overall, userId),
+      sub: `Week ${week} · top ${overall.paid_places} paid`,
+      list: leaderList(userList, overall.key, overall.paid_places, userId),
     },
     {
-      key: "second_half",
-      title: "2nd half",
-      sub: `Since week ${secondHalfStartWeek} · top ${paidPlaces.second_half} paid`,
-      list: leaderList(userList, "second_half", paidPlaces.second_half, userId),
+      key: segment.key,
+      title: periodName(segment),
+      sub: `Since week ${segment.start_week} · top ${segment.paid_places} paid`,
+      list: leaderList(userList, segment.key, segment.paid_places, userId),
     },
   ];
   const active = boards.find((b) => b.key === tab) ?? boards[0];

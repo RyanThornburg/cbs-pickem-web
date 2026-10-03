@@ -10,11 +10,13 @@ import { moversByUserId, perfectWeekUserIds } from "../Recap/recapBadges";
 import { buildUsersTableColumns, toUsersTableRow } from "./usersTableColumns";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { paidLines } from "./usersTableUtils";
+import { shownSegment } from "../../utils/payPeriods";
 
 interface UseUsersTableArgs {
   userList: RankedUser[];
   trends: Record<string, UserSeasonTrends>;
-  showSecondHalf: boolean;
+  // The browsed week, which picks the segment columns and paid lines.
+  week: number;
   recap?: WeekRecap;
   showStreak: boolean;
 }
@@ -26,7 +28,7 @@ interface UseUsersTableArgs {
 export const useUsersTable = ({
   userList,
   trends,
-  showSecondHalf,
+  week,
   recap,
   showStreak,
 }: UseUsersTableArgs) => {
@@ -34,18 +36,26 @@ export const useUsersTable = ({
     { id: "place", desc: false },
   ]);
 
+  const { periods } = useCurrentWeek();
+  const segment = shownSegment(periods, week);
+
   const data = useMemo(() => {
     const movers = moversByUserId(recap);
     const perfect = perfectWeekUserIds(recap);
     return userList.map((user) =>
-      toUsersTableRow(user, trends, {
-        move: movers.get(user.id),
-        perfectWeek: perfect.has(user.id),
-        showStreak,
-      })
+      toUsersTableRow(
+        user,
+        trends,
+        {
+          move: movers.get(user.id),
+          perfectWeek: perfect.has(user.id),
+          showStreak,
+        },
+        { periods, week }
+      )
     );
-  }, [userList, trends, recap, showStreak]);
-  const columns = useMemo(() => buildUsersTableColumns(), []);
+  }, [userList, trends, recap, showStreak, periods, week]);
+  const columns = useMemo(() => buildUsersTableColumns(segment), [segment]);
 
   const table = useReactTable({
     data,
@@ -53,8 +63,8 @@ export const useUsersTable = ({
     state: {
       sorting,
       columnVisibility: {
-        second_half_place: showSecondHalf,
-        second_half_score: showSecondHalf,
+        segment_place: segment !== null,
+        segment_score: segment !== null,
       },
     },
     onSortingChange: setSorting,
@@ -63,13 +73,12 @@ export const useUsersTable = ({
     getRowId: (row) => row.id,
   });
 
-  const { paidPlaces } = useCurrentWeek();
   const rows = table.getRowModel().rows;
   const lines = paidLines(
     rows.map((row) => row.original),
     sorting[0],
-    paidPlaces,
-    showSecondHalf
+    periods,
+    week
   );
   // Paid lines to draw under the row at this index in the sorted rows.
   const paidLinesAfter = (rowIndex: number) => lines.get(rowIndex) ?? [];

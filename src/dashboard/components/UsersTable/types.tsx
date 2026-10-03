@@ -7,7 +7,6 @@ export type UserGridProps = {
   // Loading, failed and "Updated" state of the userList poll.
   leaderboardStatus: LeaderboardStatus;
   userId: string;
-  showSecondHalf: boolean;
   week: number;
   season: number;
   // This week's recap, for the mover and 5-0 badges next to names.

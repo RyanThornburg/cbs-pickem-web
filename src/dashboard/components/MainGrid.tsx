@@ -57,7 +57,8 @@ import { useMoneyStandings } from "./UsersTable/useMoneyStandings";
 import { ordinal, visuallyHidden } from "../helper";
 import { PHONE_TAB_BAR_OFFSET, PhoneTabBar } from "./PhoneTabBar";
 import RecapStrip from "./Recap/RecapStrip";
-import SecondHalfLeaders from "./Leaders/SecondHalfLeaders";
+import SegmentLeaders from "./Leaders/SegmentLeaders";
+import { shownSegment } from "../utils/payPeriods";
 import { useCurrentWeek } from "./CurrentWeekContext";
 import { useIsAdmin, useSelectedUser, useWeekData } from "./useWeekData";
 import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
@@ -94,14 +95,8 @@ const NFL_VIEW_TITLES: Record<NflView, string> = {
 };
 
 export default function MainGrid() {
-  const {
-    metaStatus,
-    retryMeta,
-    currentWeek,
-    season,
-    secondHalfStartWeek,
-    cbsPoolUrl,
-  } = useCurrentWeek();
+  const { metaStatus, retryMeta, currentWeek, season, periods, cbsPoolUrl } =
+    useCurrentWeek();
   // Until meta first loads there's no season or week, so the header and
   // tabs render around placeholders instead of the page staying blank.
   const metaReady = metaStatus === "ready";
@@ -131,6 +126,9 @@ export default function MainGrid() {
   // The hot streak badge is season data as of now, with no week-by-week
   // history, so it only shows while browsing the current week.
   const isCurrentWeek = selectedWeek === currentWeek;
+  // The prize segment with its own columns and leader card this week (the
+  // 2nd half from week 10 in 2026), or null.
+  const selectedSegment = shownSegment(periods, selectedWeek);
   const {
     userList,
     leaderboardStatus,
@@ -549,6 +547,7 @@ export default function MainGrid() {
                 onMenuClosed={scrollToPendingRow}
                 summary={isDesktop ? "card" : "compact"}
                 standings={moneyStandings}
+                segment={selectedSegment}
                 asOfWeek={isCurrentWeek ? undefined : selectedWeek}
               />
             )}
@@ -758,11 +757,12 @@ export default function MainGrid() {
                     {!user && userList.length > 0 && (
                       <PickYourselfHint onChoose={openUserMenu} />
                     )}
-                    {selectedWeek >= secondHalfStartWeek && (
-                      <SecondHalfLeaders
+                    {selectedSegment && (
+                      <SegmentLeaders
                         userList={userList}
                         userId={user}
                         week={selectedWeek}
+                        segment={selectedSegment}
                       />
                     )}
                     <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
@@ -770,7 +770,6 @@ export default function MainGrid() {
                       userList={userList}
                       leaderboardStatus={leaderboardStatus}
                       userId={user}
-                      showSecondHalf={selectedWeek >= secondHalfStartWeek}
                       week={selectedWeek}
                       season={season}
                       recap={recap}
@@ -846,7 +845,7 @@ export default function MainGrid() {
                           key={pagePlayerId}
                           season={season}
                           currentWeek={currentWeek}
-                          secondHalfStartWeek={secondHalfStartWeek}
+                          periods={periods}
                           playerId={pagePlayerId}
                           selectedId={user}
                           userList={userList}

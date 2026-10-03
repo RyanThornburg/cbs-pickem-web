@@ -23,7 +23,7 @@ export function MoneyLines({ standings }: { standings: ShownMoneyStanding[] }) {
       }}
     >
       {standings.map((standing) => (
-        <Box component="span" key={standing.prize} sx={{ display: "contents" }}>
+        <Box component="span" key={standing.key} sx={{ display: "contents" }}>
           <Box component="span" sx={{ color: "text.secondary" }}>
             {standing.prize}
           </Box>
@@ -53,9 +53,9 @@ export function MoneyLines({ standings }: { standings: ShownMoneyStanding[] }) {
 // The note on a paid line for a player chasing that prize, or nothing.
 export const paidLineNote = (
   standings: ShownMoneyStanding[],
-  prize: ShownMoneyStanding["prize"]
+  key: ShownMoneyStanding["key"]
 ): string | undefined => {
-  const standing = standings.find((s) => s.prize === prize);
+  const standing = standings.find((s) => s.key === key);
   return standing && !standing.inMoney
     ? `you're ${pts(standing.ptsOut)} back`
     : undefined;

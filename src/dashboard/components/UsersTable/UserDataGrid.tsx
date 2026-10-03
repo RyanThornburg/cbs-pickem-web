@@ -21,7 +21,7 @@ import { playerPath } from "../shared/PlayerLink";
 const UserDataGrid = ({
   userList,
   userId,
-  showSecondHalf,
+  week,
   recap,
   showStreak,
   trends,
@@ -36,7 +36,7 @@ const UserDataGrid = ({
   const { table, paidLinesAfter } = useUsersTable({
     userList,
     trends,
-    showSecondHalf,
+    week,
     recap,
     showStreak,
   });
@@ -125,7 +125,7 @@ const UserDataGrid = ({
                     >
                       <PaidLineRule
                         label={line.label}
-                        note={paidLineNote(moneyStandings, line.prize)}
+                        note={paidLineNote(moneyStandings, line.key)}
                       />
                     </TableCell>
                   </TableRow>

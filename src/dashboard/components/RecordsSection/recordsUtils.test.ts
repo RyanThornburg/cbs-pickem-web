@@ -13,7 +13,9 @@ import {
   finishTier,
   highestWinningScore,
   isUnknownChampion,
+  seasonPeriods,
 } from "./recordsUtils";
+import { THIRDS } from "../../utils/testPeriods";
 
 const standing = (
   user_id: number,
@@ -24,10 +26,6 @@ const standing = (
   name: `User ${user_id}`,
   rank,
   score,
-  first_half_rank: null,
-  first_half_score: null,
-  second_half_rank: null,
-  second_half_score: null,
 });
 
 const career = (
@@ -50,10 +48,6 @@ const career = (
       incomplete: false,
       rank: finishes[season],
       score: 50 - finishes[season],
-      first_half_rank: null,
-      first_half_score: null,
-      second_half_rank: null,
-      second_half_score: null,
     })),
     ...opts,
   };
@@ -69,8 +63,8 @@ const records = (
     "2025": { pool_name: "", incomplete: false, standings: [] },
   },
   champions,
-  first_half_champions: [],
-  second_half_champions: [],
+  period_champions: [],
+  last_place: [],
   career: careers,
 });
 
@@ -118,16 +112,24 @@ describe("buildSeasonRows", () => {
     expect(rows[1].missingBefore).toBe(0);
   });
 
-  it("labels half-season ties separately from the overall rank", () => {
-    const rows = buildSeasonRows([
-      { ...standing(1, 1), first_half_rank: 2 },
-      { ...standing(2, 2), first_half_rank: 2 },
-      { ...standing(3, 3), second_half_rank: 1 },
-    ]);
-    expect(rows.map((r) => [r.firstHalfLabel, r.secondHalfLabel])).toEqual([
+  it("labels each period's ties separately from the overall rank", () => {
+    const half = (rank: number) => ({ rank, score: 20, last_place: false });
+    const rows = buildSeasonRows(
+      [
+        { ...standing(1, 1), periods: { first_half: half(2) } },
+        { ...standing(2, 2), periods: { first_half: half(2) } },
+        { ...standing(3, 3), periods: { second_half: half(1) } },
+        standing(4, 4),
+      ],
+      ["first_half", "second_half"]
+    );
+    expect(
+      rows.map((r) => [r.periodLabels.first_half, r.periodLabels.second_half])
+    ).toEqual([
       ["T2", undefined],
       ["T2", undefined],
       [undefined, "1"],
+      [undefined, undefined],
     ]);
   });
 });
@@ -257,5 +259,51 @@ describe("finishTier", () => {
     expect([1, 2, 3, 4, 5, 6, 10, 11, 30].map(finishTier)).toEqual([
       1, 2, 3, 4, 4, 5, 5, 6, 6,
     ]);
+  });
+});
+
+describe("seasonPeriods", () => {
+  const data = (
+    years: HistoricalRecords["years"],
+    period_champions: HistoricalRecords["period_champions"] = []
+  ): HistoricalRecords => ({
+    years,
+    champions: [],
+    period_champions,
+    last_place: [],
+    career: [],
+  });
+  const season = (periods?: HistoricalRecords["years"][string]["periods"]) => ({
+    pool_name: "",
+    incomplete: false,
+    periods,
+    standings: [],
+  });
+
+  it("uses the season's own periods, without overall", () => {
+    expect(seasonPeriods(data({ "2027": season(THIRDS) }), 2027)).toEqual([
+      { key: "first_third", name: "1st third" },
+      { key: "second_third", name: "2nd third" },
+      { key: "final_third", name: "Final third" },
+    ]);
+  });
+
+  it("falls back to that year's period champions for archive seasons", () => {
+    const champ = (year: number, period_key: string, label: string) => ({
+      year,
+      period_key,
+      label,
+      names: ["A"],
+      score: null,
+    });
+    const records = data({ "2025": season(null), "2024": season(null) }, [
+      champ(2025, "first_half", "First Half"),
+      champ(2025, "second_half", "Second Half"),
+    ]);
+    expect(seasonPeriods(records, 2025)).toEqual([
+      { key: "first_half", name: "1st half" },
+      { key: "second_half", name: "2nd half" },
+    ]);
+    expect(seasonPeriods(records, 2024)).toEqual([]);
   });
 });

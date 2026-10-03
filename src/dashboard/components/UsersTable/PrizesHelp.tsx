@@ -6,21 +6,24 @@ import Typography from "@mui/material/Typography";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { MONEY_GOLD } from "./StandingsStatus";
+import { periodName, periodWeeksText } from "../../utils/payPeriods";
 
-// How scoring and the three prizes work, opened from the "?" on each paid
-// line. Places and the second-half start come from meta, so the text follows
-// the season's settings. CBS lines are always half points, so there are no
+// How scoring and the prizes work, opened from the "?" on each paid line.
+// The prize periods come from meta, so the text follows the season's
+// settings. CBS lines are always half points, so there are no
 // pushes to explain.
 export function PrizesHelp() {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const { paidPlaces, secondHalfStartWeek } = useCurrentWeek();
-  const lastFirstHalfWeek = secondHalfStartWeek - 1;
-
-  const prizes = [
-    ["Overall", "the whole season", paidPlaces.overall],
-    ["1st half", `weeks 1–${lastFirstHalfWeek}`, paidPlaces.first_half],
-    ["2nd half", `week ${secondHalfStartWeek} on`, paidPlaces.second_half],
-  ] as const;
+  const { periods } = useCurrentWeek();
+  const prizes = periods.map(
+    (period) =>
+      [
+        period.key,
+        periodName(period),
+        periodWeeksText(period),
+        period.paid_places,
+      ] as const
+  );
 
   return (
     <>
@@ -70,8 +73,8 @@ export function PrizesHelp() {
             fontSize: "0.875rem",
           }}
         >
-          {prizes.map(([name, span, places]) => (
-            <Box key={name} sx={{ display: "contents" }}>
+          {prizes.map(([key, name, span, places]) => (
+            <Box key={key} sx={{ display: "contents" }}>
               <Box component="dt" sx={{ fontWeight: 600 }}>
                 {name}
               </Box>

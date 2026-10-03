@@ -20,6 +20,7 @@ import {
   closedSeasons,
   HALVES_FROM_SEASON,
   isUnknownChampion,
+  seasonPeriods,
 } from "./recordsUtils";
 import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
 
@@ -41,15 +42,22 @@ export default function SeasonTable({
   const theme = useTheme();
   const years = closedSeasons(data);
   const season = data.years[String(year)];
+  const periods = useMemo(() => seasonPeriods(data, year), [data, year]);
   const rows = useMemo(
-    () => (season ? buildSeasonRows(season.standings) : []),
-    [season]
+    () =>
+      season
+        ? buildSeasonRows(
+            season.standings,
+            periods.map((p) => p.key)
+          )
+        : [],
+    [season, periods]
   );
   const champion = data.champions.find((c) => c.year === year);
-  const halves = year >= HALVES_FROM_SEASON;
+  const hasPeriods = periods.length > 0;
   const maxRank = Math.max(0, ...rows.map((r) => r.rank));
   const hasGaps = rows.some((r) => r.missingBefore > 0);
-  const columnCount = halves ? 5 : 3;
+  const columnCount = 3 + periods.length;
 
   return (
     <Stack spacing={1.5}>
@@ -130,19 +138,19 @@ export default function SeasonTable({
         </Typography>
       </Stack>
 
-      {(season?.incomplete || hasGaps || !halves) && (
+      {(season?.incomplete || hasGaps || !hasPeriods) && (
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           {season?.incomplete
             ? `${year} is missing some players, including the champion, so ranks skip where they would be.`
             : hasGaps
               ? `Some ${year} players aren't on file, so ranks skip where they would be.`
               : ""}
-          {!halves &&
+          {!hasPeriods &&
             `${season?.incomplete || hasGaps ? " " : ""}Half-season results start in ${HALVES_FROM_SEASON}.`}
         </Typography>
       )}
 
-      <TableContainer sx={{ maxWidth: halves ? 720 : 520 }}>
+      <TableContainer sx={{ maxWidth: 520 + 100 * periods.length }}>
         <Table
           size="small"
           aria-label={`${year} standings`}
@@ -161,8 +169,11 @@ export default function SeasonTable({
               <TableCell>Place</TableCell>
               <TableCell>Player</TableCell>
               <TableCell align="center">Score</TableCell>
-              {halves && <TableCell align="center">1st half</TableCell>}
-              {halves && <TableCell align="center">2nd half</TableCell>}
+              {periods.map((p) => (
+                <TableCell key={p.key} align="center">
+                  {p.name}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -228,40 +239,26 @@ export default function SeasonTable({
                     <TableCell align="center" sx={youSx}>
                       {row.score}
                     </TableCell>
-                    {halves && (
-                      <TableCell align="center" sx={youSx}>
-                        {row.firstHalfLabel ?? dash}
-                        {row.first_half_score != null && (
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                            }}
-                          >
-                            {" "}
-                            ({row.first_half_score})
-                          </Typography>
-                        )}
-                      </TableCell>
-                    )}
-                    {halves && (
-                      <TableCell align="center" sx={youSx}>
-                        {row.secondHalfLabel ?? dash}
-                        {row.second_half_score != null && (
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                            }}
-                          >
-                            {" "}
-                            ({row.second_half_score})
-                          </Typography>
-                        )}
-                      </TableCell>
-                    )}
+                    {periods.map((p) => {
+                      const score = row.periods?.[p.key]?.score;
+                      return (
+                        <TableCell key={p.key} align="center" sx={youSx}>
+                          {row.periodLabels[p.key] ?? dash}
+                          {score != null && (
+                            <Typography
+                              component="span"
+                              variant="caption"
+                              sx={{
+                                color: "text.secondary",
+                              }}
+                            >
+                              {" "}
+                              ({score})
+                            </Typography>
+                          )}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 </Fragment>
               );

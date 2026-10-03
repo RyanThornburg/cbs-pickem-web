@@ -1,7 +1,13 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { RankedUser, RecapMove, UserSeasonTrends } from "../../types";
+import {
+  PayPeriod,
+  RankedUser,
+  RecapMove,
+  UserSeasonTrends,
+} from "../../types";
+import { periodAbbr, periodName, shownSegment } from "../../utils/payPeriods";
 import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import UserAvatar from "../UserAvatar";
 import { PlayerLink } from "../shared/PlayerLink";
@@ -11,15 +17,23 @@ import { ScoreWithCovering } from "./ScoreWithCovering";
 import { WeeklyFormIcon } from "./WeeklyFormIcon";
 import { DefendingChampionBadge } from "./DefendingChampionBadge";
 import { UserGamePicksStack } from "./UserPickStack";
-import { getWeeklyForm, SEASON_STREAK_MIN_WEEKS } from "./usersTableUtils";
+import {
+  getWeeklyForm,
+  RowPeriods,
+  rowPeriods,
+  SEASON_STREAK_MIN_WEEKS,
+} from "./usersTableUtils";
 
 export interface UsersTableRow {
   id: string;
   name: string;
   place: number | null;
-  second_half_place: number | null;
+  // The shown segment's place and score (shownSegment), when there is one.
+  segment_place: number | null;
   score: number;
-  second_half_score: number;
+  segment_score: number;
+  // Every period's displayed place and score, for the paid lines.
+  periods: RowPeriods;
   weekly_score: number;
   // Picks covering right now; already included in the three scores above.
   covering: number;
@@ -40,17 +54,23 @@ export const toUsersTableRow = (
     move?: RecapMove;
     perfectWeek?: boolean;
     showStreak?: boolean;
-  } = {}
+  } = {},
+  // The season's periods and the browsed week, for the segment columns.
+  season: { periods: PayPeriod[]; week: number } = { periods: [], week: 0 }
 ): UsersTableRow => {
   const lastSeason = trends[user.id]?.career.trend?.last_season;
+  const periods = rowPeriods(user, season.periods, season.week);
+  const segment = shownSegment(season.periods, season.week);
+  const segmentRow = segment ? periods[segment.key] : undefined;
 
   return {
     id: user.id,
     name: user.name,
     place: user.place,
-    second_half_place: user.second_half_place,
+    segment_place: segmentRow?.place ?? null,
     score: user.cumulative_score + user.trending_score,
-    second_half_score: (user.second_half_score ?? 0) + user.trending_score,
+    segment_score: segmentRow?.score ?? 0,
+    periods,
     weekly_score: user.weekly_score + user.trending_score,
     covering: user.trending_score,
     submitted: user.has_submitted_picks,
@@ -84,144 +104,154 @@ const columnHelper = createColumnHelper<UsersTableRow>();
 
 // Columns hold different value types, so TanStack's own docs type the array
 // with `any` for the value.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const buildUsersTableColumns = (): ColumnDef<UsersTableRow, any>[] => [
-  // Ranks sort 1st-first on the first click (TanStack starts number
-  // columns descending), which is also the order the paid lines need.
-  columnHelper.accessor("place", {
-    header: "#",
-    sortDescFirst: false,
-    cell: (info) => <PlaceCell place={info.getValue()} />,
-    meta: { align: "center" },
-  }),
-  columnHelper.accessor("second_half_place", {
-    id: "second_half_place",
-    header: "2nd Half Place",
-    sortDescFirst: false,
-    cell: (info) => <PlaceCell place={info.getValue()} />,
-    meta: { mobileHeader: "2H Plc", align: "center" },
-  }),
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: (info) => {
-      const row = info.row.original;
-      const hasBadges =
-        row.defendingChampionSeason != null ||
-        row.streakWeeks >= SEASON_STREAK_MIN_WEEKS ||
-        row.perfectWeek ||
-        (row.move?.change ?? 0) !== 0;
-      return (
-        // On phones the badges wrap to a line under the name (indented past
-        // the avatar) so they don't squeeze the name down to a letter.
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: "center",
-            flexWrap: { xs: "wrap", sm: "nowrap" },
-            columnGap: 1,
-            rowGap: 0.25,
-          }}
-        >
-          {/* The whole row opens the player's page too; the link is the
-              keyboard and screen-reader way in. */}
-          <PlayerLink id={row.id} sx={{ maxWidth: "100%" }}>
-            <UserAvatar
-              userName={info.getValue()}
-              userId={row.id}
-              fontSize="0.8125rem"
-              size={26}
-            />
-          </PlayerLink>
-          {hasBadges && (
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "center",
-                width: { xs: "100%", sm: "auto" },
-                pl: { xs: "32px", sm: 0 },
-                flexWrap: { xs: "wrap", sm: "nowrap" },
-                gap: 0.75,
-              }}
-            >
-              {/* Most common first, so each badge lands in a predictable spot. */}
-              <MoverBadge move={row.move} />
-              <StreakBadge
-                weeks={row.streakWeeks}
-                thresholdPct={row.streakThresholdPct}
-              />
-              <PerfectWeekBadge perfect={row.perfectWeek} />
-              <DefendingChampionBadge season={row.defendingChampionSeason} />
-            </Stack>
-          )}
-        </Stack>
-      );
-    },
-  }),
-  columnHelper.accessor("score", {
-    header: "Score",
-    cell: (info) => (
-      <ScoreWithCovering
-        total={info.getValue()}
-        covering={info.row.original.covering}
-      />
-    ),
-    meta: { align: "center" },
-  }),
-  columnHelper.accessor("second_half_score", {
-    id: "second_half_score",
-    header: "2nd Half",
-    cell: (info) => (
-      <ScoreWithCovering
-        total={info.getValue()}
-        covering={info.row.original.covering}
-        hideCoveringOnPhone
-      />
-    ),
-    meta: { mobileHeader: "2H", align: "center" },
-  }),
-  columnHelper.accessor("weekly_score", {
-    header: "Week",
-    cell: (info) => {
-      const { picks, covering } = info.row.original;
-      // Before any of this week's picks is decided or live, a "0" and a
-      // grey dot on every row said nothing; a muted dash does (in
-      // secondary ink, 5.7:1; disabled ink was 2.7:1).
-      const f = getWeeklyForm(picks);
-      if (f.won + f.lost + f.covering + f.notCovering === 0) {
+export const buildUsersTableColumns = (
+  // The shown segment, which names its two columns. They're hidden (column
+  // visibility in useUsersTable) when there's none.
+  segment: PayPeriod | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): ColumnDef<UsersTableRow, any>[] => {
+  const segmentTitle = segment
+    ? periodName(segment).replace(/ \w/g, (c) => c.toUpperCase())
+    : "";
+  const segmentAbbr = segment ? periodAbbr(segment) : "";
+  return [
+    // Ranks sort 1st-first on the first click (TanStack starts number
+    // columns descending), which is also the order the paid lines need.
+    columnHelper.accessor("place", {
+      header: "#",
+      sortDescFirst: false,
+      cell: (info) => <PlaceCell place={info.getValue()} />,
+      meta: { align: "center" },
+    }),
+    columnHelper.accessor("segment_place", {
+      id: "segment_place",
+      header: `${segmentTitle} Place`,
+      sortDescFirst: false,
+      cell: (info) => <PlaceCell place={info.getValue()} />,
+      meta: { mobileHeader: `${segmentAbbr} Plc`, align: "center" },
+    }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => {
+        const row = info.row.original;
+        const hasBadges =
+          row.defendingChampionSeason != null ||
+          row.streakWeeks >= SEASON_STREAK_MIN_WEEKS ||
+          row.perfectWeek ||
+          (row.move?.change ?? 0) !== 0;
         return (
-          <Box
-            component="span"
-            aria-label="No picks decided yet"
-            sx={{ color: "text.secondary" }}
+          // On phones the badges wrap to a line under the name (indented past
+          // the avatar) so they don't squeeze the name down to a letter.
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              flexWrap: { xs: "wrap", sm: "nowrap" },
+              columnGap: 1,
+              rowGap: 0.25,
+            }}
           >
-            –
-          </Box>
+            {/* The whole row opens the player's page too; the link is the
+              keyboard and screen-reader way in. */}
+            <PlayerLink id={row.id} sx={{ maxWidth: "100%" }}>
+              <UserAvatar
+                userName={info.getValue()}
+                userId={row.id}
+                fontSize="0.8125rem"
+                size={26}
+              />
+            </PlayerLink>
+            {hasBadges && (
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  width: { xs: "100%", sm: "auto" },
+                  pl: { xs: "32px", sm: 0 },
+                  flexWrap: { xs: "wrap", sm: "nowrap" },
+                  gap: 0.75,
+                }}
+              >
+                {/* Most common first, so each badge lands in a predictable spot. */}
+                <MoverBadge move={row.move} />
+                <StreakBadge
+                  weeks={row.streakWeeks}
+                  thresholdPct={row.streakThresholdPct}
+                />
+                <PerfectWeekBadge perfect={row.perfectWeek} />
+                <DefendingChampionBadge season={row.defendingChampionSeason} />
+              </Stack>
+            )}
+          </Stack>
         );
-      }
-      return (
-        <Stack
-          direction="row"
-          spacing={0.75}
-          sx={{
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <ScoreWithCovering
-            total={info.getValue()}
-            covering={covering}
-            hideCoveringOnPhone
-          />
-          <WeeklyFormIcon picks={picks} />
-        </Stack>
-      );
-    },
-    meta: { mobileHeader: "Wk", align: "center" },
-  }),
-  columnHelper.accessor("picks", {
-    header: "Picks",
-    cell: (info) =>
-      UserGamePicksStack(info.getValue(), false, info.row.original.submitted),
-    enableSorting: false,
-  }),
-];
+      },
+    }),
+    columnHelper.accessor("score", {
+      header: "Score",
+      cell: (info) => (
+        <ScoreWithCovering
+          total={info.getValue()}
+          covering={info.row.original.covering}
+        />
+      ),
+      meta: { align: "center" },
+    }),
+    columnHelper.accessor("segment_score", {
+      id: "segment_score",
+      header: segmentTitle,
+      cell: (info) => (
+        <ScoreWithCovering
+          total={info.getValue()}
+          covering={info.row.original.covering}
+          hideCoveringOnPhone
+        />
+      ),
+      meta: { mobileHeader: segmentAbbr, align: "center" },
+    }),
+    columnHelper.accessor("weekly_score", {
+      header: "Week",
+      cell: (info) => {
+        const { picks, covering } = info.row.original;
+        // Before any of this week's picks is decided or live, a "0" and a
+        // grey dot on every row said nothing; a muted dash does (in
+        // secondary ink, 5.7:1; disabled ink was 2.7:1).
+        const f = getWeeklyForm(picks);
+        if (f.won + f.lost + f.covering + f.notCovering === 0) {
+          return (
+            <Box
+              component="span"
+              aria-label="No picks decided yet"
+              sx={{ color: "text.secondary" }}
+            >
+              –
+            </Box>
+          );
+        }
+        return (
+          <Stack
+            direction="row"
+            spacing={0.75}
+            sx={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ScoreWithCovering
+              total={info.getValue()}
+              covering={covering}
+              hideCoveringOnPhone
+            />
+            <WeeklyFormIcon picks={picks} />
+          </Stack>
+        );
+      },
+      meta: { mobileHeader: "Wk", align: "center" },
+    }),
+    columnHelper.accessor("picks", {
+      header: "Picks",
+      cell: (info) =>
+        UserGamePicksStack(info.getValue(), false, info.row.original.submitted),
+      enableSorting: false,
+    }),
+  ];
+};

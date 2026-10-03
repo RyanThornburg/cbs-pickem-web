@@ -1,16 +1,24 @@
 import { RankedUser, UserSeasonTrends } from "../../types";
+import { HALVES } from "../../utils/testPeriods";
 import { toUsersTableRow } from "./usersTableColumns";
+
+const standing = (score: number | null, place: number | null) => ({
+  score,
+  place,
+  in_money: false,
+  last_place_eligible: null,
+  in_money_last_place: false,
+});
 
 const user = (overrides: Partial<RankedUser> = {}): RankedUser =>
   ({
     id: "29",
     name: "Patrick Madden",
     place: 1,
-    second_half_place: null,
+    periods: {},
     cumulative_score: 9,
     trending_score: 2,
     weekly_score: 3,
-    second_half_score: null,
     picks: [],
     ...overrides,
   }) as RankedUser;
@@ -35,13 +43,33 @@ const trends = (
 
 describe("toUsersTableRow", () => {
   it("adds trending points to every displayed score", () => {
-    const row = toUsersTableRow(user({ second_half_score: 4 }), {});
+    const halves = user({
+      periods: {
+        first_half: standing(30, 4),
+        second_half: standing(4, 2),
+      },
+    });
+    const row = toUsersTableRow(halves, {}, {}, { periods: HALVES, week: 12 });
     expect(row).toMatchObject({
       score: 11,
       weekly_score: 5,
-      second_half_score: 6,
+      segment_place: 2,
+      segment_score: 6,
     });
-    expect(toUsersTableRow(user(), {}).second_half_score).toBe(2);
+    // A finished period keeps its graded score: this week's live picks
+    // aren't part of it.
+    expect(row.periods.first_half).toEqual({ place: 4, score: 30 });
+  });
+
+  it("has no segment columns while the 1st half ranks like overall", () => {
+    const row = toUsersTableRow(
+      user({ periods: { first_half: standing(9, 1) } }),
+      {},
+      {},
+      { periods: HALVES, week: 4 }
+    );
+    expect(row).toMatchObject({ segment_place: null, segment_score: 0 });
+    expect(row.periods.first_half).toEqual({ place: 1, score: 11 });
   });
 
   it("shows the season hot streak unless the browsed week isn't the current one", () => {

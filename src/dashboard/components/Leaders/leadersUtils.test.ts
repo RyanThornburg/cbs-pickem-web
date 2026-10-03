@@ -13,9 +13,16 @@ const user = (
   weekly_score: 0,
   trending_score: trending,
   cumulative_score: cumulative,
-  second_half_score: secondHalf ? secondHalf[1] : null,
   place,
-  second_half_place: secondHalf ? secondHalf[0] : null,
+  periods: {
+    second_half: {
+      score: secondHalf ? secondHalf[1] : null,
+      place: secondHalf ? secondHalf[0] : null,
+      in_money: false,
+      last_place_eligible: null,
+      in_money_last_place: false,
+    },
+  },
   picks: [],
 });
 

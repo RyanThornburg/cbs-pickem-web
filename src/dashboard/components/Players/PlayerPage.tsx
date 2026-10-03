@@ -6,7 +6,8 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import { ReactNode, useEffect } from "react";
 import { ordinal } from "../../helper";
-import { RankedUser } from "../../types";
+import { PayPeriod, RankedUser } from "../../types";
+import { periodName, shownSegment } from "../../utils/payPeriods";
 import TabSkeleton from "../TabSkeleton";
 import UserAvatar from "../UserAvatar";
 import { useStandings } from "../Nfl/useNflData";
@@ -69,7 +70,7 @@ const NotYet = ({ children }: { children: ReactNode }) => (
 export default function PlayerPage({
   season,
   currentWeek,
-  secondHalfStartWeek,
+  periods,
   playerId,
   selectedId,
   userList,
@@ -77,7 +78,7 @@ export default function PlayerPage({
 }: {
   season: number;
   currentWeek: number;
-  secondHalfStartWeek: number;
+  periods: PayPeriod[];
   playerId: string;
   // The header's selected player, highlighted in the pool's lists.
   selectedId: string;
@@ -116,7 +117,8 @@ export default function PlayerPage({
   const records = current?.records;
   const total = seasonRecord(records);
   const career = trends?.career;
-  const showSecondHalf = currentWeek >= secondHalfStartWeek;
+  const segment = shownSegment(periods, currentWeek);
+  const segmentPlace = segment && now?.periods[segment.key]?.place;
 
   return (
     <Box
@@ -162,9 +164,9 @@ export default function PlayerPage({
                 {now.cumulative_score + now.trending_score} pts
               </Fact>
             )}
-            {now && showSecondHalf && now.second_half_place != null && (
+            {segment && segmentPlace != null && (
               <Fact>
-                2nd half <Strong>{ordinal(now.second_half_place)}</Strong>
+                {periodName(segment)} <Strong>{ordinal(segmentPlace)}</Strong>
               </Fact>
             )}
             {total && (

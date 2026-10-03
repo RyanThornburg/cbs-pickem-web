@@ -14,15 +14,42 @@ export interface UserPick {
   line?: number;
 }
 
+// One prize period from meta:current / the leaderboard's `periods` list
+// (reference: https://claude.ai/artifact/AZkRwzPfoj4ntTSzzasjYW). The list
+// is in display order and always starts with `overall`; the rest can be
+// halves, thirds or anything else, so nothing should name them by key.
+export interface PayPeriod {
+  key: string;
+  label: string; // "Second Half"
+  start_week: number;
+  // Already resolved to the season's last week; null only before the
+  // season's weeks have loaded on the data side.
+  end_week: number | null;
+  paid_places: number;
+  pay_last_place: boolean;
+}
+
+// One player's standing in one period. `score` is graded points only
+// (null before the period starts); `place` is re-ranked client-side on the
+// displayed score, see GetUserByWeek. The last place fields aren't shown
+// yet: no 2026 period pays last place.
+export interface UserPeriodStanding {
+  score: number | null;
+  place: number | null;
+  in_money: boolean;
+  last_place_eligible: boolean | null;
+  in_money_last_place: boolean;
+}
+
 export interface RankedUser {
   id: string;
   name: string;
   weekly_score: number;
   trending_score: number;
   cumulative_score: number;
-  second_half_score: number | null;
   place: number;
-  second_half_place: number | null;
+  // Keyed by PayPeriod.key; every period has an entry, overall included.
+  periods: Record<string, UserPeriodStanding>;
   picks: UserPick[];
   // From the leaderboard feed; can be missing early in a week, which means
   // unknown, not "hasn't submitted".
@@ -418,10 +445,9 @@ export interface SeasonHistoryEntry {
   incomplete: boolean;
   rank: number;
   score: number;
-  first_half_rank: number | null;
-  first_half_score: number | null;
-  second_half_rank: number | null;
-  second_half_score: number | null;
+  // Won the overall last place prize.
+  last_place?: boolean;
+  periods?: HistoricalPeriodResults;
 }
 
 export interface CareerTrend {
@@ -832,17 +858,22 @@ export interface AdminStatus {
 
 // ---- meta:historical (GET /api/historical) -- the Records tab ----
 
-// One player's finish in one closed season. Before 2025 the half-season
-// fields are always null; from 2025 on they're only set for the paid spots.
+// A closed season's non-overall periods for one player, keyed by
+// PayPeriod.key. Empty before 2025; in 2025 only the paid spots are there.
+export type HistoricalPeriodResults = Record<
+  string,
+  { rank: number | null; score: number | null; last_place: boolean }
+>;
+
+// One player's finish in one closed season. Overall is rank/score.
 export interface HistoricalStanding {
   user_id: number;
   name: string;
   rank: number;
   score: number;
-  first_half_rank: number | null;
-  first_half_score: number | null;
-  second_half_rank: number | null;
-  second_half_score: number | null;
+  // Won the overall last place prize.
+  last_place?: boolean;
+  periods?: HistoricalPeriodResults;
 }
 
 // Standings only include players still on file, so ranks can skip (the
@@ -852,6 +883,9 @@ export interface HistoricalStanding {
 export interface HistoricalSeason {
   pool_name: string;
   incomplete: boolean;
+  // The season's prize periods; null for archive seasons (2025 and
+  // earlier), whose structure wasn't recorded.
+  periods?: PayPeriod[] | null;
   standings: HistoricalStanding[];
 }
 
@@ -860,6 +894,17 @@ export interface HistoricalSeason {
 export interface HistoricalChampion {
   year: number;
   incomplete?: boolean;
+  names: string[];
+  score: number | null;
+}
+
+// Rank 1 in one non-overall period of a closed season (period_champions),
+// or a last place winner (last_place, overall included). Archive seasons'
+// labels are built from the key ("First Half").
+export interface HistoricalPeriodChampion {
+  year: number;
+  period_key: string;
+  label: string;
   names: string[];
   score: number | null;
 }
@@ -880,8 +925,10 @@ export interface HistoricalRecords {
   // Keyed by season year as a string ("2013"). Closed seasons only.
   years: Record<string, HistoricalSeason>;
   champions: HistoricalChampion[];
-  first_half_champions: HistoricalChampion[];
-  second_half_champions: HistoricalChampion[];
+  // In year order, then the season's own period order.
+  period_champions: HistoricalPeriodChampion[];
+  // Empty until a season that pays last place closes. Not shown yet.
+  last_place: HistoricalPeriodChampion[];
   career: HistoricalCareer[];
 }
 

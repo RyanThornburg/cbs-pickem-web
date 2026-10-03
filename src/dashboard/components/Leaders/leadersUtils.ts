@@ -1,6 +1,8 @@
 import { RankedUser } from "../../types";
+import { OVERALL_KEY } from "../../utils/payPeriods";
 
-export type LeaderBoard = "overall" | "second_half";
+// A PayPeriod key: "overall" or the shown segment's.
+export type LeaderBoard = string;
 
 export interface LeaderRow {
   id: string;
@@ -20,14 +22,16 @@ export interface LeaderList {
 }
 
 const placeOf = (user: RankedUser, board: LeaderBoard) =>
-  board === "overall" ? user.place : user.second_half_place;
+  board === OVERALL_KEY ? user.place : (user.periods[board]?.place ?? null);
 
 const scoreOf = (user: RankedUser, board: LeaderBoard) =>
-  board === "overall" ? user.cumulative_score : (user.second_half_score ?? 0);
+  board === OVERALL_KEY
+    ? user.cumulative_score
+    : (user.periods[board]?.score ?? 0);
 
 // The paid places for one board: everyone ranked within `paid`, so a tie at
 // the cutoff shows every tied player (the list can run past `paid`). Users
-// with no rank on that board (second half before it starts) are left out.
+// with no rank on that board (a period before it starts) are left out.
 export const leaderList = (
   users: RankedUser[],
   board: LeaderBoard,

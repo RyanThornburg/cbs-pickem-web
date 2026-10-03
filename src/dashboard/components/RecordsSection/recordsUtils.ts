@@ -4,10 +4,35 @@ import {
   HistoricalStanding,
 } from "../../types";
 import { ordinal } from "../../helper";
+import { OVERALL_KEY, periodName } from "../../utils/payPeriods";
 
-// Half-season results (first/second half standings and champions) only
-// exist from this season on. Earlier years get an "incomplete" note instead.
+// Results for the periods inside a season (the halves, so far) only exist
+// from this season on. Earlier years get a note instead.
 export const HALVES_FROM_SEASON = 2025;
+
+export interface SeasonPeriod {
+  key: string;
+  // "1st half"
+  name: string;
+}
+
+// A closed season's periods other than overall, in the season's order: from
+// its own definitions, or for archive seasons (no definitions saved) from
+// that year's period champions. Empty when there's nothing on file.
+export const seasonPeriods = (
+  data: HistoricalRecords,
+  year: number
+): SeasonPeriod[] => {
+  const defined = data.years[String(year)]?.periods;
+  const list = defined
+    ? defined
+        .filter((p) => p.key !== OVERALL_KEY)
+        .map((p) => ({ key: p.key, label: p.label }))
+    : (data.period_champions ?? [])
+        .filter((c) => c.year === year)
+        .map((c) => ({ key: c.period_key, label: c.label }));
+  return list.map((p) => ({ key: p.key, name: periodName(p) }));
+};
 
 // "Best average finish" needs a real sample, or one great season wins it.
 export const BEST_AVG_MIN_SEASONS = 5;
@@ -267,8 +292,8 @@ export const buildRecordTiles = (
 export interface SeasonRow extends HistoricalStanding {
   // "T3" when the rank is shared.
   rankLabel: string;
-  firstHalfLabel: string | undefined;
-  secondHalfLabel: string | undefined;
+  // Place in each of the season's other periods ("T2"), by period key.
+  periodLabels: Record<string, string | undefined>;
   // How many ranks are missing right before this row (players not on file).
   missingBefore: number;
 }
@@ -288,12 +313,17 @@ const countBy = (values: (number | null)[]): Map<number, number> => {
 };
 
 export const buildSeasonRows = (
-  standings: HistoricalStanding[]
+  standings: HistoricalStanding[],
+  periodKeys: string[] = []
 ): SeasonRow[] => {
   const sorted = [...standings].sort((a, b) => a.rank - b.rank);
   const rankCounts = countBy(sorted.map((s) => s.rank));
-  const firstCounts = countBy(sorted.map((s) => s.first_half_rank));
-  const secondCounts = countBy(sorted.map((s) => s.second_half_rank));
+  const periodCounts = new Map(
+    periodKeys.map((key) => [
+      key,
+      countBy(sorted.map((s) => s.periods?.[key]?.rank ?? null)),
+    ])
+  );
 
   // Standard competition ranking: after rank r shared by n players, the next
   // rank is r + n. Anything past that is a player we don't have.
@@ -307,8 +337,15 @@ export const buildSeasonRows = (
       ...standing,
       name: cleanName(standing.name),
       rankLabel: tieLabel(standing.rank, rankCounts) as string,
-      firstHalfLabel: tieLabel(standing.first_half_rank, firstCounts),
-      secondHalfLabel: tieLabel(standing.second_half_rank, secondCounts),
+      periodLabels: Object.fromEntries(
+        periodKeys.map((key) => [
+          key,
+          tieLabel(
+            standing.periods?.[key]?.rank ?? null,
+            periodCounts.get(key)!
+          ),
+        ])
+      ),
       missingBefore,
     };
   });

@@ -1,5 +1,12 @@
 import { fetchJson, pollAsync } from "../../api/pickemApi";
-import { GameStatus, RankedUser, UserPick } from "../types";
+import {
+  GameStatus,
+  PayPeriod,
+  RankedUser,
+  UserPeriodStanding,
+  UserPick,
+} from "../types";
+import { OVERALL_KEY, shownSegment } from "../utils/payPeriods";
 import {
   ApiGame,
   buildGamesById,
@@ -25,15 +32,14 @@ interface ApiLeaderboardUser {
   trending_score: number;
   cumulative_score: number;
   place: number;
-  second_half_score: number | null;
-  second_half_place: number | null;
+  periods: Record<string, UserPeriodStanding>;
   has_submitted_picks?: boolean;
   picks: ApiLeaderboardPick[];
 }
 
 interface ApiLeaderboardResponse {
   week: number;
-  second_half_start_week: number;
+  periods: PayPeriod[];
   users: ApiLeaderboardUser[];
 }
 
@@ -43,8 +49,8 @@ const fetchLeaderboard = (
 ): Promise<ApiLeaderboardResponse> =>
   fetchJson<ApiLeaderboardResponse>(`/api/weeks/${season}/${week}/leaderboard`);
 
-// The API's own place/second_half_place rank on cumulative_score alone and don't
-// account for trending_score -- but the score shown in the UI is
+// The API's own places (overall and per period) rank on graded points alone
+// and don't account for trending_score -- but the score shown in the UI is
 // cumulative_score + trending_score (the User Picks table and the leader cards), so a user
 // with a trending bonus can display the same total as 1st place while the API
 // ranks them lower. Re-rank client-side against the score actually displayed,
@@ -76,19 +82,25 @@ const rankByScore = (
   return ranks;
 };
 
-const compareUsers = (a: RankedUser, b: RankedUser): number => {
-  if (a.place !== b.place) {
-    return a.place - b.place;
-  }
+// Overall place, then the shown segment's place (players tied overall),
+// then name.
+const compareUsers =
+  (segmentKey: string | undefined) =>
+  (a: RankedUser, b: RankedUser): number => {
+    if (a.place !== b.place) {
+      return a.place - b.place;
+    }
 
-  const aSecondHalf = a.second_half_place ?? 0;
-  const bSecondHalf = b.second_half_place ?? 0;
-  if (aSecondHalf !== bSecondHalf) {
-    return aSecondHalf - bSecondHalf;
-  }
+    if (segmentKey) {
+      const aSegment = a.periods[segmentKey]?.place ?? 0;
+      const bSegment = b.periods[segmentKey]?.place ?? 0;
+      if (aSegment !== bSegment) {
+        return aSegment - bSegment;
+      }
+    }
 
-  return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
-};
+    return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
+  };
 
 // Picks lock and reveal together for the whole week (at the first kickoff), not
 // game-by-game -- otherwise someone with an early bye-week-ish game still shows TBD
@@ -185,8 +197,8 @@ const toRankedUser = (
   user: ApiLeaderboardUser,
   gamesById: Map<number, ApiGame>,
   weekLocked: boolean,
-  overallRanks: Map<number, number | null>,
-  secondHalfRanks: Map<number, number | null>
+  periods: PayPeriod[],
+  ranks: Map<string, Map<number, number | null>>
 ): RankedUser => {
   const visiblePicks = user.picks
     .map((pick) => joinPick(pick, gamesById, weekLocked))
@@ -198,9 +210,23 @@ const toRankedUser = (
     weekly_score: user.weekly_score,
     trending_score: user.trending_score,
     cumulative_score: user.cumulative_score,
-    second_half_score: user.second_half_score,
-    place: overallRanks.get(user.user_id) ?? user.place,
-    second_half_place: secondHalfRanks.get(user.user_id) ?? null,
+    place: ranks.get(OVERALL_KEY)?.get(user.user_id) ?? user.place,
+    periods: Object.fromEntries(
+      periods.map((period) => {
+        const api = user.periods?.[period.key];
+        const place = ranks.get(period.key)?.get(user.user_id) ?? null;
+        return [
+          period.key,
+          {
+            score: api?.score ?? null,
+            place,
+            in_money: place != null && place <= period.paid_places,
+            last_place_eligible: api?.last_place_eligible ?? null,
+            in_money_last_place: api?.in_money_last_place ?? false,
+          },
+        ];
+      })
+    ),
     picks: withTbdPlaceholders(visiblePicks, user.has_submitted_picks),
     has_submitted_picks: user.has_submitted_picks,
   };
@@ -219,20 +245,37 @@ export const loadUsersByWeek = async (
 
   const gamesById = buildGamesById(weekGames.games);
   const weekLocked = isWeekLocked(weekGames.games);
-  const overallRanks = rankByScore(
-    leaderboard.users,
-    (user) => user.cumulative_score + user.trending_score
-  );
-  const secondHalfRanks = rankByScore(leaderboard.users, (user) =>
-    user.second_half_score == null
-      ? null
-      : user.second_half_score + user.trending_score
-  );
+  const periods = leaderboard.periods ?? [];
+  // The live bonus belongs to this leaderboard's week, so it only counts
+  // toward periods that include it (not a finished 1st half, say).
+  const ranks = new Map<string, Map<number, number | null>>([
+    [
+      OVERALL_KEY,
+      rankByScore(
+        leaderboard.users,
+        (user) => user.cumulative_score + user.trending_score
+      ),
+    ],
+  ]);
+  periods
+    .filter((period) => period.key !== OVERALL_KEY)
+    .forEach((period) => {
+      const inPeriod =
+        leaderboard.week >= period.start_week &&
+        leaderboard.week <= (period.end_week ?? Infinity);
+      ranks.set(
+        period.key,
+        rankByScore(leaderboard.users, (user) => {
+          const score = user.periods?.[period.key]?.score;
+          if (score == null) return null;
+          return inPeriod ? score + user.trending_score : score;
+        })
+      );
+    });
+  const segment = shownSegment(periods, leaderboard.week);
   return leaderboard.users
-    .map((user) =>
-      toRankedUser(user, gamesById, weekLocked, overallRanks, secondHalfRanks)
-    )
-    .sort(compareUsers);
+    .map((user) => toRankedUser(user, gamesById, weekLocked, periods, ranks))
+    .sort(compareUsers(segment?.key));
 };
 
 export const GetUserByWeek = (

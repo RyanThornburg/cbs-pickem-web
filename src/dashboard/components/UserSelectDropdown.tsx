@@ -3,7 +3,8 @@ import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { RankedUser } from "../types";
+import { PayPeriod, RankedUser } from "../types";
+import { periodName } from "../utils/payPeriods";
 import { ordinal, visuallyHidden } from "../helper";
 import UserAvatar from "./UserAvatar";
 import { ScoreWithCovering } from "./UsersTable/ScoreWithCovering";
@@ -28,6 +29,8 @@ export type Props = {
   // The money lines worth showing (desktop card only; phones put them on
   // the table's paid lines).
   standings: ShownMoneyStanding[];
+  // The shown prize segment (shownSegment), for "2nd half 3rd" in the card.
+  segment?: PayPeriod | null;
   // Set while a past week is browsed, so the card's place and money read
   // as that week's, not today's.
   asOfWeek?: number;
@@ -45,6 +48,7 @@ export default function UserSelectDropdown({
   onMenuClosed,
   summary,
   standings,
+  segment = null,
   asOfWeek,
 }: Props) {
   // Case-insensitive, so lowercase names sit with their letter instead of
@@ -73,6 +77,7 @@ export default function UserSelectDropdown({
         <Box component="span" sx={visuallyHidden}>
           {playerSummaryText(
             selected,
+            segment,
             summary === "card" ? standings : [],
             asOfWeek
           )}
@@ -85,6 +90,7 @@ export default function UserSelectDropdown({
   };
 
   const renderCard = (selected: RankedUser) => {
+    const segmentPlace = segment ? selected.periods[segment.key]?.place : null;
     const score = (
       <ScoreWithCovering
         total={selected.cumulative_score + selected.trending_score}
@@ -174,8 +180,8 @@ export default function UserSelectDropdown({
           >
             {selected.place != null && `${ordinal(selected.place)} · `}
             {score} pts
-            {selected.second_half_place != null &&
-              ` · 2nd half ${ordinal(selected.second_half_place)}`}
+            {segmentPlace != null &&
+              ` · ${periodName(segment!)} ${ordinal(segmentPlace)}`}
             {asOfWeek != null && ` · as of week ${asOfWeek}`}
           </Box>
         </Box>

@@ -20,9 +20,8 @@ const user = (id: string, place: number): RankedUser => ({
   weekly_score: 0,
   trending_score: 0,
   cumulative_score: 0,
-  second_half_score: null,
   place,
-  second_half_place: null,
+  periods: {},
   picks: [
     {
       game_id: 1,
@@ -87,10 +86,6 @@ describe("player page helpers", () => {
       incomplete: false,
       rank: season - 2020,
       score: 50,
-      first_half_rank: null,
-      first_half_score: null,
-      second_half_rank: null,
-      second_half_score: null,
     }));
     expect(finishPoints(history, 2026, 9)).toEqual([
       { season: 2024, rank: 4, current: false },

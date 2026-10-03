@@ -7,31 +7,18 @@ import React, {
   useState,
 } from "react";
 import { fetchJson } from "../../api/pickemApi";
+import { PayPeriod } from "../types";
 
 const META_POLL_INTERVAL_MS = 5 * 60_000;
 // Until the first meta arrives the app has nothing to show, so a failed
 // first load retries much sooner than the regular poll.
 export const META_RETRY_INTERVAL_MS = 15_000;
-const DEFAULT_SECOND_HALF_START_WEEK = 10;
-// How many places pay out, from meta:current's paid_places (set on the data
-// side). Drives how many rows the second-half leader cards show.
-export interface PaidPlaces {
-  overall: number;
-  first_half: number;
-  second_half: number;
-}
-const DEFAULT_PAID_PLACES: PaidPlaces = {
-  overall: 5,
-  first_half: 3,
-  second_half: 3,
-};
-
 interface ApiMeta {
   season: number;
   current_week: number;
-  second_half_start_week: number;
+  // The season's prize periods (overall first), set on the data side.
+  periods?: PayPeriod[] | null;
   cbs_pool_url?: string | null;
-  paid_places?: Partial<PaidPlaces> | null;
 }
 
 // "loading" until the first meta arrives, "failed" while that first load
@@ -55,10 +42,9 @@ type CurrentWeekContextType = {
   currentWeek: number;
   setCurrentWeek: React.Dispatch<React.SetStateAction<number>>;
   season: number;
-  secondHalfStartWeek: number;
-  isSecondHalf: boolean;
+  // Prize periods in display order, overall first. Empty until meta loads.
+  periods: PayPeriod[];
   cbsPoolUrl: string | null;
-  paidPlaces: PaidPlaces;
 };
 
 const CurrentWeekContext = createContext<CurrentWeekContextType | undefined>(
@@ -70,13 +56,10 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [currentWeek, setCurrentWeek] = useState<number>(0);
   const [season, setSeason] = useState<number>(0);
-  const [secondHalfStartWeek, setSecondHalfStartWeek] = useState<number>(
-    DEFAULT_SECOND_HALF_START_WEEK
-  );
+  const [periods, setPeriods] = useState<PayPeriod[]>([]);
   // Remembered from the last visit, so the CBS link still works while meta
   // can't load.
   const [cbsPoolUrl, setCbsPoolUrl] = useState<string | null>(readCbsPoolUrl);
-  const [paidPlaces, setPaidPlaces] = useState<PaidPlaces>(DEFAULT_PAID_PLACES);
   const [metaStatus, setMetaStatus] = useState<MetaStatus>("loading");
   // The running poll's "load now", for retryMeta.
   const loadNowRef = useRef<() => void>(() => {});
@@ -91,7 +74,7 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
     const applyMeta = (meta: ApiMeta) => {
       setSeason(meta.season);
       setCurrentWeek(meta.current_week);
-      setSecondHalfStartWeek(meta.second_half_start_week);
+      setPeriods(meta.periods ?? []);
       setCbsPoolUrl(meta.cbs_pool_url ?? null);
       try {
         if (meta.cbs_pool_url) {
@@ -100,13 +83,6 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch {
         // Blocked storage: the link just won't be there during an outage.
       }
-      setPaidPlaces({
-        overall: meta.paid_places?.overall ?? DEFAULT_PAID_PLACES.overall,
-        first_half:
-          meta.paid_places?.first_half ?? DEFAULT_PAID_PLACES.first_half,
-        second_half:
-          meta.paid_places?.second_half ?? DEFAULT_PAID_PLACES.second_half,
-      });
     };
 
     const load = () => {
@@ -144,7 +120,6 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
     loadNowRef.current();
   }, []);
 
-  const isSecondHalf = currentWeek >= secondHalfStartWeek;
   return (
     <CurrentWeekContext.Provider
       value={{
@@ -153,10 +128,8 @@ export const CurrentWeekProvider: React.FC<{ children: React.ReactNode }> = ({
         currentWeek,
         setCurrentWeek,
         season,
-        secondHalfStartWeek,
-        isSecondHalf,
+        periods,
         cbsPoolUrl,
-        paidPlaces,
       }}
     >
       {children}

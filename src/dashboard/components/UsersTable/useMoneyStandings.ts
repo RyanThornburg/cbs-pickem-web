@@ -2,6 +2,7 @@ import { RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import {
   moneyStandings,
+  rowPeriods,
   ShownMoneyStanding,
   shownMoneyStandings,
 } from "./usersTableUtils";
@@ -15,24 +16,16 @@ export function useMoneyStandings(
   week: number,
   weekComplete: boolean
 ): ShownMoneyStanding[] {
-  const { paidPlaces, secondHalfStartWeek } = useCurrentWeek();
+  const { periods } = useCurrentWeek();
   if (!userId) return [];
   const standings = moneyStandings(
     userList.map((user) => ({
       id: user.id,
-      place: user.place,
-      second_half_place: user.second_half_place,
-      score: user.cumulative_score + user.trending_score,
-      second_half_score: (user.second_half_score ?? 0) + user.trending_score,
+      periods: rowPeriods(user, periods, week),
     })),
     userId,
-    paidPlaces,
-    week >= secondHalfStartWeek
+    periods,
+    week
   );
-  return shownMoneyStandings(
-    standings,
-    week,
-    secondHalfStartWeek,
-    weekComplete
-  );
+  return shownMoneyStandings(standings, periods, week, weekComplete);
 }

@@ -3,9 +3,9 @@ import { HistoricalChampion, HistoricalRecords } from "../../types";
 import {
   cleanName,
   closedSeasons,
-  HALVES_FROM_SEASON,
   highestWinningScore,
   isUnknownChampion,
+  seasonPeriods,
 } from "./recordsUtils";
 import { GOLD, INCOMPLETE_HATCH, YOU_FILL } from "./recordsTheme";
 
@@ -65,31 +65,31 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
   );
   const isYouName = (name: string) =>
     String(idByName.get(name.toLowerCase())) === userId;
-  const halfByYear = (list: HistoricalChampion[]) =>
-    new Map(list.map((c) => [c.year, c]));
-  const firstHalf = halfByYear(data.first_half_champions);
-  const secondHalf = halfByYear(data.second_half_champions);
   const champions = [...data.champions].sort((a, b) => b.year - a.year);
 
-  const halfLines = (year: number) => {
-    if (year < HALVES_FROM_SEASON) return null;
-    const halves = [
-      ["1st half", firstHalf.get(year)],
-      ["2nd half", secondHalf.get(year)],
-    ] as const;
-    // Scores only when both halves have one, so the two lines match.
-    const withScores = halves.every(([, c]) => c?.score != null);
+  // One line per period inside the season (the halves so far), in the
+  // season's order.
+  const periodLines = (year: number) => {
+    const lines = seasonPeriods(data, year).map((period) => ({
+      ...period,
+      champ: data.period_champions?.find(
+        (c) => c.year === year && c.period_key === period.key
+      ),
+    }));
+    if (!lines.some((line) => line.champ)) return null;
+    // Scores only when every period has one, so the lines match.
+    const withScores = lines.every((line) => line.champ?.score != null);
     return (
       <Stack sx={{ mt: 0.5, pt: 0.5, borderTop: 1, borderColor: "divider" }}>
-        {halves.map(
-          ([label, champ]) =>
+        {lines.map(
+          ({ key, name, champ }) =>
             champ && (
               <Typography
-                key={label}
+                key={key}
                 variant="caption"
                 sx={{ color: "text.secondary" }}
               >
-                {label}:{" "}
+                {name}:{" "}
                 <Box
                   component="b"
                   sx={{ color: "text.primary", fontWeight: 600 }}
@@ -259,7 +259,7 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
                   {tags(champ, unknown)}
                 </Box>
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                  {halfLines(champ.year)}
+                  {periodLines(champ.year)}
                 </Box>
               </Box>
               {!unknown && champ.score != null && (

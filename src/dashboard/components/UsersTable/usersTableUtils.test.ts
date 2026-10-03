@@ -1,3 +1,4 @@
+import { HALVES } from "../../utils/testPeriods";
 import { GameStatus, UserPick } from "../../types";
 import {
   getWeeklyForm,
@@ -77,13 +78,13 @@ describe("playerSummaryText", () => {
   const user = {
     name: "Scott Miller",
     place: 4,
-    second_half_place: null,
+    periods: {},
     cumulative_score: 7,
     trending_score: 2,
   };
 
   it("reads place, points and covering picks as words", () => {
-    expect(playerSummaryText(user, [])).toBe(
+    expect(playerSummaryText(user, null, [])).toBe(
       "Scott Miller, 4th, 9 points, 2 covering now"
     );
   });
@@ -92,6 +93,7 @@ describe("playerSummaryText", () => {
     expect(
       playerSummaryText(
         { ...user, trending_score: 0, cumulative_score: 1 },
+        null,
         [
           {
             prize: "1st half",
@@ -112,6 +114,24 @@ describe("playerSummaryText", () => {
       )
     ).toBe(
       "Scott Miller, 4th, 1 point. 1st half: 1 point out, 6 weeks left. Overall: in the money, top 5. As of week 2"
+    );
+  });
+
+  it("adds the shown segment's place", () => {
+    const withHalf = {
+      ...user,
+      periods: {
+        second_half: {
+          score: 3,
+          place: 2,
+          in_money: true,
+          last_place_eligible: true,
+          in_money_last_place: false,
+        },
+      },
+    };
+    expect(playerSummaryText(withHalf, HALVES[2], [])).toBe(
+      "Scott Miller, 4th, 9 points, 2 covering now, 2nd half 2nd"
     );
   });
 });
