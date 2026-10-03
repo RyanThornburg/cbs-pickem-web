@@ -1,4 +1,5 @@
 import { verifyAdmin } from "./access.ts";
+import { checkPipeline } from "./pipelineAlert.ts";
 
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
@@ -91,6 +92,11 @@ export default {
       );
       return jsonResponse({ error: "internal_error" }, 500);
     }
+  },
+
+  // Cron trigger (wrangler.jsonc): emails when the data pipeline stops.
+  async scheduled(_controller, env, ctx): Promise<void> {
+    ctx.waitUntil(checkPipeline(env));
   },
 } satisfies ExportedHandler<Env>;
 

@@ -18,9 +18,25 @@
     {
       "binding": "PICKEM_KV",
       // No preview_id -- wrangler dev --remote and wrangler deploy both read
-      // CBS_PICKEM_PROD now. The worker is read-only (no .put() calls
-      // anywhere), so pointing local dev at prod can't write/corrupt it.
+      // CBS_PICKEM_PROD now. The worker only reads this namespace (no
+      // .put() on PICKEM_KV anywhere), so pointing local dev at prod can't
+      // write/corrupt it.
       "id": "55ae4b1a890a46d88557b9d69d9ecdd8"
+    },
+    {
+      // The pipeline alert's own state (what it last emailed), kept apart so
+      // PICKEM_KV stays read-only. See worker/pipelineAlert.ts.
+      "binding": "ALERT_KV",
+      "id": "4d37e0e725da4e9ca7c624a34a94ade3"
+    }
+  ],
+  // Pipeline alert: every 10 minutes, email ALERT_EMAIL (a Worker secret,
+  // like ADMIN_EMAIL) when the data pipeline's heartbeat stops.
+  "triggers": { "crons": ["*/10 * * * *"] },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": ["alerts@morlocked.rattsnest.com"]
     }
   ],
   // Cloudflare Access app guarding /admin + /api/admin/*. Not secrets: the AUD
