@@ -15,6 +15,8 @@ import { BackLink } from "../shared/BackLink";
 import TabIntro from "../TabIntro";
 import { UserGamePicksStack } from "../UsersTable/UserPickStack";
 import { UserTrendPanel } from "../UsersTable/UserTrendPanel";
+import { MoneyLines } from "../UsersTable/MoneyLines";
+import { ShownMoneyStanding } from "../UsersTable/usersTableUtils";
 import { FinishesChart } from "./FinishesChart";
 import { SideRoleGrid } from "./SideRoleGrid";
 import { SpreadLadder } from "./SpreadLadder";
@@ -75,6 +77,7 @@ export default function PlayerPage({
   playerId,
   selectedId,
   userList,
+  moneyStandings,
   onSelect,
 }: {
   season: number;
@@ -85,6 +88,9 @@ export default function PlayerPage({
   selectedId: string;
   // The browsed week's roster, for a name before the profile loads.
   userList: RankedUser[];
+  // This player's money standings for the browsed week (in the money, or
+  // within reach), the same lines as the header's player card.
+  moneyStandings: ShownMoneyStanding[];
   onSelect: (id: string) => void;
 }) {
   const { trends, failed } = usePlayerSeason(playerId, season);
@@ -135,48 +141,58 @@ export default function PlayerPage({
         }
         title={name ?? <Skeleton width={180} />}
         subtitle={
-          <Typography
-            variant="body2"
-            component="div"
-            sx={{
-              color: "text.secondary",
-              display: "flex",
-              flexWrap: "wrap",
-              columnGap: 2,
-              rowGap: 0.25,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            {now && (
-              <Fact>
-                <Strong>{ordinal(now.place)}</Strong> overall ·{" "}
-                {now.cumulative_score + now.trending_score} pts
-              </Fact>
+          <>
+            <Typography
+              variant="body2"
+              component="div"
+              sx={{
+                color: "text.secondary",
+                display: "flex",
+                flexWrap: "wrap",
+                columnGap: 2,
+                rowGap: 0.25,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {now && (
+                <Fact>
+                  <Strong>{ordinal(now.place)}</Strong> overall ·{" "}
+                  {now.cumulative_score + now.trending_score} pts
+                </Fact>
+              )}
+              {segment && segmentPlace != null && (
+                <Fact>
+                  {periodName(segment)} <Strong>{ordinal(segmentPlace)}</Strong>
+                </Fact>
+              )}
+              {total && (
+                <Fact>
+                  Picks{" "}
+                  <Strong>
+                    {total.wins}-{total.losses}
+                  </Strong>{" "}
+                  (
+                  {Math.round((total.wins / (total.wins + total.losses)) * 100)}
+                  %)
+                </Fact>
+              )}
+              {career && (
+                <Fact>
+                  <Strong>{career.years_played}</Strong>{" "}
+                  {career.years_played === 1 ? "season" : "seasons"}
+                  {career.titles > 0 &&
+                    ` · ${career.titles} ${career.titles === 1 ? "title" : "titles"}`}
+                </Fact>
+              )}
+            </Typography>
+            {moneyStandings.length > 0 && (
+              // The question the site exists for: in the money, or how far
+              // out, with the weeks left.
+              <Box sx={{ mt: 0.75, display: "inline-block" }}>
+                <MoneyLines standings={moneyStandings} />
+              </Box>
             )}
-            {segment && segmentPlace != null && (
-              <Fact>
-                {periodName(segment)} <Strong>{ordinal(segmentPlace)}</Strong>
-              </Fact>
-            )}
-            {total && (
-              <Fact>
-                Picks{" "}
-                <Strong>
-                  {total.wins}-{total.losses}
-                </Strong>{" "}
-                ({Math.round((total.wins / (total.wins + total.losses)) * 100)}
-                %)
-              </Fact>
-            )}
-            {career && (
-              <Fact>
-                <Strong>{career.years_played}</Strong>{" "}
-                {career.years_played === 1 ? "season" : "seasons"}
-                {career.titles > 0 &&
-                  ` · ${career.titles} ${career.titles === 1 ? "title" : "titles"}`}
-              </Fact>
-            )}
-          </Typography>
+          </>
         }
         actions={
           !isSelected && name ? (
@@ -192,8 +208,8 @@ export default function PlayerPage({
           ) : undefined
         }
       />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <Grid container columnSpacing={4} rowSpacing={3}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <Grid container columnSpacing={4} rowSpacing={4}>
           <Grid size={{ xs: 12, md: 7 }}>
             <Section title="Week by week">
               {!weeksLoaded && myWeeks.length === 0 ? (
@@ -261,50 +277,45 @@ export default function PlayerPage({
             </Section>
           </Grid>
           <Grid size={{ xs: 12, md: 5 }}>
-            <Section
-              title="Home or road, favorite or underdog"
-              note="Win-loss on each kind of pick this season. Green from 60%, red at 40% or less, from 3 graded picks."
-            >
-              {records?.side_roles ? (
-                <SideRoleGrid sideRoles={records.side_roles} />
-              ) : trends ? (
-                <NotYet>Not enough picks yet.</NotYet>
-              ) : (
-                <Skeleton
-                  variant="rounded"
-                  height={150}
-                  sx={{ maxWidth: 440 }}
-                />
-              )}
-            </Section>
+            {/* How they pick: by side and role, then by the size of the line. */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <Section
+                title="Home or road, favorite or underdog"
+                note="Win-loss on each kind of pick this season. Green from 60%, red at 40% or less, from 3 graded picks."
+              >
+                {records?.side_roles ? (
+                  <SideRoleGrid sideRoles={records.side_roles} />
+                ) : trends ? (
+                  <NotYet>Not enough picks yet.</NotYet>
+                ) : (
+                  <Skeleton
+                    variant="rounded"
+                    height={150}
+                    sx={{ maxWidth: 440 }}
+                  />
+                )}
+              </Section>
+              <Section
+                title="By the line"
+                note="The picked team's CBS line. The edges sit at 3 and 7, the most common final margins."
+              >
+                {records?.spread_buckets ? (
+                  <SpreadLadder buckets={records.spread_buckets} />
+                ) : trends ? (
+                  <NotYet>Not enough picks yet.</NotYet>
+                ) : (
+                  <Skeleton
+                    variant="rounded"
+                    height={170}
+                    sx={{ maxWidth: 640 }}
+                  />
+                )}
+              </Section>
+            </Box>
           </Grid>
         </Grid>
 
-        <Section
-          title="By the line"
-          note="The picked team's CBS line. The edges sit at 3 and 7, the most common final margins."
-        >
-          {records?.spread_buckets ? (
-            <SpreadLadder buckets={records.spread_buckets} />
-          ) : trends ? (
-            <NotYet>Not enough picks yet.</NotYet>
-          ) : (
-            <Skeleton variant="rounded" height={170} sx={{ maxWidth: 640 }} />
-          )}
-        </Section>
-
-        <Section
-          title="Team by team"
-          note="For: picking that team. Vs: picking their opponent. Tinted by the two together."
-        >
-          {standings && trends ? (
-            <TeamGrid standings={standings} teams={records?.teams ?? []} />
-          ) : (
-            <Skeleton variant="rounded" height={220} />
-          )}
-        </Section>
-
-        <Grid container columnSpacing={4} rowSpacing={3}>
+        <Grid container columnSpacing={4} rowSpacing={4}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Section title="Notes">
               {trends ? (
@@ -347,6 +358,17 @@ export default function PlayerPage({
             </Section>
           </Grid>
         </Grid>
+
+        <Section
+          title="Team by team"
+          note="For: picking that team. Vs: picking their opponent. Tinted by the two together."
+        >
+          {standings && trends ? (
+            <TeamGrid standings={standings} teams={records?.teams ?? []} />
+          ) : (
+            <Skeleton variant="rounded" height={220} />
+          )}
+        </Section>
       </Box>
     </Box>
   );

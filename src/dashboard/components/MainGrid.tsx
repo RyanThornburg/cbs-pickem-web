@@ -204,6 +204,13 @@ export default function MainGrid() {
   // plain /players. The You tab is only lit on the selected player's page.
   const pagePlayerId =
     activeTab === PLAYERS_TAB ? (playerId ?? user) || undefined : undefined;
+  // The same money lines for whoever's page is open.
+  const pageMoneyStandings = useMoneyStandings(
+    userList,
+    pagePlayerId ?? "",
+    selectedWeek,
+    weekComplete
+  );
   const navTab: AppTab | null =
     activeTab === PLAYERS_TAB && playerId && playerId !== user
       ? null
@@ -849,6 +856,7 @@ export default function MainGrid() {
                           playerId={pagePlayerId}
                           selectedId={user}
                           userList={userList}
+                          moneyStandings={pageMoneyStandings}
                           onSelect={onUserChange}
                         />
                       ) : (

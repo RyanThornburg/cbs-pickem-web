@@ -60,7 +60,7 @@ export function SpreadLadder({ buckets }: { buckets: SpreadBucketRecord[] }) {
         sx={{
           display: "flex",
           flexDirection: "column",
-          fontSize: "0.6875rem",
+          fontSize: "0.75rem",
         }}
       >
         <Box
@@ -93,7 +93,7 @@ export function SpreadLadder({ buckets }: { buckets: SpreadBucketRecord[] }) {
               aria-hidden
               sx={{
                 mt: 0.5,
-                fontSize: "0.6875rem",
+                fontSize: "0.75rem",
                 lineHeight: 1.25,
                 color: bucket.picks ? "text.secondary" : "text.disabled",
                 textAlign: "center",
