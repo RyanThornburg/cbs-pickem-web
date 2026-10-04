@@ -6,47 +6,53 @@ All the data is written in [https://github.com/RyanThornburg/cbs-pickem](https:/
 
 ## Screenshots
 
-Player names in these screenshots are replaced with made-up ones.
+Player names in these screenshots are replaced with made-up ones. Taken during the 1 PM games of week 4, 2026.
 
 ### User Picks
 
-The weekly leaderboard with everyone's picks, the week's recap strip, and badges for streaks, movers and the defending champion.
+The weekly leaderboard with everyone's picks (live ones show whether they're covering), paid lines, the week's recap strip, and badges for streaks, movers and the defending champion. The header shows the selected player's picks, place and money standing on every tab.
 
 ![User Picks](docs/screenshots/user-picks.png)
 
-Click a row for that player's season trends.
+### Player pages
 
-![User Picks with a player's trend panel open](docs/screenshots/user-picks-expanded.png)
+Click a name for that player's page: every week's picks, how they do by kind of pick and by the line, notes on their season, and their finishes over the years. The **You** tab opens the selected player's own page.
 
-### Games
+![A player's page](docs/screenshots/player.png)
 
-Lines, market spread and movement, O/U, and kickoff weather with an hourly strip.
+### NFL
 
-![Games](docs/screenshots/games.png)
+One tab with three views. **Games** has the CBS line against Vegas, line moves, O/U, and kickoff weather with an hourly strip.
 
-### Scoreboard
+![NFL, Games](docs/screenshots/nfl-games.png)
 
-Live and final scores with quarter scores, who picked each side, and your pick's status.
+**Live** has scores with your picks summed up on top, who picked each side, and close-game and red-zone borders. Full cards or a compact list.
 
-![Scoreboard](docs/screenshots/scoreboard.png)
+![NFL, Live](docs/screenshots/nfl-live.png)
 
-Each game opens to its leaders, scoring plays and team stats.
+Each live or final game opens to win probability, the margin against the CBS line, leaders, scoring plays, team stats and every player's stats.
 
-![Scoreboard with a box score open](docs/screenshots/scoreboard-box-score.png)
+<img src="docs/screenshots/live-box-score.png" alt="A live game's box score" width="480">
+
+**Standings** has every division with each team's record against the CBS line and the pool's record picking them. Team marks link to team pages.
+
+![NFL, Standings](docs/screenshots/standings.png)
+
+![A team page](docs/screenshots/team.png)
 
 ### Trends
 
-The week's recap cards, consensus, lone picks and line movers.
+The week's recap cards, how the pool split on each game, and the picks nobody else made.
 
 ![Trends, week view](docs/screenshots/trends-week.png)
 
-Season charts and a sortable table of every team.
+The season's recap, accuracy and chaos charts, and a table of the teams the pool picks.
 
 ![Trends, season view](docs/screenshots/trends-season.png)
 
 ### Records
 
-Champions and all-time records back to 2013.
+Your all-time line, every champion back to 2013, and each player's finish by year.
 
 ![Records](docs/screenshots/records.png)
 
@@ -54,7 +60,7 @@ Champions and all-time records back to 2013.
 
 <p>
   <img src="docs/screenshots/mobile-user-picks.png" alt="User Picks on a phone" width="300">
-  <img src="docs/screenshots/mobile-scoreboard.png" alt="Scoreboard on a phone, compact layout" width="300">
+  <img src="docs/screenshots/mobile-live.png" alt="NFL Live on a phone, compact layout" width="300">
 </p>
 
 ## Stack
@@ -71,7 +77,7 @@ Champions and all-time records back to 2013.
 
 ## Project layout
 
-- `src/dashboard/components/` one folder per dashboard widget (Scoreboard, UsersTable, TrendsSection, GamesCard, etc.)
+- `src/dashboard/components/` one folder per tab or widget (UsersTable, Nfl, GamesCard, Scoreboard, Players, TrendsSection, RecordsSection, etc.)
 - `src/dashboard/types.ts` shared data types
 - `worker/` the Cloudflare Worker that serves data from KV
 - `src/dashboard/icons/` team logo PNGs
