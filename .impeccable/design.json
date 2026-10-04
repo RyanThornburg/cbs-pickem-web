@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-03T00:32:10+00:00",
+  "generatedAt": "2026-10-03T23:16:20+00:00",
   "title": "Design System: Morlocked Pick'em",
   "extensions": {
     "colorMeta": {
@@ -479,6 +479,51 @@
           "hsl(210, 98%, 85%)",
           "hsl(210, 98%, 95%)"
         ]
+      },
+      "pool-violet": {
+        "role": "tertiary",
+        "displayName": "Pool Violet",
+        "canonical": "#5b45c2",
+        "tonalRamp": [
+          "#2a1f63",
+          "#3a2b86",
+          "#4a36a8",
+          "#5b45c2",
+          "#8a7ad6",
+          "#b9aeea",
+          "#d9d2f6",
+          "#f4f2fd"
+        ]
+      },
+      "pool-violet-ink": {
+        "role": "tertiary",
+        "displayName": "Pool Violet Ink",
+        "canonical": "#4a36a8",
+        "tonalRamp": [
+          "#2a1f63",
+          "#3a2b86",
+          "#4a36a8",
+          "#5b45c2",
+          "#8a7ad6",
+          "#b9aeea",
+          "#d9d2f6",
+          "#f4f2fd"
+        ]
+      },
+      "pool-violet-tint": {
+        "role": "tertiary",
+        "displayName": "Pool Violet Tint",
+        "canonical": "#f4f2fd",
+        "tonalRamp": [
+          "#2a1f63",
+          "#3a2b86",
+          "#4a36a8",
+          "#5b45c2",
+          "#8a7ad6",
+          "#b9aeea",
+          "#d9d2f6",
+          "#f4f2fd"
+        ]
       }
     },
     "typographyMeta": {
@@ -592,8 +637,8 @@
       "name": "Route Tabs",
       "kind": "nav",
       "refersTo": "tab",
-      "description": "Primary navigation: text tabs with a dark underline; Records set apart in deep gold after a divider.",
-      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab is-active\">User Picks</a><a class=\"ds-tab\">Games</a><a class=\"ds-tab\">Scoreboard</a><a class=\"ds-tab\">Trends</a><span class=\"ds-tab-divider\"></span><a class=\"ds-tab ds-tab-records\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z\"/></svg>Records</a></nav>",
+      "description": "The desktop route tabs: User Picks, NFL, Trends, You, then Records in deep trophy gold after a divider.",
+      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab is-active\">User Picks</a><a class=\"ds-tab\">NFL</a><a class=\"ds-tab\">Trends</a><a class=\"ds-tab\">You</a><span class=\"ds-tab-divider\"></span><a class=\"ds-tab ds-tab-records\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z\"/></svg>Records</a></nav>",
       "css": ".ds-tabs{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:flex; align-items:center; gap:4px; border-bottom:1px solid rgba(0,0,0,0.12);} .ds-tab{display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:500; padding:6px 8px; margin-bottom:8px; color:rgba(0,0,0,0.6); border:1px solid transparent; border-radius:8px; cursor:pointer; position:relative;} .ds-tab:hover{color:rgba(0,0,0,0.87); background:hsl(220,30%,94%); border-color:hsl(220,20%,88%);} .ds-tab.is-active{color:hsl(220,35%,3%);} .ds-tab.is-active::after{content:''; position:absolute; left:0; right:0; bottom:-9px; height:2px; background:hsl(220,30%,6%);} .ds-tab-divider{width:1px; align-self:stretch; margin:0 4px 8px; background:rgba(0,0,0,0.12);} .ds-tab-records,.ds-tab-records:hover{color:#a87f12;}"
     },
     {
@@ -651,6 +696,22 @@
       "description": "Games and Scoreboard share one caution voice: a solid warning-orange flag for an official alert or a close game, an orange tint with dark amber ink for weather flags; plain slate chips for venues, line moves and streaks.",
       "html": "<span class=\"ds-flag ds-flag-solid\">⚠ Flood Watch</span> <span class=\"ds-flag ds-flag-solid\">Close</span> <span class=\"ds-flag ds-flag-tint\">Gusts 22 mph</span> <span class=\"ds-chip\">Moved 5 to ARI</span> <span class=\"ds-chip\">▲ CLE: 3 straight covers</span>",
       "css": ".ds-flag{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:inline-flex; align-items:center; gap:5px; padding:2px 7px; border-radius:4px; font-size:12px; font-weight:600;} .ds-flag-solid{background:#ed6c02; color:#1b1300;} .ds-flag-tint{background:#fbe9d7; color:#8a560a;} .ds-chip{font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; display:inline-flex; align-items:center; padding:1px 8px; border-radius:10px; font-size:12px; font-weight:600; background:hsl(220,30%,94%); color:rgba(0,0,0,0.87);}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "segmented",
+      "description": "Every view switch (NFL views, Standings, Live layout, Trends): 36px, muted ink, the selected segment ink on slate-200.",
+      "html": "<div class=\"ds-seg\" role=\"group\" aria-label=\"NFL view\"><button class=\"ds-seg-btn\">Games</button><button class=\"ds-seg-btn is-on\" aria-pressed=\"true\">Live</button><button class=\"ds-seg-btn\">Standings</button></div>",
+      "css": ".ds-seg { display: inline-flex; border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; overflow: hidden; font-family: Inter, system-ui, sans-serif; } .ds-seg-btn { font: inherit; font-size: 14px; font-weight: 500; min-height: 36px; padding: 2px 12px; border: 0; border-left: 1px solid rgba(0,0,0,0.12); background: #fff; color: rgba(0,0,0,0.6); cursor: pointer; transition: background 100ms ease-in; } .ds-seg-btn:first-child { border-left: 0; } .ds-seg-btn:hover { background: hsl(220,30%,94%); } .ds-seg-btn.is-on { background: hsl(220,20%,88%); color: rgba(0,0,0,0.87); } .ds-seg-btn.is-on:hover { background: hsl(220,20%,80%); } .ds-seg-btn:focus-visible { outline: 3px solid hsl(210,98%,42%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Load Error",
+      "kind": "card",
+      "refersTo": "load-error",
+      "description": "The one 'couldn't load' treatment: a quiet bordered box, what failed, the automatic retry, and Try now.",
+      "html": "<div class=\"ds-loaderr\" role=\"alert\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"rgba(0,0,0,0.6)\"><path d=\"M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg><div class=\"ds-loaderr-text\"><b>Couldn't load the standings.</b><span>Trying again every 5 minutes.</span></div><button class=\"ds-loaderr-btn\">Try now</button></div>",
+      "css": ".ds-loaderr { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 16px; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; background: #fff; font-family: Inter, system-ui, sans-serif; font-size: 14px; max-width: 560px; } .ds-loaderr-text { flex: 1 1 14rem; display: flex; flex-direction: column; } .ds-loaderr-text b { font-weight: 600; color: rgba(0,0,0,0.87); } .ds-loaderr-text span { color: rgba(0,0,0,0.6); } .ds-loaderr-btn { font: inherit; font-weight: 500; min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid hsl(220,20%,88%); background: hsl(220,35%,97%); color: rgba(0,0,0,0.87); cursor: pointer; transition: background 100ms ease-in; } .ds-loaderr-btn:hover { background: hsl(220,30%,94%); } .ds-loaderr-btn:focus-visible { outline: 3px solid hsl(210,98%,42%); outline-offset: 2px; }"
     }
   ],
   "narrative": {
@@ -662,12 +723,12 @@
       "Color means state (won, lost, open, honored), never decoration.",
       "Gold is the clubhouse color: trophies, medals, 5-0, the Records tab.",
       "Friendly details (identicon avatars, pill badges, medal tiles) live at the edges of the record, not in it.",
-      "Light only. `themePrimitives.ts` defines dark schemes, but they aren't wired in."
+      "Light only. There are no dark color schemes; the `applyStyles(\"dark\", …)` blocks left in the theme overrides are inert."
     ],
     "rules": [
       {
         "name": "The Earned Color Rule",
-        "body": "Every color on the page says something: won, lost, open, honored, or a team. If a colored element isn't carrying one of those meanings, make it neutral.",
+        "body": "Every color on the page says something: won, lost, open, honored, the pool, or a team. If a colored element isn't carrying one of those meanings, make it neutral.",
         "section": "colors"
       },
       {
@@ -704,16 +765,6 @@
         "name": "The Flat Record Rule",
         "body": "Nothing that is part of the record (tables, cards, tiles) casts a shadow at rest. Only things that float above it (menus, popovers, tooltips) do.",
         "section": "elevation"
-      },
-      {
-        "name": "Red And Green Mean Picks",
-        "body": "Red and green are for pick results only (won/lost, covering/not covering), plus the mover arrows. Everything else that only compares (team streaks, the pool's split rates against 50%, how often a team was picked, the pool split bar) is neutral: `text.secondary` fills, `text.disabled` for the smaller side, slate chips. Team colors stay in logos and the drive band, not in bars, where TB would read as red and PIT as black.",
-        "section": "colors"
-      },
-      {
-        "name": "Freshness",
-        "body": "User Picks shows \"Updated 7:19 PM\" in the desktop table header only (the user's call) and a \"Couldn't refresh…\" line when a poll fails. The Scoreboard shows the same note on its tab intro at every width, but only while a game is live or after a failed refresh; on a quiet day it shows nothing.",
-        "section": "layout"
       }
     ],
     "dos": [
