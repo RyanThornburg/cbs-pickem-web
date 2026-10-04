@@ -88,7 +88,7 @@ function ChartTooltip({
         borderRadius: 1,
         px: 1.25,
         py: 0.75,
-        fontSize: "0.78rem",
+        fontSize: "0.75rem",
         whiteSpace: "nowrap",
         zIndex: 2,
       }}

@@ -272,7 +272,7 @@ export default function SeasonTeamTable(props: Props) {
                     align={header.column.columnDef.meta?.align ?? "left"}
                     sx={{
                       fontSize: "0.75rem",
-                      fontWeight: "bold",
+                      fontWeight: 700,
                       whiteSpace: "nowrap",
                       py: 0,
                       px: { xs: 1, sm: 2 },

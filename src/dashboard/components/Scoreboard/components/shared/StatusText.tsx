@@ -26,7 +26,7 @@ export const StatusText = ({ game }: { game: Game }) => {
         alignItems: "center",
         gap: 0.75,
         fontWeight: 700,
-        fontSize: "0.85rem",
+        fontSize: "0.875rem",
         letterSpacing: "0.03em",
         textTransform: "uppercase",
         // kickoff times ("MON 8:15 PM") may wrap in the narrow compact column

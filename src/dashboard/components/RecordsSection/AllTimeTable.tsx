@@ -228,7 +228,7 @@ export default function AllTimeTable({ table, userId }: Props) {
               <TableRow key={headerGroup.id}>
                 <TableCell
                   align="center"
-                  sx={{ fontSize: "0.75rem", fontWeight: "bold", width: 48 }}
+                  sx={{ fontSize: "0.75rem", fontWeight: 700, width: 48 }}
                 >
                   Place
                 </TableCell>
@@ -245,7 +245,7 @@ export default function AllTimeTable({ table, userId }: Props) {
                     align={header.column.columnDef.meta?.align ?? "left"}
                     sx={{
                       fontSize: "0.75rem",
-                      fontWeight: "bold",
+                      fontWeight: 700,
                       whiteSpace: "nowrap",
                       ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
                     }}

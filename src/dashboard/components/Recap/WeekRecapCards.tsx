@@ -75,7 +75,7 @@ export function Big({ value, suffix }: { value: string; suffix?: string }) {
     <Typography
       sx={{
         fontSize: "1.75rem",
-        fontWeight: 800,
+        fontWeight: 700,
         lineHeight: 1.05,
         fontVariantNumeric: "tabular-nums",
       }}
@@ -166,7 +166,7 @@ function PersonChips({
             component="span"
             sx={{
               fontSize: "0.75rem",
-              fontWeight: you ? 800 : 600,
+              fontWeight: you ? 700 : 600,
               borderRadius: 0.5,
               px: 0.75,
               py: "1px",
@@ -329,7 +329,7 @@ function PeopleLine({
     >
       <Typography
         sx={{
-          fontSize: "0.8rem",
+          fontSize: "0.8125rem",
           fontWeight: 700,
           color: "text.secondary",
           minWidth: 26,
@@ -378,7 +378,7 @@ function RecordRows({
             <Typography variant="body2">{name}</Typography>
             <Typography
               sx={{
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: "1.25rem",
                 textAlign: "right",
                 fontVariantNumeric: "tabular-nums",
@@ -596,8 +596,8 @@ function UpsetCard({
             </Typography>
             <Typography
               sx={{
-                fontWeight: 800,
-                fontSize: "1.1rem",
+                fontWeight: 700,
+                fontSize: "1.125rem",
                 color: won ? "text.primary" : "text.disabled",
               }}
             >
@@ -633,13 +633,13 @@ function MoversCard({ card }: { card: WeekCard }) {
             spacing={1}
             sx={{
               alignItems: "center",
-              fontSize: "0.82rem",
+              fontSize: "0.8125rem",
             }}
           >
             <Box
               component="span"
               sx={{
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: "0.75rem",
                 borderRadius: 0.5,
                 px: 0.5,

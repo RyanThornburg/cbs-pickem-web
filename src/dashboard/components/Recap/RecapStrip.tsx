@@ -119,7 +119,7 @@ export default function RecapStrip({ recap, isCurrentWeek }: Props) {
         </Box>
         <Typography
           aria-live={announce ? "polite" : "off"}
-          sx={{ fontSize: "0.9rem", fontWeight: 500 }}
+          sx={{ fontSize: "0.875rem", fontWeight: 500 }}
         >
           {/* The full sentence has room on desktop; phones get the
               80-character version so the strip doesn't change height. */}
@@ -197,7 +197,7 @@ export default function RecapStrip({ recap, isCurrentWeek }: Props) {
           }}
           underline="hover"
           sx={{
-            fontSize: "0.78rem",
+            fontSize: "0.75rem",
             fontWeight: 600,
             whiteSpace: "nowrap",
             ml: 0.5,

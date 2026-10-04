@@ -37,7 +37,7 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
         color: "#fff",
         display: "grid",
         placeItems: "center",
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 700,
         lineHeight: 1,
         overflow: "hidden",

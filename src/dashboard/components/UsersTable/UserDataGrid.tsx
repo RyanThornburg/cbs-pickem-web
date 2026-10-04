@@ -51,7 +51,7 @@ const UserDataGrid = ({
                 <TableCell
                   key={header.id}
                   align={header.column.columnDef.meta?.align ?? "left"}
-                  sx={{ fontSize: "0.75rem", fontWeight: "bold" }}
+                  sx={{ fontSize: "0.75rem", fontWeight: 700 }}
                 >
                   {header.column.getCanSort() ? (
                     <TableSortLabel

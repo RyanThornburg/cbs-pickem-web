@@ -36,7 +36,7 @@ const PickerList = ({
         alignItems: "center",
         gap: 0.75,
         fontWeight: 700,
-        fontSize: "0.85rem",
+        fontSize: "0.875rem",
       }}
     >
       <TeamLogo abbr={abbr} size={18} />
@@ -58,12 +58,7 @@ const PickerList = ({
             color: user.id === userId ? "primary.main" : "text.primary",
           }}
         >
-          <UserAvatar
-            userId={user.id}
-            userName={user.name}
-            size={18}
-            fontSize="0.78rem"
-          />
+          <UserAvatar userId={user.id} userName={user.name} size={18} />
         </Box>
       ))
     )}
@@ -202,7 +197,7 @@ export const PickSplitBar = ({
                 display: "flex",
                 justifyContent: "space-between",
                 gap: 1,
-                fontSize: "0.8rem",
+                fontSize: "0.8125rem",
                 color: "text.secondary",
               }}
             >

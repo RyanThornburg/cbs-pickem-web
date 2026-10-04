@@ -20,7 +20,7 @@ export function PlaceCell({ place }: { place: number | null | undefined }) {
         alignItems: "center",
         justifyContent: "center",
         fontSize: "0.75rem",
-        fontWeight: 800,
+        fontWeight: 700,
         bgcolor: medal.bg,
         color: medal.fg,
       }}

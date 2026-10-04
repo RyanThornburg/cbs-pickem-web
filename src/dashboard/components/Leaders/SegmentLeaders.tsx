@@ -53,7 +53,7 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
           alignItems: "center",
           justifyContent: "center",
           fontSize: "0.75rem",
-          fontWeight: 800,
+          fontWeight: 700,
           bgcolor: medal?.bg ?? "action.hover",
           color: medal?.fg ?? "text.secondary",
         }}
@@ -80,7 +80,7 @@ const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
             sx={{
               ml: 0.5,
               fontWeight: 500,
-              fontSize: "0.72rem",
+              fontSize: "0.75rem",
               color: "success.main",
             }}
           >
@@ -103,7 +103,7 @@ const Rows = ({ list, userId }: { list: LeaderList; userId?: string }) => (
           sx={{
             textAlign: "center",
             color: "text.disabled",
-            fontSize: "0.8rem",
+            fontSize: "0.8125rem",
             lineHeight: 1,
           }}
         >
@@ -131,7 +131,7 @@ const CardHead = ({ title, sub }: { title: string; sub: string }) => (
       mb: 0.75,
     }}
   >
-    <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
+    <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
       {title}
     </Typography>
     <Typography variant="caption" sx={{ color: "text.secondary" }}>

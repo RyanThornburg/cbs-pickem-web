@@ -161,7 +161,7 @@ export default function SeasonTable({
               sx={{
                 "& th": {
                   fontSize: "0.75rem",
-                  fontWeight: "bold",
+                  fontWeight: 700,
                   whiteSpace: "nowrap",
                 },
               }}

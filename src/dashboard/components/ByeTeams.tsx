@@ -35,7 +35,7 @@ export const ByeTeams = ({ teams }: { teams: string[] }) => {
             </Typography>
             <Typography
               sx={{
-                fontSize: "0.8rem",
+                fontSize: "0.8125rem",
                 color: "text.secondary",
                 display: { xs: "none", sm: "block" },
               }}

@@ -90,7 +90,7 @@ const Leaders = ({ game }: { game: Game }) => {
           gridTemplateColumns: "auto 1fr",
           columnGap: 1.5,
           rowGap: 0.75,
-          fontSize: "0.82rem",
+          fontSize: "0.8125rem",
         }}
       >
         {LEADER_FORMATS.flatMap(({ key, label, line }) =>
@@ -140,7 +140,7 @@ const ScoringPlays = ({ game }: { game: Game }) => {
           gridTemplateColumns: "auto auto 1fr auto",
           columnGap: 1,
           rowGap: 0.75,
-          fontSize: "0.8rem",
+          fontSize: "0.8125rem",
           alignItems: "start",
         }}
       >
@@ -195,7 +195,7 @@ const StatSide = ({
     {align === "right" && sub != null && (
       <Box
         component="span"
-        sx={{ color: "text.secondary", fontSize: "0.72rem" }}
+        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
       >
         ({sub})
       </Box>
@@ -206,7 +206,7 @@ const StatSide = ({
     {align === "left" && sub != null && (
       <Box
         component="span"
-        sx={{ color: "text.secondary", fontSize: "0.72rem" }}
+        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
       >
         ({sub})
       </Box>
@@ -264,7 +264,7 @@ const BoxScore = ({
           display: "flex",
           flexDirection: "column",
           gap: 1,
-          fontSize: "0.82rem",
+          fontSize: "0.8125rem",
           fontVariantNumeric: "tabular-nums",
         }}
       >
@@ -283,7 +283,7 @@ const BoxScore = ({
                 sx={{
                   color: "text.secondary",
                   textAlign: "center",
-                  fontSize: "0.78rem",
+                  fontSize: "0.75rem",
                 }}
               >
                 {row.label}

@@ -84,7 +84,7 @@ export const YourPickBadge = ({ game, side, compact }: Props) => {
         px: 1,
         py: "2px",
         borderRadius: 999,
-        fontSize: "0.78rem",
+        fontSize: "0.75rem",
         fontWeight: 600,
         whiteSpace: "nowrap",
         color: ink,

@@ -60,14 +60,14 @@ const Middle = ({ game }: { game: Game }) => {
             justifyContent: "space-between",
             alignItems: "center",
             gap: 1,
-            fontSize: "0.8rem",
+            fontSize: "0.8125rem",
             minHeight: 20,
           }}
         >
           <Box
             component="span"
             sx={{
-              fontWeight: live?.down === 4 ? 800 : 700,
+              fontWeight: live?.down === 4 ? 700 : 600,
             }}
           >
             {down}
@@ -101,7 +101,7 @@ const Middle = ({ game }: { game: Game }) => {
     return (
       <Typography
         variant="body2"
-        sx={{ color: "text.secondary", fontSize: "0.82rem" }}
+        sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
       >
         {parts.map((part, i) => (
           <Fragment key={part}>
@@ -124,7 +124,7 @@ const Middle = ({ game }: { game: Game }) => {
         display: "flex",
         minWidth: 0,
         color: "text.secondary",
-        fontSize: "0.82rem",
+        fontSize: "0.8125rem",
       }}
     >
       <Box

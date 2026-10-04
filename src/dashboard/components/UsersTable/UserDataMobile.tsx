@@ -21,7 +21,7 @@ import { playerPath } from "../shared/PlayerLink";
 const StyledTableCellHeader = styled(TableCell)(() => ({
   "&.MuiTableCell-head": {
     fontSize: "0.75rem",
-    fontWeight: "bold",
+    fontWeight: 700,
     paddingLeft: 4,
     paddingRight: 4,
   },

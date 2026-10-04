@@ -5,7 +5,7 @@ import { BadgeTooltip } from "../UsersTable/BadgeTooltip";
 
 const chipSx = {
   fontSize: "0.75rem",
-  fontWeight: 800,
+  fontWeight: 700,
   lineHeight: 1.4,
   borderRadius: 0.5,
   px: 0.5,

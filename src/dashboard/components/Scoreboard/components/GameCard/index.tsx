@@ -61,14 +61,14 @@ const DownDistance = ({ game }: { game: Game }) => {
   // down is -1 on a try/kickoff, with no text
   if (live.down != null && live.down <= 0) {
     return (
-      <Box component="span" sx={{ fontWeight: 700 }}>
+      <Box component="span" sx={{ fontWeight: 600 }}>
         Try / kickoff
       </Box>
     );
   }
   if (!live.down_distance_text) return null;
   return (
-    <Box component="span" sx={{ fontWeight: live.down === 4 ? 800 : 700 }}>
+    <Box component="span" sx={{ fontWeight: live.down === 4 ? 700 : 600 }}>
       {live.down_distance_text}
     </Box>
   );
@@ -98,7 +98,7 @@ const Situation = ({ game }: { game: Game }) => {
         bgcolor: "action.hover",
         borderRadius: 2,
         p: 1.25,
-        fontSize: "0.85rem",
+        fontSize: "0.875rem",
       }}
     >
       {inProgress && (
@@ -126,7 +126,7 @@ const Situation = ({ game }: { game: Game }) => {
             columnGap: 1.5,
             rowGap: 0.25,
             color: "text.secondary",
-            fontSize: "0.8rem",
+            fontSize: "0.8125rem",
           }}
         >
           {live.drive_text && (
@@ -157,7 +157,7 @@ const PregameLine = ({ game }: { game: Game }) => {
   return (
     <Typography
       variant="body2"
-      sx={{ color: "text.secondary", fontSize: "0.82rem" }}
+      sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
     >
       {f && outdoor
         ? `Forecast: ${weatherLine(f)}`
@@ -240,7 +240,7 @@ export const GameCard = memo(
                       noWrap
                       sx={{
                         color: "text.secondary",
-                        fontSize: "0.8rem",
+                        fontSize: "0.8125rem",
                         display: { xs: "none", sm: "block" },
                       }}
                     >
@@ -284,7 +284,7 @@ export const GameCard = memo(
               sx={{
                 textAlign: "center",
                 color: "text.secondary",
-                fontSize: "0.85rem",
+                fontSize: "0.875rem",
               }}
             >
               {line?.[p] ?? "–"}
@@ -331,7 +331,7 @@ export const GameCard = memo(
             alignItems: "center",
             gap: 1,
             flexWrap: "wrap",
-            fontSize: "0.8rem",
+            fontSize: "0.8125rem",
             color: "text.secondary",
           }}
         >
