@@ -228,8 +228,11 @@ export const teamLineText = (
       ? `O/U ${total}`
       : "";
 
+// No possession_text means the feed's spot may be stale (the field strip
+// hides its ball then too), so the name-line mark hides with it.
 export const hasBall = (game: Game, side: Side): boolean =>
   game.status === GameStatus.Inprogress &&
+  !!game.live?.possession_text &&
   game.live?.possession ===
     (side === "home" ? Possession.Home : Possession.Away);
 

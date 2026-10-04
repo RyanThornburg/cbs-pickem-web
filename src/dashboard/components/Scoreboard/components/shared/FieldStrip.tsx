@@ -3,6 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { Game, Possession } from "../../../../types";
 import { getBallSpot } from "../../utils/scoreboardUtils";
 import { teamColor } from "../../utils/teamData";
+import { BALL_BROWN } from "./BallIcon";
 
 interface Props {
   game: Game;
@@ -147,7 +148,7 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
                     width: height * 0.55,
                     height: height * 0.38,
                     borderRadius: "50%",
-                    bgcolor: "#8b4a1e",
+                    bgcolor: BALL_BROWN,
                     border: "1.5px solid #fff",
                   }}
                 />

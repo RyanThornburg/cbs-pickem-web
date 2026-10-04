@@ -248,6 +248,7 @@ export const GameCard = memo(
                     </Typography>
                   )}
                 </TeamLink>
+                {hasBall(game, side) && <BallIcon abbr={team.abbr} />}
               </Box>
               <Box
                 sx={{
@@ -265,7 +266,6 @@ export const GameCard = memo(
                     .join(" · ")}
                 </span>
                 <AtsTag game={game} side={side} />
-                {hasBall(game, side) && <BallIcon />}
                 {showTimeouts && (
                   <Timeouts
                     left={

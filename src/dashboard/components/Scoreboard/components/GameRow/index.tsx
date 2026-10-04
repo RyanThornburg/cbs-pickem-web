@@ -177,6 +177,14 @@ export const GameRow = memo((props: GameRowProps) => {
             {team.abbr}
           </Typography>
         </TeamLink>
+        {/* A fixed slot, so the line, tag and score stay aligned whether or
+            not this team has the ball */}
+        <Box
+          component="span"
+          sx={{ width: 16, display: "inline-flex", flexShrink: 0 }}
+        >
+          {hasBall(game, side) && <BallIcon abbr={team.abbr} />}
+        </Box>
         <Box
           component="span"
           sx={{
@@ -188,12 +196,6 @@ export const GameRow = memo((props: GameRowProps) => {
           }}
         >
           {teamLineText(game, side, total)}
-        </Box>
-        <Box
-          component="span"
-          sx={{ width: 16, display: "inline-flex", flexShrink: 0 }}
-        >
-          {hasBall(game, side) && <BallIcon />}
         </Box>
         <AtsTag game={game} side={side} compact />
         <Typography
@@ -250,7 +252,7 @@ export const GameRow = memo((props: GameRowProps) => {
           columnGap: 2,
           rowGap: 1,
           alignItems: "center",
-          px: 1.75,
+          px: { xs: 1.25, md: 1.75 },
           py: 1.25,
           borderBottom: 1,
           borderColor: "divider",
@@ -259,8 +261,12 @@ export const GameRow = memo((props: GameRowProps) => {
             background: `linear-gradient(90deg, ${t.palette.action.selected}, transparent 45%)`,
           }),
           [t.breakpoints.down("md")]: {
-            gridTemplateColumns: "100px minmax(0, 1fr)",
+            // 96px fits "THU 12:30 PM"; the tighter gap and padding leave
+            // the team lines the 196px they need at 360 (logo, abbr, ball,
+            // line, ✓ tag, a two-digit score).
+            gridTemplateColumns: "96px minmax(0, 1fr)",
             gridTemplateAreas: mobileAreas,
+            columnGap: 1.25,
           },
         }),
         highlightSx(border, true),

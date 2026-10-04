@@ -242,7 +242,8 @@ const Scoreboard = memo((props: Props) => {
                 <Box key={group}>
                   <Box
                     sx={{
-                      px: 1.75,
+                      // Matches the compact rows' side padding
+                      px: { xs: 1.25, md: 1.75 },
                       py: 0.5,
                       bgcolor: "action.hover",
                       borderBottom: 1,

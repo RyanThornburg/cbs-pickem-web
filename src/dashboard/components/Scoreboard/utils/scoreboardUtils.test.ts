@@ -6,6 +6,7 @@ import {
   getGameHighlight,
   getPickState,
   groupGames,
+  hasBall,
   highlightBorder,
   pickDeadline,
   pickStateText,
@@ -170,6 +171,27 @@ describe("pick state", () => {
     expect(sideLine(game(), "home")).toBe("−3.5");
     expect(sideLine(game(), "away")).toBe("+3.5");
     expect(sideLine(game({ cbs_spread: 0 }), "home")).toBe("PK");
+  });
+});
+
+describe("hasBall", () => {
+  const live = { possession: Possession.Away, possession_text: "TB 38" };
+
+  it("marks the team the feed says has the ball", () => {
+    expect(hasBall(game({ live }), "away")).toBe(true);
+    expect(hasBall(game({ live }), "home")).toBe(false);
+  });
+
+  it("hides with no possession_text, since the spot may be stale", () => {
+    expect(
+      hasBall(game({ live: { ...live, possession_text: undefined } }), "away")
+    ).toBe(false);
+  });
+
+  it("hides outside play (halftime, final)", () => {
+    for (const status of [GameStatus.Halftime, GameStatus.Final]) {
+      expect(hasBall(game({ status, live }), "away")).toBe(false);
+    }
   });
 });
 
