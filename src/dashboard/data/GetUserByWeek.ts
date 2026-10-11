@@ -7,11 +7,13 @@ import {
   UserPick,
 } from "../types";
 import { OVERALL_KEY, shownSegment } from "../utils/payPeriods";
+import { pickDeadline } from "../components/Scoreboard/utils/scoreboardUtils";
 import {
   ApiGame,
   buildGamesById,
   fetchWeekGames,
   findEarliestGame,
+  toGame,
   toTeam,
 } from "./weekGames";
 
@@ -170,6 +172,10 @@ const joinPick = (
 // rather than "not submitted" whenever real picks already joined: never
 // discard picks we actually have. Only fall back to zero slots when there's
 // nothing to show AND the flag isn't affirmatively true.
+//
+// Once the Sunday deadline has passed every saved pick is public, so a short
+// sheet is short for good (CBS saves fewer than five): no padding then, or the
+// missing picks would read "Hidden until kickoff" all week.
 const tbdPlaceholder = (index: number): UserPick => ({
   game_id: -1 - index,
   team: "",
@@ -180,13 +186,15 @@ const tbdPlaceholder = (index: number): UserPick => ({
 
 const withTbdPlaceholders = (
   visiblePicks: UserPick[],
-  hasSubmittedPicks: boolean | undefined
+  hasSubmittedPicks: boolean | undefined,
+  pastDeadline: boolean
 ): UserPick[] => {
   if (visiblePicks.length === 0 && !hasSubmittedPicks) return [];
 
-  const missing = hasSubmittedPicks
-    ? Math.max(0, REQUIRED_PICKS_PER_WEEK - visiblePicks.length)
-    : 0;
+  const missing =
+    hasSubmittedPicks && !pastDeadline
+      ? Math.max(0, REQUIRED_PICKS_PER_WEEK - visiblePicks.length)
+      : 0;
   return [
     ...visiblePicks,
     ...Array.from({ length: missing }, (_, i) => tbdPlaceholder(i)),
@@ -197,6 +205,7 @@ const toRankedUser = (
   user: ApiLeaderboardUser,
   gamesById: Map<number, ApiGame>,
   weekLocked: boolean,
+  pastDeadline: boolean,
   periods: PayPeriod[],
   ranks: Map<string, Map<number, number | null>>
 ): RankedUser => {
@@ -227,7 +236,11 @@ const toRankedUser = (
         ];
       })
     ),
-    picks: withTbdPlaceholders(visiblePicks, user.has_submitted_picks),
+    picks: withTbdPlaceholders(
+      visiblePicks,
+      user.has_submitted_picks,
+      pastDeadline
+    ),
     has_submitted_picks: user.has_submitted_picks,
   };
 };
@@ -245,6 +258,8 @@ export const loadUsersByWeek = async (
 
   const gamesById = buildGamesById(weekGames.games);
   const weekLocked = isWeekLocked(weekGames.games);
+  const deadline = pickDeadline(weekGames.games.map(toGame));
+  const pastDeadline = deadline !== null && Date.now() >= deadline;
   const periods = leaderboard.periods ?? [];
   // The live bonus belongs to this leaderboard's week, so it only counts
   // toward periods that include it (not a finished 1st half, say).
@@ -274,7 +289,9 @@ export const loadUsersByWeek = async (
     });
   const segment = shownSegment(periods, leaderboard.week);
   return leaderboard.users
-    .map((user) => toRankedUser(user, gamesById, weekLocked, periods, ranks))
+    .map((user) =>
+      toRankedUser(user, gamesById, weekLocked, pastDeadline, periods, ranks)
+    )
     .sort(compareUsers(segment?.key));
 };
 

@@ -307,6 +307,9 @@ describe("GetUserByWeek", () => {
     });
 
     it("tops up a submitted sheet whose picks haven't all joined yet", async () => {
+      // Before the Sunday 1 PM ET deadline (17:00Z on 9/27).
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-09-27T16:00:00Z"));
       const [ann] = await load([
         user({
           user_id: 1,
@@ -318,6 +321,23 @@ describe("GetUserByWeek", () => {
       expect(ann.picks).toHaveLength(5);
       expect(ann.picks[0]).toMatchObject({ team: "H10", visible: true });
       expect(ann.picks.slice(1).every((p) => !p.visible)).toBe(true);
+    });
+
+    it("stops padding a short sheet once the Sunday deadline has passed", async () => {
+      // CBS saves fewer than five picks; after the deadline every saved pick
+      // is public, so the missing ones aren't hidden, they were never made.
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-09-27T17:30:00Z"));
+      const [ann] = await load([
+        user({
+          user_id: 1,
+          name: "Ann",
+          has_submitted_picks: true,
+          picks: [{ game_id: 1, team_id: 10, is_correct: false }],
+        }),
+      ]);
+      expect(ann.picks).toHaveLength(1);
+      expect(ann.picks[0]).toMatchObject({ team: "H10", visible: true });
     });
 
     it("shows nothing for someone who hasn't submitted", async () => {
