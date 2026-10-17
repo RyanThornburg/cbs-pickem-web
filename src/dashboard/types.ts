@@ -873,6 +873,38 @@ export interface AdminStatus {
   system_events: AdminEventSummary<AdminSystemEvent>;
 }
 
+// ---- Roster (GET/PUT/DELETE /api/admin/roster/...) -- Admin › Roster ----
+// Built by the Worker (worker/roster.ts) from admin:users, meta:current's
+// entry_fee and roster:{season}. Admin-only: it carries every email.
+
+export type PaymentMethod = "venmo" | "paypal" | "cash_app" | "cash" | "other";
+
+export interface RosterPayment {
+  // Whole dollars.
+  paid_amount: number;
+  // YYYY-MM-DD.
+  paid_at: string | null;
+  method: PaymentMethod | null;
+  note: string | null;
+}
+
+export interface RosterMember {
+  user_id: number;
+  name: string;
+  email: string | null;
+  payment: RosterPayment | null;
+}
+
+export interface Roster {
+  season: number;
+  entry_fee: number | null;
+  users_updated_at: string | null;
+  // Last payment save; null before the season's first.
+  updated_at: string | null;
+  // Active members, by name.
+  users: RosterMember[];
+}
+
 // ---- meta:historical (GET /api/historical) -- the Records tab ----
 
 // A closed season's non-overall periods for one player, keyed by

@@ -1,4 +1,5 @@
 import { Fragment, ReactNode, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Alert,
   AlertColor,
@@ -9,7 +10,6 @@ import {
 } from "@mui/material";
 import { alpha, Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
-import LogoutIcon from "@mui/icons-material/Logout";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   AdminUnauthorizedError,
@@ -44,7 +44,9 @@ import {
   TaskHealth,
   taskHealth,
 } from "./adminUtils";
+import { AdminView, AdminViewSwitch, LogoutButton } from "./AdminControls";
 import EventsCard, { LastSeenCell } from "./EventsCard";
+import RosterView from "./RosterView";
 import TaskCard, { TaskRun } from "./TaskCard";
 
 type SectionKey = "always" | "quiet" | "live" | "changes" | "other";
@@ -402,7 +404,35 @@ const liveSinceOf = (games: Game[]): number | null => {
   return kickoffs.length ? Math.min(...kickoffs) : null;
 };
 
+// Pipeline status (the default) or the Roster, switched in ?view=roster.
+// Each view mounts only while shown, so the pipeline poll stops on Roster.
 export default function AdminPanel() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view: AdminView =
+    searchParams.get("view") === "roster" ? "roster" : "pipeline";
+  const viewSwitch = (
+    <AdminViewSwitch
+      view={view}
+      onChange={(next) =>
+        setSearchParams(
+          (params) => {
+            if (next === "pipeline") params.delete("view");
+            else params.set("view", next);
+            return params;
+          },
+          { replace: true }
+        )
+      }
+    />
+  );
+  return view === "roster" ? (
+    <RosterView viewSwitch={viewSwitch} />
+  ) : (
+    <PipelineView viewSwitch={viewSwitch} />
+  );
+}
+
+function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
   const { season, currentWeek } = useCurrentWeek();
   const [status, setStatus] = useState<AdminStatus | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
@@ -501,7 +531,13 @@ export default function AdminPanel() {
             : "Pipeline status"
         }
         actions={
-          <Stack direction="row" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{ flexWrap: "wrap", alignItems: "center" }}
+          >
+            {viewSwitch}
             <Button
               variant="outlined"
               size="small"
@@ -510,17 +546,7 @@ export default function AdminPanel() {
             >
               Refresh
             </Button>
-            {/* Full navigation, not a router link: /logout is a Worker
-                redirect to Access's own logout endpoint, which clears the
-                session. */}
-            <Button
-              href="/logout"
-              variant="outlined"
-              size="small"
-              startIcon={<LogoutIcon />}
-            >
-              Log out
-            </Button>
+            <LogoutButton />
           </Stack>
         }
       />

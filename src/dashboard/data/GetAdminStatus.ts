@@ -9,8 +9,11 @@ const POLL_INTERVAL_MS = 60_000;
 // its Google login -- so `redirect: "manual"` keeps fetch from following that
 // cross-origin hop. Anything but a 200 from the Worker itself means "not
 // signed in as admin" (an opaque redirect, or the Worker's own 401).
-const adminFetch = (path: string): Promise<Response> =>
-  fetch(path, { redirect: "manual", cache: "no-store" });
+export const adminFetch = (
+  path: string,
+  init: RequestInit = {}
+): Promise<Response> =>
+  fetch(path, { redirect: "manual", cache: "no-store", ...init });
 
 export class AdminUnauthorizedError extends Error {}
 
