@@ -1,5 +1,6 @@
 import { verifyAdmin } from "./access.ts";
 import { checkPipeline } from "./pipelineAlert.ts";
+import { buildRoster, parsePayment, savePayment } from "./roster.ts";
 
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
@@ -7,6 +8,8 @@ const SEASON_RESOURCE_PATTERN = /^\/api\/season\/(\d+)\/(trends|standings)$/;
 const TEAM_PROFILE_PATTERN = /^\/api\/teams\/(\d+)\/(\d+)$/;
 const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 const GAME_DETAILS_PATTERN = /^\/api\/games\/(\d+)\/(\d+)\/details$/;
+const ROSTER_PATTERN = /^\/api\/admin\/roster\/(\d{4})$/;
+const ROSTER_USER_PATTERN = /^\/api\/admin\/roster\/(\d{4})\/(\d+)$/;
 // KV caches reads at the edge for 60s by default. The games key carries live
 // scores, so cache it for Cloudflare's 30s minimum instead.
 const GAMES_CACHE_TTL_SECONDS = 30;
@@ -120,7 +123,69 @@ async function handleAdmin(
     return await respondWithKvJson(env, "meta:admin", NO_STORE);
   }
 
+  const rosterMatch = pathname.match(ROSTER_PATTERN);
+  if (rosterMatch && request.method === "GET") {
+    const roster = await buildRoster(env.PICKEM_KV, Number(rosterMatch[1]));
+    return roster ? jsonResponse(roster, 200, NO_STORE) : notFound(NO_STORE);
+  }
+
+  const rosterUserMatch = pathname.match(ROSTER_USER_PATTERN);
+  if (
+    rosterUserMatch &&
+    (request.method === "PUT" || request.method === "DELETE")
+  ) {
+    return await handleRosterWrite(
+      request,
+      env,
+      Number(rosterUserMatch[1]),
+      Number(rosterUserMatch[2])
+    );
+  }
+
   return notFound(NO_STORE);
+}
+
+// Saves (PUT) or clears (DELETE) one member's payment. On top of the Access
+// check, a write must come from this site's own page (Origin), and a PUT
+// must be JSON, which a plain cross-site form can't send.
+async function handleRosterWrite(
+  request: Request,
+  env: Env,
+  season: number,
+  userId: number
+): Promise<Response> {
+  if (request.headers.get("origin") !== new URL(request.url).origin) {
+    return jsonResponse({ error: "forbidden" }, 403, NO_STORE);
+  }
+
+  let payment = null;
+  if (request.method === "PUT") {
+    if (!request.headers.get("content-type")?.startsWith("application/json")) {
+      return jsonResponse({ error: "expected JSON" }, 415, NO_STORE);
+    }
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return jsonResponse({ error: "body isn't valid JSON" }, 400, NO_STORE);
+    }
+    const parsed = parsePayment(body);
+    if (typeof parsed === "string") {
+      return jsonResponse({ error: parsed }, 400, NO_STORE);
+    }
+    payment = parsed;
+  }
+
+  const roster = await savePayment(env.PICKEM_KV, season, userId, payment);
+  if (!roster) return notFound(NO_STORE);
+  console.log(
+    JSON.stringify({
+      message: payment ? "roster payment saved" : "roster payment cleared",
+      season,
+      user_id: userId,
+    })
+  );
+  return jsonResponse(roster, 200, NO_STORE);
 }
 
 // For admin responses (never cached by the browser or the edge) and live

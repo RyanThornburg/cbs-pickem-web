@@ -19,14 +19,14 @@
     {
       "binding": "PICKEM_KV",
       // No preview_id -- wrangler dev --remote and wrangler deploy both read
-      // CBS_PICKEM_PROD now. The worker only reads this namespace (no
-      // .put() on PICKEM_KV anywhere), so pointing local dev at prod can't
-      // write/corrupt it.
+      // CBS_PICKEM_PROD now. The worker only reads this namespace, except
+      // Admin > Roster's roster:{season} (worker/roster.ts), which sits
+      // behind /api/admin/* and so 401s in local dev.
       "id": "55ae4b1a890a46d88557b9d69d9ecdd8"
     },
     {
-      // The pipeline alert's own state (what it last emailed), kept apart so
-      // PICKEM_KV stays read-only. See worker/pipelineAlert.ts.
+      // The pipeline alert's own state (what it last emailed), kept in its
+      // own namespace. See worker/pipelineAlert.ts.
       "binding": "ALERT_KV",
       "id": "4d37e0e725da4e9ca7c624a34a94ade3"
     }
