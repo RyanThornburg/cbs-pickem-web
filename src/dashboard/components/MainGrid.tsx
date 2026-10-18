@@ -12,7 +12,17 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import {
+  lazy,
+  startTransition,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useOptimistic,
+  useRef,
+  useState,
+} from "react";
 import {
   useLocation,
   useNavigate,
@@ -39,7 +49,7 @@ import {
   isPrimaryTab,
   setStoredTab,
 } from "../utils/defaultTab";
-import NflViewSwitch from "./Nfl/NflViewSwitch";
+import NflViewSwitch, { NflViewContext } from "./Nfl/NflViewSwitch";
 import { useTrackBackTargets } from "./shared/backTarget";
 import StandingsView from "./Nfl/StandingsView";
 import TeamPage from "./Nfl/TeamPage";
@@ -64,6 +74,9 @@ import { useCurrentWeek } from "./CurrentWeekContext";
 import { useIsAdmin, useSelectedUser, useWeekData } from "./useWeekData";
 import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
 import { TabActiveContext, followTabLink, tabHref } from "./tabLinks";
+import { useStableHandler } from "./shared/useStableHandler";
+import { playerPath } from "./shared/PlayerLink";
+import type { View as TrendsView } from "./TrendsSection";
 
 // All-time records and the owner-only admin page aren't weekly, and most
 // visits never open them, so they load on first open.
@@ -89,6 +102,10 @@ const TAB_TITLES: Record<AppTab, string> = {
   [PLAYERS_TAB]: "You",
 };
 
+// The same element every render, so the memoized views it sits in don't
+// re-render for it; its state comes through NflViewContext.
+const VIEW_SWITCH = <NflViewSwitch />;
+
 const NFL_VIEW_TITLES: Record<NflView, string> = {
   games: "Games",
   live: "Live",
@@ -107,7 +124,7 @@ export default function MainGrid() {
     teamSlug: string;
     playerId: string;
   }>();
-  const { pathname } = useLocation();
+  const { pathname, key: locationKey } = useLocation();
   // Team pages (/nfl/teams/buf) sit under the NFL tab; player pages
   // (/players/:id, and /players for the selected player) are the You tab's.
   const routeTab = teamSlug
@@ -218,6 +235,8 @@ export default function MainGrid() {
     activeTab === PLAYERS_TAB && playerId && playerId !== user
       ? null
       : activeTab;
+  // navTab, or the tab just tapped while it renders (see goToTab).
+  const [shownTab, setShownTab] = useOptimistic(navTab);
 
   // The NFL tab's view lives in ?view=. Plain /nfl picks one: a view
   // chosen by hand earlier in the visit, else the day's rule (Live while a
@@ -243,21 +262,43 @@ export default function MainGrid() {
       { replace: true }
     );
   }, [onNflList, urlNflView, pendingNflView, setSearchParams]);
-  const changeNflView = (view: NflView) => {
+  // Tab and NFL view changes scroll to the top once the new page is in
+  // (the layout effect below).
+  const scrollTopOnCommit = useRef(false);
+  // A tapped view lights up in the switch at once (an optimistic value);
+  // the view itself renders in a transition, so the tap paints right away.
+  const [shownNflView, setShownNflView] = useOptimistic(nflView);
+  const changeNflView = useStableHandler((view: NflView) => {
     saveNflChoice(view);
-    setSearchParams((params) => {
-      params.set("view", view);
-      return params;
+    startTransition(() => {
+      setShownNflView(view);
+      setSearchParams((params) => {
+        params.set("view", view);
+        return params;
+      });
     });
-    window.scrollTo({ top: 0 });
-  };
-  const viewSwitch = (view: NflView) => (
-    <NflViewSwitch
-      view={view}
-      onChange={changeNflView}
-      hasLiveGame={hasLiveGame}
-    />
+    scrollTopOnCommit.current = true;
+  });
+  const nflViewState = useMemo(
+    () => ({ view: shownNflView, onChange: changeNflView, hasLiveGame }),
+    [shownNflView, changeNflView, hasLiveGame]
   );
+  // Trends' Week/Season (?view=) is read here and handed down, see
+  // TrendsSection's props.
+  const trendsUrlView = routeTab === "trends" ? viewParam : null;
+  const changeTrendsView = useStableHandler((view: TrendsView) => {
+    setSearchParams(
+      (params) => {
+        params.set("view", view);
+        return params;
+      },
+      { replace: true }
+    );
+  });
+  const openPlayer = useStableHandler((id: string) => {
+    navigate(playerPath(id));
+    window.scrollTo({ top: 0 });
+  });
   // Pipeline status has nothing to do with a week or a player, so the admin
   // page drops the dropdowns and the selected-player header.
   const showPlayerControls = activeTab !== ADMIN_TAB;
@@ -329,8 +370,14 @@ export default function MainGrid() {
     role: undefined,
     tabIndex: 0,
     "aria-selected": undefined,
-    "aria-current": navTab === value ? ("page" as const) : undefined,
+    "aria-current": shownTab === value ? ("page" as const) : undefined,
   });
+
+  useLayoutEffect(() => {
+    if (!scrollTopOnCommit.current) return;
+    scrollTopOnCommit.current = false;
+    window.scrollTo({ top: 0 });
+  }, [locationKey]);
 
   // Skips the header and tab row to the active tab's content.
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -339,12 +386,19 @@ export default function MainGrid() {
     mainContentRef.current?.focus();
   };
   // A new tab starts at its top, not at the old tab's scroll position.
+  // The tapped tab lights up at once (shownTab, set in goToTab) and the
+  // tab itself renders in a transition, so the tap paints without waiting
+  // for it; the scroll waits for the new tab, so the old one doesn't jump
+  // first.
   const goToTab = (value: AppTab) => {
     if (isPrimaryTab(value)) {
       setStoredTab(value);
     }
-    navigate({ pathname: `/${value}`, search: weekSearch });
-    window.scrollTo({ top: 0 });
+    startTransition(() => {
+      setShownTab(value);
+      navigate({ pathname: `/${value}`, search: weekSearch });
+    });
+    scrollTopOnCommit.current = true;
   };
 
   // Desktop's tab row sticks to the top once the header scrolls away, and
@@ -367,13 +421,15 @@ export default function MainGrid() {
   // "Back" buttons) at once.
   const [pastNotice, setPastNotice] = useState<HTMLDivElement | null>(null);
   const [pastNoticeGone, setPastNoticeGone] = useState(false);
-  const pastWeekInfo: PastWeekInfo | null = isCurrentWeek
-    ? null
-    : {
-        currentWeek,
-        onBack: () => onWeekChange(currentWeek),
-        noticeRef: setPastNotice,
-      };
+  const backToCurrentWeek = useStableHandler(() => onWeekChange(currentWeek));
+  // Memoized: every TabIntro reads it, including those in memoized tabs.
+  const pastWeekInfo: PastWeekInfo | null = useMemo(
+    () =>
+      isCurrentWeek
+        ? null
+        : { currentWeek, onBack: backToCurrentWeek, noticeRef: setPastNotice },
+    [isCurrentWeek, currentWeek, backToCurrentWeek]
+  );
   useEffect(() => {
     const notice = pastNotice;
     setPastNoticeGone(false);
@@ -609,7 +665,7 @@ export default function MainGrid() {
             }}
           >
             <Tabs
-              value={navTab ?? false}
+              value={shownTab ?? false}
               variant="scrollable"
               slotProps={{ list: { role: undefined } }}
               // No arrows: with "auto", MUI showed them on some tabs and not
@@ -740,195 +796,205 @@ export default function MainGrid() {
             tabIndex={-1}
             sx={{ outline: "none" }}
           >
-            <PastWeekContext.Provider value={pastWeekInfo}>
-              {/* Each tab opens with a TabIntro (its heading and controls):
+            <NflViewContext.Provider value={nflViewState}>
+              <PastWeekContext.Provider value={pastWeekInfo}>
+                {/* Each tab opens with a TabIntro (its heading and controls):
                 the weekly tab components render their own, since the
                 controls are theirs; the rest are here. */}
-              {!metaReady && (
-                <Box sx={{ mt: 2 }}>
-                  <TabIntro title={TAB_TITLES[activeTab]} />
-                  <AppShellStatus
-                    metaStatus={metaStatus}
-                    onRetry={retryMeta}
-                    shape={TAB_SKELETONS[activeTab]}
-                    cbsPoolUrl={cbsPoolUrl}
-                  />
-                </Box>
-              )}
-              {metaReady && (
-                <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
-                  <Grid
-                    size={{ xs: 12, lg: 12 }}
-                    sx={{ display: activeTab === "picks" ? "block" : "none" }}
-                  >
-                    <TabActiveContext.Provider value={activeTab === "picks"}>
-                      <TabIntro title={TAB_TITLES.picks} week={selectedWeek} />
-                    </TabActiveContext.Provider>
-                    {!user && userList.length > 0 && (
-                      <PickYourselfHint onChoose={openUserMenu} />
-                    )}
-                    {selectedSegment && (
-                      <SegmentLeaders
+                {!metaReady && (
+                  <Box sx={{ mt: 2 }}>
+                    <TabIntro title={TAB_TITLES[activeTab]} />
+                    <AppShellStatus
+                      metaStatus={metaStatus}
+                      onRetry={retryMeta}
+                      shape={TAB_SKELETONS[activeTab]}
+                      cbsPoolUrl={cbsPoolUrl}
+                    />
+                  </Box>
+                )}
+                {metaReady && (
+                  <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
+                    <Grid
+                      size={{ xs: 12, lg: 12 }}
+                      sx={{ display: activeTab === "picks" ? "block" : "none" }}
+                    >
+                      <TabActiveContext.Provider value={activeTab === "picks"}>
+                        <TabIntro
+                          title={TAB_TITLES.picks}
+                          week={selectedWeek}
+                        />
+                      </TabActiveContext.Provider>
+                      {!user && userList.length > 0 && (
+                        <PickYourselfHint onChoose={openUserMenu} />
+                      )}
+                      {selectedSegment && (
+                        <SegmentLeaders
+                          userList={userList}
+                          userId={user}
+                          week={selectedWeek}
+                          segment={selectedSegment}
+                        />
+                      )}
+                      <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
+                      <UsersTable
                         userList={userList}
+                        leaderboardStatus={leaderboardStatus}
+                        onRetryLeaderboard={retryLeaderboard}
                         userId={user}
                         week={selectedWeek}
-                        segment={selectedSegment}
-                      />
-                    )}
-                    <RecapStrip recap={recap} isCurrentWeek={isCurrentWeek} />
-                    <UsersTable
-                      userList={userList}
-                      leaderboardStatus={leaderboardStatus}
-                      onRetryLeaderboard={retryLeaderboard}
-                      userId={user}
-                      week={selectedWeek}
-                      season={season}
-                      recap={recap}
-                      showStreak={isCurrentWeek}
-                      moneyStandings={moneyStandings}
-                    />
-                  </Grid>
-                  {/* NFL: Games and Live stay mounted while hidden (their
-                      polls pause), like the other weekly tabs; Standings and
-                      team pages mount only while open. */}
-                  <Grid
-                    size={{ xs: 12, lg: 12 }}
-                    sx={{ display: onNflList ? "block" : "none" }}
-                  >
-                    {onNflList && nflView === null && (
-                      <>
-                        <TabIntro title="NFL" week={selectedWeek} />
-                        <TabSkeleton shape="cards" label="Loading" />
-                      </>
-                    )}
-                    <Box
-                      sx={{ display: nflView === "games" ? "block" : "none" }}
-                    >
-                      <TabActiveContext.Provider
-                        value={onNflList && nflView === "games"}
-                      >
-                        <GamesCard
-                          week={selectedWeek}
-                          recap={recap}
-                          viewSwitch={viewSwitch("games")}
-                        />
-                      </TabActiveContext.Provider>
-                    </Box>
-                    <Box
-                      sx={{ display: nflView === "live" ? "block" : "none" }}
-                    >
-                      <TabActiveContext.Provider
-                        value={onNflList && nflView === "live"}
-                      >
-                        <Scoreboard
-                          week={selectedWeek}
-                          userId={user}
-                          totalUsers={userList.length}
-                          recap={recap}
-                          viewSwitch={viewSwitch("live")}
-                        />
-                      </TabActiveContext.Provider>
-                    </Box>
-                    {onNflList && nflView === "standings" && (
-                      <StandingsView
                         season={season}
-                        userId={user}
-                        userName={selectedUser?.name}
-                        intro={viewSwitch("standings")}
-                      />
-                    )}
-                  </Grid>
-                  {activeTab === "nfl" && teamSlug && (
-                    <Grid size={{ xs: 12, lg: 12 }}>
-                      <TeamPage
-                        season={season}
-                        slug={teamSlug}
-                        currentWeek={currentWeek}
-                        userId={user}
-                        userName={selectedUser?.name}
+                        recap={recap}
+                        showStreak={isCurrentWeek}
+                        moneyStandings={moneyStandings}
+                        onOpenPlayer={openPlayer}
                       />
                     </Grid>
-                  )}
-                  {activeTab === PLAYERS_TAB && (
-                    <Grid size={{ xs: 12, lg: 12 }}>
-                      {pagePlayerId ? (
-                        <PlayerPage
-                          key={pagePlayerId}
+                    {/* NFL: Games and Live stay mounted while hidden (their
+                      polls pause), like the other weekly tabs; Standings and
+                      team pages mount only while open. */}
+                    <Grid
+                      size={{ xs: 12, lg: 12 }}
+                      sx={{ display: onNflList ? "block" : "none" }}
+                    >
+                      {onNflList && nflView === null && (
+                        <>
+                          <TabIntro title="NFL" week={selectedWeek} />
+                          <TabSkeleton shape="cards" label="Loading" />
+                        </>
+                      )}
+                      <Box
+                        sx={{ display: nflView === "games" ? "block" : "none" }}
+                      >
+                        <TabActiveContext.Provider
+                          value={onNflList && nflView === "games"}
+                        >
+                          <GamesCard
+                            week={selectedWeek}
+                            recap={recap}
+                            viewSwitch={VIEW_SWITCH}
+                          />
+                        </TabActiveContext.Provider>
+                      </Box>
+                      <Box
+                        sx={{ display: nflView === "live" ? "block" : "none" }}
+                      >
+                        <TabActiveContext.Provider
+                          value={onNflList && nflView === "live"}
+                        >
+                          <Scoreboard
+                            week={selectedWeek}
+                            userId={user}
+                            totalUsers={userList.length}
+                            recap={recap}
+                            viewSwitch={VIEW_SWITCH}
+                          />
+                        </TabActiveContext.Provider>
+                      </Box>
+                      {onNflList && nflView === "standings" && (
+                        <StandingsView
                           season={season}
-                          currentWeek={currentWeek}
-                          periods={periods}
-                          playerId={pagePlayerId}
-                          selectedId={user}
-                          userList={userList}
-                          moneyStandings={pageMoneyStandings}
-                          onSelect={onUserChange}
-                        />
-                      ) : (
-                        <PlayerChooser
-                          userList={userList}
-                          onChoose={(id) => {
-                            onUserChange(id);
-                            window.scrollTo({ top: 0 });
-                          }}
+                          userId={user}
+                          userName={selectedUser?.name}
+                          intro={VIEW_SWITCH}
                         />
                       )}
                     </Grid>
-                  )}
-                  <Grid
-                    size={{ xs: 12, lg: 12 }}
-                    sx={{ display: activeTab === "trends" ? "block" : "none" }}
-                  >
-                    <TabActiveContext.Provider value={activeTab === "trends"}>
-                      <TrendsSection
-                        season={season}
-                        week={selectedWeek}
-                        recap={recap}
-                        userList={userList}
-                        userId={user}
-                      />
-                    </TabActiveContext.Provider>
-                  </Grid>
-                  {activeTab === RECORDS_TAB && (
-                    <Grid size={{ xs: 12, lg: 12 }}>
-                      <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
-                      <Suspense
-                        fallback={
-                          <TabSkeleton
-                            shape="tiles"
-                            label="Loading the records"
-                          />
-                        }
-                      >
-                        <RecordsSection
+                    {activeTab === "nfl" && teamSlug && (
+                      <Grid size={{ xs: 12, lg: 12 }}>
+                        <TeamPage
                           season={season}
+                          slug={teamSlug}
+                          currentWeek={currentWeek}
                           userId={user}
-                          onChoosePlayer={openUserMenu}
+                          userName={selectedUser?.name}
                         />
-                      </Suspense>
-                    </Grid>
-                  )}
-                  {/* Mounted only while open, so admin data is never polled in the
-                background from the public tabs. */}
-                  {activeTab === ADMIN_TAB && (
-                    <Grid size={{ xs: 12, lg: 12 }}>
-                      <Suspense
-                        fallback={
-                          <TabSkeleton
-                            shape="rows"
-                            label="Loading the admin page"
+                      </Grid>
+                    )}
+                    {activeTab === PLAYERS_TAB && (
+                      <Grid size={{ xs: 12, lg: 12 }}>
+                        {pagePlayerId ? (
+                          <PlayerPage
+                            key={pagePlayerId}
+                            season={season}
+                            currentWeek={currentWeek}
+                            periods={periods}
+                            playerId={pagePlayerId}
+                            selectedId={user}
+                            userList={userList}
+                            moneyStandings={pageMoneyStandings}
+                            onSelect={onUserChange}
                           />
-                        }
-                      >
-                        <AdminPanel />
-                      </Suspense>
+                        ) : (
+                          <PlayerChooser
+                            userList={userList}
+                            onChoose={(id) => {
+                              onUserChange(id);
+                              window.scrollTo({ top: 0 });
+                            }}
+                          />
+                        )}
+                      </Grid>
+                    )}
+                    <Grid
+                      size={{ xs: 12, lg: 12 }}
+                      sx={{
+                        display: activeTab === "trends" ? "block" : "none",
+                      }}
+                    >
+                      <TabActiveContext.Provider value={activeTab === "trends"}>
+                        <TrendsSection
+                          season={season}
+                          week={selectedWeek}
+                          recap={recap}
+                          userList={userList}
+                          userId={user}
+                          urlView={trendsUrlView}
+                          onUrlViewChange={changeTrendsView}
+                        />
+                      </TabActiveContext.Provider>
                     </Grid>
-                  )}
-                </Grid>
-              )}
-            </PastWeekContext.Provider>
+                    {activeTab === RECORDS_TAB && (
+                      <Grid size={{ xs: 12, lg: 12 }}>
+                        <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
+                        <Suspense
+                          fallback={
+                            <TabSkeleton
+                              shape="tiles"
+                              label="Loading the records"
+                            />
+                          }
+                        >
+                          <RecordsSection
+                            season={season}
+                            userId={user}
+                            onChoosePlayer={openUserMenu}
+                          />
+                        </Suspense>
+                      </Grid>
+                    )}
+                    {/* Mounted only while open, so admin data is never polled in the
+                background from the public tabs. */}
+                    {activeTab === ADMIN_TAB && (
+                      <Grid size={{ xs: 12, lg: 12 }}>
+                        <Suspense
+                          fallback={
+                            <TabSkeleton
+                              shape="rows"
+                              label="Loading the admin page"
+                            />
+                          }
+                        >
+                          <AdminPanel />
+                        </Suspense>
+                      </Grid>
+                    )}
+                  </Grid>
+                )}
+              </PastWeekContext.Provider>
+            </NflViewContext.Provider>
           </Box>
           <PhoneTabBar
-            activeTab={navTab}
+            activeTab={shownTab}
             onChange={goToTab}
             search={weekSearch}
             hasLiveGame={hasLiveGame}

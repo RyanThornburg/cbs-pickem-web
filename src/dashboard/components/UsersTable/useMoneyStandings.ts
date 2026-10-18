@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import {
@@ -17,15 +18,21 @@ export function useMoneyStandings(
   weekComplete: boolean
 ): ShownMoneyStanding[] {
   const { periods } = useCurrentWeek();
-  if (!userId) return [];
-  const standings = moneyStandings(
-    userList.map((user) => ({
-      id: user.id,
-      periods: rowPeriods(user, periods, week),
-    })),
-    userId,
-    periods,
-    week
-  );
-  return shownMoneyStandings(standings, periods, week, weekComplete);
+  // Memoized so the tabs it's passed to (memoized themselves) don't
+  // re-render on every MainGrid render.
+  return useMemo(() => {
+    if (!userId) return NONE;
+    const standings = moneyStandings(
+      userList.map((user) => ({
+        id: user.id,
+        periods: rowPeriods(user, periods, week),
+      })),
+      userId,
+      periods,
+      week
+    );
+    return shownMoneyStandings(standings, periods, week, weekComplete);
+  }, [userList, userId, periods, week, weekComplete]);
 }
+
+const NONE: ShownMoneyStanding[] = [];

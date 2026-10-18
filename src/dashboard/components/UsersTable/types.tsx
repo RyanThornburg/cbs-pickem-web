@@ -18,6 +18,10 @@ export type UserGridProps = {
   // The selected player's money standings worth showing (useMoneyStandings),
   // for the paid-line notes and the pinned row on phones.
   moneyStandings: ShownMoneyStanding[];
+  // Opens a player's page (a row tap). Comes from MainGrid with a stable
+  // identity: calling useNavigate here would re-render both tables on
+  // every navigation, hidden or not.
+  onOpenPlayer: (id: string) => void;
 };
 
 // UsersTable/index.tsx fetches season trends itself (derived from

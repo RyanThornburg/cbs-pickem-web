@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { createContext, useContext } from "react";
 import { visuallyHidden } from "../../helper";
 import { NflView } from "./nflView";
 
@@ -10,17 +11,26 @@ const LABELS: Record<NflView, string> = {
   standings: "Standings",
 };
 
-// Games | Live | Standings, on the intro row of each NFL view. Live carries
-// the red dot the Scoreboard tab used to while a game is on.
-export default function NflViewSwitch({
-  view,
-  onChange,
-  hasLiveGame,
-}: {
-  view: NflView;
+export interface NflViewState {
+  // The view shown, or the one just tapped while it renders.
+  view: NflView | null;
   onChange: (view: NflView) => void;
   hasLiveGame: boolean;
-}) {
+}
+
+// MainGrid provides the switch's state through context rather than props,
+// so a view change re-renders the switches and not the (memoized) views
+// they sit in.
+export const NflViewContext = createContext<NflViewState>({
+  view: null,
+  onChange: () => {},
+  hasLiveGame: false,
+});
+
+// Games | Live | Standings, on the intro row of each NFL view. Live carries
+// the red dot the Scoreboard tab used to while a game is on.
+export default function NflViewSwitch() {
+  const { view, onChange, hasLiveGame } = useContext(NflViewContext);
   return (
     <ToggleButtonGroup
       size="small"

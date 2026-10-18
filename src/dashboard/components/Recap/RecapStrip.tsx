@@ -7,8 +7,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Link as RouterLink, useSearchParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { memo, useEffect, useMemo, useState } from "react";
 import { WeekRecap } from "../../types";
 import { CategoryMark, ScopeTag } from "./recapCategory";
 import { getSeenItems, markItemSeen, orderForRotation } from "./recapUtils";
@@ -24,15 +24,14 @@ type Props = {
 // One-line rotating strip of the week's top items on User Picks. Unseen
 // items come first; rotation pauses while hovered or focused, and doesn't
 // auto-advance at all for reduced motion.
-export default function RecapStrip({ recap, isCurrentWeek }: Props) {
+// Memoized for the same reason as UsersTable: User Picks stays mounted.
+const RecapStrip = memo(function RecapStrip({ recap, isCurrentWeek }: Props) {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   // Screen readers hear the headline only after a manual step, not on
   // every 8-second rotation.
   const [announce, setAnnounce] = useState(false);
-  const [searchParams] = useSearchParams();
-  const pastWeek = searchParams.get("week");
 
   const season = recap?.season ?? 0;
   const week = recap?.week ?? 0;
@@ -193,7 +192,7 @@ export default function RecapStrip({ recap, isCurrentWeek }: Props) {
           component={RouterLink}
           to={{
             pathname: "/trends",
-            search: pastWeek ? `?week=${pastWeek}` : "",
+            search: isCurrentWeek ? "" : `?week=${week}`,
           }}
           underline="hover"
           sx={{
@@ -209,4 +208,6 @@ export default function RecapStrip({ recap, isCurrentWeek }: Props) {
       </Box>
     </Box>
   );
-}
+});
+
+export default RecapStrip;

@@ -1,5 +1,4 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { memo, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -40,9 +39,14 @@ export type Props = {
   userList: RankedUser[];
   // The selected player ("" when nobody is picked).
   userId: string;
+  // ?view= while Trends is shown (null otherwise), and the setter. MainGrid
+  // reads the URL so this doesn't: useSearchParams would re-render Trends on
+  // every navigation, hidden or not.
+  urlView: string | null;
+  onUrlViewChange: (view: View) => void;
 };
 
-type View = "week" | "season";
+export type View = "week" | "season";
 
 // Week or Season lives in the URL (?view=season) so it can be linked, and
 // in localStorage so coming back to Trends from another tab keeps it. With
@@ -110,16 +114,18 @@ const LoadFailed = ({
   />
 );
 
-export default function TrendsSection({
+// Memoized: it stays mounted while other tabs are shown, and MainGrid passes
+// it stable props, so a tab switch doesn't re-render it.
+const TrendsSection = memo(function TrendsSection({
   season,
   week,
   recap,
   userList,
   userId,
+  urlView,
+  onUrlViewChange,
 }: Props) {
   const active = useTabActive();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const urlView = searchParams.get("view");
 
   // undefined = still loading (never shown as "no data").
   const [weekTrends, setWeekTrends] = useState<WeekTrends>();
@@ -251,13 +257,7 @@ export default function TrendsSection({
     } catch {
       // Blocked storage: the URL still carries the choice.
     }
-    setSearchParams(
-      (params) => {
-        params.set("view", value);
-        return params;
-      },
-      { replace: true }
-    );
+    onUrlViewChange(value);
   };
 
   const user = useMemo(
@@ -455,4 +455,6 @@ export default function TrendsSection({
       {view === "week" ? weekView : seasonView}
     </Box>
   );
-}
+});
+
+export default TrendsSection;

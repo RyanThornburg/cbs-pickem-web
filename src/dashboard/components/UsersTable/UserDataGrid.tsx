@@ -15,11 +15,10 @@ import { formatUpdated } from "../../utils/updatedTime";
 import { paidLineNote } from "./MoneyLines";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
-import { useNavigate } from "react-router-dom";
-import { playerPath } from "../shared/PlayerLink";
 
 const UserDataGrid = ({
   userList,
+  onOpenPlayer: openPlayer,
   userId,
   week,
   recap,
@@ -28,11 +27,6 @@ const UserDataGrid = ({
   moneyStandings,
   leaderboardStatus,
 }: UserGridWithTrendsProps) => {
-  const navigate = useNavigate();
-  const openPlayer = (id: string) => {
-    navigate(playerPath(id));
-    window.scrollTo({ top: 0 });
-  };
   const { table, paidLinesAfter } = useUsersTable({
     userList,
     trends,

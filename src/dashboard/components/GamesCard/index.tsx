@@ -1,7 +1,7 @@
 import { Alert } from "@mui/material";
 import dayjs from "dayjs";
 import { formatUpdated } from "../../utils/updatedTime";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { byeTeams } from "../../data/weekGames";
 import { ByeTeams } from "../ByeTeams";
 import { WeekRecap } from "../../types";
@@ -22,7 +22,9 @@ type Props = {
   viewSwitch?: React.ReactNode;
 };
 
-export default function GamesCard({ week, recap, viewSwitch }: Props) {
+// Memoized: it stays mounted while other tabs are shown, and MainGrid passes
+// it stable props, so a tab switch doesn't re-render it.
+const GamesCard = memo(function GamesCard({ week, recap, viewSwitch }: Props) {
   const streaks = useMemo(() => coverStreaksByTeamId(recap), [recap]);
   const { games, loading, failed, oddsAvailable, oddsUpdatedAt, retry } =
     useGamesWithOdds(week);
@@ -84,4 +86,6 @@ export default function GamesCard({ week, recap, viewSwitch }: Props) {
       <ByeTeams teams={byeTeams(games)} />
     </div>
   );
-}
+});
+
+export default GamesCard;

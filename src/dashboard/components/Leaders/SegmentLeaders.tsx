@@ -3,7 +3,7 @@ import Paper from "@mui/material/Paper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { PayPeriod, RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { UserAvatar } from "../UserAvatar";
@@ -143,7 +143,8 @@ const CardHead = ({ title, sub }: { title: string; sub: string }) => (
 // Overall and the shown segment's paid places (the 2nd half today), at the
 // top of User Picks while a segment that didn't start with the season is
 // being played. Two cards side by side; one card with tabs on phones.
-export default function SegmentLeaders({
+// Memoized for the same reason as UsersTable: User Picks stays mounted.
+const SegmentLeaders = memo(function SegmentLeaders({
   userList,
   userId,
   week,
@@ -215,4 +216,6 @@ export default function SegmentLeaders({
       </Paper>
     </Box>
   );
-}
+});
+
+export default SegmentLeaders;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { GetIsAdmin } from "../data/GetAdminStatus";
 import { GetGameDataByWeek } from "../data/GetGameDataByWeek";
@@ -76,10 +76,10 @@ export function useWeekData(season: number, week: number) {
     }
   }, [season, week, leaderboardAttempt]);
 
-  const retryLeaderboard = () => {
+  const retryLeaderboard = useCallback(() => {
     setLeaderboardStatus((status) => ({ ...status, failed: false }));
     setLeaderboardAttempt((n) => n + 1);
-  };
+  }, []);
 
   useEffect(() => {
     setRecap(undefined);
@@ -136,14 +136,14 @@ export function useSelectedUser(userList: RankedUser[]) {
     setUser(userList.some((u) => u.id === storedUser) ? storedUser : "");
   }, [userList]);
 
-  const onUserChange = (userId: string) => {
+  const onUserChange = useCallback((userId: string) => {
     try {
       localStorage.setItem("user", userId);
     } catch {
       // Blocked storage: the choice still holds for this visit.
     }
     setUser(userId);
-  };
+  }, []);
 
   return [user, onUserChange] as const;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import UserDataGrid from "./UserDataGrid";
 import UserDataMobile from "./UserDataMobile";
@@ -8,7 +8,9 @@ import { GetUserSeasonTrends } from "../../data/GetUserSeasonTrends";
 import { RefreshFailedLine, StandingsPlaceholder } from "./StandingsStatus";
 import { PinnedPlayerRow } from "./PinnedPlayerRow";
 
-export default function UsersTable(props: UserGridProps) {
+// Memoized: it stays mounted while other tabs are shown, and MainGrid passes
+// it stable props, so a tab switch doesn't re-render the whole table.
+const UsersTable = memo(function UsersTable(props: UserGridProps) {
   const {
     userList,
     season,
@@ -72,4 +74,6 @@ export default function UsersTable(props: UserGridProps) {
       />
     </>
   );
-}
+});
+
+export default UsersTable;
