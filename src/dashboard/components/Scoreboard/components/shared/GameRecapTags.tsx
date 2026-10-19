@@ -1,4 +1,4 @@
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "../../../../ui/Tooltip";
 import { GameTag } from "../../../Recap/recapBadges";
 import styles from "./GameRecapTags.module.css";
 
@@ -18,6 +18,8 @@ export function GameRecapTags({
       {tags.map((tag) => (
         <Tooltip key={tag.kind} title={tag.detail}>
           <span
+            // MUI's Tooltip labelled its trigger with the title; kept.
+            aria-label={tag.detail}
             className={[styles.tag, styles[tag.kind], wrap && styles.wrap]
               .filter(Boolean)
               .join(" ")}

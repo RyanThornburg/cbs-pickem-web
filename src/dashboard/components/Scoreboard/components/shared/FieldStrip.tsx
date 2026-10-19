@@ -1,4 +1,4 @@
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "../../../../ui/Tooltip";
 import { Game, Possession } from "../../../../types";
 import { getBallSpot } from "../../utils/scoreboardUtils";
 import { teamColor } from "../../utils/teamData";
@@ -76,13 +76,7 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
                 style={{ left: `${spot.firstDownPct}%` }}
               />
             )}
-            <Tooltip
-              title={ballTooltip}
-              arrow
-              placement="top"
-              enterTouchDelay={0}
-              leaveTouchDelay={3000}
-            >
+            <Tooltip title={ballTooltip} arrow side="top">
               {/* Invisible hit area around the ball -- the ball itself is too
                   small to hover or tap reliably */}
               <div

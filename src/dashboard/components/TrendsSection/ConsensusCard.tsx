@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Tooltip } from "@mui/material";
+import { Tooltip } from "../../ui/Tooltip";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
 import { TeamLogo } from "../shared/TeamLogo";
@@ -157,6 +157,8 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                     title={`${trailer.name}: ${trailer.pick_count} picks`}
                   >
                     <div
+                      // MUI's Tooltip labelled its trigger with the title.
+                      aria-label={`${trailer.name}: ${trailer.pick_count} picks`}
                       className={styles.trailerBar}
                       style={{ flexGrow: Math.max(trailer.pct, 0.02) }}
                     />
@@ -164,6 +166,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
                 )}
                 <Tooltip title={`${leader.name}: ${leader.pick_count} picks`}>
                   <div
+                    aria-label={`${leader.name}: ${leader.pick_count} picks`}
                     className={styles.leaderBar}
                     style={{ flexGrow: Math.max(leader.pct, 0.02) }}
                   />

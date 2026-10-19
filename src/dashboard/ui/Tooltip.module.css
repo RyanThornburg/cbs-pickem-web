@@ -1,0 +1,67 @@
+/* MUI's Tooltip as the app had it (measured on the main build): 11px
+   medium white on translucent grey, 4px 8px, the theme's 8px corners, at
+   most 300px wide. The light tone is the pick-split list's panel. */
+
+@layer ui {
+  /* Above everything on the page, as MUI's tooltips were (z-index 1500):
+     the field strip's ball has its own stacking and showed through. */
+  .positioner {
+    z-index: 1500;
+  }
+
+  .popup {
+    box-sizing: border-box;
+    max-width: 300px;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    outline: none;
+  }
+
+  .dark {
+    background-color: rgba(97, 97, 97, 0.92);
+    color: #fff;
+  }
+
+  .light {
+    border: 1px solid var(--divider);
+    background-color: var(--paper);
+    color: var(--text);
+  }
+
+  /* MUI's arrow: a 1em by 0.71em box showing half of a rotated square, on
+     the edge facing the trigger. It stays MUI's dark grey on the light
+     tone too, as the pick-split list always had it. */
+  .arrow {
+    box-sizing: border-box;
+    width: 1em;
+    height: 0.71em;
+    overflow: hidden;
+    color: rgba(97, 97, 97, 0.92);
+  }
+  .arrow::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background-color: currentColor;
+    transform: rotate(45deg);
+  }
+  .arrow[data-side="top"] {
+    bottom: -0.71em;
+  }
+  .arrow[data-side="top"]::before {
+    transform-origin: 100% 0;
+  }
+  .arrow[data-side="bottom"] {
+    top: -0.71em;
+  }
+  .arrow[data-side="bottom"]::before {
+    transform-origin: 0 100%;
+  }
+}

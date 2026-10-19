@@ -1,6 +1,4 @@
-import { useState } from "react";
-import Tooltip from "@mui/material/Tooltip";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
+import { Tooltip } from "../../../../ui/Tooltip";
 import { Game, UserId } from "../../../../types";
 import { UserAvatar } from "../../../UserAvatar";
 import { getCover, Side } from "../../utils/scoreboardUtils";
@@ -57,7 +55,6 @@ export const PickSplitBar = ({
   compact,
   picksRevealed = true,
 }: Props) => {
-  const [open, setOpen] = useState(false);
   const away = game.picks.away;
   const home = game.picks.home;
   const total = away.length + home.length;
@@ -109,75 +106,57 @@ export const PickSplitBar = ({
     </span>
   );
 
+  // Hover, focus or a tap opens every picker's name; a tap elsewhere or
+  // Escape closes it (the Tooltip handles all of it).
   return (
-    <ClickAwayListener onClickAway={() => setOpen(false)}>
-      <div>
-        <Tooltip
-          open={open}
-          onOpen={() => setOpen(true)}
-          onClose={() => setOpen(false)}
-          placement="top"
-          arrow
-          slotProps={{
-            tooltip: {
-              sx: {
-                bgcolor: "background.paper",
-                color: "text.primary",
-                border: 1,
-                borderColor: "divider",
-                boxShadow: 6,
-                p: 1.5,
-                maxWidth: 440,
-              },
-            },
-          }}
-          title={
-            <div className={styles.tooltipLists}>
-              <PickerList
-                abbr={game.away_team.abbr}
-                users={away}
-                userId={userId}
-              />
-              <PickerList
-                abbr={game.home_team.abbr}
-                users={home}
-                userId={userId}
-              />
-            </div>
-          }
-        >
-          <div
-            role="button"
-            tabIndex={0}
-            aria-label={`${away.length} picked ${game.away_team.abbr}, ${home.length} picked ${game.home_team.abbr}. Show names.`}
-            onClick={() => setOpen((o) => !o)}
-            onKeyDown={(e) =>
-              (e.key === "Enter" || e.key === " ") && setOpen((o) => !o)
-            }
-            className={styles.trigger}
-          >
-            <div className={styles.counts}>
-              {count("away", game.away_team.abbr, away.length, "left")}
-              {!compact && totalUsers ? (
-                <span>
-                  {total} of {totalUsers} picked this game
-                </span>
-              ) : null}
-              {count("home", game.home_team.abbr, home.length, "right")}
-            </div>
-            <div className={styles.bar}>
-              <div
-                className={styles[result("away")]}
-                style={{ width: `${(away.length / total) * 100}%` }}
-              />
-              <div
-                className={`${styles[result("home")]} ${styles.homeHalf}`}
-                style={{ width: `${(home.length / total) * 100}%` }}
-              />
-            </div>
+    <div>
+      <Tooltip
+        side="top"
+        arrow
+        tone="light"
+        popupClassName={styles.popup}
+        title={
+          <div className={styles.tooltipLists}>
+            <PickerList
+              abbr={game.away_team.abbr}
+              users={away}
+              userId={userId}
+            />
+            <PickerList
+              abbr={game.home_team.abbr}
+              users={home}
+              userId={userId}
+            />
           </div>
-        </Tooltip>
-      </div>
-    </ClickAwayListener>
+        }
+      >
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label={`${away.length} picked ${game.away_team.abbr}, ${home.length} picked ${game.home_team.abbr}. Show names.`}
+          className={styles.trigger}
+        >
+          <div className={styles.counts}>
+            {count("away", game.away_team.abbr, away.length, "left")}
+            {!compact && totalUsers ? (
+              <span>
+                {total} of {totalUsers} picked this game
+              </span>
+            ) : null}
+            {count("home", game.home_team.abbr, home.length, "right")}
+          </div>
+          <div className={styles.bar}>
+            <div
+              className={styles[result("away")]}
+              style={{ width: `${(away.length / total) * 100}%` }}
+            />
+            <div
+              className={`${styles[result("home")]} ${styles.homeHalf}`}
+              style={{ width: `${(home.length / total) * 100}%` }}
+            />
+          </div>
+        </div>
+      </Tooltip>
+    </div>
   );
 };

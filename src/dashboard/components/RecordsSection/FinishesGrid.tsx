@@ -7,11 +7,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { HistoricalRecords } from "../../types";
+import { Tooltip } from "../../ui/Tooltip";
 import { ordinal } from "../../helper";
 import {
   byAllTimeRank,

@@ -12,6 +12,17 @@
 }
 
 /* The tooltip: every picker, one column per side. */
+/* The panel: MUI's light tooltip as this list had it (paper, hairline,
+   shadow 6, 12px padding, up to 440px). */
+.popup {
+  max-width: 440px;
+  padding: 12px;
+  box-shadow:
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+}
+
 .tooltipLists {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,8 +1,8 @@
 // Clicks through the app's interactive controls on a build, against the same
 // recorded data and frozen clock as snap.mjs, at 360 and 1280: segmented
 // controls (tap and arrow keys), Live's layout, the box score and its stat
-// groups, the Standings Key popover, the team page back link, and Admin's
-// views, filter and payment form. Prints PASS/FAIL per check; exits 1 on any
+// groups, the Standings Key popover, the team page back link, tooltips
+// (tap, click, Escape), and Admin's views, filter and payment form. Prints PASS/FAIL per check; exits 1 on any
 // failure. Screenshots say a page looks right; this says it still works.
 //
 //   node scripts/visual/clickthrough.mjs [--dist build] [--port 3490]
@@ -244,6 +244,45 @@ try {
     ok(
       page.url().includes("/nfl?view=standings"),
       "Team: back goes to Standings"
+    );
+
+    // Tooltips (ui/Tooltip): a badge opens on tap/click without opening
+    // its row; the pick-split list toggles and Escape closes it.
+    const tooltipOpen = () =>
+      page
+        .locator('[role="tooltip"]')
+        .filter({ visible: true })
+        .count()
+        .then((n) => n > 0);
+    const tapOrClick = (locator) =>
+      width < 900 ? locator.tap() : locator.click();
+    await page.goto(`${BASE}/picks`);
+    await wait(2500);
+    const badge = page
+      .locator('span[role="img"][tabindex="0"]')
+      .filter({ visible: true })
+      .first();
+    await tapOrClick(badge);
+    await wait(500);
+    ok(
+      (await tooltipOpen()) && page.url().endsWith("/picks"),
+      "Tooltip: a badge opens without opening its row"
+    );
+    await page.goto(`${BASE}/nfl?view=live`);
+    await wait(2500);
+    const split = page
+      .locator('[aria-label$="Show names."]')
+      .filter({ visible: true })
+      .first();
+    await split.scrollIntoViewIfNeeded();
+    await tapOrClick(split);
+    await wait(500);
+    const splitOpened = await tooltipOpen();
+    await page.keyboard.press("Escape");
+    await wait(300);
+    ok(
+      splitOpened && !(await tooltipOpen()),
+      "Tooltip: the pick split opens, and Escape closes it"
     );
 
     // User Picks: a row opens the player page.
