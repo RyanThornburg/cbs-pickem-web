@@ -1,0 +1,76 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 6px;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4.8px;
+}
+
+/* A tier's tile in the legend; its colors come from FINISH_TIER_STYLE. */
+.sample {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 2px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+}
+
+/* INCOMPLETE_HATCH in recordsTheme.ts. */
+.hatch {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    hsl(220, 30%, 90%) 5px 7px
+  );
+}
+
+.caption {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+/* Holds a line's height while empty, so the grid doesn't jump. */
+.detail {
+  min-height: 1.43em;
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+.name {
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1.43;
+  white-space: nowrap;
+}
+.former {
+  margin-left: 4px;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.none {
+  color: var(--text-faint);
+}

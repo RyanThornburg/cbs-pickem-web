@@ -1,8 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
-  Box,
   ButtonBase,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,7 +8,6 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -29,6 +26,7 @@ import {
   INCOMPLETE_HATCH,
   youRowSx,
 } from "./recordsTheme";
+import styles from "./FinishesGrid.module.css";
 
 type Props = {
   data: HistoricalRecords;
@@ -50,25 +48,18 @@ const SAMPLE_RANK: Record<FinishTier, number> = {
 const Sample = ({ tier }: { tier: FinishTier }) => {
   const s = FINISH_TIER_STYLE[tier];
   return (
-    <Box
-      component="span"
+    <span
       aria-hidden
-      sx={{
-        display: "inline-grid",
-        placeItems: "center",
-        minWidth: 22,
-        height: 18,
-        px: 0.25,
-        borderRadius: "4px",
-        fontSize: "0.75rem",
+      className={styles.sample}
+      style={{
         fontWeight: s.weight,
-        bgcolor: s.bg,
+        backgroundColor: s.bg,
         color: s.fg,
         boxShadow: s.ring ? `inset 0 0 0 1px ${s.ring}` : undefined,
       }}
     >
       {SAMPLE_RANK[tier]}
-    </Box>
+    </span>
   );
 };
 
@@ -111,56 +102,24 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
   }, []);
 
   return (
-    <Stack spacing={1.25}>
-      <Stack
-        direction="row"
-        sx={{
-          flexWrap: "wrap",
-          columnGap: 1.75,
-          rowGap: 0.75,
-          alignItems: "center",
-        }}
-      >
+    <div className={styles.stack}>
+      <div className={styles.legend}>
         {TIERS.map((tier) => (
-          <Stack
-            key={tier}
-            direction="row"
-            spacing={0.6}
-            sx={{ alignItems: "center" }}
-          >
+          <div key={tier} className={styles.legendItem}>
             <Sample tier={tier} />
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              {FINISH_TIER_LABELS[tier]}
-            </Typography>
-          </Stack>
+            <span className={styles.caption}>{FINISH_TIER_LABELS[tier]}</span>
+          </div>
         ))}
-        <Stack direction="row" spacing={0.6} sx={{ alignItems: "center" }}>
-          <Box
-            component="span"
-            aria-hidden
-            sx={{
-              width: 18,
-              height: 18,
-              borderRadius: "4px",
-              border: 1,
-              borderColor: "divider",
-              backgroundImage: INCOMPLETE_HATCH,
-            }}
-          />
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            Missing some players
-          </Typography>
-        </Stack>
-      </Stack>
+        <div className={styles.legendItem}>
+          <span aria-hidden className={styles.hatch} />
+          <span className={styles.caption}>Missing some players</span>
+        </div>
+      </div>
 
-      <Typography
-        variant="body2"
-        aria-live="polite"
-        sx={{ color: "text.secondary", minHeight: "1.43em" }}
-      >
+      <p aria-live="polite" className={styles.detail}>
         {detail ??
           `Players in all-time order. ${canHover ? "Hover over" : "Tap"} a finish for its score.`}
-      </Typography>
+      </p>
 
       <TableContainer
         ref={scroller}
@@ -235,26 +194,12 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                       }),
                     }}
                   >
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
-                    >
+                    <span className={styles.name}>
                       {row.name}
                       {!row.active && (
-                        <Box
-                          component="span"
-                          sx={{
-                            color: "text.secondary",
-                            fontWeight: 400,
-                            fontSize: "0.75rem",
-                            ml: 0.5,
-                          }}
-                        >
-                          former
-                        </Box>
+                        <span className={styles.former}>former</span>
                       )}
-                    </Typography>
+                    </span>
                   </TableCell>
                   {years.map((year) => {
                     const finish = row.byYear.get(year);
@@ -306,13 +251,9 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                             </ButtonBase>
                           </Tooltip>
                         ) : (
-                          <Box
-                            component="span"
-                            aria-hidden
-                            sx={{ color: "text.disabled" }}
-                          >
+                          <span aria-hidden className={styles.none}>
                             ·
-                          </Box>
+                          </span>
                         )}
                       </TableCell>
                     );
@@ -323,6 +264,6 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
           </TableBody>
         </Table>
       </TableContainer>
-    </Stack>
+    </div>
   );
 }

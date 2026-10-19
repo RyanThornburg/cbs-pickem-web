@@ -1,0 +1,54 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* The picked season's year, champion and head count on one line. */
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  row-gap: 4px;
+}
+.year,
+.muted {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+.year {
+  font-weight: 700;
+}
+.muted {
+  color: var(--text-muted);
+}
+.strong {
+  color: var(--text);
+}
+
+.champion {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+/* GOLD in recordsTheme.ts. */
+.trophy {
+  font-size: 1rem;
+  color: #d4a017;
+}
+
+.periodScore {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+  color: var(--text-muted);
+}

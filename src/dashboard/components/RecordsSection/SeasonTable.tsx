@@ -1,16 +1,12 @@
 import { Fragment, useMemo } from "react";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import {
-  Box,
   Chip,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
   useTheme,
 } from "@mui/material";
 import { HistoricalRecords } from "../../types";
@@ -22,7 +18,9 @@ import {
   isUnknownChampion,
   seasonPeriods,
 } from "./recordsUtils";
-import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
+import { rowHoverSx, youRowSx } from "./recordsTheme";
+import { Icon } from "../../ui/Icon";
+import styles from "./SeasonTable.module.css";
 
 type Props = {
   data: HistoricalRecords;
@@ -60,13 +58,9 @@ export default function SeasonTable({
   const columnCount = 3 + periods.length;
 
   return (
-    <Stack spacing={1.5}>
+    <div className={styles.stack}>
       {/* Wraps rather than scrolls, so every season is in view. */}
-      <Box
-        role="group"
-        aria-label="Season"
-        sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}
-      >
+      <div role="group" aria-label="Season" className={styles.years}>
         {[...years].reverse().map((y) => (
           <Chip
             key={y}
@@ -94,52 +88,33 @@ export default function SeasonTable({
             }}
           />
         ))}
-      </Box>
+      </div>
 
-      <Stack
-        direction="row"
-        sx={{ flexWrap: "wrap", columnGap: 2.5, rowGap: 0.5 }}
-      >
-        <Typography variant="body2" sx={{ fontWeight: 700 }}>
-          {year}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-          }}
-        >
+      <div className={styles.summary}>
+        <p className={styles.year}>{year}</p>
+        <p className={styles.muted}>
           Champion{" "}
           {champion && !isUnknownChampion(champion) ? (
             <>
-              <Box component="b" sx={{ color: "text.primary" }}>
+              <b className={styles.strong}>
                 {champion.names.map(cleanName).join(", ")}
-              </Box>{" "}
+              </b>{" "}
               · {champion.score} pts
             </>
           ) : (
-            <Box component="b" sx={{ color: "text.primary" }}>
-              unknown
-            </Box>
+            <b className={styles.strong}>unknown</b>
           )}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-          }}
-        >
-          <Box component="b" sx={{ color: "text.primary" }}>
-            {rows.length}
-          </Box>
+        </p>
+        <p className={styles.muted}>
+          <b className={styles.strong}>{rows.length}</b>
           {rows.length < maxRank
             ? ` of ${maxRank} players on file`
             : " players"}
-        </Typography>
-      </Stack>
+        </p>
+      </div>
 
       {(season?.incomplete || hasGaps || !hasPeriods) && (
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        <p className={styles.muted}>
           {season?.incomplete
             ? `${year} is missing some players, including the champion, so ranks skip where they would be.`
             : hasGaps
@@ -147,7 +122,7 @@ export default function SeasonTable({
               : ""}
           {!hasPeriods &&
             `${season?.incomplete || hasGaps ? " " : ""}Half-season results start in ${HALVES_FROM_SEASON}.`}
-        </Typography>
+        </p>
       )}
 
       <TableContainer sx={{ maxWidth: 520 + 100 * periods.length }}>
@@ -211,20 +186,10 @@ export default function SeasonTable({
                       }}
                     >
                       {row.rank === 1 ? (
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                            fontWeight: 600,
-                          }}
-                        >
-                          <EmojiEventsIcon
-                            sx={{ fontSize: "1rem" }}
-                            htmlColor={GOLD}
-                          />
+                        <div className={styles.champion}>
+                          <Icon name="EmojiEvents" className={styles.trophy} />
                           {row.rankLabel}
-                        </Box>
+                        </div>
                       ) : (
                         row.rankLabel
                       )}
@@ -245,16 +210,10 @@ export default function SeasonTable({
                         <TableCell key={p.key} align="center" sx={youSx}>
                           {row.periodLabels[p.key] ?? dash}
                           {score != null && (
-                            <Typography
-                              component="span"
-                              variant="caption"
-                              sx={{
-                                color: "text.secondary",
-                              }}
-                            >
+                            <span className={styles.periodScore}>
                               {" "}
                               ({score})
-                            </Typography>
+                            </span>
                           )}
                         </TableCell>
                       );
@@ -266,6 +225,6 @@ export default function SeasonTable({
           </TableBody>
         </Table>
       </TableContainer>
-    </Stack>
+    </div>
   );
 }

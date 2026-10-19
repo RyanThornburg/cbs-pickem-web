@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Box, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 import { GetHistorical } from "../../data/GetHistorical";
 import TabSkeleton from "../TabSkeleton";
 import LoadError from "../shared/LoadError";
@@ -17,6 +17,7 @@ import {
   buildRecordTiles,
   closedSeasons,
 } from "./recordsUtils";
+import styles from "./RecordsSection.module.css";
 
 type TableTab = "finishes" | "all-time" | "season";
 const TABLE_TABS: { value: TableTab; label: string }[] = [
@@ -48,9 +49,7 @@ type Props = {
 };
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <Typography component="h3" variant="h6">
-    {children}
-  </Typography>
+  <h3 className={styles.title}>{children}</h3>
 );
 
 export default function RecordsSection({
@@ -134,7 +133,7 @@ export default function RecordsSection({
   // seasons (Finishes first), then the record tiles.
   return (
     // No card around the page: it sits flush like the other tabs.
-    <Stack spacing={4}>
+    <div className={styles.page}>
       {you && yourPlace ? (
         <YourRecord row={you} place={yourPlace} />
       ) : (
@@ -147,7 +146,7 @@ export default function RecordsSection({
 
       <ChampionsWall data={data} currentSeason={season} userId={userId} />
 
-      <Stack spacing={1.5}>
+      <div className={styles.section}>
         <SectionTitle>Every season</SectionTitle>
         <Tabs
           value={tab}
@@ -169,7 +168,7 @@ export default function RecordsSection({
           ))}
         </Tabs>
 
-        <Box
+        <div
           role="tabpanel"
           id="records-tabpanel"
           aria-labelledby={`records-tab-${tab}`}
@@ -188,13 +187,13 @@ export default function RecordsSection({
               userId={userId}
             />
           )}
-        </Box>
-      </Stack>
+        </div>
+      </div>
 
-      <Stack spacing={1.5}>
+      <div className={styles.section}>
         <SectionTitle>Pool records</SectionTitle>
         <RecordTiles tiles={tiles} userId={userId} />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

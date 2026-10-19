@@ -8,9 +8,7 @@ import {
   Table as TanstackTable,
   useReactTable,
 } from "@tanstack/react-table";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +16,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -29,18 +26,11 @@ import {
   byAllTimeRank,
   CareerRow,
 } from "./recordsUtils";
-import { GOLD, rowHoverSx, youRowSx } from "./recordsTheme";
+import { rowHoverSx, youRowSx } from "./recordsTheme";
+import { Icon } from "../../ui/Icon";
+import styles from "./AllTimeTable.module.css";
 
-const dash = (
-  <Typography
-    variant="body2"
-    sx={{
-      color: "text.secondary",
-    }}
-  >
-    –
-  </Typography>
-);
+const dash = <p className={styles.dash}>–</p>;
 const oneDecimal = (n: number | undefined) =>
   n === undefined ? dash : n.toFixed(1);
 
@@ -50,9 +40,7 @@ const sortableAvg = (row: CareerRow, n: number | undefined) =>
   row.seasons >= AVG_SORT_MIN_SEASONS ? n : undefined;
 const avgCell = (row: CareerRow, n: number | undefined) =>
   n !== undefined && row.seasons < AVG_SORT_MIN_SEASONS ? (
-    <Box component="span" sx={{ color: "text.secondary" }}>
-      {n.toFixed(1)}
-    </Box>
+    <span className={styles.muted}>{n.toFixed(1)}</span>
   ) : (
     oneDecimal(n)
   );
@@ -68,37 +56,17 @@ const columns = [
         sensitivity: "base",
       }),
     cell: ({ getValue, row }) => (
-      <Typography
-        variant="body2"
-        component="span"
-        sx={{ fontWeight: 500, whiteSpace: "nowrap" }}
-      >
+      <span className={styles.name}>
         {getValue()}
-        {!row.original.active && (
-          <Box
-            component="span"
-            sx={{
-              color: "text.secondary",
-              fontWeight: 400,
-              fontSize: "0.75rem",
-              ml: 0.5,
-            }}
-          >
-            former
-          </Box>
-        )}
-      </Typography>
+        {!row.original.active && <span className={styles.former}>former</span>}
+      </span>
     ),
   }),
   columnHelper.accessor("points", {
     header: "Career pts",
     meta: { mobileHeader: "Career", align: "center" },
     sortDescFirst: true,
-    cell: ({ getValue }) => (
-      <Typography variant="body2" sx={{ fontWeight: 700 }}>
-        {getValue()}
-      </Typography>
-    ),
+    cell: ({ getValue }) => <p className={styles.points}>{getValue()}</p>,
   }),
   columnHelper.accessor("titles", {
     header: "Titles",
@@ -106,18 +74,14 @@ const columns = [
     sortDescFirst: true,
     cell: ({ getValue }) =>
       getValue() > 0 ? (
-        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+        <div className={styles.titles}>
           {getValue()}
-          <Box sx={{ display: "inline-flex" }}>
+          <div className={styles.trophies}>
             {Array.from({ length: getValue() }, (_, i) => (
-              <EmojiEventsIcon
-                key={i}
-                sx={{ fontSize: "0.9rem" }}
-                htmlColor={GOLD}
-              />
+              <Icon key={i} name="EmojiEvents" className={styles.trophy} />
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       ) : (
         dash
       ),
@@ -204,14 +168,11 @@ export default function AllTimeTable({ table, userId }: Props) {
 
   return (
     <>
-      <Typography
-        variant="body2"
-        sx={{ color: "text.secondary", fontSize: "0.8125rem", mb: 1 }}
-      >
+      <p className={styles.rule}>
         Career pts: 10 for a title, down to 1 for 10th, every season. Ties go to
         titles, then avg finish. Averages sort players with{" "}
         {AVG_SORT_MIN_SEASONS}+ seasons first.
-      </Typography>
+      </p>
       <TableContainer>
         {/* Sized to its columns rather than the page, so a row stays easy to
             follow across on wide screens. */}

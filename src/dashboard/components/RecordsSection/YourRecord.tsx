@@ -1,8 +1,7 @@
-import { Box, Typography } from "@mui/material";
 import { ordinal } from "../../helper";
 import { CareerRow } from "./recordsUtils";
-import { YOU_FILL } from "./recordsTheme";
 import { Button } from "../../ui/Button";
+import styles from "./YourRecord.module.css";
 
 type Props = {
   row: CareerRow;
@@ -10,9 +9,7 @@ type Props = {
 };
 
 const Fact = ({ children }: { children: React.ReactNode }) => (
-  <Typography component="span" variant="body2">
-    {children}
-  </Typography>
+  <span className={styles.fact}>{children}</span>
 );
 
 // The selected player's all-time line, first on the page: one big number
@@ -29,46 +26,22 @@ export default function YourRecord({ row, place }: Props) {
     .sort((a, b) => a - b);
 
   return (
-    <Box
+    <div
       role="group"
       aria-label="Your all-time record"
-      sx={(t) => ({
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "baseline",
-        columnGap: 2,
-        rowGap: 0.5,
-        px: 1.75,
-        py: 1.5,
-        borderRadius: 2,
-        bgcolor: YOU_FILL,
-        boxShadow: `inset 3px 0 0 ${t.palette.primary.main}`,
-      })}
+      className={styles.record}
     >
-      <Typography
-        variant="body2"
-        sx={{ width: "100%", color: "text.secondary", fontWeight: 600 }}
-      >
+      <p className={styles.name}>
         {row.name}
         {row.active ? "" : " · former player"}
-      </Typography>
-      <Typography
-        sx={{
-          fontSize: "1.75rem",
-          fontWeight: 700,
-          lineHeight: 1,
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
+      </p>
+      <p className={styles.place}>
         {place.tied ? "T" : ""}
         {ordinal(place.place)}
-        <Box
-          component="span"
-          sx={{ fontSize: "0.875rem", fontWeight: 600, ml: 0.75 }}
-        >
+        <span className={styles.placeNote}>
           all-time · {row.points} career pts
-        </Box>
-      </Typography>
+        </span>
+      </p>
       {titleYears.length > 0 ? (
         <Fact>
           <b>
@@ -96,7 +69,7 @@ export default function YourRecord({ row, place }: Props) {
           <b>{row.top5}</b> top-5 finish{row.top5 === 1 ? "" : "es"}
         </Fact>
       )}
-    </Box>
+    </div>
   );
 }
 
@@ -110,29 +83,17 @@ type NoRecordProps = {
 // yet, or the picked player has no finished season (a rookie).
 export function NoRecordYet({ selected, season, onChoose }: NoRecordProps) {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 1,
-        px: 1.75,
-        py: 1,
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 2,
-      }}
-    >
-      <Typography variant="body2" sx={{ flex: "1 1 14rem" }}>
+    <div className={styles.empty}>
+      <p className={styles.emptyText}>
         {selected
           ? `Your all-time line starts once the ${season} season closes.`
           : "Pick your name to see where you rank all\u2011time."}
-      </Typography>
+      </p>
       {!selected && (
         <Button variant="outlined" size="small" onClick={onChoose}>
           Choose your name
         </Button>
       )}
-    </Box>
+    </div>
   );
 }

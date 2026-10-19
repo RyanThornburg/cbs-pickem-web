@@ -1,4 +1,3 @@
-import { Box, Stack, Typography } from "@mui/material";
 import { HistoricalChampion, HistoricalRecords } from "../../types";
 import {
   cleanName,
@@ -7,43 +6,15 @@ import {
   isUnknownChampion,
   seasonPeriods,
 } from "./recordsUtils";
-import { GOLD, INCOMPLETE_HATCH, YOU_FILL } from "./recordsTheme";
+import styles from "./ChampionsWall.module.css";
 
 type TagTone = "gold" | "grey";
 
-const TAG_COLORS: Record<TagTone, { bg: string; fg: string }> = {
-  gold: { bg: GOLD, fg: "#3d2c05" },
-  grey: { bg: "hsl(220, 30%, 94%)", fg: "rgba(0, 0, 0, 0.7)" },
-};
-
 function Tag({ tone, children }: { tone: TagTone; children: React.ReactNode }) {
-  const { bg, fg } = TAG_COLORS[tone];
-  return (
-    <Box
-      component="span"
-      sx={{
-        alignSelf: "flex-start",
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        lineHeight: 1.5,
-        borderRadius: "4px",
-        px: 0.75,
-        bgcolor: bg,
-        color: fg,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </Box>
-  );
+  return <span className={`${styles.tag} ${styles[tone]}`}>{children}</span>;
 }
 
-const You = () => (
-  <Box component="span" sx={{ fontWeight: 700 }}>
-    {" "}
-    (you)
-  </Box>
-);
+const You = () => <span className={styles.you}> (you)</span>;
 
 type Props = {
   data: HistoricalRecords;
@@ -80,27 +51,20 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
     // Scores only when every period has one, so the lines match.
     const withScores = lines.every((line) => line.champ?.score != null);
     return (
-      <Stack sx={{ mt: 0.5, pt: 0.5, borderTop: 1, borderColor: "divider" }}>
+      <div className={styles.periods}>
         {lines.map(
           ({ key, name, champ }) =>
             champ && (
-              <Typography
-                key={key}
-                variant="caption"
-                sx={{ color: "text.secondary" }}
-              >
+              <span key={key} className={styles.period}>
                 {name}:{" "}
-                <Box
-                  component="b"
-                  sx={{ color: "text.primary", fontWeight: 600 }}
-                >
+                <b className={styles.periodNames}>
                   {champ.names.map(cleanName).join(", ")}
-                </Box>
+                </b>
                 {withScores && ` · ${champ.score}`}
-              </Typography>
+              </span>
             )
         )}
-      </Stack>
+      </div>
     );
   };
 
@@ -120,44 +84,16 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
   );
 
   return (
-    <Stack spacing={1.5}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          flexWrap: "wrap",
-          gap: 1,
-        }}
-      >
-        <Typography component="h3" variant="h6">
-          Champions
-        </Typography>
+    <div className={styles.section}>
+      <div className={styles.heading}>
+        <h3 className={styles.title}>Champions</h3>
         {currentSeason > defendingYear && (
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {currentSeason} season in progress
-          </Typography>
+          <p className={styles.note}>{currentSeason} season in progress</p>
         )}
-      </Box>
-      <Box
-        component="ol"
+      </div>
+      <ol
         aria-label="Champions by season, newest first"
-        sx={{
-          listStyle: "none",
-          m: 0,
-          p: 0,
-          display: "grid",
-          gap: { xs: 0, sm: 1 },
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(auto-fill, minmax(150px, 1fr))",
-          },
-          // Phones: one bordered list instead of tiles.
-          border: { xs: 1, sm: 0 },
-          borderColor: { xs: "divider" },
-          borderRadius: { xs: 2, sm: 0 },
-          overflow: { xs: "hidden", sm: "visible" },
-        }}
+        className={styles.list}
       >
         {champions.map((champ) => {
           const unknown = isUnknownChampion(champ);
@@ -165,119 +101,49 @@ export default function ChampionsWall({ data, currentSeason, userId }: Props) {
           const isYou = !unknown && names.some(isYouName);
           const defending = champ.year === defendingYear && !unknown;
           return (
-            <Box
-              component="li"
+            <li
               key={champ.year}
-              sx={(t) => ({
-                display: "flex",
-                flexDirection: "column",
-                gap: 0.25,
-                p: { xs: "8px 12px", sm: 1.25 },
-                // tiles from sm, rows of a list on phones
-                [t.breakpoints.up("sm")]: {
-                  border: 1,
-                  borderColor: defending ? GOLD : "divider",
-                  borderRadius: 2,
-                },
-                [t.breakpoints.down("sm")]: {
-                  borderTop: 1,
-                  borderColor: "divider",
-                  "&:first-of-type": { borderTop: 0 },
-                  display: "grid",
-                  gridTemplateColumns: "44px minmax(0, 1fr) auto",
-                  columnGap: 1,
-                  alignItems: "baseline",
-                },
-                ...(unknown && { backgroundImage: INCOMPLETE_HATCH }),
-                ...(isYou && {
-                  bgcolor: YOU_FILL,
-                  boxShadow: `inset 3px 0 0 ${t.palette.primary.main}`,
-                }),
-              })}
+              className={[
+                styles.champion,
+                defending && styles.defending,
+                unknown && styles.unknown,
+                isYou && styles.isYou,
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <Typography
-                sx={{
-                  fontSize: { xs: "0.875rem", sm: "1.125rem" },
-                  fontWeight: 700,
-                  lineHeight: 1.3,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {champ.year}
-              </Typography>
-              <Box sx={{ minWidth: 0 }}>
+              <p className={styles.year}>{champ.year}</p>
+              <div className={styles.body}>
                 {unknown ? (
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    Champion unknown
-                  </Typography>
+                  <p className={styles.unknownText}>Champion unknown</p>
                 ) : (
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 600, fontSize: "0.8125rem" }}
-                  >
+                  <p className={styles.names}>
                     {names.map((name, i) => (
-                      <Box
-                        component="span"
-                        key={name}
-                        sx={{ display: { sm: "block" } }}
-                      >
+                      <span key={name} className={styles.nameLine}>
                         {name}
                         {isYouName(name) && <You />}
                         {i < names.length - 1 && (
-                          <Box
-                            component="span"
-                            sx={{ display: { sm: "none" } }}
-                          >
-                            ,{" "}
-                          </Box>
+                          <span className={styles.comma}>, </span>
                         )}
-                      </Box>
+                      </span>
                     ))}
-                  </Typography>
+                  </p>
                 )}
                 {!unknown && champ.score != null && (
-                  <Typography
-                    variant="caption"
-                    component="div"
-                    sx={{
-                      color: "text.secondary",
-                      display: { xs: "none", sm: "block" },
-                    }}
-                  >
-                    {champ.score} pts
-                  </Typography>
+                  <div className={styles.score}>{champ.score} pts</div>
                 )}
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 0.5,
-                    mt: { xs: 0.25, sm: 0.5 },
-                    "&:empty": { display: "none" },
-                  }}
-                >
-                  {tags(champ, unknown)}
-                </Box>
-                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                <div className={styles.tags}>{tags(champ, unknown)}</div>
+                <div className={styles.periodsWrap}>
                   {periodLines(champ.year)}
-                </Box>
-              </Box>
+                </div>
+              </div>
               {!unknown && champ.score != null && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "text.secondary",
-                    fontVariantNumeric: "tabular-nums",
-                    display: { sm: "none" },
-                  }}
-                >
-                  {champ.score}
-                </Typography>
+                <span className={styles.phoneScore}>{champ.score}</span>
               )}
-            </Box>
+            </li>
           );
         })}
-      </Box>
-    </Stack>
+      </ol>
+    </div>
   );
 }
