@@ -1,0 +1,86 @@
+/* Heading row: title and status on the left, the "All N notes" toggle on
+   the right. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 12px;
+  min-height: 44px;
+  margin-bottom: 8px;
+}
+
+/* Margins rather than a gap, so a status that wraps under the title keeps
+   the same indent it had with MUI's Stack spacing. */
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.titleRow > * {
+  margin: 0;
+}
+.titleRow > * + * {
+  margin-left: 12px;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.status {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 4px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.headline {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+/* 1, 2, then one row across: 4 cards never wrap 3 + 1, and 3 cards fill
+   the row instead of leaving an empty fourth slot. */
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+@media (min-width: 600px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1200px) {
+  .cards {
+    grid-template-columns: repeat(var(--row-columns), minmax(0, 1fr));
+  }
+}
+.cardsOpen {
+  margin-top: 16px;
+}
+
+.emptyAfterLead {
+  margin-top: 12px;
+}

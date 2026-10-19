@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { useWidth } from "../shared/useWidth";
 import { useState } from "react";
 import { focusRingColor, pool } from "../../shared-theme/themePrimitives";
@@ -8,6 +8,7 @@ import {
   RecapPoolAccuracyPoint,
   WeekRecap,
 } from "../../types";
+import styles from "./SeasonRecapCharts.module.css";
 
 // Week-over-week charts for Trends › Season, from the recap key's `series`
 // (every week through the selected one). Hand-drawn SVG: two single-series
@@ -73,28 +74,17 @@ function ChartTooltip({
 }) {
   const left = (x / W) * 100;
   return (
-    <Box
+    <div
       role="tooltip"
-      sx={{
-        position: "absolute",
+      className={styles.tooltip}
+      style={{
         left: `${left}%`,
         top: `${(y / H) * 100}%`,
         transform: `translate(${left > 70 ? "-100%" : left < 30 ? "0" : "-50%"}, calc(-100% - 8px))`,
-        pointerEvents: "none",
-        bgcolor: "background.paper",
-        border: 1,
-        borderColor: "divider",
-        boxShadow: 4,
-        borderRadius: 1,
-        px: 1.25,
-        py: 0.75,
-        fontSize: "0.75rem",
-        whiteSpace: "nowrap",
-        zIndex: 2,
       }}
     >
       {children}
-    </Box>
+    </div>
   );
 }
 
@@ -110,25 +100,13 @@ function ChartCard({
   plotRef: React.Ref<HTMLDivElement>;
 }) {
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 1.5,
-        textAlign: "left",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
-        minWidth: 0,
-      }}
-    >
-      <Typography component="h4" sx={{ fontSize: "0.875rem", fontWeight: 700 }}>
-        {title}
-      </Typography>
-      <Box ref={plotRef} sx={{ position: "relative" }}>
+    <div className={styles.card}>
+      <h4 className={styles.title}>{title}</h4>
+      <div ref={plotRef} className={styles.plot}>
         {children}
-      </Box>
+      </div>
       {legend}
-    </Paper>
+    </div>
   );
 }
 
@@ -141,13 +119,7 @@ const LegendDot = ({
   hollow?: boolean;
   label: string;
 }) => (
-  <Stack
-    direction="row"
-    spacing={0.6}
-    sx={{
-      alignItems: "center",
-    }}
-  >
+  <div className={styles.legendItem}>
     <svg width="10" height="10" aria-hidden="true">
       <circle
         cx="5"
@@ -159,7 +131,7 @@ const LegendDot = ({
       />
     </svg>
     <span>{label}</span>
-  </Stack>
+  </div>
 );
 
 // Full-height column per week: the hover/focus target. The active column
@@ -240,9 +212,7 @@ function Names({
 const WaitingTooltip = ({ week, finals }: { week: number; finals: number }) => (
   <>
     <b>Week {week}</b>
-    <Box sx={{ color: "text.secondary" }}>
-      Shows once {finals} games are final
-    </Box>
+    <div className={styles.muted}>Shows once {finals} games are final</div>
   </>
 );
 
@@ -316,25 +286,10 @@ function PoolAccuracyChart({
       title="Pool accuracy by week"
       plotRef={plotRef}
       legend={
-        <Stack
-          direction="row"
-          sx={{
-            flexWrap: "wrap",
-            columnGap: 2,
-            rowGap: 0.5,
-            fontSize: "0.75rem",
-            color: "text.secondary",
-          }}
-        >
+        <div className={styles.legend}>
           {/* In the legend rather than on the line, where it collided with
               the latest week's value on narrow screens. */}
-          <Stack
-            direction="row"
-            spacing={0.6}
-            sx={{
-              alignItems: "center",
-            }}
-          >
+          <div className={styles.legendItem}>
             <svg width="16" height="10" aria-hidden="true">
               <line
                 x1="0"
@@ -347,7 +302,7 @@ function PoolAccuracyChart({
               />
             </svg>
             <span>50%, a coin flip</span>
-          </Stack>
+          </div>
           <LegendDot color={GOLD} label="Someone went 5-0" />
           <LegendDot color={WINLESS} label="Someone went 0-5" />
           {inProgressWeek != null &&
@@ -355,7 +310,7 @@ function PoolAccuracyChart({
               <LegendDot color={line} hollow label="Week in progress" />
             )}
           <span>Hover or tap a week for names</span>
-        </Stack>
+        </div>
       }
     >
       <svg
@@ -472,26 +427,26 @@ function PoolAccuracyChart({
             {activePt.p.week === inProgressWeek ? " (so far)" : ""}:{" "}
             {pct(activePt.p.accuracy)}
           </b>
-          <Box sx={{ color: "text.secondary" }}>
+          <div className={styles.muted}>
             {activePt.p.correct} of {activePt.p.graded} picks
-          </Box>
+          </div>
           {activePt.p.perfect.length > 0 && (
-            <Box>
+            <div>
               5-0:{" "}
               <Names
                 people={activePt.p.perfect}
                 selectedUserId={selectedUserId}
               />
-            </Box>
+            </div>
           )}
           {activePt.p.winless.length > 0 && (
-            <Box>
+            <div>
               0-5:{" "}
               <Names
                 people={activePt.p.winless}
                 selectedUserId={selectedUserId}
               />
-            </Box>
+            </div>
           )}
         </ChartTooltip>
       )}
@@ -529,21 +484,12 @@ function ChaosChart({
       title="Chaos index by week"
       plotRef={plotRef}
       legend={
-        <Stack
-          direction="row"
-          sx={{
-            flexWrap: "wrap",
-            columnGap: 2,
-            rowGap: 0.5,
-            fontSize: "0.75rem",
-            color: "text.secondary",
-          }}
-        >
+        <div className={styles.legend}>
           <span>Higher = more underdogs covered and more upsets</span>
           {series.some((p) => p.partial) && (
             <span>Dashed = week still in progress</span>
           )}
-        </Stack>
+        </div>
       }
     >
       <svg
@@ -631,10 +577,10 @@ function ChaosChart({
               ? ` so far (${activeP.games_final} of ${activeP.games_total} final)`
               : ""}
           </b>
-          <Box sx={{ color: "text.secondary" }}>
+          <div className={styles.muted}>
             Underdogs covered {activeP.underdog_covers} of {activeP.ats_decided}{" "}
             · {activeP.outright_upsets} outright upsets
-          </Box>
+          </div>
         </ChartTooltip>
       )}
     </ChartCard>
@@ -662,16 +608,7 @@ export default function SeasonRecapCharts({
     (a, b) => a - b
   );
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: {
-          xs: "minmax(0, 1fr)",
-          md: "repeat(2, minmax(0, 1fr))",
-        },
-        gap: 1.5,
-      }}
-    >
+    <div className={styles.charts}>
       {accuracy.length > 0 && (
         <PoolAccuracyChart
           series={accuracy}
@@ -681,6 +618,6 @@ export default function SeasonRecapCharts({
         />
       )}
       {chaos.length > 0 && <ChaosChart series={chaos} weeks={weeks} />}
-    </Box>
+    </div>
   );
 }

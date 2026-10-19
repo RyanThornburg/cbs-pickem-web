@@ -1,17 +1,11 @@
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  Box,
-  IconButton,
-  Link,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { IconButton, useMediaQuery } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { memo, useEffect, useMemo, useState } from "react";
 import { WeekRecap } from "../../types";
 import { CategoryMark, ScopeTag } from "./recapCategory";
 import { getSeenItems, markItemSeen, orderForRotation } from "./recapUtils";
+import { Icon } from "../../ui/Icon";
+import styles from "./RecapStrip.module.css";
 
 const ROTATE_MS = 8000;
 
@@ -73,89 +67,49 @@ const RecapStrip = memo(function RecapStrip({ recap, isCurrentWeek }: Props) {
   };
 
   return (
-    <Box
+    <div
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      sx={{
-        display: "grid",
-        gridTemplateColumns: {
-          xs: "auto minmax(0, 1fr)",
-          sm: "auto minmax(0, 1fr) auto",
-        },
-        columnGap: 1.5,
-        rowGap: 1,
-        alignItems: "center",
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 2.5,
-        px: 1.5,
-        py: 1.25,
-        mb: 2,
-        textAlign: "left",
-        background:
-          "linear-gradient(90deg, hsl(210, 100%, 97%), transparent 45%)",
-      }}
+      className={styles.strip}
     >
       <CategoryMark category={current.category} />
-      <Box sx={{ minWidth: 0 }}>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 0.25 }}>
+      <div className={styles.body}>
+        <div className={styles.meta}>
           {/* On a past week the intro row already says which week, so a
               week item gets no tag ("This week" would be wrong). */}
           {(isCurrentWeek || current.scope === "season") && (
             <ScopeTag scope={current.scope} />
           )}
-          <Typography
-            variant="caption"
-            sx={{
-              color: "text.secondary",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
+          <span className={styles.count}>
             {(index % items.length) + 1} of {items.length}
-          </Typography>
-        </Box>
-        <Typography
-          aria-live={announce ? "polite" : "off"}
-          sx={{ fontSize: "0.875rem", fontWeight: 500 }}
-        >
+          </span>
+        </div>
+        <p aria-live={announce ? "polite" : "off"} className={styles.headline}>
           {/* The full sentence has room on desktop; phones get the
               80-character version so the strip doesn't change height. */}
-          <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
-            {current.headline}
-          </Box>
-          <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}>
-            {current.short}
-          </Box>
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          gridColumn: { xs: "1 / -1", sm: "auto" },
-          display: "flex",
-          alignItems: "center",
-          justifyContent: { xs: "space-between", sm: "flex-end" },
-          gap: 0.75,
-        }}
-      >
+          <span className={styles.long}>{current.headline}</span>
+          <span className={styles.short}>{current.short}</span>
+        </p>
+      </div>
+      <div className={styles.controls}>
         <IconButton
           size="small"
           aria-label="Previous item"
           onClick={() => step(-1)}
         >
-          <ChevronLeftIcon fontSize="small" />
+          <Icon name="ChevronLeft" size="small" className={styles.stepIcon} />
         </IconButton>
-        <Box sx={{ display: "flex" }}>
+        <div className={styles.dots}>
           {items.map((item, i) => {
             const on = i === index % items.length;
             return (
               // The button is a 24px-tall hit area; the dot is drawn inside
               // it. Out of the tab order: Previous/Next are the keyboard
               // way through, rather than eight stops before the table.
-              <Box
+              <button
                 key={item.id}
-                component="button"
                 type="button"
                 tabIndex={-1}
                 aria-label={`Show item ${i + 1}`}
@@ -164,49 +118,25 @@ const RecapStrip = memo(function RecapStrip({ recap, isCurrentWeek }: Props) {
                   setAnnounce(true);
                   setIndex(i);
                 }}
-                sx={{
-                  display: "grid",
-                  placeItems: "center",
-                  width: on ? 22 : 14,
-                  height: 24,
-                  p: 0,
-                  border: 0,
-                  bgcolor: "transparent",
-                  cursor: "pointer",
-                  "&::before": {
-                    content: '""',
-                    width: on ? 14 : 6,
-                    height: 6,
-                    borderRadius: 3,
-                    bgcolor: on ? "primary.main" : "divider",
-                  },
-                }}
+                className={on ? `${styles.dot} ${styles.dotOn}` : styles.dot}
               />
             );
           })}
-        </Box>
+        </div>
         <IconButton size="small" aria-label="Next item" onClick={() => step(1)}>
-          <ChevronRightIcon fontSize="small" />
+          <Icon name="ChevronRight" size="small" className={styles.stepIcon} />
         </IconButton>
-        <Link
-          component={RouterLink}
+        <RouterLink
           to={{
             pathname: "/trends",
             search: isCurrentWeek ? "" : `?week=${week}`,
           }}
-          underline="hover"
-          sx={{
-            fontSize: "0.75rem",
-            fontWeight: 600,
-            whiteSpace: "nowrap",
-            ml: 0.5,
-            display: { xs: "none", sm: "inline" },
-          }}
+          className={styles.fullRecap}
         >
           Full recap →
-        </Link>
-      </Box>
-    </Box>
+        </RouterLink>
+      </div>
+    </div>
   );
 });
 

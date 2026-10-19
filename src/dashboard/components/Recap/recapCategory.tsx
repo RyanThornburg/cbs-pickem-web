@@ -1,43 +1,31 @@
-import BoltIcon from "@mui/icons-material/Bolt";
-import Diversity3Icon from "@mui/icons-material/Diversity3";
-import GroupsIcon from "@mui/icons-material/Groups";
-import LightbulbIcon from "@mui/icons-material/Lightbulb";
-import PersonIcon from "@mui/icons-material/Person";
-import PieChartIcon from "@mui/icons-material/PieChart";
-import PublicIcon from "@mui/icons-material/Public";
-import ShieldIcon from "@mui/icons-material/Shield";
-import ShowChartIcon from "@mui/icons-material/ShowChart";
-import Box from "@mui/material/Box";
-import { SvgIconComponent } from "@mui/icons-material";
+import { Icon, IconName } from "../../ui/Icon";
+import styles from "./recapCategory.module.css";
 
 // One icon per item category, all on the same neutral tile: a category
 // isn't a result, so it gets no color of its own (DESIGN.md's Earned Color
 // Rule). An unknown category (the data repo can add one) falls back to a
 // lightbulb.
-const CATEGORY_STYLES: Record<
-  string,
-  { Icon: SvgIconComponent; label: string }
-> = {
-  pool: { Icon: GroupsIcon, label: "The pool" },
+const CATEGORY_STYLES: Record<string, { icon: IconName; label: string }> = {
+  pool: { icon: "Groups", label: "The pool" },
   spread: {
-    Icon: ShowChartIcon,
+    icon: "ShowChart",
     label: "The spread",
   },
   crowd: {
-    Icon: Diversity3Icon,
+    icon: "Diversity3",
     label: "The crowd",
   },
-  chaos: { Icon: BoltIcon, label: "Chaos" },
-  users: { Icon: PersonIcon, label: "Players" },
-  teams: { Icon: ShieldIcon, label: "Teams" },
-  league: { Icon: PublicIcon, label: "League" },
+  chaos: { icon: "Bolt", label: "Chaos" },
+  users: { icon: "Person", label: "Players" },
+  teams: { icon: "Shield", label: "Teams" },
+  league: { icon: "Public", label: "League" },
   splits: {
-    Icon: PieChartIcon,
+    icon: "PieChart",
     label: "Pool splits",
   },
 };
 const FALLBACK = {
-  Icon: LightbulbIcon,
+  icon: "Lightbulb" as IconName,
   label: "Recap",
 };
 
@@ -51,27 +39,16 @@ export function CategoryMark({
   category: string;
   size?: number;
 }) {
-  const { Icon, label } = categoryStyle(category);
+  const { icon, label } = categoryStyle(category);
   return (
-    <Box
-      component="span"
+    <span
       role="img"
       aria-label={label}
-      sx={{
-        width: size,
-        height: size,
-        borderRadius: 1.5,
-        // DESIGN.md slate-100 / slate-700.
-        bgcolor: "hsl(220, 30%, 94%)",
-        color: "hsl(220, 20%, 25%)",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-      }}
+      className={styles.mark}
+      style={{ width: size, height: size }}
     >
-      <Icon sx={{ fontSize: size * 0.64 }} />
-    </Box>
+      <Icon name={icon} size="inherit" style={{ fontSize: size * 0.64 }} />
+    </span>
   );
 }
 
@@ -80,23 +57,8 @@ export function CategoryMark({
 export function ScopeTag({ scope }: { scope: "week" | "season" }) {
   const week = scope === "week";
   return (
-    <Box
-      component="span"
-      sx={{
-        fontSize: "0.75rem",
-        fontWeight: 700,
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
-        borderRadius: 0.5,
-        px: 0.75,
-        py: "1px",
-        whiteSpace: "nowrap",
-        bgcolor: week ? "hsl(210, 100%, 95%)" : "hsl(220, 30%, 94%)",
-        // brand 700-ish on the pale blue: 5:1 (primary.main was 4.1:1).
-        color: week ? "#1565c0" : "text.secondary",
-      }}
-    >
+    <span className={`${styles.tag} ${week ? styles.week : styles.season}`}>
       {week ? "This week" : "Season"}
-    </Box>
+    </span>
   );
 }

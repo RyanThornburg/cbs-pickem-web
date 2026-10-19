@@ -1,0 +1,74 @@
+/* Two charts side by side from md, stacked below. */
+.charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .charts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* An outlined card: title, the plot, then its legend. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  background-color: var(--paper);
+  color: var(--text);
+  text-align: left;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* The tooltip is placed against the plot. */
+.plot {
+  position: relative;
+}
+
+/* Tooltip anchored over a column; left, top and the shift come inline. */
+.tooltip {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 10px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  background-color: var(--paper);
+  /* MUI's shadows[4]. */
+  box-shadow:
+    0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 4px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4.8px;
+}

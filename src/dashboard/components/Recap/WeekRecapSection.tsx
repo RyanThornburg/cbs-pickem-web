@@ -1,11 +1,12 @@
-import { Box, Collapse, Stack, Typography } from "@mui/material";
-import { useId, useMemo, useState } from "react";
+import { Collapse } from "@mui/material";
+import { CSSProperties, useId, useMemo, useState } from "react";
 import { RecapItem } from "../../types";
 import { CategoryMark } from "./recapCategory";
 import { WeekRecapCard } from "./WeekRecapCards";
 import { MAX_CARDS, selectWeekCards } from "./weekCards";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import styles from "./WeekRecapSection.module.css";
 
 // The recap row at the top of Trends › Week (this week's items) and
 // Trends › Season (season-to-date items): a heading row with the
@@ -40,32 +41,14 @@ export default function WeekRecapSection({
   const rowColumns = Math.min(4, Math.max(3, cards.length + (lead ? 1 : 0)));
 
   return (
-    <Box component="section" aria-labelledby={headingId}>
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 1,
-          flexWrap: "wrap",
-          columnGap: 1.5,
-          minHeight: 44,
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={1.5}
-          sx={{ alignItems: "baseline", flexWrap: "wrap" }}
-        >
-          <Typography id={headingId} variant="h6" component="h3">
+    <section aria-labelledby={headingId}>
+      <div className={styles.head}>
+        <div className={styles.titleRow}>
+          <h3 id={headingId} className={styles.title}>
             {title}
-          </Typography>
-          {status && (
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              {status}
-            </Typography>
-          )}
-        </Stack>
+          </h3>
+          {status && <span className={styles.status}>{status}</span>}
+        </div>
         {items.length > 0 && (
           <Button
             size="small"
@@ -85,39 +68,24 @@ export default function WeekRecapSection({
             All {items.length} notes
           </Button>
         )}
-      </Stack>
+      </div>
 
       <Collapse in={showAll} unmountOnExit>
-        <Stack component="ul" spacing={1} sx={{ m: 0, p: 0, pl: 0.5 }}>
+        <ul className={styles.list}>
           {items.map((t) => (
-            <Stack
-              component="li"
-              key={t.id}
-              direction="row"
-              spacing={1}
-              sx={{ alignItems: "center", listStyle: "none" }}
-            >
+            <li key={t.id} className={styles.item}>
               <CategoryMark category={t.category} size={20} />
-              <Typography variant="body2">{t.headline}</Typography>
-            </Stack>
+              <p className={styles.headline}>{t.headline}</p>
+            </li>
           ))}
-        </Stack>
+        </ul>
       </Collapse>
 
-      <Box
-        sx={{
-          display: "grid",
-          // 1, 2, then one row across: 4 cards never wrap 3 + 1, and 3
-          // cards fill the row instead of leaving an empty fourth slot.
-          gridTemplateColumns: {
-            xs: "minmax(0, 1fr)",
-            sm: "repeat(2, minmax(0, 1fr))",
-            lg: `repeat(${rowColumns}, minmax(0, 1fr))`,
-          },
-          gap: 1.5,
-          alignItems: "start",
-          mt: showAll ? 2 : 0,
-        }}
+      <div
+        className={
+          showAll ? `${styles.cards} ${styles.cardsOpen}` : styles.cards
+        }
+        style={{ "--row-columns": rowColumns } as CSSProperties}
       >
         {lead}
         {cards.map((card) => (
@@ -127,10 +95,10 @@ export default function WeekRecapSection({
             selectedUserId={selectedUserId}
           />
         ))}
-      </Box>
+      </div>
       {items.length === 0 && empty && (
-        <Box sx={{ mt: lead ? 1.5 : 0 }}>{empty}</Box>
+        <div className={lead ? styles.emptyAfterLead : undefined}>{empty}</div>
       )}
-    </Box>
+    </section>
   );
 }

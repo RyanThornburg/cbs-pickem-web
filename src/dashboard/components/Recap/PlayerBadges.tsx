@@ -1,16 +1,7 @@
-import { Box } from "@mui/material";
 import { ordinal } from "../../helper";
 import { RecapMove } from "../../types";
 import { BadgeTooltip } from "../UsersTable/BadgeTooltip";
-
-const chipSx = {
-  fontSize: "0.75rem",
-  fontWeight: 700,
-  lineHeight: 1.4,
-  borderRadius: 0.5,
-  px: 0.5,
-  whiteSpace: "nowrap",
-} as const;
+import styles from "./PlayerBadges.module.css";
 
 // Leaderboard move of 3+ places since last week (from the recap key).
 export function MoverBadge({
@@ -28,18 +19,12 @@ export function MoverBadge({
       plain={plain}
       title={`${up ? "Up" : "Down"} ${places} places since last week (${ordinal(move.rank_before)} → ${ordinal(move.rank_after)})`}
     >
-      <Box
-        component="span"
-        sx={{
-          ...chipSx,
-          fontVariantNumeric: "tabular-nums",
-          bgcolor: up ? "hsl(145, 55%, 92%)" : "hsl(0, 80%, 95%)",
-          color: up ? "hsl(145, 60%, 28%)" : "hsl(0, 65%, 42%)",
-        }}
+      <span
+        className={`${styles.chip} ${styles.mover} ${up ? styles.up : styles.down}`}
       >
         {up ? "▲" : "▼"}
         {places}
-      </Box>
+      </span>
     </BadgeTooltip>
   );
 }
@@ -55,16 +40,7 @@ export function PerfectWeekBadge({
   if (!perfect) return null;
   return (
     <BadgeTooltip plain={plain} title="Perfect week: 5-0">
-      <Box
-        component="span"
-        sx={{
-          ...chipSx,
-          bgcolor: "hsl(45, 100%, 90%)",
-          color: "hsl(35, 80%, 28%)",
-        }}
-      >
-        5-0
-      </Box>
+      <span className={`${styles.chip} ${styles.perfect}`}>5-0</span>
     </BadgeTooltip>
   );
 }

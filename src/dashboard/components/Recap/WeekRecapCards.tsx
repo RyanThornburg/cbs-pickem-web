@@ -1,10 +1,10 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Fragment } from "react";
 import { ordinal } from "../../helper";
 import { RecapItem, RecapMove, RecapPerson } from "../../types";
 import { TeamLogo } from "../shared/TeamLogo";
 import { CategoryMark } from "./recapCategory";
 import { WeekCard } from "./weekCards";
-import { pool } from "../../shared-theme/themePrimitives";
+import styles from "./WeekRecapCards.module.css";
 
 // Renderers for the Trends recap cards (Week and Season). Each reads its
 // items' `data` (shapes per the data repo's recap reference, version 3);
@@ -37,114 +37,51 @@ export function CardShell({
   highlight?: boolean;
 }) {
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 1.5,
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
-        minWidth: 0,
-        textAlign: "left",
-        // DESIGN.md selected-lime, the selected player's row color.
-        ...(highlight ? { bgcolor: "#f0f4c3", borderColor: "#d4dc8a" } : {}),
-      }}
+    <div
+      className={highlight ? `${styles.card} ${styles.highlight}` : styles.card}
     >
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center",
-        }}
-      >
+      <div className={styles.cardHead}>
         <CategoryMark category={category} />
-        <Typography
-          component="h4"
-          sx={{ fontSize: "0.875rem", fontWeight: 700, flex: 1 }}
-        >
-          {title}
-        </Typography>
-      </Stack>
+        <h4 className={styles.cardTitle}>{title}</h4>
+      </div>
       {children}
-    </Paper>
+    </div>
   );
 }
 
 export function Big({ value, suffix }: { value: string; suffix?: string }) {
   return (
-    <Typography
-      sx={{
-        fontSize: "1.75rem",
-        fontWeight: 700,
-        lineHeight: 1.05,
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
-      {value}{" "}
-      {suffix && (
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-          }}
-        >
-          {suffix}
-        </Typography>
-      )}
-    </Typography>
+    <p className={styles.big}>
+      {value} {suffix && <span className={styles.bigSuffix}>{suffix}</span>}
+    </p>
   );
 }
 
 export const Sub = ({ children }: { children: React.ReactNode }) => (
-  <Typography
-    variant="body2"
-    sx={{
-      color: "text.secondary",
-      fontSize: "0.8125rem",
-    }}
-  >
-    {children}
-  </Typography>
+  <p className={styles.sub}>{children}</p>
 );
 
 // Label/value pairs, e.g. the chaos index parts.
 function Parts({ rows }: { rows: [React.ReactNode, React.ReactNode][] }) {
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        columnGap: 1.5,
-        rowGap: 0.25,
-        fontSize: "0.8125rem",
-        color: "text.secondary",
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
+    <div className={styles.parts}>
       {rows.map(([label, value], i) => (
-        <Box key={i} sx={{ display: "contents" }}>
+        <Fragment key={i}>
           <span>{label}</span>
-          <Box
-            component="span"
-            sx={{ color: "text.primary", fontWeight: 600, textAlign: "right" }}
-          >
-            {value}
-          </Box>
-        </Box>
+          <span className={styles.partValue}>{value}</span>
+        </Fragment>
       ))}
-    </Box>
+    </div>
   );
 }
 
 // Gold is for honors only (a 5-0 week, same as the 5-0 badge on User
 // Picks); 0-5 is a loss; anything else, like an upset's believers, is plain.
+// The tones are in WeekRecapCards.module.css.
 const CHIP_TONES = {
-  honor: { bgcolor: "hsl(45, 100%, 90%)", color: "hsl(35, 80%, 28%)" },
-  // DESIGN.md streak-pill-end on a pale red: 5.6:1.
-  lost: { bgcolor: "#ffebee", color: "#c62828" },
-  // DESIGN.md slate-100 with ink.
-  plain: { bgcolor: "hsl(220, 30%, 94%)", color: "rgba(0, 0, 0, 0.87)" },
+  honor: styles.honor,
+  lost: styles.lost,
+  plain: styles.plain,
 };
 
 function PersonChips({
@@ -157,31 +94,22 @@ function PersonChips({
   selectedUserId?: string;
 }) {
   return (
-    <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5 }}>
+    <div className={styles.chips}>
       {people.map((p) => {
         const you = String(p.user_id) === selectedUserId;
         return (
-          <Box
+          <span
             key={p.user_id}
-            component="span"
-            sx={{
-              fontSize: "0.75rem",
-              fontWeight: you ? 700 : 600,
-              borderRadius: 0.5,
-              px: 0.75,
-              py: "1px",
-              ...CHIP_TONES[tone],
-              // The selected player: an ink ring, plus "(you)" for screen
-              // readers and anyone who can't see the ring.
-              ...(you ? { boxShadow: "inset 0 0 0 1.5px currentColor" } : {}),
-            }}
+            className={[styles.chip, CHIP_TONES[tone], you && styles.chipYou]
+              .filter(Boolean)
+              .join(" ")}
           >
             {p.name}
             {you && " (you)"}
-          </Box>
+          </span>
         );
       })}
-    </Stack>
+    </div>
   );
 }
 
@@ -190,6 +118,7 @@ function ChaosCard({ item }: { item: RecapItem }) {
   const index = d.index as number;
   const partial = !!d.partial;
   const rank = d.season_rank as number | null;
+  const at = `${Math.min(100, Math.max(0, index * 10))}%`;
   return (
     <CardShell title="Chaos index" category="chaos">
       <Big
@@ -202,51 +131,18 @@ function ChaosCard({ item }: { item: RecapItem }) {
       />
       {/* Neutral meter: chaos isn't a win or a loss, so no traffic-light
           gradient. */}
-      <Box
+      <div
         role="img"
         aria-label={`Chaos index ${index.toFixed(1)} out of 10`}
-        sx={{
-          position: "relative",
-          height: 8,
-          borderRadius: 1,
-          bgcolor: "action.hover",
-        }}
+        className={styles.meter}
       >
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            width: `${Math.min(100, Math.max(0, index * 10))}%`,
-            borderRadius: 1,
-            // DESIGN.md slate-200.
-            bgcolor: "hsl(220, 20%, 80%)",
-          }}
-        />
-        <Box
-          sx={{
-            position: "absolute",
-            top: -4,
-            left: `${Math.min(100, Math.max(0, index * 10))}%`,
-            width: 4,
-            height: 16,
-            ml: "-2px",
-            borderRadius: 0.5,
-            bgcolor: "text.primary",
-          }}
-        />
-      </Box>
-      <Stack
-        direction="row"
-        sx={{
-          justifyContent: "space-between",
-          fontSize: "0.75rem",
-          color: "text.secondary",
-          mt: -0.5,
-        }}
-      >
+        <div className={styles.meterFill} style={{ width: at }} />
+        <div className={styles.meterMark} style={{ left: at }} />
+      </div>
+      <div className={styles.meterEnds}>
         <span>Favorites held</span>
         <span>Upsets everywhere</span>
-      </Stack>
+      </div>
       <Parts
         rows={[
           ["Underdogs covered", `${d.underdog_covers} of ${d.ats_decided}`],
@@ -320,26 +216,10 @@ function PeopleLine({
   children: React.ReactNode;
 }) {
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{
-        alignItems: "flex-start",
-      }}
-    >
-      <Typography
-        sx={{
-          fontSize: "0.8125rem",
-          fontWeight: 700,
-          color: "text.secondary",
-          minWidth: 26,
-          lineHeight: "20px",
-        }}
-      >
-        {label}
-      </Typography>
-      <Box sx={{ minWidth: 0 }}>{children}</Box>
-    </Stack>
+    <div className={styles.peopleLine}>
+      <p className={styles.peopleLabel}>{label}</p>
+      <div className={styles.peopleList}>{children}</div>
+    </div>
   );
 }
 
@@ -358,38 +238,17 @@ function RecordRows({
   rows: [string, string][];
 }) {
   return (
-    <Box>
-      <Typography
-        sx={{ fontSize: "0.8125rem", color: "text.secondary", mb: 0.5 }}
-      >
-        {label}
-      </Typography>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          columnGap: 2,
-          rowGap: 0.25,
-          alignItems: "baseline",
-        }}
-      >
+    <div>
+      <p className={styles.recordLabel}>{label}</p>
+      <div className={styles.records}>
         {rows.map(([name, value]) => (
-          <Box key={name} sx={{ display: "contents" }}>
-            <Typography variant="body2">{name}</Typography>
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: "1.25rem",
-                textAlign: "right",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {value}
-            </Typography>
-          </Box>
+          <Fragment key={name}>
+            <p className={styles.recordName}>{name}</p>
+            <p className={styles.recordValue}>{value}</p>
+          </Fragment>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -418,10 +277,10 @@ function CrowdCard({ card }: { card: WeekCard }) {
   ];
   const usePopular = !!(popular || popularSeason);
   const top = ((popular?.data.games ?? []) as CrowdGame[])[0];
-  const resultColor = {
-    win: "success.main",
-    loss: "error.main",
-    push: "text.secondary",
+  const resultClass = {
+    win: styles.win,
+    loss: styles.loss,
+    push: styles.push,
   };
   const resultText = { win: "covered", loss: "didn't cover", push: "pushed" };
   return (
@@ -433,26 +292,15 @@ function CrowdCard({ card }: { card: WeekCard }) {
             rows={rows(popular, popularSeason)}
           />
           {top && (
-            <Stack
-              direction="row"
-              spacing={0.75}
-              sx={{
-                alignItems: "center",
-                fontSize: "0.8125rem",
-                color: "text.secondary",
-              }}
-            >
+            <div className={styles.mostPicked}>
               <TeamLogo abbr={top.crowd_team.abbr} size={16} />
               <span>
                 Most picked: {top.crowd_team.abbr} ({top.pick_count}){" "}
-                <Box
-                  component="span"
-                  sx={{ color: resultColor[top.result], fontWeight: 600 }}
-                >
+                <span className={`${styles.result} ${resultClass[top.result]}`}>
                   {resultText[top.result]}
-                </Box>
+                </span>
               </span>
-            </Stack>
+            </div>
           )}
         </>
       ) : (
@@ -482,72 +330,32 @@ function SpreadSeasonCard({ item }: { item: RecapItem }) {
 function SplitsCard({ card, title }: { card: WeekCard; title: string }) {
   return (
     <CardShell title={title} category={card.items[0].category}>
-      <Stack spacing={1}>
+      <div className={styles.splits}>
         {card.items.map((t) => {
           const d = t.data as Record<string, number | string>;
           const p = Number(d.pct);
           const label = typeof d.label === "string" ? d.label : t.short;
           return (
-            <Box key={t.id} title={t.headline}>
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                  justifyContent: "space-between",
-                  fontSize: "0.8125rem",
-                }}
-              >
-                <Box component="span" sx={{ minWidth: 0 }}>
+            <div key={t.id} title={t.headline}>
+              <div className={styles.splitRow}>
+                <span className={styles.splitLabel}>
                   {label.charAt(0).toUpperCase() + label.slice(1)}
-                </Box>
-                <Box
-                  component="span"
-                  sx={{
-                    fontWeight: 600,
-                    whiteSpace: "nowrap",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
+                </span>
+                <span className={styles.splitValue}>
                   {d.successes}-{Number(d.n) - Number(d.successes)} · {pct(p)}
-                </Box>
-              </Stack>
-              <Box
-                sx={{
-                  position: "relative",
-                  height: 6,
-                  mt: 0.25,
-                  borderRadius: 1,
-                  bgcolor: pool[100],
-                  overflow: "hidden",
-                }}
-              >
-                <Box
-                  sx={{
-                    position: "absolute",
-                    inset: 0,
-                    width: `${p * 100}%`,
-                    borderRadius: 1,
-                    // The pool's color: this is the pool's record. The 50%
-                    // tick says above or below; red and green are kept for
-                    // pick results.
-                    bgcolor: pool[500],
-                  }}
+                </span>
+              </div>
+              <div className={styles.splitBar}>
+                <div
+                  className={styles.splitFill}
+                  style={{ width: `${p * 100}%` }}
                 />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    left: "50%",
-                    top: 0,
-                    bottom: 0,
-                    width: "1px",
-                    bgcolor: "text.secondary",
-                  }}
-                />
-              </Box>
-            </Box>
+                <div className={styles.splitTick} />
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
     </CardShell>
   );
 }
@@ -568,44 +376,29 @@ function UpsetCard({
   const believers = (d.believers ?? []) as RecapPerson[];
   return (
     <CardShell title="Upset of the week" category="chaos">
-      <Stack spacing={0.5}>
+      <div className={styles.upsetRows}>
         {[
           [fav, `−${d.points}`, favScore, false],
           [dog, `+${d.points}`, dogScore, true],
         ].map(([team, line, score, won]) => (
-          <Stack
-            key={(team as TeamRef).id}
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: "center",
-            }}
-          >
+          <div key={(team as TeamRef).id} className={styles.upsetRow}>
             <TeamLogo abbr={(team as TeamRef).abbr} size={22} />
-            <Typography sx={{ fontWeight: 700, flex: 1 }}>
+            <p className={styles.upsetTeam}>
               {(team as TeamRef).abbr}{" "}
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: "text.secondary",
-                }}
-              >
-                {line as string}
-              </Typography>
-            </Typography>
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: "1.125rem",
-                color: won ? "text.primary" : "text.disabled",
-              }}
+              <span className={styles.upsetLine}>{line as string}</span>
+            </p>
+            <p
+              className={
+                won
+                  ? styles.upsetScore
+                  : `${styles.upsetScore} ${styles.upsetScoreLost}`
+              }
             >
               {score as number}
-            </Typography>
-          </Stack>
+            </p>
+          </div>
         ))}
-      </Stack>
+      </div>
       <Sub>
         {believers.length} of the {String(d.pool_picks)} who picked this game
         had {dog.abbr}.
@@ -625,42 +418,22 @@ function MoversCard({ card }: { card: WeekCard }) {
   const moves = card.items.flatMap((t) => (t.data.moves ?? []) as RecapMove[]);
   return (
     <CardShell title="Biggest movers" category="users">
-      <Stack spacing={0.5}>
+      <div className={styles.moves}>
         {moves.map((m) => (
-          <Stack
-            key={m.user_id}
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: "center",
-              fontSize: "0.8125rem",
-            }}
-          >
-            <Box
-              component="span"
-              sx={{
-                fontWeight: 700,
-                fontSize: "0.75rem",
-                borderRadius: 0.5,
-                px: 0.5,
-                // DESIGN.md pick-won-fill / covered-green and a pale red /
-                // streak-pill-end; the ▲/▼ carries the direction too.
-                bgcolor: m.change > 0 ? "#e8f5e9" : "#ffebee",
-                color: m.change > 0 ? "#2e7d32" : "#c62828",
-              }}
+          <div key={m.user_id} className={styles.move}>
+            <span
+              className={`${styles.moveChip} ${m.change > 0 ? styles.moveUp : styles.moveDown}`}
             >
               {m.change > 0 ? "▲" : "▼"}
               {Math.abs(m.change)}
-            </Box>
-            <Box component="span" sx={{ flex: 1 }}>
-              {m.name}
-            </Box>
-            <Box component="span" sx={{ color: "text.secondary" }}>
+            </span>
+            <span className={styles.moveName}>{m.name}</span>
+            <span className={styles.moveRanks}>
               {ordinal(m.rank_before)} → {ordinal(m.rank_after)}
-            </Box>
-          </Stack>
+            </span>
+          </div>
         ))}
-      </Stack>
+      </div>
     </CardShell>
   );
 }
@@ -669,39 +442,27 @@ function MoversCard({ card }: { card: WeekCard }) {
 function StreaksCard({ card }: { card: WeekCard }) {
   return (
     <CardShell title="Cover streaks" category="teams">
-      <Stack spacing={1}>
+      <div className={styles.streaks}>
         {card.items.map((t) => {
           const teams = (t.data.teams ?? []) as TeamRef[];
           const miss = t.data.streak_type === "miss";
           return (
-            <Box key={t.id}>
-              <Typography
-                sx={{ fontSize: "0.8125rem", color: "text.secondary" }}
-              >
+            <div key={t.id}>
+              <p className={styles.streakLabel}>
                 {miss ? "Missed" : "Covered"} {String(t.data.length)} straight
-              </Typography>
-              <Stack
-                direction="row"
-                sx={{ flexWrap: "wrap", columnGap: 1.25, rowGap: 0.5, mt: 0.5 }}
-              >
+              </p>
+              <div className={styles.streakTeams}>
                 {teams.map((team) => (
-                  <Stack
-                    key={team.id}
-                    direction="row"
-                    spacing={0.5}
-                    sx={{ alignItems: "center" }}
-                  >
+                  <div key={team.id} className={styles.streakTeam}>
                     <TeamLogo abbr={team.abbr} size={18} />
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {team.abbr}
-                    </Typography>
-                  </Stack>
+                    <p className={styles.streakAbbr}>{team.abbr}</p>
+                  </div>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
     </CardShell>
   );
 }

@@ -1,0 +1,339 @@
+/* The Trends recap cards: an outlined card with a category mark and title,
+   then one big number and a few short lines. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+  background-color: var(--paper);
+  color: var(--text);
+  text-align: left;
+}
+/* DESIGN.md selected-lime, the selected player's row color. */
+.highlight {
+  background-color: #f0f4c3;
+  border-color: #d4dc8a;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.big {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.bigSuffix {
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+.sub {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+/* Label/value pairs. */
+.parts {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.partValue {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chip {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+/* The selected player: an ink ring, plus "(you)" for screen readers and
+   anyone who can't see the ring. */
+.chipYou {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+.honor {
+  background-color: hsl(45, 100%, 90%);
+  color: hsl(35, 80%, 28%);
+}
+/* DESIGN.md streak-pill-end on a pale red: 5.6:1. */
+.lost {
+  background-color: #ffebee;
+  color: #c62828;
+}
+/* DESIGN.md slate-100 with ink. */
+.plain {
+  background-color: var(--gray-100);
+  color: var(--text);
+}
+
+.meter {
+  position: relative;
+  height: 8px;
+  border-radius: 8px;
+  background-color: var(--hover);
+}
+.meterFill {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  /* DESIGN.md slate-200. */
+  background-color: var(--gray-300);
+}
+.meterMark {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 16px;
+  margin-left: -2px;
+  border-radius: 4px;
+  background-color: var(--text);
+}
+.meterEnds {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.peopleLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.peopleLabel {
+  min-width: 26px;
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--text-muted);
+}
+.peopleList {
+  min-width: 0;
+}
+
+.recordLabel {
+  margin: 0 0 4px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.records {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: baseline;
+}
+.recordName {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+}
+.recordValue {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mostPicked {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.result {
+  font-weight: 600;
+}
+.win {
+  color: var(--success);
+}
+.loss {
+  color: var(--error);
+}
+.push {
+  color: var(--text-muted);
+}
+
+.splits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.splitRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-sm);
+}
+.splitLabel {
+  min-width: 0;
+}
+.splitValue {
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.splitBar {
+  position: relative;
+  height: 6px;
+  margin-top: 2px;
+  border-radius: 8px;
+  background-color: var(--pool-100);
+  overflow: hidden;
+}
+/* The pool's color: this is the pool's record. The 50% tick says above or
+   below; red and green are kept for pick results. */
+.splitFill {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background-color: var(--pool-500);
+}
+.splitTick {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--text-muted);
+}
+
+.upsetRows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.upsetRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.upsetTeam {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.upsetLine {
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+.upsetScore {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+}
+.upsetScoreLost {
+  color: var(--text-faint);
+}
+
+.moves {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.move {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+}
+.moveChip {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+/* DESIGN.md pick-won-fill / covered-green and a pale red / streak-pill-end;
+   the ▲/▼ carries the direction too. */
+.moveUp {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+.moveDown {
+  background-color: #ffebee;
+  color: #c62828;
+}
+.moveName {
+  flex: 1;
+}
+.moveRanks {
+  color: var(--text-muted);
+}
+
+.streaks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.streakLabel {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.streakTeams {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  row-gap: 4px;
+  margin-top: 4px;
+}
+.streakTeam {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.streakAbbr {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.43;
+}
