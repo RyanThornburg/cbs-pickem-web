@@ -1,16 +1,13 @@
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
 import { memo, useState } from "react";
 import { PayPeriod, RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { UserAvatar } from "../UserAvatar";
-import { selectedRowSx } from "../UsersTable/selectedRowSx";
 import { LeaderBoard, LeaderList, LeaderRow, leaderList } from "./leadersUtils";
 import { MEDAL } from "./medals";
 import { overallPeriod, periodName } from "../../utils/payPeriods";
+import styles from "./SegmentLeaders.module.css";
 
 type Props = {
   userList: RankedUser[];
@@ -23,121 +20,62 @@ type Props = {
 const Row = ({ row, selected }: { row: LeaderRow; selected: boolean }) => {
   const medal = MEDAL[row.place];
   return (
-    <Box
-      sx={[
-        {
-          display: "grid",
-          // Wide enough for a "T12" pill.
-          gridTemplateColumns: "32px minmax(0, 1fr) auto",
-          gap: 1,
-          alignItems: "center",
-          px: 0.5,
-          py: 0.4,
-          borderRadius: 1,
-          fontVariantNumeric: "tabular-nums",
-        },
-        selected ? selectedRowSx : {},
-      ]}
-    >
-      <Box
-        sx={{
-          // A disc for "1" or "12", a pill for "T12": the label holds the
-          // 12px floor instead of shrinking to fit a fixed circle.
-          minWidth: 24,
-          height: 24,
-          px: 0.5,
-          boxSizing: "border-box",
-          justifySelf: "start",
-          borderRadius: 12,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "0.75rem",
-          fontWeight: 700,
-          bgcolor: medal?.bg ?? "action.hover",
-          color: medal?.fg ?? "text.secondary",
-        }}
+    <div className={selected ? `${styles.row} ${styles.selected}` : styles.row}>
+      <div
+        className={styles.place}
+        style={medal && { backgroundColor: medal.bg, color: medal.fg }}
       >
         {row.placeLabel}
-      </Box>
-      <Box sx={{ minWidth: 0, fontWeight: selected ? 700 : 400 }}>
+      </div>
+      <div
+        className={
+          selected ? `${styles.name} ${styles.nameSelected}` : styles.name
+        }
+      >
         <UserAvatar
           userId={row.id}
           userName={row.name}
           size={20}
           fontSize="0.8125rem"
         />
-      </Box>
-      <Typography
-        component="span"
-        sx={{ fontWeight: 700, fontSize: "0.875rem", textAlign: "right" }}
-      >
+      </div>
+      <span className={styles.score}>
         {row.score}
         {row.covering > 0 && (
-          <Box
-            component="span"
+          <span
             title={`${row.covering} pick${row.covering === 1 ? "" : "s"} covering now`}
-            sx={{
-              ml: 0.5,
-              fontWeight: 500,
-              fontSize: "0.75rem",
-              color: "success.main",
-            }}
+            className={styles.covering}
           >
             +{row.covering}
-          </Box>
+          </span>
         )}
-      </Typography>
-    </Box>
+      </span>
+    </div>
   );
 };
 
 const Rows = ({ list, userId }: { list: LeaderList; userId?: string }) => (
-  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
+  <div className={styles.rows}>
     {list.rows.map((row) => (
       <Row key={row.id} row={row} selected={row.id === userId} />
     ))}
     {list.youRow && (
       <>
-        <Typography
-          sx={{
-            textAlign: "center",
-            color: "text.disabled",
-            fontSize: "0.8125rem",
-            lineHeight: 1,
-          }}
-        >
-          ···
-        </Typography>
+        <p className={styles.gap}>···</p>
         <Row row={list.youRow} selected />
       </>
     )}
-    <Typography variant="caption" sx={{ color: "text.secondary", mt: 0.5 }}>
-      <Box component="span" sx={{ color: "success.main", fontWeight: 600 }}>
-        Green
-      </Box>{" "}
-      = picks covering right now
-    </Typography>
-  </Box>
+    <span className={`${styles.caption} ${styles.legend}`}>
+      <span className={styles.green}>Green</span> = picks covering right now
+    </span>
+  </div>
 );
 
 const CardHead = ({ title, sub }: { title: string; sub: string }) => (
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "baseline",
-      gap: 1,
-      mb: 0.75,
-    }}
-  >
-    <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>
-      {title}
-    </Typography>
-    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-      {sub}
-    </Typography>
-  </Box>
+  <div className={styles.head}>
+    <p className={styles.title}>{title}</p>
+    <span className={styles.caption}>{sub}</span>
+  </div>
 );
 
 // Overall and the shown segment's paid places (the 2nd half today), at the
@@ -177,26 +115,17 @@ const SegmentLeaders = memo(function SegmentLeaders({
   const active = boards.find((b) => b.key === tab) ?? boards[0];
 
   return (
-    <Box sx={{ mb: 1.5, textAlign: "left" }}>
-      <Box
-        sx={{
-          display: { xs: "none", sm: "grid" },
-          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-          gap: 1.5,
-        }}
-      >
+    <div className={styles.leaders}>
+      <div className={styles.pair}>
         {boards.map((b) => (
-          <Paper key={b.key} variant="outlined" sx={{ px: 1.75, py: 1.5 }}>
+          <div key={b.key} className={styles.card}>
             <CardHead title={b.title} sub={b.sub} />
             <Rows list={b.list} userId={userId} />
-          </Paper>
+          </div>
         ))}
-      </Box>
+      </div>
 
-      <Paper
-        variant="outlined"
-        sx={{ display: { xs: "block", sm: "none" }, px: 1.5, pb: 1.5 }}
-      >
+      <div className={`${styles.card} ${styles.tabbed}`}>
         <Tabs
           value={tab}
           onChange={(_, v: LeaderBoard) => setTab(v)}
@@ -206,15 +135,10 @@ const SegmentLeaders = memo(function SegmentLeaders({
             <Tab key={b.key} value={b.key} label={b.title} />
           ))}
         </Tabs>
-        <Typography
-          variant="caption"
-          sx={{ display: "block", color: "text.secondary", mb: 0.75 }}
-        >
-          {active.sub}
-        </Typography>
+        <span className={`${styles.caption} ${styles.sub}`}>{active.sub}</span>
         <Rows list={active.list} userId={userId} />
-      </Paper>
-    </Box>
+      </div>
+    </div>
   );
 });
 

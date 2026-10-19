@@ -1,0 +1,144 @@
+/* Overall and the shown segment's leader cards (SegmentLeaders.tsx): two
+   outlined cards side by side from sm, one card with tabs on phones. */
+.leaders {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.pair {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (min-width: 600px) {
+  .pair {
+    display: grid;
+  }
+}
+
+/* An outlined card, as MUI's outlined Paper drew it. */
+.card {
+  padding: 12px 14px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  color: var(--text);
+}
+
+/* The phone card: the tabs sit flush with its top edge. */
+.tabbed {
+  display: block;
+  padding: 0 12px 12px;
+}
+@media (min-width: 600px) {
+  .tabbed {
+    display: none;
+  }
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.caption {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+/* The phone card's subtitle, under the tabs. */
+.sub {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  display: grid;
+  /* Wide enough for a "T12" pill. */
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 3.2px 4px;
+  border-radius: var(--radius);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The selected player, lime as on User Picks (selectedRowSx). */
+.selected {
+  background-color: #f0f4c3;
+}
+
+/* A disc for "1" or "12", a pill for "T12": the label holds the 12px floor
+   instead of shrinking to fit a fixed circle. Medal colors come in inline. */
+.place {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 4px;
+  border-radius: 96px;
+  background-color: var(--hover);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.name {
+  min-width: 0;
+}
+.nameSelected {
+  font-weight: 700;
+}
+
+.score {
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.covering {
+  margin-left: 4px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--success);
+}
+
+/* Between the paid places and the selected player's own row below them. */
+.gap {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1;
+  text-align: center;
+  color: var(--text-faint);
+}
+
+.legend {
+  margin-top: 4px;
+}
+
+.green {
+  font-weight: 600;
+  color: var(--success);
+}
