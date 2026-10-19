@@ -1,8 +1,4 @@
 import { memo, useMemo, useState } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import { useGameData } from "./hooks/useGameData";
 import { useWeekTotals } from "./hooks/useWeekTotals";
 import { byeTeams } from "../../data/weekGames";
@@ -49,18 +45,7 @@ interface Props {
 }
 
 const GroupHeader = ({ children }: { children: string }) => (
-  <Typography
-    variant="overline"
-    component="h3"
-    sx={{
-      display: "block",
-      fontWeight: 700,
-      color: "text.secondary",
-      letterSpacing: "0.08em",
-    }}
-  >
-    {children}
-  </Typography>
+  <h3 className={styles.groupHeader}>{children}</h3>
 );
 
 const Scoreboard = memo((props: Props) => {
@@ -128,9 +113,7 @@ const Scoreboard = memo((props: Props) => {
     return (
       <>
         {intro()}
-        <Box sx={{ textAlign: "left", color: "text.secondary" }}>
-          No games scheduled for week {week}.
-        </Box>
+        <div className={styles.empty}>No games scheduled for week {week}.</div>
       </>
     );
   }
@@ -196,44 +179,26 @@ const Scoreboard = memo((props: Props) => {
   return (
     <>
       {intro(controls)}
-      <Box
+      <div
         id={`gameWeek-${week}`}
-        sx={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: layout === "full" ? 2 : 1,
-          textAlign: "left",
-        }}
+        className={`${styles.games} ${layout === "full" ? styles.gamesFull : styles.gamesCompact}`}
       >
         <YourPicksStrip games={games} userId={userId} />
         {layout === "full" ? (
           groups.map(({ group, games }) => (
-            <Box
-              key={group}
-              sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                  gap: 1,
-                }}
-              >
+            <div key={group} className={styles.group}>
+              <div className={styles.groupHead}>
                 <GroupHeader>{group}</GroupHeader>
-              </Box>
+              </div>
               {/* Upcoming games are rows even in Full: before kickoff a card
                   has nothing a row doesn't (its linescore is all dashes), and
                   15 empty cards buried the one result between game days. */}
               {group === "Upcoming" ? (
-                <Paper variant="outlined" sx={{ overflow: "hidden" }}>
-                  {games.map(row)}
-                </Paper>
+                <div className={styles.list}>{games.map(row)}</div>
               ) : (
-                <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
+                <div className={styles.cards}>
                   {games.map((game) => (
-                    <Grid key={game.game_id} size={{ xs: 12, md: 6, xl: 4 }}>
+                    <div key={game.game_id} className={styles.cardCell}>
                       <GameCard
                         game={game}
                         userId={userId}
@@ -242,37 +207,26 @@ const Scoreboard = memo((props: Props) => {
                         picksRevealed={picksRevealed(game, deadline, now)}
                         total={totals.get(game.game_id)}
                       />
-                    </Grid>
+                    </div>
                   ))}
-                </Grid>
+                </div>
               )}
-            </Box>
+            </div>
           ))
         ) : (
-          <>
-            <Paper variant="outlined" sx={{ overflow: "hidden" }}>
-              {groups.map(({ group, games }) => (
-                <Box key={group}>
-                  <Box
-                    sx={{
-                      // Matches the compact rows' side padding
-                      px: { xs: 1.25, md: 1.75 },
-                      py: 0.5,
-                      bgcolor: "action.hover",
-                      borderBottom: 1,
-                      borderColor: "divider",
-                    }}
-                  >
-                    <GroupHeader>{group}</GroupHeader>
-                  </Box>
-                  {games.map(row)}
-                </Box>
-              ))}
-            </Paper>
-          </>
+          <div className={styles.list}>
+            {groups.map(({ group, games }) => (
+              <div key={group}>
+                <div className={styles.listHead}>
+                  <GroupHeader>{group}</GroupHeader>
+                </div>
+                {games.map(row)}
+              </div>
+            ))}
+          </div>
         )}
         <ByeTeams teams={byes} />
-      </Box>
+      </div>
     </>
   );
 });

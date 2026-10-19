@@ -1,12 +1,11 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
-import Typography from "@mui/material/Typography";
 import { Game, UserId } from "../../../../types";
 import { UserAvatar } from "../../../UserAvatar";
 import { getCover, Side } from "../../utils/scoreboardUtils";
 import { TeamLogo } from "../../../shared/TeamLogo";
+import styles from "./PickSplitBar.module.css";
 
 interface Props {
   game: Game;
@@ -29,40 +28,24 @@ const PickerList = ({
   users: UserId[];
   userId?: string;
 }) => (
-  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}>
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 0.75,
-        fontWeight: 700,
-        fontSize: "0.875rem",
-      }}
-    >
+  <div className={styles.pickers}>
+    <div className={styles.pickersHead}>
       <TeamLogo abbr={abbr} size={18} />
       {abbr} · {users.length}
-    </Box>
+    </div>
     {users.length === 0 ? (
-      <Typography
-        variant="caption"
-        sx={{ fontStyle: "italic", color: "text.secondary" }}
-      >
-        Nobody
-      </Typography>
+      <span className={styles.nobody}>Nobody</span>
     ) : (
       [...users].sort(byName).map((user) => (
-        <Box
+        <div
           key={user.id}
-          sx={{
-            fontWeight: user.id === userId ? 700 : 400,
-            color: user.id === userId ? "primary.main" : "text.primary",
-          }}
+          className={user.id === userId ? styles.you : styles.picker}
         >
           <UserAvatar userId={user.id} userName={user.name} size={18} />
-        </Box>
+        </div>
       ))
     )}
-  </Box>
+  </div>
 );
 
 // Who picked each side, colored by who's winning the pick right now. Every
@@ -81,45 +64,36 @@ export const PickSplitBar = ({
 
   if (total === 0) {
     if (!picksRevealed) return null;
-    return (
-      <Typography variant="caption" sx={{ color: "text.secondary" }}>
-        Nobody picked this game
-      </Typography>
-    );
+    return <span className={styles.caption}>Nobody picked this game</span>;
   }
 
   const cover = getCover(game);
-  const colorFor = (side: Side) =>
+  // Who's winning the pick: green for the side covering (or that covered),
+  // red for the other, grey with no cover yet.
+  const result = (side: Side) =>
     !cover || cover.side === null
-      ? "text.disabled"
+      ? "even"
       : cover.side === side
-        ? "success.main"
-        : "error.main";
+        ? "winning"
+        : "losing";
   // Each side's label takes the green/red of its half of the bar, a step
   // darker so the text stays readable: winning (or won) the pick vs. losing
   // (or lost) it.
-  const labelColor = (side: Side) =>
-    !cover || cover.side === null
-      ? "text.secondary"
-      : cover.side === side
-        ? "success.dark"
-        : "error.dark";
   const count = (
     side: Side,
     abbr: string,
     n: number,
     align: "left" | "right"
   ) => (
-    <Box
-      component="span"
-      sx={{
-        display: "inline-flex",
-        gap: 0.5,
-        alignItems: "center",
-        flexDirection: align === "right" ? "row-reverse" : "row",
-        color: labelColor(side),
-        fontWeight: cover?.side ? 600 : 400,
-      }}
+    <span
+      className={[
+        styles.count,
+        styles[`${result(side)}Label`],
+        align === "right" && styles.countRight,
+        cover?.side && styles.countDecided,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <span>
         {align === "left" ? (
@@ -132,12 +106,12 @@ export const PickSplitBar = ({
           </>
         )}
       </span>
-    </Box>
+    </span>
   );
 
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>
-      <Box>
+      <div>
         <Tooltip
           open={open}
           onOpen={() => setOpen(true)}
@@ -158,9 +132,7 @@ export const PickSplitBar = ({
             },
           }}
           title={
-            <Box
-              sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}
-            >
+            <div className={styles.tooltipLists}>
               <PickerList
                 abbr={game.away_team.abbr}
                 users={away}
@@ -171,10 +143,10 @@ export const PickSplitBar = ({
                 users={home}
                 userId={userId}
               />
-            </Box>
+            </div>
           }
         >
-          <Box
+          <div
             role="button"
             tabIndex={0}
             aria-label={`${away.length} picked ${game.away_team.abbr}, ${home.length} picked ${game.home_team.abbr}. Show names.`}
@@ -182,25 +154,9 @@ export const PickSplitBar = ({
             onKeyDown={(e) =>
               (e.key === "Enter" || e.key === " ") && setOpen((o) => !o)
             }
-            sx={{
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              gap: 0.5,
-              borderRadius: 1,
-              p: "2px",
-              "&:focus-visible": { outline: 2, outlineColor: "primary.main" },
-            }}
+            className={styles.trigger}
           >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 1,
-                fontSize: "0.8125rem",
-                color: "text.secondary",
-              }}
-            >
+            <div className={styles.counts}>
               {count("away", game.away_team.abbr, away.length, "left")}
               {!compact && totalUsers ? (
                 <span>
@@ -208,33 +164,20 @@ export const PickSplitBar = ({
                 </span>
               ) : null}
               {count("home", game.home_team.abbr, home.length, "right")}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                height: 6,
-                borderRadius: 3,
-                overflow: "hidden",
-                bgcolor: "action.hover",
-              }}
-            >
-              <Box
-                sx={{
-                  width: `${(away.length / total) * 100}%`,
-                  bgcolor: colorFor("away"),
-                }}
+            </div>
+            <div className={styles.bar}>
+              <div
+                className={styles[result("away")]}
+                style={{ width: `${(away.length / total) * 100}%` }}
               />
-              <Box
-                sx={{
-                  width: `${(home.length / total) * 100}%`,
-                  bgcolor: colorFor("home"),
-                  opacity: 0.85,
-                }}
+              <div
+                className={`${styles[result("home")]} ${styles.homeHalf}`}
+                style={{ width: `${(home.length / total) * 100}%` }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         </Tooltip>
-      </Box>
+      </div>
     </ClickAwayListener>
   );
 };

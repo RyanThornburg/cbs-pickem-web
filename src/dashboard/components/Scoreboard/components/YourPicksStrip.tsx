@@ -1,6 +1,5 @@
-import Box from "@mui/material/Box";
+import { CSSProperties } from "react";
 import ButtonBase from "@mui/material/ButtonBase";
-import Typography from "@mui/material/Typography";
 import { alpha, Theme } from "@mui/material/styles";
 import { Game } from "../../../types";
 import {
@@ -15,16 +14,14 @@ import {
 } from "../utils/scoreboardUtils";
 import { StatusText } from "./shared/StatusText";
 import { TeamLogo } from "../../shared/TeamLogo";
+import styles from "./YourPicksStrip.module.css";
 
 // The id each game's card/row carries, so a chip can jump to it.
 export const gameAnchorId = (game: Game) => `scoreboard-game-${game.game_id}`;
 
 // On the card/row: land below the sticky desktop tab row, and no focus ring
 // for the programmatic focus (the scroll already shows where you are).
-export const JUMP_TARGET_SX = {
-  scrollMarginTop: { xs: 12, md: 72 },
-  "&:focus": { outline: "none" },
-} as const;
+export const jumpTargetClass = styles.jumpTarget;
 
 // Same colors as the your-pick badge: tint for the fill/ring, ink for text.
 const TONE: Record<PickState, (t: Theme) => { ink: string; tint: string }> = {
@@ -95,55 +92,16 @@ const Chip = ({ game, side }: { game: Game; side: Side }) => {
         };
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 0.75,
-          fontSize: "0.75rem",
-          color: "text.secondary",
-          "& > span:first-of-type": { fontSize: "0.75rem" },
-        }}
-      >
+      <div className={styles.chipTop}>
         <StatusText game={game} />
-        <Box
-          component="span"
-          sx={{ whiteSpace: "nowrap", display: { xs: "none", sm: "inline" } }}
-        >
-          {where}
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 0.75,
-          fontWeight: 700,
-          fontSize: "1.125rem",
-          lineHeight: 1.3,
-          whiteSpace: "nowrap",
-        }}
-      >
+        <span className={styles.where}>{where}</span>
+      </div>
+      <div className={styles.chipTeam}>
         <TeamLogo abbr={team.abbr} size={18} />
         {team.abbr}
-        <Box
-          component="span"
-          sx={{
-            fontWeight: 500,
-            fontSize: "0.875rem",
-            color: "text.secondary",
-          }}
-        >
-          {line}
-        </Box>
-      </Box>
-      <Box
-        className="state"
-        sx={{ fontSize: "0.8125rem", fontWeight: 600, lineHeight: 1.35 }}
-      >
-        {full}
-      </Box>
+        <span className={styles.chipLine}>{line}</span>
+      </div>
+      <div className={`state ${styles.state}`}>{full}</div>
     </ButtonBase>
   );
 };
@@ -162,60 +120,21 @@ export const YourPicksStrip = ({
   if (!picks.length) return null;
 
   return (
-    <Box
-      component="section"
-      aria-labelledby="your-picks-heading"
-      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          flexWrap: "wrap",
-          columnGap: 2,
-        }}
-      >
-        <Typography
-          id="your-picks-heading"
-          component="h3"
-          sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-        >
+    <section aria-labelledby="your-picks-heading" className={styles.strip}>
+      <div className={styles.head}>
+        <h3 id="your-picks-heading" className={styles.title}>
           Your picks
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: "0.8125rem",
-            color: "text.secondary",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          {pickTally(picks)}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 1,
-          // One row of five from md; below that the chips scroll sideways
-          // rather than stacking into a tall block above the games.
-          gridTemplateColumns: {
-            md: `repeat(${Math.max(picks.length, 5)}, minmax(0, 1fr))`,
-          },
-          gridAutoFlow: { xs: "column", md: "row" },
-          gridAutoColumns: { xs: "minmax(140px, 1fr)", md: undefined },
-          overflowX: { xs: "auto", md: "visible" },
-          // room for the focus ring and close-game ring inside the scroller
-          p: { xs: "3px", md: 0 },
-          m: { xs: "-3px", md: 0 },
-          scrollSnapType: { xs: "x proximity", md: "none" },
-          "& > *": { scrollSnapAlign: "start" },
-        }}
+        </h3>
+        <p className={styles.tally}>{pickTally(picks)}</p>
+      </div>
+      <div
+        className={styles.chips}
+        style={{ "--chips": Math.max(picks.length, 5) } as CSSProperties}
       >
         {picks.map(({ game, side }) => (
           <Chip key={game.game_id} game={game} side={side} />
         ))}
-      </Box>
-    </Box>
+      </div>
+    </section>
   );
 };

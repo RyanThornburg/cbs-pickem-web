@@ -1,10 +1,5 @@
 import { memo, useState } from "react";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
 import Chip from "@mui/material/Chip";
-import Typography from "@mui/material/Typography";
-import PlaceIcon from "@mui/icons-material/Place";
-import PublicIcon from "@mui/icons-material/Public";
 import { Game, GameStatus, LinescoreSide } from "../../../../types";
 import { getVenueBadge } from "../../../../utils/venue";
 import { roofText, weatherLine } from "../../../../utils/weatherText";
@@ -20,6 +15,7 @@ import {
 } from "../../utils/scoreboardUtils";
 import { TeamLink } from "../../../shared/TeamLink";
 import { TeamLogo } from "../../../shared/TeamLogo";
+import { Icon } from "../../../../ui/Icon";
 import { BallIcon } from "../shared/BallIcon";
 import { Timeouts } from "../shared/Timeouts";
 import { AtsTag } from "../shared/AtsTag";
@@ -28,12 +24,13 @@ import { PickSplitBar } from "../shared/PickSplitBar";
 import { YourPickBadge } from "../shared/YourPickBadge";
 import { HighlightFlags } from "../shared/HighlightFlags";
 import { StatusText, tvName } from "../shared/StatusText";
-import { highlightSx } from "../shared/highlightSx";
+import { highlightClass } from "../shared/highlight";
 import { GameDetails } from "../GameDetails";
 import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameRecapTags } from "../shared/GameRecapTags";
 import { GameTag } from "../../../Recap/recapBadges";
-import { gameAnchorId, JUMP_TARGET_SX } from "../YourPicksStrip";
+import { gameAnchorId, jumpTargetClass } from "../YourPicksStrip";
+import styles from "./GameCard.module.css";
 
 export interface GameCardProps {
   game: Game;
@@ -60,17 +57,13 @@ const DownDistance = ({ game }: { game: Game }) => {
   if (!live) return null;
   // down is -1 on a try/kickoff, with no text
   if (live.down != null && live.down <= 0) {
-    return (
-      <Box component="span" sx={{ fontWeight: 600 }}>
-        Try / kickoff
-      </Box>
-    );
+    return <span className={styles.down}>Try / kickoff</span>;
   }
   if (!live.down_distance_text) return null;
   return (
-    <Box component="span" sx={{ fontWeight: live.down === 4 ? 700 : 600 }}>
+    <span className={live.down === 4 ? styles.fourthDown : styles.down}>
       {live.down_distance_text}
-    </Box>
+    </span>
   );
 };
 
@@ -90,17 +83,7 @@ const Situation = ({ game }: { game: Game }) => {
 
   if (!inProgress && !lastPlay) return null;
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 0.75,
-        bgcolor: "action.hover",
-        borderRadius: 2,
-        p: 1.25,
-        fontSize: "0.875rem",
-      }}
-    >
+    <div className={styles.situation}>
       {inProgress && (
         <>
           <DownDistance game={game} />
@@ -108,27 +91,13 @@ const Situation = ({ game }: { game: Game }) => {
         </>
       )}
       {lastPlay && (
-        <Box>
-          <Box
-            component="span"
-            sx={{ color: "text.secondary", fontWeight: 600, mr: 0.5 }}
-          >
-            Last play
-          </Box>
+        <div>
+          <span className={styles.lastPlayLabel}>Last play</span>
           {lastPlay}
-        </Box>
+        </div>
       )}
       {inProgress && (live.drive_text || leader || weather) && (
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            columnGap: 1.5,
-            rowGap: 0.25,
-            color: "text.secondary",
-            fontSize: "0.8125rem",
-          }}
-        >
+        <div className={styles.driveLine}>
           {live.drive_text && (
             <span>
               Drive: {live.drive_text}
@@ -145,9 +114,9 @@ const Situation = ({ game }: { game: Game }) => {
           {weather && (
             <span>Now: {weatherLine(weather, { precip: false })}</span>
           )}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 
@@ -155,10 +124,7 @@ const PregameLine = ({ game }: { game: Game }) => {
   const f = game.forecast;
   const outdoor = game.stadium?.roof_type === "Open";
   return (
-    <Typography
-      variant="body2"
-      sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
-    >
+    <p className={styles.pregame}>
       {f && outdoor
         ? `Forecast: ${weatherLine(f)}`
         : [
@@ -167,7 +133,7 @@ const PregameLine = ({ game }: { game: Game }) => {
           ]
             .filter(Boolean)
             .join(" · ")}
-    </Typography>
+    </p>
   );
 };
 
@@ -201,65 +167,20 @@ export const GameCard = memo(
       const other = side === "home" ? game.away_score : game.home_score;
       const line = game.linescore?.[side];
       return (
-        <Box key={side} sx={{ display: "contents" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.25,
-              minWidth: 0,
-            }}
-          >
-            <TeamLink abbr={team.abbr} sx={{ flexShrink: 0 }}>
+        <div key={side} className={styles.teamRow}>
+          <div className={styles.team}>
+            <TeamLink abbr={team.abbr} className={styles.logoLink}>
               <TeamLogo abbr={team.abbr} size={30} />
             </TeamLink>
-            <Box sx={{ minWidth: 0 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 0.75,
-                  minWidth: 0,
-                }}
-              >
-                <TeamLink
-                  abbr={team.abbr}
-                  sx={{ alignItems: "baseline", gap: 0.75 }}
-                >
-                  <Typography
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: "1.125rem",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {team.abbr}
-                  </Typography>
-                  {team.name && (
-                    <Typography
-                      noWrap
-                      sx={{
-                        color: "text.secondary",
-                        fontSize: "0.8125rem",
-                        display: { xs: "none", sm: "block" },
-                      }}
-                    >
-                      {team.name}
-                    </Typography>
-                  )}
+            <div className={styles.teamText}>
+              <div className={styles.teamNameRow}>
+                <TeamLink abbr={team.abbr} className={styles.nameLink}>
+                  <p className={styles.abbr}>{team.abbr}</p>
+                  {team.name && <p className={styles.name}>{team.name}</p>}
                 </TeamLink>
                 {hasBall(game, side) && <BallIcon abbr={team.abbr} />}
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.75,
-                  flexWrap: "wrap",
-                  fontSize: "0.75rem",
-                  color: "text.secondary",
-                }}
-              >
+              </div>
+              <div className={styles.teamMeta}>
                 <span>
                   {[recordText(game, side), teamLineText(game, side, total)]
                     .filter(Boolean)
@@ -275,66 +196,37 @@ export const GameCard = memo(
                     }
                   />
                 )}
-              </Box>
-            </Box>
-          </Box>
+              </div>
+            </div>
+          </div>
           {periods.map((p) => (
-            <Box
-              key={p}
-              sx={{
-                textAlign: "center",
-                color: "text.secondary",
-                fontSize: "0.875rem",
-              }}
-            >
+            <div key={p} className={styles.period}>
               {line?.[p] ?? "–"}
-            </Box>
+            </div>
           ))}
-          <Typography
-            sx={{
-              textAlign: "right",
-              fontWeight: 700,
-              fontSize: "1.75rem",
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-              color: final && score < other ? "text.secondary" : "text.primary",
-            }}
+          <p
+            className={`${styles.score} ${final && score < other ? styles.lost : ""}`}
           >
             {started ? score : ""}
-          </Typography>
-        </Box>
+          </p>
+        </div>
       );
     };
 
     return (
-      <Card
-        variant="outlined"
+      <div
         id={gameAnchorId(game)}
         tabIndex={-1}
-        sx={[
-          {
-            p: 1.75,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1.5,
-            ...JUMP_TARGET_SX,
-          },
-          !border &&
-            !!pickSide &&
-            ((t) => ({ borderColor: t.palette.primary.main })),
-          highlightSx(border),
-        ]}
+        className={[
+          styles.card,
+          jumpTargetClass,
+          !border && !!pickSide && styles.picked,
+          highlightClass(border),
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            flexWrap: "wrap",
-            fontSize: "0.8125rem",
-            color: "text.secondary",
-          }}
-        >
+        <div className={styles.header}>
           <StatusText game={game} />
           <span>{tvName(game.tv_network)}</span>
           <HighlightFlags highlight={highlight} />
@@ -342,57 +234,40 @@ export const GameCard = memo(
           {venueBadge && (
             <Chip
               icon={
-                venueBadge.kind === "international" ? (
-                  <PublicIcon />
-                ) : (
-                  <PlaceIcon />
-                )
+                // Caption-sized, as the theme sizes a chip's MUI icons (by
+                // their MuiSvgIcon class, which this one doesn't carry).
+                <Icon
+                  name={
+                    venueBadge.kind === "international" ? "Public" : "Place"
+                  }
+                  style={{ fontSize: "0.75rem" }}
+                />
               }
               label={venueBadge.label}
               size="small"
               variant="outlined"
             />
           )}
-          <Box sx={{ flex: 1 }} />
+          <div className={styles.spacer} />
           {pickSide && <YourPickBadge game={game} side={pickSide} />}
-        </Box>
+        </div>
 
-        <Box
-          sx={{
-            display: "grid",
+        <div
+          className={styles.linescore}
+          style={{
             gridTemplateColumns: `minmax(0, 1fr) repeat(${periods.length}, 22px) 48px`,
-            alignItems: "center",
-            columnGap: 0.75,
-            rowGap: 1,
           }}
         >
           <span />
           {periods.map((p) => (
-            <Box
-              key={p}
-              sx={{
-                textAlign: "center",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                color: "text.secondary",
-              }}
-            >
+            <div key={p} className={styles.periodHead}>
               {p === "ot" ? "OT" : p.slice(1)}
-            </Box>
+            </div>
           ))}
-          <Box
-            sx={{
-              textAlign: "right",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              color: "text.secondary",
-            }}
-          >
-            T
-          </Box>
+          <div className={`${styles.periodHead} ${styles.totalHead}`}>T</div>
           {teamRow("away")}
           {teamRow("home")}
-        </Box>
+        </div>
 
         <Situation game={game} />
         {game.status === GameStatus.Scheduled && <PregameLine game={game} />}
@@ -405,12 +280,12 @@ export const GameCard = memo(
         />
 
         {(final || isLiveStatus(game.status)) && (
-          <Box sx={{ borderTop: 1, borderColor: "divider", pt: 0.5 }}>
+          <div className={styles.details}>
             <DetailsToggle open={open} onToggle={() => setOpen((o) => !o)} />
             {open && <GameDetails game={game} />}
-          </Box>
+          </div>
         )}
-      </Card>
+      </div>
     );
   }
 );

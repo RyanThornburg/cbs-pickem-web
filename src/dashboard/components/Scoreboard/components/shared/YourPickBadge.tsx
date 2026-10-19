@@ -1,10 +1,3 @@
-import Box from "@mui/material/Box";
-import { alpha, Theme } from "@mui/material/styles";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
-import CloseIcon from "@mui/icons-material/Close";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { Game } from "../../../../types";
 import {
   getPickState,
@@ -12,49 +5,19 @@ import {
   pickStateText,
   Side,
 } from "../../utils/scoreboardUtils";
+import { Icon, IconName } from "../../../../ui/Icon";
+import styles from "./YourPickBadge.module.css";
 
 // Deliberately not the flame/snowflake -- those mean weekly form on User
 // Picks (WeeklyFormIcon). Check/✗ match what the old scoreboard used.
-// `tint` colors the fill and ring; `ink` (one step darker) is the text, so
-// it stays readable on the tint and inside a close game's amber row.
-// A push is neutral: nobody won or lost it.
-const STATE: Record<
-  PickState,
-  {
-    ink: (t: Theme) => string;
-    tint: (t: Theme) => string;
-    Icon?: typeof CloseIcon;
-  }
-> = {
-  notStarted: {
-    ink: (t) => t.palette.primary.dark,
-    tint: (t) => t.palette.primary.main,
-  },
-  covering: {
-    ink: (t) => t.palette.success.dark,
-    tint: (t) => t.palette.success.main,
-    Icon: TrendingUpIcon,
-  },
-  notCovering: {
-    ink: (t) => t.palette.error.dark,
-    tint: (t) => t.palette.error.main,
-    Icon: TrendingDownIcon,
-  },
-  push: {
-    ink: (t) => t.palette.text.primary,
-    tint: (t) => t.palette.text.secondary,
-    Icon: RemoveIcon,
-  },
-  won: {
-    ink: (t) => t.palette.success.dark,
-    tint: (t) => t.palette.success.main,
-    Icon: CheckCircleOutlineIcon,
-  },
-  lost: {
-    ink: (t) => t.palette.error.dark,
-    tint: (t) => t.palette.error.main,
-    Icon: CloseIcon,
-  },
+// The colors are in YourPickBadge.module.css, one class per state.
+const ICONS: Record<PickState, IconName | undefined> = {
+  notStarted: undefined,
+  covering: "TrendingUp",
+  notCovering: "TrendingDown",
+  push: "Remove",
+  won: "CheckCircleOutlined",
+  lost: "Close",
 };
 
 interface Props {
@@ -65,36 +28,23 @@ interface Props {
 
 export const YourPickBadge = ({ game, side, compact }: Props) => {
   const state = getPickState(game, side);
-  const { ink, tint, Icon } = STATE[state];
+  const icon = ICONS[state];
   const { full, short } = pickStateText(game, side);
   const abbr = (side === "home" ? game.home_team : game.away_team).abbr;
   const label = compact
     ? `You: ${abbr}${short ? ` · ${short}` : ""}`
-    : `Your pick: ${abbr}${Icon ? ` · ${full}` : ""}`;
+    : `Your pick: ${abbr}${icon ? ` · ${full}` : ""}`;
 
   return (
-    <Box
-      component="span"
+    <span
       title={`Your pick: ${abbr}. ${full}.`}
       aria-label={`Your pick: ${abbr}, ${full}`}
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 0.5,
-        px: 1,
-        py: "2px",
-        borderRadius: 999,
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        whiteSpace: "nowrap",
-        color: ink,
-        bgcolor: (t) => alpha(tint(t), 0.12),
-        boxShadow: (t) =>
-          Icon ? `inset 0 0 0 1px ${alpha(tint(t), 0.6)}` : "none",
-      }}
+      className={[styles.badge, styles[state], icon && styles.ringed]
+        .filter(Boolean)
+        .join(" ")}
     >
       {label}
-      {Icon && <Icon sx={{ fontSize: "0.95rem" }} />}
-    </Box>
+      {icon && <Icon name={icon} className={styles.icon} />}
+    </span>
   );
 };

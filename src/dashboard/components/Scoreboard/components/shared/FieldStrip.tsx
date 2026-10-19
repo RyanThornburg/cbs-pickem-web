@@ -1,9 +1,9 @@
-import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import { Game, Possession } from "../../../../types";
 import { getBallSpot } from "../../utils/scoreboardUtils";
 import { teamColor } from "../../utils/teamData";
 import { BALL_BROWN } from "./BallIcon";
+import styles from "./FieldStrip.module.css";
 
 interface Props {
   game: Game;
@@ -31,87 +31,49 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
   // one image to screen readers, so the labels are decoration either way.
   const labelled = height >= 20;
   const endZone = (abbr: string) => (
-    <Box
+    <div
       aria-hidden
-      sx={{
-        bgcolor: teamColor(abbr),
-        color: "#fff",
-        display: "grid",
-        placeItems: "center",
-        fontSize: 12,
-        fontWeight: 700,
-        lineHeight: 1,
-        overflow: "hidden",
-      }}
+      className={styles.endZone}
+      style={{ backgroundColor: teamColor(abbr) }}
     >
       {labelled && abbr}
-    </Box>
+    </div>
   );
+  const hitArea = Math.max(24, height * 1.4);
 
   return (
-    <Box
+    <div
       role="img"
       aria-label={
         spot
           ? `Ball on the ${spot.label}${spot.driveStartLabel ? `, drive started at the ${spot.driveStartLabel}` : ""}`
           : "No ball spot"
       }
-      sx={(theme) => ({
-        display: "grid",
-        gridTemplateColumns: "8% 84% 8%",
-        height,
-        borderRadius: "4px",
-        overflow: "hidden",
-        bgcolor: "#2f7a45",
-        ...theme.applyStyles("dark", { bgcolor: "#1f5a33" }),
-      })}
+      className={styles.strip}
+      style={{ height }}
     >
       {endZone(game.away_team.abbr)}
-      <Box
-        sx={{
-          position: "relative",
-          opacity: spot ? 1 : 0.55,
-          backgroundImage:
-            "repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(255,255,255,0.3) calc(10% - 1px) 10%)",
-        }}
-      >
+      <div className={styles.field} style={{ opacity: spot ? 1 : 0.55 }}>
         {spot && (
           <>
             {spot.driveStartPct != null && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "22%",
-                  bottom: "22%",
+              <div
+                className={styles.drive}
+                style={{
                   left: `${Math.min(spot.driveStartPct, spot.ballPct)}%`,
                   width: `${Math.abs(spot.ballPct - spot.driveStartPct)}%`,
-                  bgcolor: teamColor(offense.abbr),
-                  opacity: 0.75,
-                  boxShadow: "0 0 0 1px rgba(255,255,255,0.5)",
-                  borderRadius: "2px",
+                  backgroundColor: teamColor(offense.abbr),
                 }}
               />
             )}
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                width: 2,
-                left: `${spot.ballPct}%`,
-                bgcolor: "#4aa3ff",
-              }}
+            <div
+              className={`${styles.marker} ${styles.scrimmage}`}
+              style={{ left: `${spot.ballPct}%` }}
             />
             {spot.firstDownPct != null && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  bottom: 0,
-                  width: 2,
-                  left: `${spot.firstDownPct}%`,
-                  bgcolor: "#ffd23f",
-                }}
+              <div
+                className={`${styles.marker} ${styles.firstDown}`}
+                style={{ left: `${spot.firstDownPct}%` }}
               />
             )}
             <Tooltip
@@ -123,41 +85,30 @@ export const FieldStrip = ({ game, height = 22 }: Props) => {
             >
               {/* Invisible hit area around the ball -- the ball itself is too
                   small to hover or tap reliably */}
-              <Box
+              <div
                 tabIndex={0}
                 aria-label={ballTooltip}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
+                className={styles.ballHit}
+                style={{
                   left: `${spot.ballPct}%`,
-                  width: Math.max(24, height * 1.4),
-                  height: Math.max(24, height * 1.4),
-                  transform: "translate(-50%, -50%)",
-                  display: "grid",
-                  placeItems: "center",
-                  cursor: "default",
-                  zIndex: 1,
-                  "&:focus-visible": {
-                    outline: "2px solid #fff",
-                    borderRadius: "50%",
-                  },
+                  width: hitArea,
+                  height: hitArea,
                 }}
               >
-                <Box
-                  sx={{
+                <div
+                  className={styles.ball}
+                  style={{
                     width: height * 0.55,
                     height: height * 0.38,
-                    borderRadius: "50%",
-                    bgcolor: BALL_BROWN,
-                    border: "1.5px solid #fff",
+                    backgroundColor: BALL_BROWN,
                   }}
                 />
-              </Box>
+              </div>
             </Tooltip>
           </>
         )}
-      </Box>
+      </div>
       {endZone(game.home_team.abbr)}
-    </Box>
+    </div>
   );
 };

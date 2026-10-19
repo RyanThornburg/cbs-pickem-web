@@ -1,6 +1,4 @@
-import { Fragment, memo, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { CSSProperties, Fragment, memo, useState } from "react";
 import { Game, GameStatus } from "../../../../types";
 import { roofText, weatherParts } from "../../../../utils/weatherText";
 import {
@@ -22,12 +20,13 @@ import { PickSplitBar } from "../shared/PickSplitBar";
 import { YourPickBadge } from "../shared/YourPickBadge";
 import { HighlightFlags } from "../shared/HighlightFlags";
 import { StatusText, tvName } from "../shared/StatusText";
-import { highlightSx } from "../shared/highlightSx";
+import { highlightClass } from "../shared/highlight";
 import { DetailsToggle } from "../shared/DetailsToggle";
 import { GameDetails } from "../GameDetails";
 import { GameRecapTags } from "../shared/GameRecapTags";
 import { GameTag } from "../../../Recap/recapBadges";
-import { gameAnchorId, JUMP_TARGET_SX } from "../YourPicksStrip";
+import { gameAnchorId, jumpTargetClass } from "../YourPicksStrip";
+import styles from "./GameRow.module.css";
 
 export interface GameRowProps {
   game: Game;
@@ -51,33 +50,17 @@ const Middle = ({ game }: { game: Game }) => {
         ? "Try / kickoff"
         : (live?.down_distance_text ?? "");
     return (
-      <Box
-        sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 0 }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 1,
-            fontSize: "0.8125rem",
-            minHeight: 20,
-          }}
-        >
-          <Box
-            component="span"
-            sx={{
-              fontWeight: live?.down === 4 ? 700 : 600,
-            }}
-          >
+      <div className={styles.field}>
+        <div className={styles.downRow}>
+          <span className={live?.down === 4 ? styles.fourthDown : styles.down}>
             {down}
-          </Box>
-          <Box sx={{ display: "flex", gap: 0.5 }}>
+          </span>
+          <div className={styles.flags}>
             <HighlightFlags highlight={getGameHighlight(game)} />
-          </Box>
-        </Box>
+          </div>
+        </div>
         <FieldStrip game={game} height={16} />
-      </Box>
+      </div>
     );
   }
   if (
@@ -85,12 +68,12 @@ const Middle = ({ game }: { game: Game }) => {
     game.status === GameStatus.Delayed
   ) {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+      <div className={styles.paused}>
+        <span className={styles.caption}>
           {game.status === GameStatus.Halftime ? "Halftime" : "Delayed"}
-        </Typography>
+        </span>
         <FieldStrip game={game} height={16} />
-      </Box>
+      </div>
     );
   }
   const f = game.forecast;
@@ -99,51 +82,31 @@ const Middle = ({ game }: { game: Game }) => {
     // column shows "Wind 5 mph W" on a second line instead of "Wind 5 m…".
     const parts = weatherParts(f, { precip: false });
     return (
-      <Typography
-        variant="body2"
-        sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
-      >
+      <p className={styles.note}>
         {parts.map((part, i) => (
           <Fragment key={part}>
-            <Box component="span" sx={{ whiteSpace: "nowrap" }}>
+            <span className={styles.part}>
               {part}
               {i < parts.length - 1 && " ·"}
-            </Box>
+            </span>
             {i < parts.length - 1 && " "}
           </Fragment>
         ))}
-      </Typography>
+      </p>
     );
   }
   // Indoors: the stadium and its roof, as on the cards and Games. A long
   // name ellipsizes; the roof always shows.
   return (
-    <Typography
-      variant="body2"
-      sx={{
-        display: "flex",
-        minWidth: 0,
-        color: "text.secondary",
-        fontSize: "0.8125rem",
-      }}
-    >
-      <Box
-        component="span"
-        sx={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {game.stadium?.name ?? ""}
-      </Box>
+    <p className={`${styles.note} ${styles.indoor}`}>
+      <span className={styles.stadium}>{game.stadium?.name ?? ""}</span>
       {game.stadium && game.stadium.roof_type !== "Open" && (
-        <Box component="span" sx={{ flexShrink: 0, whiteSpace: "pre" }}>
+        <span className={styles.roof}>
           {game.stadium.name ? " · " : ""}
           {roofText(game.stadium.roof_type)}
-        </Box>
+        </span>
       )}
-    </Typography>
+    </p>
   );
 };
 
@@ -160,59 +123,24 @@ export const GameRow = memo((props: GameRowProps) => {
     const score = side === "home" ? game.home_score : game.away_score;
     const other = side === "home" ? game.away_score : game.home_score;
     return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: { xs: 0.5, md: 1 },
-          minWidth: 0,
-        }}
-      >
-        <TeamLink
-          abbr={team.abbr}
-          sx={{ gap: { xs: 0.5, md: 1 }, flexShrink: 0 }}
-        >
+      <div className={styles.teamLine}>
+        <TeamLink abbr={team.abbr} className={styles.teamLink}>
           <TeamLogo abbr={team.abbr} size={22} decorative />
-          <Typography sx={{ fontWeight: 700, width: 38, flexShrink: 0 }}>
-            {team.abbr}
-          </Typography>
+          <p className={styles.abbr}>{team.abbr}</p>
         </TeamLink>
         {/* A fixed slot, so the line, tag and score stay aligned whether or
             not this team has the ball */}
-        <Box
-          component="span"
-          sx={{ width: 16, display: "inline-flex", flexShrink: 0 }}
-        >
+        <span className={styles.ballSlot}>
           {hasBall(game, side) && <BallIcon abbr={team.abbr} />}
-        </Box>
-        <Box
-          component="span"
-          sx={{
-            fontSize: "0.75rem",
-            color: "text.secondary",
-            width: 52,
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {teamLineText(game, side, total)}
-        </Box>
+        </span>
+        <span className={styles.line}>{teamLineText(game, side, total)}</span>
         <AtsTag game={game} side={side} compact />
-        <Typography
-          sx={{
-            ml: "auto",
-            fontWeight: 700,
-            fontSize: "1.25rem",
-            lineHeight: 1,
-            minWidth: 28,
-            textAlign: "right",
-            fontVariantNumeric: "tabular-nums",
-            color: final && score < other ? "text.secondary" : "text.primary",
-          }}
+        <p
+          className={`${styles.score} ${final && score < other ? styles.lost : ""}`}
         >
           {started ? score : ""}
-        </Typography>
-      </Box>
+        </p>
+      </div>
     );
   };
 
@@ -238,123 +166,70 @@ export const GameRow = memo((props: GameRowProps) => {
   ]);
 
   return (
-    <Box
+    <div
       id={gameAnchorId(game)}
       tabIndex={-1}
-      sx={[
-        (t) => ({
-          ...JUMP_TARGET_SX,
-          display: "grid",
-          gridTemplateColumns:
-            // Wide enough for "SUN 12:00 PM" on one line.
-            "108px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr) 156px",
-          gridTemplateAreas: desktopAreas,
-          columnGap: 2,
-          rowGap: 1,
-          alignItems: "center",
-          px: { xs: 1.25, md: 1.75 },
-          py: 1.25,
-          borderBottom: 1,
-          borderColor: "divider",
-          "&:last-of-type": { borderBottom: 0 },
-          ...(pickSide && {
-            background: `linear-gradient(90deg, ${t.palette.action.selected}, transparent 45%)`,
-          }),
-          [t.breakpoints.down("md")]: {
-            // 96px fits "THU 12:30 PM"; the tighter gap and padding leave
-            // the team lines the 196px they need at 360 (logo, abbr, ball,
-            // line, ✓ tag, a two-digit score).
-            gridTemplateColumns: "96px minmax(0, 1fr)",
-            gridTemplateAreas: mobileAreas,
-            columnGap: 1.25,
-          },
-        }),
-        highlightSx(border, true),
-      ]}
+      className={[
+        styles.row,
+        jumpTargetClass,
+        pickSide && styles.picked,
+        highlightClass(border, true),
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      style={
+        {
+          "--desktop-areas": desktopAreas,
+          "--mobile-areas": mobileAreas,
+        } as CSSProperties
+      }
     >
-      <Box
-        sx={{
-          gridArea: "status",
-          display: "flex",
-          flexDirection: "column",
-          gap: 0.25,
-          minWidth: 0,
-        }}
-      >
+      <div className={styles.status}>
         <StatusText game={game} />
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          {tvName(game.tv_network)}
-        </Typography>
+        <span className={styles.caption}>{tvName(game.tv_network)}</span>
         <GameRecapTags tags={tags} wrap />
-      </Box>
-      <Box
-        sx={{
-          gridArea: "teams",
-          display: "flex",
-          flexDirection: "column",
-          gap: 0.5,
-          minWidth: 0,
-        }}
-      >
+      </div>
+      <div className={styles.teams}>
         {teamLine("away")}
         {teamLine("home")}
-      </Box>
+      </div>
       {!final && (
-        <Box sx={{ gridArea: "middle", minWidth: 0 }}>
+        <div className={styles.middle}>
           <Middle game={game} />
-        </Box>
+        </div>
       )}
       {hasDetails && (
-        <Box
-          sx={{
-            gridArea: "toggle",
-            minWidth: 0,
-            borderTop: { xs: 1, md: 0 },
-            borderColor: "divider",
-            mt: { md: final ? 0 : -0.5 },
-          }}
+        <div
+          className={`${styles.toggle} ${final ? "" : styles.toggleUnderField}`}
         >
           <DetailsToggle
             open={open}
             onToggle={() => setOpen((o) => !o)}
             fullWidthOnPhone
           />
-        </Box>
+        </div>
       )}
-      <Box sx={{ gridArea: "picks", minWidth: 0 }}>
+      <div className={styles.picks}>
         <PickSplitBar
           game={game}
           userId={userId}
           picksRevealed={picksRevealed}
           compact
         />
-      </Box>
+      </div>
       {/* Only rendered with a pick: the phone layout has no "you" area otherwise,
           and an unplaced area name makes the grid add phantom columns. */}
       {pickSide && (
-        <Box
-          sx={{
-            gridArea: "you",
-            display: "flex",
-            justifyContent: { xs: "flex-start", md: "flex-end" },
-          }}
-        >
+        <div className={styles.you}>
           <YourPickBadge game={game} side={pickSide} compact />
-        </Box>
+        </div>
       )}
       {open && (
-        <Box
-          sx={{
-            gridArea: "details",
-            minWidth: 0,
-            borderTop: 1,
-            borderColor: "divider",
-          }}
-        >
+        <div className={styles.details}>
           <GameDetails game={game} columns />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 });
 

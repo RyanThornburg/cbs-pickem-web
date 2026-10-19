@@ -1,0 +1,211 @@
+/* One game as a row. The grid areas change with the game's state, so they
+   come in as custom properties (--desktop-areas, --mobile-areas). */
+.row {
+  display: grid;
+  grid-template-columns:
+    /* Wide enough for "SUN 12:00 PM" on one line. */
+    108px minmax(0, 1.4fr) minmax(0, 1.3fr) minmax(0, 1fr)
+    156px;
+  grid-template-areas: var(--desktop-areas);
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--divider);
+}
+.row:last-of-type {
+  border-bottom: 0;
+}
+/* The selected player's games. */
+.picked {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.08), transparent 45%);
+}
+@media (max-width: 899.95px) {
+  .row {
+    /* 96px fits "THU 12:30 PM"; the tighter gap and padding leave the team
+       lines the 196px they need at 360 (logo, abbr, ball, line, ✓ tag, a
+       two-digit score). */
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-areas: var(--mobile-areas);
+    column-gap: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+/* MUI's caption: the network, "Halftime". */
+.caption {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  grid-area: status;
+  gap: 2px;
+  min-width: 0;
+}
+
+.teams {
+  display: flex;
+  flex-direction: column;
+  grid-area: teams;
+  gap: 4px;
+  min-width: 0;
+}
+.teamLine,
+.teamLink {
+  gap: 4px;
+}
+.teamLine {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.teamLink {
+  flex-shrink: 0;
+}
+@media (min-width: 900px) {
+  .teamLine,
+  .teamLink {
+    gap: 8px;
+  }
+}
+.abbr,
+.score {
+  margin: 0;
+  line-height: 1.5;
+}
+.abbr {
+  flex-shrink: 0;
+  width: 38px;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+.ballSlot {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 16px;
+}
+.line {
+  flex-shrink: 0;
+  width: 52px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+.score {
+  min-width: 28px;
+  margin-left: auto;
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: right;
+}
+/* The losing score, once final. */
+.lost {
+  color: var(--text-muted);
+}
+
+.middle {
+  grid-area: middle;
+  min-width: 0;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.downRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-size: var(--text-sm);
+}
+.down {
+  font-weight: 600;
+}
+.fourthDown {
+  font-weight: 700;
+}
+.flags {
+  display: flex;
+  gap: 4px;
+}
+.paused {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* MUI's body2, smaller: the forecast, or the stadium indoors. */
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.43;
+}
+.part {
+  white-space: nowrap;
+}
+.indoor {
+  display: flex;
+  min-width: 0;
+}
+.stadium {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roof {
+  flex-shrink: 0;
+  white-space: pre;
+}
+
+/* Across the row's foot on phones; on desktop in the middle column (final)
+   or tucked under the field (live). */
+.toggle {
+  grid-area: toggle;
+  min-width: 0;
+  /* In ink, not the divider grey: under MUI the responsive borderTop came
+     after borderColor and reset it to currentColor. Kept as it looked. */
+  border-top: 1px solid currentColor;
+}
+@media (min-width: 900px) {
+  .toggle {
+    border-top: 0;
+  }
+  .toggleUnderField {
+    margin-top: -4px;
+  }
+}
+
+.picks {
+  grid-area: picks;
+  min-width: 0;
+}
+
+.you {
+  display: flex;
+  grid-area: you;
+  justify-content: flex-start;
+}
+@media (min-width: 900px) {
+  .you {
+    justify-content: flex-end;
+  }
+}
+
+.details {
+  grid-area: details;
+  min-width: 0;
+  border-top: 1px solid var(--divider);
+}

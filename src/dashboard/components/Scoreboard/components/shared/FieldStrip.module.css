@@ -1,0 +1,71 @@
+/* The field: end zones 8% a side, the height from the strip's prop. */
+.strip {
+  display: grid;
+  grid-template-columns: 8% 84% 8%;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #2f7a45;
+}
+
+/* In the team's color (inline), labelled only on the taller strip. */
+.endZone {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* A thin white line every 10 yards. */
+.field {
+  position: relative;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(10% - 1px),
+    rgba(255, 255, 255, 0.3) calc(10% - 1px) 10%
+  );
+}
+
+/* The current drive, from its start to the ball, in the offense's color. */
+.drive {
+  position: absolute;
+  top: 22%;
+  bottom: 22%;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  opacity: 0.75;
+}
+
+.marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+/* Blue: the line of scrimmage. Yellow: the first-down marker. */
+.scrimmage {
+  background-color: #4aa3ff;
+}
+.firstDown {
+  background-color: #ffd23f;
+}
+
+.ballHit {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  cursor: default;
+}
+.ballHit:focus-visible {
+  outline: 2px solid #fff;
+  border-radius: 50%;
+}
+.ball {
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+}

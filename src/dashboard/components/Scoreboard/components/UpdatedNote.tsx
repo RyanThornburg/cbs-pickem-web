@@ -1,7 +1,7 @@
-import Box from "@mui/material/Box";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { formatUpdated } from "../../../utils/updatedTime";
 import { Button } from "../../../ui/Button";
+import { Icon } from "../../../ui/Icon";
+import styles from "./UpdatedNote.module.css";
 
 // The Scoreboard's freshness line on the tab intro, at every width: while a
 // game is live, when the scores were last fetched; after a failed refresh,
@@ -21,20 +21,9 @@ export function UpdatedNote({
 }) {
   if (!updatedAt || !(live || refreshFailed)) return null;
   return (
-    <Box
-      component="span"
-      role="status"
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 0.5,
-        fontSize: "0.75rem",
-        color: "text.secondary",
-      }}
-    >
+    <span role="status" className={styles.note}>
       {refreshFailed && (
-        <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem" }} />
+        <Icon name="ErrorOutlineOutlined" className={styles.icon} />
       )}
       {refreshFailed
         ? `Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`
@@ -44,6 +33,6 @@ export function UpdatedNote({
           Try now
         </Button>
       )}
-    </Box>
+    </span>
   );
 }

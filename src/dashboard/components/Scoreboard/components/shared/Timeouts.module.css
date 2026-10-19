@@ -1,0 +1,17 @@
+.pips {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* A used timeout is a divider-grey pip; one still left is ink. */
+.pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background-color: var(--divider);
+}
+.left {
+  background-color: var(--text);
+  opacity: 0.8;
+}

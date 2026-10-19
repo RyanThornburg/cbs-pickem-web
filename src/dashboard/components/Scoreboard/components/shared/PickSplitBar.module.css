@@ -1,0 +1,102 @@
+/* MUI's caption: "Nobody picked this game", and "Nobody" in a list. */
+.caption,
+.nobody {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+.nobody {
+  font-style: italic;
+}
+
+/* The tooltip: every picker, one column per side. */
+.tooltipLists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.pickers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.pickersHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+.picker {
+  color: var(--text);
+  font-weight: 400;
+}
+/* The selected player, in their list. */
+.you {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.trigger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--primary);
+}
+
+.counts {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 400;
+}
+.countRight {
+  flex-direction: row-reverse;
+}
+.countDecided {
+  font-weight: 600;
+}
+.evenLabel {
+  color: var(--text-muted);
+}
+.winningLabel {
+  color: var(--success-dark);
+}
+.losingLabel {
+  color: var(--error-dark);
+}
+
+.bar {
+  display: flex;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: var(--hover);
+}
+.even {
+  background-color: var(--text-faint);
+}
+.winning {
+  background-color: var(--success);
+}
+.losing {
+  background-color: var(--error);
+}
+.homeHalf {
+  opacity: 0.85;
+}

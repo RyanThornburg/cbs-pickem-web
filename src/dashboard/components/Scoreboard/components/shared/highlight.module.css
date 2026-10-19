@@ -1,0 +1,32 @@
+/* One border per game (see highlightBorder): amber for a close game, red for
+   the red zone. Classes are doubled so they win over the card's or row's own
+   border, whatever order the modules load in. */
+.outside.close,
+.inset.close {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 1px var(--warning);
+}
+.inset.close {
+  box-shadow: inset 0 0 0 2px var(--warning);
+}
+.outside.redZone,
+.inset.redZone {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px var(--error);
+}
+.inset.redZone {
+  box-shadow: inset 0 0 0 2px var(--error);
+}
+
+/* Close and ending: a thicker ring, with a glow outside or a tint inset. */
+.outside.ending {
+  border-color: var(--warning);
+  box-shadow:
+    0 0 0 2px var(--warning),
+    0 0 14px rgba(237, 108, 2, 0.45);
+}
+.inset.ending {
+  border-color: var(--warning);
+  box-shadow: inset 0 0 0 3px var(--warning);
+  background-color: rgba(237, 108, 2, 0.08);
+}

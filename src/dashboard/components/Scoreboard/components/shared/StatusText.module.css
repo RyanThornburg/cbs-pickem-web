@@ -1,0 +1,37 @@
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ink {
+  color: var(--text);
+}
+/* kickoff times ("MON 8:15 PM") may wrap in the narrow compact column */
+.wraps {
+  white-space: normal;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--error);
+  animation: pulse 1.6s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live::before {
+    animation: none;
+  }
+}
