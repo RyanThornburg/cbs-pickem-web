@@ -1,17 +1,9 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import {
-  ButtonBase,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
 import { HistoricalRecords } from "../../types";
 import { Tooltip } from "../../ui/Tooltip";
+import table from "../../ui/table.module.css";
+import uiStyles from "../../ui/ui.module.css";
+import { useMediaQuery } from "../../ui/useMediaQuery";
 import { ordinal } from "../../helper";
 import {
   byAllTimeRank,
@@ -20,12 +12,7 @@ import {
   FinishTier,
   finishTier,
 } from "./recordsUtils";
-import {
-  FINISH_TIER_LABELS,
-  FINISH_TIER_STYLE,
-  INCOMPLETE_HATCH,
-  youRowSx,
-} from "./recordsTheme";
+import shared from "./recordsTable.module.css";
 import styles from "./FinishesGrid.module.css";
 
 type Props = {
@@ -33,6 +20,9 @@ type Props = {
   rows: CareerRow[];
   userId: string;
 };
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 const TIERS: FinishTier[] = [1, 2, 3, 4, 5, 6];
 const SAMPLE_RANK: Record<FinishTier, number> = {
@@ -44,51 +34,38 @@ const SAMPLE_RANK: Record<FinishTier, number> = {
   6: 14,
 };
 
-// The legend draws each tier the way the grid does.
-const Sample = ({ tier }: { tier: FinishTier }) => {
-  const s = FINISH_TIER_STYLE[tier];
-  return (
-    <span
-      aria-hidden
-      className={styles.sample}
-      style={{
-        fontWeight: s.weight,
-        backgroundColor: s.bg,
-        color: s.fg,
-        boxShadow: s.ring ? `inset 0 0 0 1px ${s.ring}` : undefined,
-      }}
-    >
-      {SAMPLE_RANK[tier]}
-    </span>
-  );
+// Each tier's look (FinishesGrid.module.css), shared by the legend and the
+// grid.
+const TIER_CLASS: Record<FinishTier, string> = {
+  1: styles.tier1,
+  2: styles.tier2,
+  3: styles.tier3,
+  4: styles.tier4,
+  5: styles.tier5,
+  6: styles.tier6,
 };
 
-// The pinned name column. Its right edge fades out, so tiles scrolling
-// under it vanish instead of showing as colored slivers.
-const stickySx = {
-  position: "sticky",
-  left: 0,
-  zIndex: 1,
-  bgcolor: "background.paper",
-  "&::after": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    right: -10,
-    width: 10,
-    pointerEvents: "none",
-    background:
-      "linear-gradient(to right, var(--template-palette-background-paper, #fff), transparent)",
-  },
-} as const;
+const FINISH_TIER_LABELS: Record<FinishTier, string> = {
+  1: "Champion",
+  2: "2nd",
+  3: "3rd",
+  4: "4th–5th",
+  5: "6th–10th",
+  6: "11th and below",
+};
+
+// The legend draws each tier the way the grid does.
+const Sample = ({ tier }: { tier: FinishTier }) => (
+  <span aria-hidden className={cx(styles.sample, TIER_CLASS[tier])}>
+    {SAMPLE_RANK[tier]}
+  </span>
+);
 
 // Every player's finish in every season, players in all-time order (fixed,
 // whatever the All-time table is sorted by). Opens scrolled to the newest
 // seasons, so phones see this year's players first. Tapping a finish shows
 // its score in the line above the grid.
 export default function FinishesGrid({ data, rows, userId }: Props) {
-  const theme = useTheme();
   const years = closedSeasons(data);
   const incomplete = (year: number) => data.years[String(year)]?.incomplete;
   const ordered = useMemo(() => [...rows].sort(byAllTimeRank), [rows]);
@@ -121,78 +98,67 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
           `Players in all-time order. ${canHover ? "Hover over" : "Tap"} a finish for its score.`}
       </p>
 
-      <TableContainer
+      <div
         ref={scroller}
         tabIndex={0}
         role="region"
         aria-label="Finishes by year, scrolls sideways"
-        sx={{
-          "&:focus-visible": {
-            outline: `3px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2,
-          },
-        }}
+        className={cx(table.container, styles.scroller)}
       >
-        <Table
-          size="small"
+        <table
           aria-label="Each player's finish by season"
-          sx={{
-            width: "auto",
-            "& td, & th": {
-              px: 0.4,
-              py: 0.4,
-              borderBottom: 0,
-              textAlign: "center",
-            },
-            "& tr > :first-of-type": {
-              textAlign: "left",
-              pr: 1.25,
-              pl: 1,
-            },
-          }}
+          className={cx(table.table, styles.grid)}
         >
-          <TableHead>
-            <TableRow
-              sx={{
-                "& th": {
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  color: "text.secondary",
-                },
-              }}
-            >
-              <TableCell sx={{ ...stickySx, zIndex: 3 }}>Player</TableCell>
+          <thead>
+            <tr>
+              <th
+                scope="col"
+                className={cx(
+                  table.cell,
+                  table.small,
+                  table.head,
+                  styles.head,
+                  shared.sticky,
+                  shared.stickyHead,
+                  styles.fade
+                )}
+              >
+                Player
+              </th>
               {years.map((year) => (
-                <TableCell
+                <th
                   key={year}
+                  scope="col"
                   aria-label={String(year)}
-                  sx={{
-                    minWidth: 38,
-                    ...(incomplete(year) && {
-                      backgroundImage: INCOMPLETE_HATCH,
-                    }),
-                  }}
+                  className={cx(
+                    table.cell,
+                    table.small,
+                    table.head,
+                    styles.head,
+                    styles.yearHead,
+                    incomplete(year) && styles.incomplete
+                  )}
                 >
                   ’{String(year).slice(2)}
-                </TableCell>
+                </th>
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
+            </tr>
+          </thead>
+          <tbody>
             {ordered.map((row) => {
               const isYou = String(row.id) === userId;
               return (
-                <TableRow key={row.id}>
-                  <TableCell
-                    component="th"
+                <tr key={row.id}>
+                  <th
                     scope="row"
-                    sx={{
-                      ...stickySx,
-                      ...(isYou && {
-                        ...youRowSx,
-                        boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
-                      }),
-                    }}
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      shared.sticky,
+                      styles.fade,
+                      isYou && shared.you,
+                      isYou && shared.youEdge
+                    )}
                   >
                     <span className={styles.name}>
                       {row.name}
@@ -200,70 +166,57 @@ export default function FinishesGrid({ data, rows, userId }: Props) {
                         <span className={styles.former}>former</span>
                       )}
                     </span>
-                  </TableCell>
+                  </th>
                   {years.map((year) => {
                     const finish = row.byYear.get(year);
-                    const s =
-                      finish && FINISH_TIER_STYLE[finishTier(finish.rank)];
                     const text =
                       finish &&
                       `${row.name} · ${year}: ${ordinal(finish.rank)}, ${finish.score} pts`;
                     return (
-                      <TableCell
+                      <td
                         key={year}
-                        sx={{
-                          ...(isYou && youRowSx),
-                          ...(incomplete(year) && {
-                            backgroundImage: INCOMPLETE_HATCH,
-                          }),
-                        }}
+                        className={cx(
+                          table.cell,
+                          table.small,
+                          isYou && shared.you,
+                          incomplete(year) && styles.incomplete
+                        )}
                       >
-                        {finish && s ? (
+                        {finish ? (
                           <Tooltip
                             title={`${ordinal(finish.rank)}, ${finish.score} pts`}
                           >
                             {/* Out of the tab order (hundreds of cells); the
                                 grid scrolls by keyboard and screen readers
                                 read each cell's label. */}
-                            <ButtonBase
+                            <button
+                              type="button"
                               tabIndex={-1}
                               aria-label={`${year}: ${ordinal(finish.rank)}, ${finish.score} points`}
                               onClick={() => setDetail(text ?? null)}
-                              sx={{
-                                minWidth: 30,
-                                height: 24,
-                                borderRadius: "4px",
-                                fontSize: "0.75rem",
-                                fontWeight: s.weight,
-                                fontVariantNumeric: "tabular-nums",
-                                bgcolor: s.bg,
-                                color: s.fg,
-                                boxShadow: s.ring
-                                  ? `inset 0 0 0 1px ${s.ring}`
-                                  : undefined,
-                                "&.Mui-focusVisible": {
-                                  outline: `3px solid ${theme.palette.primary.main}`,
-                                  outlineOffset: 1,
-                                },
-                              }}
+                              className={cx(
+                                uiStyles.plainButton,
+                                styles.finish,
+                                TIER_CLASS[finishTier(finish.rank)]
+                              )}
                             >
                               {finish.rank}
-                            </ButtonBase>
+                            </button>
                           </Tooltip>
                         ) : (
                           <span aria-hidden className={styles.none}>
                             ·
                           </span>
                         )}
-                      </TableCell>
+                      </td>
                     );
                   })}
-                </TableRow>
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

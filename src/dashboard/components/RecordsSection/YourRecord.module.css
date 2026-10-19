@@ -1,5 +1,6 @@
-/* The selected player's all-time line: Selected Lime (YOU_FILL in
-   recordsTheme.ts) with the 3px office-blue edge, as on their table rows. */
+/* The selected player's all-time line: Selected Lime (.you in
+   recordsTable.module.css) with the 3px office-blue edge, as on their
+   table rows. */
 .record {
   display: flex;
   flex-wrap: wrap;

@@ -8,17 +8,6 @@ import {
   Table as TanstackTable,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
 import { ordinal } from "../../helper";
 import {
   allTimePlaces,
@@ -26,9 +15,15 @@ import {
   byAllTimeRank,
   CareerRow,
 } from "./recordsUtils";
-import { rowHoverSx, youRowSx } from "./recordsTheme";
 import { Icon } from "../../ui/Icon";
+import { SortLabel } from "../../ui/SortLabel";
+import table from "../../ui/table.module.css";
+import { DOWN_SM, useMediaQuery } from "../../ui/useMediaQuery";
+import shared from "./recordsTable.module.css";
 import styles from "./AllTimeTable.module.css";
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 const dash = <p className={styles.dash}>–</p>;
 const oneDecimal = (n: number | undefined) =>
@@ -146,25 +141,19 @@ export const useAllTimeTable = (rows: CareerRow[]) => {
   });
 };
 
-const stickySx = {
-  position: "sticky",
-  left: 0,
-  zIndex: 1,
-  bgcolor: "background.paper",
-} as const;
-
 type Props = {
   table: TanstackTable<CareerRow>;
   userId: string;
 };
 
-export default function AllTimeTable({ table, userId }: Props) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+export default function AllTimeTable({ table: reactTable, userId }: Props) {
+  const isMobile = useMediaQuery(DOWN_SM);
   // Place is fixed by the all-time rule, whatever column the table is
   // sorted by.
-  const rows = table.options.data;
+  const rows = reactTable.options.data;
   const places = useMemo(() => allTimePlaces(rows), [rows]);
+  const alignClass = (align: "left" | "center" | undefined) =>
+    align === "center" && table.center;
 
   return (
     <>
@@ -173,29 +162,33 @@ export default function AllTimeTable({ table, userId }: Props) {
         titles, then avg finish. Averages sort players with{" "}
         {AVG_SORT_MIN_SEASONS}+ seasons first.
       </p>
-      <TableContainer>
+      <div className={table.container}>
         {/* Sized to its columns rather than the page, so a row stays easy to
             follow across on wide screens. */}
-        <Table
-          size="small"
+        <table
           aria-label="All-time standings"
-          sx={{
-            width: "auto",
-            "& td, & th": { fontVariantNumeric: "tabular-nums" },
-          }}
+          className={cx(table.table, styles.table, shared.tabular)}
         >
-          <TableHead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                <TableCell
-                  align="center"
-                  sx={{ fontSize: "0.75rem", fontWeight: 700, width: 48 }}
+          <thead>
+            {reactTable.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                <th
+                  scope="col"
+                  className={cx(
+                    table.cell,
+                    table.small,
+                    table.head,
+                    table.center,
+                    shared.headCell,
+                    styles.placeHead
+                  )}
                 >
                   Place
-                </TableCell>
+                </th>
                 {headerGroup.headers.map((header, i) => (
-                  <TableCell
+                  <th
                     key={header.id}
+                    scope="col"
                     aria-sort={
                       header.column.getIsSorted() === "asc"
                         ? "ascending"
@@ -203,18 +196,22 @@ export default function AllTimeTable({ table, userId }: Props) {
                           ? "descending"
                           : undefined
                     }
-                    align={header.column.columnDef.meta?.align ?? "left"}
-                    sx={{
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
-                    }}
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      table.head,
+                      alignClass(header.column.columnDef.meta?.align),
+                      shared.headCell,
+                      shared.nowrap,
+                      i === 0 && shared.sticky,
+                      i === 0 && shared.stickyHead
+                    )}
                   >
-                    <TableSortLabel
+                    <SortLabel
                       active={header.column.getIsSorted() !== false}
                       direction={header.column.getIsSorted() || "desc"}
                       onClick={header.column.getToggleSortingHandler()}
+                      className={styles.sortLabel}
                     >
                       {isMobile
                         ? header.column.columnDef.meta?.mobileHeader
@@ -222,53 +219,57 @@ export default function AllTimeTable({ table, userId }: Props) {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableSortLabel>
-                  </TableCell>
+                    </SortLabel>
+                  </th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableHead>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => {
+          </thead>
+          <tbody>
+            {reactTable.getRowModel().rows.map((row) => {
               const isYou = row.id === userId;
               const place = places.get(row.original.id);
               return (
-                <TableRow key={row.id} hover sx={rowHoverSx}>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      fontWeight: 700,
-                      ...(isYou && {
-                        ...youRowSx,
-                        boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
-                      }),
-                    }}
+                <tr key={row.id} className={cx(table.hover, shared.rowHover)}>
+                  <td
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      table.center,
+                      styles.place,
+                      isYou && shared.you,
+                      isYou && shared.youEdge
+                    )}
                   >
                     {place && `${place.tied ? "T" : ""}${place.place}`}
-                  </TableCell>
-                  {row.getVisibleCells().map((cell, i) => (
-                    <TableCell
-                      key={cell.id}
-                      component={i === 0 ? "th" : "td"}
-                      scope={i === 0 ? "row" : undefined}
-                      align={cell.column.columnDef.meta?.align ?? "left"}
-                      sx={{
-                        ...(i === 0 ? stickySx : {}),
-                        ...(isYou ? youRowSx : {}),
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                  </td>
+                  {row.getVisibleCells().map((cell, i) => {
+                    const Cell = i === 0 ? "th" : "td";
+                    return (
+                      <Cell
+                        key={cell.id}
+                        scope={i === 0 ? "row" : undefined}
+                        className={cx(
+                          table.cell,
+                          table.small,
+                          alignClass(cell.column.columnDef.meta?.align),
+                          i === 0 && shared.sticky,
+                          isYou && shared.you
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Cell>
+                    );
+                  })}
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

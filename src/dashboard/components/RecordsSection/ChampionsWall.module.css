@@ -75,14 +75,14 @@
     border: 1px solid var(--divider);
     border-radius: 16px;
   }
-  /* The defending champion's tile: GOLD in recordsTheme.ts. */
+  /* The defending champion's tile: Records' gold (DefendingChampionBadge's
+     trophy). */
   .defending {
     border-color: #d4a017;
   }
 }
 
-/* 2015/2016, which are missing players: INCOMPLETE_HATCH in
-   recordsTheme.ts. */
+/* 2015/2016, which are missing players: the Finishes grid's hatch. */
 .unknown {
   background-image: repeating-linear-gradient(
     135deg,
@@ -154,7 +154,7 @@
   line-height: 1.5;
   white-space: nowrap;
 }
-/* GOLD in recordsTheme.ts. */
+/* Records' gold, the same as DefendingChampionBadge's trophy. */
 .gold {
   background-color: #d4a017;
   color: #3d2c05;

@@ -1,14 +1,4 @@
 import { Fragment, useMemo } from "react";
-import {
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  useTheme,
-} from "@mui/material";
 import { HistoricalRecords } from "../../types";
 import {
   buildSeasonRows,
@@ -18,8 +8,10 @@ import {
   isUnknownChampion,
   seasonPeriods,
 } from "./recordsUtils";
-import { rowHoverSx, youRowSx } from "./recordsTheme";
+import { Chip } from "../../ui/Chip";
 import { Icon } from "../../ui/Icon";
+import table from "../../ui/table.module.css";
+import shared from "./recordsTable.module.css";
 import styles from "./SeasonTable.module.css";
 
 type Props = {
@@ -31,13 +23,23 @@ type Props = {
 
 const dash = "–";
 
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
+
+const headCell = cx(
+  table.cell,
+  table.small,
+  table.head,
+  shared.headCell,
+  shared.nowrap
+);
+
 export default function SeasonTable({
   data,
   year,
   onYearChange,
   userId,
 }: Props) {
-  const theme = useTheme();
   const years = closedSeasons(data);
   const season = data.years[String(year)];
   const periods = useMemo(() => seasonPeriods(data, year), [data, year]);
@@ -65,27 +67,18 @@ export default function SeasonTable({
           <Chip
             key={y}
             label={y}
-            size="small"
-            clickable
-            aria-pressed={y === year}
+            pressed={y === year}
             variant={y === year ? "filled" : "outlined"}
             onClick={() => onYearChange(y)}
-            sx={{
-              height: 28,
-              fontVariantNumeric: "tabular-nums",
+            className={cx(
+              styles.yearChip,
               // Selected like the phone tab bar's pill: slate, not blue
               // (blue means "open" and "you").
-              ...(y === year && {
-                bgcolor: "hsl(220, 20%, 88%)",
-                color: "text.primary",
-                fontWeight: 700,
-                "&:hover": { bgcolor: "hsl(220, 20%, 84%)" },
-              }),
+              y === year && styles.selected,
               // Seasons missing players get a dashed edge, but not once
               // selected (a dashed filled chip looks broken).
-              ...(data.years[String(y)]?.incomplete &&
-                y !== year && { borderStyle: "dashed" }),
-            }}
+              data.years[String(y)]?.incomplete && y !== year && styles.dashed
+            )}
           />
         ))}
       </div>
@@ -125,65 +118,66 @@ export default function SeasonTable({
         </p>
       )}
 
-      <TableContainer sx={{ maxWidth: 520 + 100 * periods.length }}>
-        <Table
-          size="small"
+      <div
+        className={table.container}
+        style={{ maxWidth: 520 + 100 * periods.length }}
+      >
+        <table
           aria-label={`${year} standings`}
-          sx={{ "& td, & th": { fontVariantNumeric: "tabular-nums" } }}
+          className={cx(table.table, shared.tabular)}
         >
-          <TableHead>
-            <TableRow
-              sx={{
-                "& th": {
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  whiteSpace: "nowrap",
-                },
-              }}
-            >
-              <TableCell>Place</TableCell>
-              <TableCell>Player</TableCell>
-              <TableCell align="center">Score</TableCell>
+          <thead>
+            <tr>
+              <th scope="col" className={headCell}>
+                Place
+              </th>
+              <th scope="col" className={headCell}>
+                Player
+              </th>
+              <th scope="col" className={cx(headCell, table.center)}>
+                Score
+              </th>
               {periods.map((p) => (
-                <TableCell key={p.key} align="center">
+                <th
+                  key={p.key}
+                  scope="col"
+                  className={cx(headCell, table.center)}
+                >
                   {p.name}
-                </TableCell>
+                </th>
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
+            </tr>
+          </thead>
+          <tbody>
             {rows.map((row) => {
               const isYou = String(row.user_id) === userId;
-              const youSx = isYou ? youRowSx : {};
+              const bodyCell = cx(table.cell, table.small, isYou && shared.you);
               return (
                 <Fragment key={row.user_id}>
                   {row.missingBefore > 0 && (
-                    <TableRow>
-                      <TableCell
+                    <tr>
+                      <td
                         colSpan={columnCount}
-                        align="center"
-                        sx={{
-                          py: 0.25,
-                          bgcolor: "background.default",
-                          color: "text.secondary",
-                          fontSize: "0.75rem",
-                        }}
+                        className={cx(
+                          table.cell,
+                          table.small,
+                          table.center,
+                          styles.missing
+                        )}
                       >
                         {row.missingBefore}{" "}
                         {row.missingBefore === 1 ? "player" : "players"} not on
                         file
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   )}
-                  <TableRow hover sx={rowHoverSx}>
-                    <TableCell
-                      sx={{
-                        ...youSx,
-                        whiteSpace: "nowrap",
-                        ...(isYou && {
-                          boxShadow: `inset 3px 0 0 ${theme.palette.primary.main}`,
-                        }),
-                      }}
+                  <tr className={cx(table.hover, shared.rowHover)}>
+                    <td
+                      className={cx(
+                        bodyCell,
+                        shared.nowrap,
+                        isYou && shared.youEdge
+                      )}
                     >
                       {row.rank === 1 ? (
                         <div className={styles.champion}>
@@ -193,21 +187,18 @@ export default function SeasonTable({
                       ) : (
                         row.rankLabel
                       )}
-                    </TableCell>
-                    <TableCell
-                      component="th"
+                    </td>
+                    <th
                       scope="row"
-                      sx={{ ...youSx, fontWeight: 500, whiteSpace: "nowrap" }}
+                      className={cx(bodyCell, styles.name, shared.nowrap)}
                     >
                       {row.name}
-                    </TableCell>
-                    <TableCell align="center" sx={youSx}>
-                      {row.score}
-                    </TableCell>
+                    </th>
+                    <td className={cx(bodyCell, table.center)}>{row.score}</td>
                     {periods.map((p) => {
                       const score = row.periods?.[p.key]?.score;
                       return (
-                        <TableCell key={p.key} align="center" sx={youSx}>
+                        <td key={p.key} className={cx(bodyCell, table.center)}>
                           {row.periodLabels[p.key] ?? dash}
                           {score != null && (
                             <span className={styles.periodScore}>
@@ -215,16 +206,16 @@ export default function SeasonTable({
                               ({score})
                             </span>
                           )}
-                        </TableCell>
+                        </td>
                       );
                     })}
-                  </TableRow>
+                  </tr>
                 </Fragment>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -40,7 +40,7 @@
   gap: 4px;
   font-weight: 600;
 }
-/* GOLD in recordsTheme.ts. */
+/* Records' gold, the same as DefendingChampionBadge's trophy. */
 .trophy {
   font-size: 1rem;
   color: #d4a017;
@@ -51,4 +51,52 @@
   font-weight: 400;
   line-height: 1.66;
   color: var(--text-muted);
+}
+
+.name {
+  font-weight: 500;
+}
+
+/* "N players not on file": a thin quiet row where the ranks skip. */
+.missing {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background-color: var(--paper);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+/* The season chips (ui/Chip). As MUI's clickable chip: hovered, an
+   unselected one clears to a faint grey; pressed, it lifts; keyboard focus
+   greys it under the ring. */
+.yearChip {
+  position: relative;
+  line-height: 1.5;
+  text-align: start;
+  font-variant-numeric: tabular-nums;
+}
+.yearChip:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.yearChip:active {
+  box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+.yearChip:focus-visible {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+.selected {
+  background-color: var(--gray-200);
+  font-weight: 700;
+}
+.selected:hover {
+  background-color: hsl(220, 20%, 84%);
+}
+.selected:focus-visible {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.dashed {
+  border-style: dashed;
 }

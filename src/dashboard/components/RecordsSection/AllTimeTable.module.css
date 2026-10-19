@@ -44,8 +44,25 @@
 .trophies {
   display: inline-flex;
 }
-/* GOLD in recordsTheme.ts. */
+/* Records' gold, the same as DefendingChampionBadge's trophy. */
 .trophy {
   font-size: 0.9rem;
   color: #d4a017;
+}
+
+/* Sized to its columns, not the page (see the table). */
+.table {
+  width: auto;
+}
+.placeHead {
+  width: 48px;
+}
+/* Middle-aligned in its line, as MUI's sort label sat, so the header row
+   keeps its height. */
+.sortLabel {
+  position: relative;
+  vertical-align: middle;
+}
+.place {
+  font-weight: 700;
 }

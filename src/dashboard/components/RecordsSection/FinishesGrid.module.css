@@ -17,7 +17,7 @@
   gap: 4.8px;
 }
 
-/* A tier's tile in the legend; its colors come from FINISH_TIER_STYLE. */
+/* A tier's tile in the legend; its colors come from the tier classes. */
 .sample {
   display: inline-grid;
   place-items: center;
@@ -28,7 +28,7 @@
   font-size: var(--text-xs);
 }
 
-/* INCOMPLETE_HATCH in recordsTheme.ts. */
+/* The legend's sample of the hatch on incomplete seasons' columns. */
 .hatch {
   width: 18px;
   height: 18px;
@@ -39,6 +39,112 @@
     transparent 0 5px,
     hsl(220, 30%, 90%) 5px 7px
   );
+}
+
+/* Finishes: the leader cards' gold/silver/bronze for 1st-3rd (Leaders/
+   medals.ts), then a quiet slate tile for 4th-5th, bold numbers for
+   6th-10th and muted ones below that. Blue stays out: it means "open" and
+   "you" elsewhere. */
+.tier1 {
+  background-color: #d4a017;
+  color: #3d2c05;
+  font-weight: 700;
+}
+.tier2 {
+  background-color: #c3c7cf;
+  color: #262c38;
+  font-weight: 700;
+}
+.tier3 {
+  background-color: #d9a27a;
+  color: #4a2a12;
+  font-weight: 700;
+}
+.tier4 {
+  background-color: hsl(220, 30%, 94%);
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px hsl(220, 20%, 82%);
+}
+.tier5 {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 700;
+}
+.tier6 {
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+}
+
+/* The grid scrolls sideways; keyboard focus rings the whole region. */
+.scroller:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Sized to its columns. Tight cells, no rules between rows, the name
+   column left-aligned with room after it. */
+.grid {
+  width: auto;
+}
+.grid td,
+.grid th {
+  padding: 3.2px;
+  border-bottom: 0 solid;
+  text-align: center;
+}
+.grid tr > :first-of-type {
+  padding-right: 10px;
+  padding-left: 8px;
+  text-align: left;
+}
+.head {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.yearHead {
+  min-width: 38px;
+}
+
+/* Diagonal hatch for 2015/2016 columns, which are missing players. Drawn as
+   a background image, so a row's fill (the "you" lime) still shows through. */
+.incomplete {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    hsl(220, 30%, 90%) 5px 7px
+  );
+}
+
+/* The pinned name column's right edge fades out, so tiles scrolling under
+   it vanish instead of showing as colored slivers. */
+.fade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    var(--template-palette-background-paper, #fff),
+    transparent
+  );
+}
+
+/* A finish's tile, a button that shows its score above the grid. */
+.finish {
+  min-width: 30px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  transition: all 100ms ease-in;
+}
+.finish:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 1px;
 }
 
 .caption {

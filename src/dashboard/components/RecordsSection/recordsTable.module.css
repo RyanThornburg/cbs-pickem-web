@@ -1,0 +1,46 @@
+/* Shared by Records' three tables, on top of ui/table.module.css. Kept in
+   one file so .you always comes after .sticky, whatever order the
+   tables' own modules load in. */
+
+/* Pinned first column: its solid background hides cells scrolling under
+   it. The header's sits above the body's. */
+.sticky {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--paper);
+}
+.stickyHead {
+  z-index: 3;
+}
+
+/* The selected user's rows: Selected Lime, as on User Picks and the leader
+   cards, plus the 3px office-blue edge on the first cell. Opaque, so pinned
+   sticky cells don't show the scrolled content through them. */
+.you {
+  background-color: #f0f4c3;
+}
+.youEdge {
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+/* MUI's row hover fills the row, but the pinned name cell paints its own
+   background over it; a background image shades every cell, pinned or not. */
+.rowHover:hover > * {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+}
+
+/* Numbers line up down a column. */
+.tabular td,
+.tabular th {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header labels: small, bold. */
+.headCell {
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.nowrap {
+  white-space: nowrap;
+}
