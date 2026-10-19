@@ -3,7 +3,6 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
@@ -77,6 +76,8 @@ import { TabActiveContext, followTabLink, tabHref } from "./tabLinks";
 import { useStableHandler } from "./shared/useStableHandler";
 import { playerPath } from "./shared/PlayerLink";
 import type { View as TrendsView } from "./TrendsSection";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
 
 // All-time records and the owner-only admin page aren't weekly, and most
 // visits never open them, so they load on first open.
@@ -782,8 +783,8 @@ export default function MainGrid() {
                 rel="noopener noreferrer"
                 size="small"
                 aria-label="CBS Pool (opens in a new tab)"
-                endIcon={<OpenInNewIcon />}
-                sx={{ flexShrink: 0, whiteSpace: "nowrap" }}
+                endIcon={<Icon name="OpenInNew" />}
+                style={{ flexShrink: 0, whiteSpace: "nowrap" }}
               >
                 CBS Pool
               </Button>

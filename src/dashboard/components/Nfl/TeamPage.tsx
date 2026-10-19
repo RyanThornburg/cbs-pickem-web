@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -34,6 +33,7 @@ import {
 } from "./standingsUtils";
 import { useStandings, useTeamProfile } from "./useNflData";
 import LoadError from "../shared/LoadError";
+import { Button } from "../../ui/Button";
 
 // How many believers or faders show before "Show all".
 const PEOPLE_SHOWN = 8;
@@ -329,7 +329,7 @@ const People = ({
         <Button
           size="small"
           onClick={() => setShowAll((v) => !v)}
-          sx={{ mt: 0.5 }}
+          style={{ marginTop: 4 }}
         >
           {showAll ? "Show fewer" : `Show all ${people.length}`}
         </Button>
@@ -413,7 +413,14 @@ export default function TeamPage({
       playerRecord={trends?.current_season.records?.teams.find(
         (entry) => entry.team.id === placed.row.team.id
       )}
-      back={back}
+      // On the team's color band, so it takes the band's white.
+      back={
+        <BackLink
+          fallback="/nfl?view=standings"
+          label="Standings"
+          inheritColor
+        />
+      }
     />
   );
 }
@@ -457,7 +464,6 @@ function TeamPageBody({
           pt: 1.5,
           pb: 0.5,
           mb: 2.5,
-          "& .MuiButton-root": { color: "inherit" },
         }}
       >
         <TabIntro

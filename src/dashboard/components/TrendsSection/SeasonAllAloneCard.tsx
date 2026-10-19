@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { GameCoverResult } from "../../data/weekGames";
 import { SeasonAllAlonePick } from "../../types";
 import UserAvatar from "../UserAvatar";
 import { CoverResultIcon, selectedRowSx } from "./AllAloneCard";
 import { TeamLogo } from "../shared/TeamLogo";
+import { Button } from "../../ui/Button";
 
 export type Props = {
   allAlonePicksSeason: SeasonAllAlonePick[];
@@ -113,7 +114,7 @@ export default function SeasonAllAloneCard({
           size="small"
           onClick={() => setShowAll((s) => !s)}
           aria-expanded={showAll}
-          sx={{ mt: 0.5, minHeight: 44 }}
+          style={{ marginTop: 4, minHeight: 44 }}
         >
           {showAll ? "Show fewer" : `Show all ${sorted.length}`}
         </Button>

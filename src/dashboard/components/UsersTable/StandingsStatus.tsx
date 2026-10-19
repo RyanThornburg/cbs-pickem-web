@@ -1,10 +1,10 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Skeleton from "@mui/material/Skeleton";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { LeaderboardStatus } from "../useWeekData";
 import { formatUpdated } from "../../utils/updatedTime";
 import LoadError from "../shared/LoadError";
+import { Button } from "../../ui/Button";
 
 // Deep trophy gold for text: 5.1:1 on white (DESIGN.md's #a87f12 was 3.7:1).
 export const MONEY_GOLD = "#8a6a0f";
@@ -41,7 +41,7 @@ export function RefreshFailedLine({
         <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem", mt: "1px" }} />
         {`Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`}
       </Box>
-      <Button size="small" onClick={onRetry} sx={{ minHeight: 32 }}>
+      <Button size="small" onClick={onRetry}>
         Try now
       </Button>
     </Box>

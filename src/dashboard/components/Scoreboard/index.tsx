@@ -3,10 +3,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import ViewListIcon from "@mui/icons-material/ViewList";
 import { useGameData } from "./hooks/useGameData";
 import { useWeekTotals } from "./hooks/useWeekTotals";
 import { byeTeams } from "../../data/weekGames";
@@ -26,6 +22,9 @@ import { gameTagsById } from "../Recap/recapBadges";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import LoadError from "../shared/LoadError";
+import { SegmentedControl } from "../../ui/SegmentedControl";
+import { Icon } from "../../ui/Icon";
+import styles from "./Scoreboard.module.css";
 
 type Layout = "full" | "compact";
 const LAYOUT_KEY = "scoreboardLayout";
@@ -74,8 +73,7 @@ const Scoreboard = memo((props: Props) => {
   const byes = useMemo(() => byeTeams(games), [games]);
   const [layout, setLayout] = useState<Layout>(readLayout);
 
-  const changeLayout = (_: unknown, next: Layout | null) => {
-    if (!next) return;
+  const changeLayout = (next: Layout) => {
     setLayout(next);
     try {
       localStorage.setItem(LAYOUT_KEY, next);
@@ -142,29 +140,44 @@ const Scoreboard = memo((props: Props) => {
   // kickoff or the Sunday deadline.
   const now = Date.now();
 
+  // Icons only on phones, so the switch fits on the NFL switch's row
+  // instead of taking a row of its own; the labels name them.
   const controls = (
-    <ToggleButtonGroup
-      size="small"
-      exclusive
+    <SegmentedControl
       value={layout}
       onChange={changeLayout}
-      aria-label="Live layout"
-    >
-      {/* Icons only on phones, so the toggle fits on the NFL switch's row
-          instead of taking a row of its own; the aria-labels name them. */}
-      <ToggleButton value="full" aria-label="Full cards">
-        <ViewModuleIcon fontSize="small" sx={{ mr: { xs: 0, sm: 0.5 } }} />
-        <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
-          Full
-        </Box>
-      </ToggleButton>
-      <ToggleButton value="compact" aria-label="Compact list">
-        <ViewListIcon fontSize="small" sx={{ mr: { xs: 0, sm: 0.5 } }} />
-        <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
-          Compact
-        </Box>
-      </ToggleButton>
-    </ToggleButtonGroup>
+      label="Live layout"
+      segments={[
+        {
+          value: "full",
+          label: "Full cards",
+          children: (
+            <>
+              <Icon
+                name="ViewModule"
+                size="small"
+                className={styles.layoutIcon}
+              />
+              <span className={styles.layoutLabel}>Full</span>
+            </>
+          ),
+        },
+        {
+          value: "compact",
+          label: "Compact list",
+          children: (
+            <>
+              <Icon
+                name="ViewList"
+                size="small"
+                className={styles.layoutIcon}
+              />
+              <span className={styles.layoutLabel}>Compact</span>
+            </>
+          ),
+        },
+      ]}
+    />
   );
 
   const row = (game: Game) => (

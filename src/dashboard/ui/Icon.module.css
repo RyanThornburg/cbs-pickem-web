@@ -1,0 +1,25 @@
+/* MUI SvgIcon's box and sizes. Classes, not inline styles, so a container
+   can resize its icon (Button's start and end icons are 20px, 18px small). */
+
+@layer ui {
+  .icon {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    user-select: none;
+  }
+  .small {
+    font-size: 1.25rem;
+  }
+  .medium {
+    font-size: 1.5rem;
+  }
+  .large {
+    font-size: 2.1875rem;
+  }
+  .inherit {
+    font-size: inherit;
+  }
+}

@@ -1,7 +1,8 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ordinal } from "../../helper";
 import { CareerRow } from "./recordsUtils";
 import { YOU_FILL } from "./recordsTheme";
+import { Button } from "../../ui/Button";
 
 type Props = {
   row: CareerRow;

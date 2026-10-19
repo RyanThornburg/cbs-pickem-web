@@ -317,10 +317,7 @@ export const GameRow = memo((props: GameRowProps) => {
           <DetailsToggle
             open={open}
             onToggle={() => setOpen((o) => !o)}
-            sx={{
-              width: { xs: "100%", md: "auto" },
-              justifyContent: { xs: "center", md: "flex-start" },
-            }}
+            fullWidthOnPhone
           />
         </Box>
       )}

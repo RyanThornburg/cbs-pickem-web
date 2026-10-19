@@ -1,0 +1,16 @@
+/* Live's layout switch: icons only on phones (so it fits the NFL switch's
+   row), icon and word from sm. */
+.layoutIcon {
+  margin-right: 0;
+}
+.layoutLabel {
+  display: none;
+}
+@media (min-width: 600px) {
+  .layoutIcon {
+    margin-right: 4px;
+  }
+  .layoutLabel {
+    display: inline;
+  }
+}

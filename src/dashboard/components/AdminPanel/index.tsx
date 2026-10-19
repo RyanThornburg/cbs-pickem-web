@@ -1,16 +1,8 @@
 import { Fragment, ReactNode, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  Alert,
-  AlertColor,
-  Button,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, AlertColor, Link, Stack, Typography } from "@mui/material";
 import { alpha, Theme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   AdminUnauthorizedError,
   GetAdminStatus,
@@ -48,6 +40,8 @@ import { AdminView, AdminViewSwitch, LogoutButton } from "./AdminControls";
 import EventsCard, { LastSeenCell } from "./EventsCard";
 import RosterView from "./RosterView";
 import TaskCard, { TaskRun } from "./TaskCard";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
 
 type SectionKey = "always" | "quiet" | "live" | "changes" | "other";
 
@@ -541,7 +535,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
             <Button
               variant="outlined"
               size="small"
-              startIcon={<RefreshIcon />}
+              startIcon={<Icon name="Refresh" />}
               onClick={() => setAttempt((n) => n + 1)}
             >
               Refresh
@@ -557,7 +551,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
             sx={severitySx("warning")}
             action={
               // Full page load so it goes back through the Access login.
-              <Button color="inherit" size="small" href="/admin">
+              <Button size="small" href="/admin">
                 Sign in
               </Button>
             }

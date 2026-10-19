@@ -1,10 +1,10 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import { useState } from "react";
+import { Button } from "../../ui/Button";
 
 const DISMISSED_KEY = "pickYourselfHintDismissed";
 

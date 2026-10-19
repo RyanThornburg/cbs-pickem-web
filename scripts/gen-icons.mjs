@@ -28,9 +28,10 @@ walk(join(ROOT, "src"));
 const existing = (() => {
   try {
     return [
-      ...readFileSync(join(ROOT, "src/dashboard/ui/iconData.ts"), "utf8").matchAll(
-        /^ {2}(\w+): \[/gm
-      ),
+      ...readFileSync(
+        join(ROOT, "src/dashboard/ui/iconData.ts"),
+        "utf8"
+      ).matchAll(/^ {2}(\w+): \[/gm),
     ].map((m) => m[1]);
   } catch {
     return [];
@@ -49,12 +50,17 @@ const entries = [...names].sort().map((name) => {
   const svg = renderToStaticMarkup(createElement(Icon));
   // Emotion puts a <style> tag first when rendering on the server.
   const inner = svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];
-  const shapes = [...inner.matchAll(/<(\w+)([^>]*?)\/?>/g)].map(([, tag, attrs]) => [
-    tag,
-    Object.fromEntries(
-      [...attrs.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, k, v]) => [camel(k), v])
-    ),
-  ]);
+  const shapes = [...inner.matchAll(/<(\w+)([^>]*?)\/?>/g)].map(
+    ([, tag, attrs]) => [
+      tag,
+      Object.fromEntries(
+        [...attrs.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, k, v]) => [
+          camel(k),
+          v,
+        ])
+      ),
+    ]
+  );
   return `  ${name}: ${JSON.stringify(shapes)},`;
 });
 

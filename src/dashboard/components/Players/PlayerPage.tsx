@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
@@ -23,6 +22,7 @@ import { SpreadLadder } from "./SpreadLadder";
 import { TeamGrid } from "./TeamGrid";
 import { finishPoints, playerWeeks, seasonRecord } from "./playerUtils";
 import { usePlayerSeason, useSeasonWeeks } from "./usePlayerData";
+import { Button } from "../../ui/Button";
 
 const Section = ({
   title,

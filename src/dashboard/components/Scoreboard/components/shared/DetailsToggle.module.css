@@ -1,0 +1,19 @@
+/* Quieter than a plain text button: muted ink, tight sides, one line. */
+.toggle {
+  padding-right: 4px;
+  padding-left: 4px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Compact rows: across the row's foot on phones, inline from md. */
+.fullWidthOnPhone {
+  width: 100%;
+  justify-content: center;
+}
+@media (min-width: 900px) {
+  .fullWidthOnPhone {
+    width: auto;
+    justify-content: flex-start;
+  }
+}

@@ -2,63 +2,65 @@
    layout, Trends' Week/Season), as the theme's MuiToggleButton had it: 36px
    segments, muted ink, the selected one ink on slate-200. */
 
-.group {
-  display: inline-flex;
-  border-radius: var(--radius-lg);
-}
-
-.segment {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-sizing: border-box;
-  min-height: 36px;
-  margin: 0;
-  padding: 2px 12px;
-  border: 1px solid var(--divider);
-  border-radius: var(--radius-lg);
-  background-color: transparent;
-  color: var(--text-muted);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  line-height: 1.75;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Joined edges: segments after the first overlap the one before by the
-   border's width, and only the outer corners are round. */
-.segment:not(:last-child) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.segment:not(:first-child) {
-  margin-left: -1px;
-  border-left: 1px solid transparent;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-@media (hover: hover) {
-  .segment:hover {
-    background-color: var(--hover);
+@layer ui {
+  .group {
+    display: inline-flex;
+    border-radius: var(--radius-lg);
   }
-}
 
-.segment[data-pressed] {
-  color: var(--text);
-  background-color: var(--gray-200);
-}
-.segment[data-pressed]:hover {
-  background-color: var(--gray-300);
-}
+  .segment {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 36px;
+    margin: 0;
+    padding: 2px 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-lg);
+    background-color: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.75;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-.segment:focus-visible {
-  z-index: 1;
-  outline: var(--focus-ring);
-  outline-offset: 2px;
+  /* Joined edges: segments after the first overlap the one before by the
+     border's width, and only the outer corners are round. */
+  .segment:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .segment:not(:first-child) {
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  @media (hover: hover) {
+    .segment:hover {
+      background-color: var(--hover);
+    }
+  }
+
+  .segment[data-pressed] {
+    color: var(--text);
+    background-color: var(--gray-200);
+  }
+  .segment[data-pressed]:hover {
+    background-color: var(--gray-300);
+  }
+
+  .segment:focus-visible {
+    z-index: 1;
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
 }

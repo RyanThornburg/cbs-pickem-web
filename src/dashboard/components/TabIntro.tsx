@@ -1,9 +1,9 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import HistoryIcon from "@mui/icons-material/History";
 import { createContext, ReactNode, Ref, useContext } from "react";
 import { useTabActive } from "./tabLinks";
+import { Button } from "../ui/Button";
 
 // Set by MainGrid while a past week is browsed. Weekly tabs' intro rows
 // then say so, with the way back, in place of a separate notice. `noticeRef`
@@ -102,7 +102,7 @@ export default function TabIntro({
             <HistoryIcon aria-hidden sx={{ fontSize: "0.95rem" }} />
             Past week
           </Box>
-          <Button size="small" onClick={pastWeek.onBack} sx={{ minHeight: 36 }}>
+          <Button size="small" onClick={pastWeek.onBack}>
             Back to week {pastWeek.currentWeek}
           </Button>
         </Box>

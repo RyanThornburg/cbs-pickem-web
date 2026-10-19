@@ -7,11 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -40,6 +36,9 @@ import {
   sortValue,
 } from "./standingsUtils";
 import { useAllTeamProfiles, useStandings } from "./useNflData";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import { SegmentedControl } from "../../ui/SegmentedControl";
 
 type Layout = "divisions" | "league";
 type Conference = "AFC" | "NFC";
@@ -403,12 +402,9 @@ export default function StandingsView({
       {isPhone ? (
         // Phones: one control. AFC and NFC show that conference's
         // divisions; All 32 is the league table.
-        <ToggleButtonGroup
-          size="small"
-          exclusive
+        <SegmentedControl<Conference | "league">
           value={layout === "league" ? "league" : conference}
-          onChange={(_, next: Conference | "league" | null) => {
-            if (!next) return;
+          onChange={(next) => {
             if (next === "league") {
               setLayout("league");
             } else {
@@ -416,33 +412,33 @@ export default function StandingsView({
               setConference(next);
             }
           }}
-          aria-label="Standings"
-        >
-          <ToggleButton value="AFC">AFC</ToggleButton>
-          <ToggleButton value="NFC">NFC</ToggleButton>
-          <ToggleButton value="league">All 32</ToggleButton>
-        </ToggleButtonGroup>
+          label="Standings"
+          segments={[
+            { value: "AFC", children: "AFC" },
+            { value: "NFC", children: "NFC" },
+            { value: "league", children: "All 32" },
+          ]}
+        />
       ) : (
-        <ToggleButtonGroup
-          size="small"
-          exclusive
+        <SegmentedControl<Layout>
           value={layout}
-          onChange={(_, next: Layout | null) => next && setLayout(next)}
-          aria-label="Standings layout"
-        >
-          <ToggleButton value="divisions">Divisions</ToggleButton>
-          <ToggleButton value="league">All 32</ToggleButton>
-        </ToggleButtonGroup>
+          onChange={setLayout}
+          label="Standings layout"
+          segments={[
+            { value: "divisions", children: "Divisions" },
+            { value: "league", children: "All 32" },
+          ]}
+        />
       )}
       {isPhone && (
         <>
           <Button
             size="small"
-            startIcon={<HelpOutlineIcon />}
+            startIcon={<Icon name="HelpOutlineOutlined" />}
             aria-haspopup="dialog"
             aria-expanded={Boolean(keyAnchor)}
             onClick={(event) => setKeyAnchor(event.currentTarget)}
-            sx={{ minHeight: 36, color: "text.secondary" }}
+            style={{ color: "var(--text-muted)" }}
           >
             Key
           </Button>

@@ -1,8 +1,8 @@
-import Button from "@mui/material/Button";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { META_RETRY_INTERVAL_MS, MetaStatus } from "./CurrentWeekContext";
 import TabSkeleton, { TabSkeletonShape } from "./TabSkeleton";
 import LoadError from "./shared/LoadError";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
 
 // The page body until /api/meta first arrives: every tab needs the season
 // and week from it. A placeholder shaped like the tab while it loads; if it
@@ -35,8 +35,7 @@ export default function AppShellStatus({
                 href={cbsPoolUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                endIcon={<OpenInNewIcon />}
-                sx={{ minHeight: 36 }}
+                endIcon={<Icon name="OpenInNew" />}
               >
                 Pool on CBS
               </Button>

@@ -1,5 +1,6 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import { SegmentedControl } from "../../ui/SegmentedControl";
 
 export type AdminView = "pipeline" | "roster";
 
@@ -11,17 +12,15 @@ export const AdminViewSwitch = ({
   view: AdminView;
   onChange: (view: AdminView) => void;
 }) => (
-  <ToggleButtonGroup
-    size="small"
-    exclusive
+  <SegmentedControl
     value={view}
-    // Exclusive, so pressing the shown view again sends null: ignore it.
-    onChange={(_e, value: AdminView | null) => value && onChange(value)}
-    aria-label="Admin page"
-  >
-    <ToggleButton value="pipeline">Pipeline</ToggleButton>
-    <ToggleButton value="roster">Roster</ToggleButton>
-  </ToggleButtonGroup>
+    onChange={onChange}
+    label="Admin page"
+    segments={[
+      { value: "pipeline", children: "Pipeline" },
+      { value: "roster", children: "Roster" },
+    ]}
+  />
 );
 
 // Full navigation, not a router link: /logout is a Worker redirect to
@@ -31,7 +30,7 @@ export const LogoutButton = () => (
     href="/logout"
     variant="outlined"
     size="small"
-    startIcon={<LogoutIcon />}
+    startIcon={<Icon name="Logout" />}
   >
     Log out
   </Button>

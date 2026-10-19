@@ -1,0 +1,5 @@
+/* Seven stat groups don't fit a phone, so the switch scrolls sideways;
+   each label stays on one line. */
+.groups > * {
+  white-space: nowrap;
+}

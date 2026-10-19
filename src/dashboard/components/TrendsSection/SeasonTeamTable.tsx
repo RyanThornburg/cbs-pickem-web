@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import {
   Box,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -30,6 +29,7 @@ import {
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { pool } from "../../shared-theme/themePrimitives";
+import { Button } from "../../ui/Button";
 
 export type Props = {
   teamPickTotals: TeamPickTotal[];
@@ -329,7 +329,7 @@ export default function SeasonTeamTable(props: Props) {
           size="small"
           onClick={() => setShowAll((s) => !s)}
           aria-expanded={showAll}
-          sx={{ mt: 0.5, minHeight: 44 }}
+          style={{ marginTop: 4, minHeight: 44 }}
         >
           {showAll ? "Show top 10" : `Show all ${rows.length} teams`}
         </Button>

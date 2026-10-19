@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   Chip,
   MenuItem,
@@ -12,12 +11,8 @@ import {
   TableHead,
   TableRow,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import MailOutlineIcon from "@mui/icons-material/MailOutlined";
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { AdminUnauthorizedError } from "../../data/GetAdminStatus";
 import {
@@ -51,6 +46,9 @@ import {
   rosterTotals,
   todayIso,
 } from "./rosterUtils";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import { SegmentedControl } from "../../ui/SegmentedControl";
 
 // Admin › Roster: who's paid this season, and a Gmail draft to whoever's
 // picked. Payments save to roster:{season} through the Worker; names and
@@ -456,25 +454,19 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
               spacing={1}
               sx={{ flexWrap: "wrap", alignItems: "center" }}
             >
-              <ToggleButtonGroup
-                size="small"
-                exclusive
+              <SegmentedControl
                 value={filter}
-                onChange={(_e, value: RosterFilter | null) =>
-                  value && changeFilter(value)
-                }
-                aria-label="Show members"
-              >
-                {FILTERS.map((f) => (
-                  <ToggleButton key={f.value} value={f.value}>
-                    {f.label} {filterMembers(roster.users, f.value, fee).length}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
+                onChange={changeFilter}
+                label="Show members"
+                segments={FILTERS.map((f) => ({
+                  value: f.value,
+                  children: `${f.label} ${filterMembers(roster.users, f.value, fee).length}`,
+                }))}
+              />
               <Box sx={{ flex: 1 }} />
               <Button
                 variant="outlined"
-                startIcon={<ContentCopyIcon />}
+                startIcon={<Icon name="ContentCopy" />}
                 disabled={emails.length === 0}
                 onClick={copyEmails}
               >
@@ -484,7 +476,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                 // Outlined until someone's picked: the theme's disabled
                 // contained button is dark text on a dark fill.
                 variant={emails.length ? "contained" : "outlined"}
-                startIcon={<MailOutlineIcon />}
+                startIcon={<Icon name="MailOutlined" />}
                 disabled={emails.length === 0}
                 href={gmailComposeUrl(emails)}
                 target="_blank"
@@ -644,7 +636,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                             }}
                             aria-expanded={editing === m.user_id}
                             aria-label={`${m.payment ? "Edit payment" : "Mark paid"} for ${m.name}`}
-                            sx={{ whiteSpace: "nowrap" }}
+                            style={{ whiteSpace: "nowrap" }}
                           >
                             {m.payment ? "Edit" : "Mark paid"}
                           </Button>

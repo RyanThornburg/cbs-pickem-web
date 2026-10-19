@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { NflStandings, TeamRef, UserTeamRecord } from "../../types";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { Tone, teamGamesRecord, toneOf } from "./playerUtils";
+import { Button } from "../../ui/Button";
 
 const TONE_SX: Record<Tone, object> = {
   good: { bgcolor: "#f1f8f2", borderColor: "#a5d6a7" },
@@ -159,7 +159,7 @@ export function TeamGrid({
         <Button
           size="small"
           onClick={() => setShowAll((v) => !v)}
-          sx={{ alignSelf: "flex-start" }}
+          style={{ alignSelf: "flex-start" }}
         >
           {showAll ? "Only teams picked" : "Show all 32"}
         </Button>

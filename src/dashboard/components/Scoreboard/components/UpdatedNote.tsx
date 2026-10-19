@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { formatUpdated } from "../../../utils/updatedTime";
+import { Button } from "../../../ui/Button";
 
 // The Scoreboard's freshness line on the tab intro, at every width: while a
 // game is live, when the scores were last fetched; after a failed refresh,
@@ -40,7 +40,7 @@ export function UpdatedNote({
         ? `Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`
         : `Updated ${formatUpdated(updatedAt)}`}
       {refreshFailed && onRetry && (
-        <Button size="small" onClick={onRetry} sx={{ minHeight: 32 }}>
+        <Button size="small" onClick={onRetry}>
           Try now
         </Button>
       )}

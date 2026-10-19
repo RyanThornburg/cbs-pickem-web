@@ -1,10 +1,11 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, Button, Collapse, Stack, Typography } from "@mui/material";
+import { Box, Collapse, Stack, Typography } from "@mui/material";
 import { useId, useMemo, useState } from "react";
 import { RecapItem } from "../../types";
 import { CategoryMark } from "./recapCategory";
 import { WeekRecapCard } from "./WeekRecapCards";
 import { MAX_CARDS, selectWeekCards } from "./weekCards";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
 
 // The recap row at the top of Trends › Week (this week's items) and
 // Trends › Season (season-to-date items): a heading row with the
@@ -70,15 +71,16 @@ export default function WeekRecapSection({
             size="small"
             onClick={() => setShowAll((s) => !s)}
             endIcon={
-              <ExpandMoreIcon
-                sx={{
+              <Icon
+                name="ExpandMore"
+                style={{
                   transform: showAll ? "rotate(180deg)" : "none",
                   transition: "transform 150ms",
                 }}
               />
             }
             aria-expanded={showAll}
-            sx={{ minHeight: 44 }}
+            style={{ minHeight: 44 }}
           >
             All {items.length} notes
           </Button>

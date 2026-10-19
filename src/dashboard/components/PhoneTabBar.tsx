@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import ButtonBase from "@mui/material/ButtonBase";
 import HistoryIcon from "@mui/icons-material/History";
 import { useEffect } from "react";
@@ -19,6 +18,7 @@ import {
 import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
 import { followTabLink, tabHref } from "./tabLinks";
 import { focusRingColor } from "../shared-theme/themePrimitives";
+import { Button } from "../ui/Button";
 
 // The bar's height above the phone's safe area. User Picks' pinned row sits
 // on top of it, and the page leaves this much room at the bottom. While a
@@ -150,7 +150,7 @@ export function PhoneTabBar({
           <Button
             size="small"
             onClick={pastWeek.onBack}
-            sx={{ minHeight: 36, flexShrink: 0 }}
+            style={{ flexShrink: 0 }}
           >
             Back to week {pastWeek.currentWeek}
           </Button>

@@ -1,7 +1,7 @@
-import Button from "@mui/material/Button";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useLocation, useNavigate } from "react-router-dom";
 import { backTargetFor } from "./backTarget";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
 
 // "← Trends" at the top of a team or player page. When the page was opened
 // from inside the app it goes back in history (so the list keeps its place)
@@ -10,9 +10,12 @@ import { backTargetFor } from "./backTarget";
 export const BackLink = ({
   fallback,
   label,
+  inheritColor,
 }: {
   fallback: string;
   label: string;
+  // On a colored band (the team page's), take the band's text color.
+  inheritColor?: boolean;
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +23,7 @@ export const BackLink = ({
   return (
     <Button
       size="small"
-      startIcon={<ArrowBackIcon />}
+      startIcon={<Icon name="ArrowBack" />}
       href={fallback}
       onClick={(event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey) return;
@@ -31,7 +34,11 @@ export const BackLink = ({
           window.scrollTo({ top: 0 });
         }
       }}
-      sx={{ alignSelf: "flex-start", ml: -1 }}
+      style={{
+        alignSelf: "flex-start",
+        marginLeft: -8,
+        color: inheritColor ? "inherit" : undefined,
+      }}
     >
       {target?.label ?? label}
     </Button>

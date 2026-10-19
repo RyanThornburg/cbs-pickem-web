@@ -1,13 +1,5 @@
-import { memo, SyntheticEvent, useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Skeleton,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { memo, useEffect, useMemo, useState } from "react";
+import { Box, Skeleton, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GetTrendsByWeek } from "../../data/GetTrendsByWeek";
 import { GetSeasonTrends } from "../../data/GetSeasonTrends";
@@ -28,6 +20,8 @@ import YouThisWeekCard from "./YouThisWeekCard";
 import { useTabActive } from "../tabLinks";
 import TabIntro from "../TabIntro";
 import LoadError from "../shared/LoadError";
+import { Button } from "../../ui/Button";
+import { SegmentedControl } from "../../ui/SegmentedControl";
 
 export type Props = {
   season: number;
@@ -250,8 +244,7 @@ const TrendsSection = memo(function TrendsSection({
   }, [season, seasonAlone]);
 
   // Exclusive, so pressing the shown view again sends null: ignore it.
-  const handleViewChange = (_event: SyntheticEvent, value: View | null) => {
-    if (!value) return;
+  const handleViewChange = (value: View) => {
     try {
       localStorage.setItem(VIEW_STORAGE_KEY, value);
     } catch {
@@ -304,8 +297,8 @@ const TrendsSection = memo(function TrendsSection({
   const seasonLink = (
     <Button
       size="small"
-      onClick={(e) => handleViewChange(e, "season")}
-      sx={{ minHeight: 44, px: 1, ml: -1 }}
+      onClick={() => handleViewChange("season")}
+      style={{ minHeight: 44, paddingLeft: 8, paddingRight: 8, marginLeft: -8 }}
     >
       See the season so far
     </Button>
@@ -440,16 +433,15 @@ const TrendsSection = memo(function TrendsSection({
         title="Trends"
         weekly
         actions={
-          <ToggleButtonGroup
-            size="small"
-            exclusive
+          <SegmentedControl<View>
             value={view}
             onChange={handleViewChange}
-            aria-label="Trends for this week or the season"
-          >
-            <ToggleButton value="week">Week {week}</ToggleButton>
-            <ToggleButton value="season">Season</ToggleButton>
-          </ToggleButtonGroup>
+            label="Trends for this week or the season"
+            segments={[
+              { value: "week", children: `Week ${week}` },
+              { value: "season", children: "Season" },
+            ]}
+          />
         }
       />
       {view === "week" ? weekView : seasonView}

@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { Game, GameDetails, PlayerLine } from "../../../../types";
 import { visuallyHidden } from "../../../../helper";
@@ -14,6 +11,9 @@ import {
   availableGroups,
   statCell,
 } from "../../utils/playerStats";
+import { Button } from "../../../../ui/Button";
+import { SegmentedControl } from "../../../../ui/SegmentedControl";
+import styles from "./PlayerStats.module.css";
 
 // Every player's line from the details key, one stat group at a time, both
 // teams away first (keyed by the box score's blue and orange, like the team
@@ -172,7 +172,7 @@ function TeamTable({
         <Button
           size="small"
           onClick={() => setAll(true)}
-          sx={{ mt: 0.25, minHeight: 32 }}
+          style={{ marginTop: 2 }}
         >
           Show all {rows.length}
         </Button>
@@ -211,22 +211,13 @@ export function PlayerStats({
       </Typography>
       {/* Seven groups don't fit a phone, so the switch scrolls sideways. */}
       <Box sx={{ overflowX: "auto", mx: -0.5, px: 0.5, pb: 0.25 }}>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
+        <SegmentedControl
           value={group.id}
-          onChange={(_, next: PlayerStatGroupId | null) =>
-            next && setPicked(next)
-          }
-          aria-label="Player stat group"
-          sx={{ flexWrap: "nowrap" }}
-        >
-          {groups.map((g) => (
-            <ToggleButton key={g.id} value={g.id} sx={{ whiteSpace: "nowrap" }}>
-              {g.label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
+          onChange={setPicked}
+          label="Player stat group"
+          className={styles.groups}
+          segments={groups.map((g) => ({ value: g.id, children: g.label }))}
+        />
       </Box>
       <TeamTable
         key={`away-${group.id}`}
