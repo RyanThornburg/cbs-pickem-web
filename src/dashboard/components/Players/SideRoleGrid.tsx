@@ -1,12 +1,11 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { SideRoleRecord } from "../../types";
 import { Tone, recordTone } from "./playerUtils";
+import styles from "./SideRoleGrid.module.css";
 
-const TONE_SX: Record<Tone, object> = {
-  good: { bgcolor: "#eef7ef", borderColor: "#a5d6a7" },
-  bad: { bgcolor: "#fcefef", borderColor: "#ef9a9a" },
-  neutral: {},
+const TONE_CLASS: Record<Tone, string | undefined> = {
+  good: styles.good,
+  bad: styles.bad,
+  neutral: undefined,
 };
 
 // Home or road crossed with favorite or underdog, so "4-1 on road dogs"
@@ -18,72 +17,34 @@ export function SideRoleGrid({ sideRoles }: { sideRoles: SideRoleRecord[] }) {
     const graded = record ? record.wins + record.losses : 0;
     const label = `${side === "home" ? "Home" : "Road"} ${role === "favorite" ? "favorites" : "underdogs"}`;
     return (
-      <Box
+      <div
         role="group"
         aria-label={label}
-        sx={[
-          {
-            border: 1,
-            borderColor: "hsl(220, 20%, 88%)",
-            borderRadius: 2,
-            p: 1.25,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 0.25,
-            minWidth: 0,
-          },
-          graded === 0 && { bgcolor: "hsl(220, 35%, 97%)" },
-          TONE_SX[recordTone(record)],
-        ]}
+        className={[
+          styles.cell,
+          graded === 0 && styles.empty,
+          TONE_CLASS[recordTone(record)],
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
-        <Typography
-          sx={{
-            fontSize: "1.125rem",
-            fontWeight: 700,
-            fontVariantNumeric: "tabular-nums",
-            color: graded === 0 ? "text.disabled" : "text.primary",
-          }}
-        >
+        <p className={styles.record}>
           {record ? `${record.wins}-${record.losses}` : "0-0"}
-        </Typography>
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+        </p>
+        <span className={styles.detail}>
           {graded === 0
             ? "none yet"
             : `${Math.round((record!.wins / graded) * 100)}% · ${record!.picks} ${record!.picks === 1 ? "pick" : "picks"}`}
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
   };
-  const head = (text: string) => (
-    <Typography
-      variant="caption"
-      sx={{ color: "text.secondary", fontWeight: 500, textAlign: "center" }}
-    >
-      {text}
-    </Typography>
-  );
+  const head = (text: string) => <span className={styles.head}>{text}</span>;
   const rowHead = (text: string) => (
-    <Typography
-      variant="caption"
-      sx={{
-        color: "text.secondary",
-        fontWeight: 500,
-        alignSelf: "center",
-      }}
-    >
-      {text}
-    </Typography>
+    <span className={styles.rowHead}>{text}</span>
   );
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "48px minmax(0, 1fr) minmax(0, 1fr)",
-        gap: 0.75,
-        maxWidth: 440,
-      }}
-    >
+    <div className={styles.grid}>
       <span />
       {head("Favorite")}
       {head("Underdog")}
@@ -93,6 +54,6 @@ export function SideRoleGrid({ sideRoles }: { sideRoles: SideRoleRecord[] }) {
       {rowHead("Road")}
       {cell("away", "favorite")}
       {cell("away", "underdog")}
-    </Box>
+    </div>
   );
 }

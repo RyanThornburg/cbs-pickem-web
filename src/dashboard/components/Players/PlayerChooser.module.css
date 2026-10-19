@@ -1,0 +1,41 @@
+.page {
+  text-align: left;
+}
+
+.intro {
+  max-width: 60ch;
+  margin: -8px 0 16px;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+/* Names in reading order: 1 column, 2 from sm, 3 from md. */
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 600px) {
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 900px) {
+  .list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+}
+.chevron {
+  color: var(--text-faint);
+  font-size: 1.1rem;
+}

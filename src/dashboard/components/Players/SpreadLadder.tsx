@@ -1,112 +1,70 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { SpreadBucketRecord } from "../../types";
-import { visuallyHidden } from "../../helper";
+import uiStyles from "../../ui/ui.module.css";
 import { SPREAD_BUCKET_LABELS } from "./playerUtils";
+import styles from "./SpreadLadder.module.css";
 
 // The tallest bar's height; every bar is to the same scale.
 const MAX_BAR = 64;
+// A half column: the tallest bar plus its count's line.
+const HALF = { height: MAX_BAR + 18 };
 
 // Wins up, losses down, one column per line size from big favorites to big
 // underdogs, so "where do this player's picks win" reads left to right.
 export function SpreadLadder({ buckets }: { buckets: SpreadBucketRecord[] }) {
   const max = Math.max(1, ...buckets.map((b) => Math.max(b.wins, b.losses)));
   const unit = MAX_BAR / max;
-  const bar = (count: number, color: string, up: boolean) => (
-    <Box
-      sx={{
-        height: MAX_BAR + 18,
-        display: "flex",
-        flexDirection: up ? "column-reverse" : "column",
-        alignItems: "center",
-      }}
+  const bar = (count: number, up: boolean) => (
+    <div
+      className={`${styles.half} ${up ? styles.won : styles.lost}`}
+      style={HALF}
     >
       {count > 0 && (
         <>
-          <Box
-            sx={{
-              width: "min(34px, 60%)",
-              height: count * unit,
-              bgcolor: color,
-              borderRadius: up ? "3px 3px 0 0" : "0 0 3px 3px",
-            }}
-          />
-          <Typography
-            aria-hidden
-            sx={{
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              lineHeight: "18px",
-              color: up ? "success.dark" : "error.dark",
-            }}
-          >
+          <div className={styles.bar} style={{ height: count * unit }} />
+          <p aria-hidden className={styles.count}>
             {count}
-          </Typography>
+          </p>
         </>
       )}
-    </Box>
+    </div>
   );
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "28px repeat(7, minmax(0, 1fr))",
-        maxWidth: 640,
-        columnGap: 0.5,
-      }}
-    >
-      <Box
-        aria-hidden
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          fontSize: "0.75rem",
-        }}
-      >
-        <Box
-          sx={{
-            height: MAX_BAR + 18,
-            display: "flex",
-            alignItems: "flex-end",
-            color: "success.dark",
-            pb: 0.25,
-          }}
-        >
+    <div className={styles.ladder}>
+      <div aria-hidden className={styles.legend}>
+        <div className={styles.legendWon} style={HALF}>
           Won
-        </Box>
-        <Box sx={{ height: "1px" }} />
-        <Box sx={{ color: "error.dark", pt: 0.25 }}>Lost</Box>
-      </Box>
+        </div>
+        <div className={styles.legendAxis} />
+        <div className={styles.legendLost}>Lost</div>
+      </div>
       {buckets.map((bucket) => {
         const { short, long } = SPREAD_BUCKET_LABELS[bucket.bucket];
         return (
-          <Box
+          <div
             key={bucket.bucket}
             role="group"
             aria-label={long}
-            sx={{ display: "flex", flexDirection: "column", minWidth: 0 }}
+            className={styles.column}
           >
-            {bar(bucket.wins, "#66bb6a", true)}
-            <Box sx={{ height: "1px", bgcolor: "rgba(0, 0, 0, 0.25)" }} />
-            {bar(bucket.losses, "#ef5350", false)}
-            <Typography
+            {bar(bucket.wins, true)}
+            <div className={styles.axis} />
+            {bar(bucket.losses, false)}
+            <p
               aria-hidden
-              sx={{
-                mt: 0.5,
-                fontSize: "0.75rem",
-                lineHeight: 1.25,
-                color: bucket.picks ? "text.secondary" : "text.disabled",
-                textAlign: "center",
-              }}
+              className={
+                bucket.picks
+                  ? styles.label
+                  : `${styles.label} ${styles.noPicks}`
+              }
             >
               {short}
-            </Typography>
-            <Box component="span" sx={visuallyHidden}>
+            </p>
+            <span className={uiStyles.visuallyHidden}>
               {bucket.wins} won, {bucket.losses} lost
-            </Box>
-          </Box>
+            </span>
+          </div>
         );
       })}
-    </Box>
+    </div>
   );
 }

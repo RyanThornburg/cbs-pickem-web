@@ -1,35 +1,26 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { NflStandings, TeamRef, UserTeamRecord } from "../../types";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { Tone, teamGamesRecord, toneOf } from "./playerUtils";
 import { Button } from "../../ui/Button";
+import styles from "./TeamGrid.module.css";
 
-const TONE_SX: Record<Tone, object> = {
-  good: { bgcolor: "#f1f8f2", borderColor: "#a5d6a7" },
-  bad: { bgcolor: "#fdf0f0", borderColor: "#ef9a9a" },
-  neutral: {},
+const TONE_CLASS: Record<Tone, string | undefined> = {
+  good: styles.good,
+  bad: styles.bad,
+  neutral: undefined,
 };
 
 const line = (label: string, record?: { wins: number; losses: number }) => (
-  <Box
-    component="span"
-    sx={{
-      fontSize: "0.75rem",
-      color: "text.secondary",
-      whiteSpace: "nowrap",
-      fontVariantNumeric: "tabular-nums",
-    }}
-  >
+  <span className={styles.line}>
     {label}{" "}
-    <Box component="b" sx={{ color: "text.primary", fontWeight: 600 }}>
+    <b className={styles.record}>
       {record && record.wins + record.losses > 0
         ? `${record.wins}-${record.losses}`
         : "–"}
-    </Box>
-  </Box>
+    </b>
+  </span>
 );
 
 const hasGames = (entry?: UserTeamRecord) =>
@@ -48,28 +39,16 @@ const TeamTile = ({
   return (
     <TeamLink
       abbr={team.abbr}
-      sx={[
-        {
-          flexDirection: "column",
-          gap: "1px",
-          py: 0.75,
-          border: 1,
-          borderColor: "hsl(220, 20%, 88%)",
-          borderRadius: 1.5,
-          bgcolor: "background.paper",
-          "&:hover": {
-            borderColor: "primary.main",
-            textDecoration: "none",
-          },
-        },
-        !hasGames(entry) && { opacity: 0.5 },
-        TONE_SX[toneOf(both.wins, both.losses)],
-      ]}
+      className={[
+        styles.tile,
+        !hasGames(entry) && styles.noGames,
+        TONE_CLASS[toneOf(both.wins, both.losses)],
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <TeamLogo abbr={team.abbr} size={20} decorative />
-      <Box component="span" sx={{ fontWeight: 600, fontSize: "0.75rem" }}>
-        {team.abbr}
-      </Box>
+      <span className={styles.abbr}>{team.abbr}</span>
       {line("For", entry?.picked)}
       {line("Vs", entry?.against)}
     </TeamLink>
@@ -97,41 +76,19 @@ export function TeamGrid({
   const all = showAll || picked.length === 0;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <div className={styles.grid}>
       {all ? (
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(4, minmax(0, 1fr))",
-              lg: "repeat(8, minmax(0, 1fr))",
-            },
-            gap: 0.75,
-          }}
-        >
+        <div className={styles.divisions}>
           {divisions.map((division) => (
-            <Box
+            <div
               key={division.name}
               role="group"
               aria-label={division.name}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 0.5,
-                minWidth: 0,
-              }}
+              className={styles.division}
             >
-              <Typography
-                aria-hidden
-                sx={{
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "text.secondary",
-                  textAlign: "center",
-                }}
-              >
+              <p aria-hidden className={styles.divisionName}>
                 {division.name}
-              </Typography>
+              </p>
               {division.teams.map(({ team }) => (
                 <TeamTile
                   key={team.id}
@@ -139,31 +96,25 @@ export function TeamGrid({
                   entry={teams.find((t) => t.team.id === team.id)}
                 />
               ))}
-            </Box>
+            </div>
           ))}
-        </Box>
+        </div>
       ) : (
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(76px, 1fr))",
-            gap: 0.75,
-          }}
-        >
+        <div className={styles.picked}>
           {picked.map((entry) => (
             <TeamTile key={entry.team.id} team={entry.team} entry={entry} />
           ))}
-        </Box>
+        </div>
       )}
       {picked.length > 0 && (
         <Button
           size="small"
           onClick={() => setShowAll((v) => !v)}
-          style={{ alignSelf: "flex-start" }}
+          className={styles.toggle}
         >
           {showAll ? "Only teams picked" : "Show all 32"}
         </Button>
       )}
-    </Box>
+    </div>
   );
 }

@@ -1,7 +1,4 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
-import Typography from "@mui/material/Typography";
 import { ReactNode, useEffect } from "react";
 import { ordinal } from "../../helper";
 import { PayPeriod, RankedUser } from "../../types";
@@ -23,6 +20,7 @@ import { TeamGrid } from "./TeamGrid";
 import { finishPoints, playerWeeks, seasonRecord } from "./playerUtils";
 import { usePlayerSeason, useSeasonWeeks } from "./usePlayerData";
 import { Button } from "../../ui/Button";
+import styles from "./PlayerPage.module.css";
 
 const Section = ({
   title,
@@ -33,41 +31,23 @@ const Section = ({
   note?: string;
   children: ReactNode;
 }) => (
-  <Box
-    component="section"
-    sx={{ display: "flex", flexDirection: "column", gap: 1.25, minWidth: 0 }}
-  >
-    <Typography component="h3" sx={{ fontSize: "1.125rem", fontWeight: 600 }}>
-      {title}
-    </Typography>
+  <section className={styles.section}>
+    <h3 className={styles.sectionTitle}>{title}</h3>
     {children}
-    {note && (
-      <Typography
-        variant="caption"
-        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
-      >
-        {note}
-      </Typography>
-    )}
-  </Box>
+    {note && <span className={styles.note}>{note}</span>}
+  </section>
 );
 
 const Fact = ({ children }: { children: ReactNode }) => (
-  <Box component="span" sx={{ whiteSpace: "nowrap" }}>
-    {children}
-  </Box>
+  <span className={styles.fact}>{children}</span>
 );
 
 const Strong = ({ children }: { children: ReactNode }) => (
-  <Box component="b" sx={{ color: "text.primary", fontWeight: 600 }}>
-    {children}
-  </Box>
+  <b className={styles.strong}>{children}</b>
 );
 
 const NotYet = ({ children }: { children: ReactNode }) => (
-  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-    {children}
-  </Typography>
+  <p className={styles.notYet}>{children}</p>
 );
 
 export default function PlayerPage({
@@ -113,7 +93,7 @@ export default function PlayerPage({
   // data being unreachable, which mustn't read as "no player".
   if (failed && !trends && !rosterEntry) {
     return (
-      <Box sx={{ textAlign: "left" }}>
+      <div className={styles.page}>
         {back}
         {missing ? (
           <LoadError
@@ -129,7 +109,7 @@ export default function PlayerPage({
             style={{ marginTop: 16 }}
           />
         )}
-      </Box>
+      </div>
     );
   }
 
@@ -141,7 +121,7 @@ export default function PlayerPage({
   const segmentPlace = segment && now?.periods[segment.key]?.place;
 
   return (
-    <Box sx={{ textAlign: "left" }}>
+    <div className={styles.page}>
       <TabIntro
         back={back}
         leading={
@@ -155,18 +135,7 @@ export default function PlayerPage({
         title={name ?? <Skeleton width={180} />}
         subtitle={
           <>
-            <Typography
-              variant="body2"
-              component="div"
-              sx={{
-                color: "text.secondary",
-                display: "flex",
-                flexWrap: "wrap",
-                columnGap: 2,
-                rowGap: 0.25,
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
+            <div className={styles.facts}>
               {now && (
                 <Fact>
                   <Strong>{ordinal(now.place)}</Strong> overall ·{" "}
@@ -197,13 +166,13 @@ export default function PlayerPage({
                     ` · ${career.titles} ${career.titles === 1 ? "title" : "titles"}`}
                 </Fact>
               )}
-            </Typography>
+            </div>
             {moneyStandings.length > 0 && (
               // The question the site exists for: in the money, or how far
               // out, with the weeks left.
-              <Box sx={{ mt: 0.75, display: "inline-block" }}>
+              <div className={styles.money}>
                 <MoneyLines standings={moneyStandings} />
-              </Box>
+              </div>
             )}
           </>
         }
@@ -221,77 +190,49 @@ export default function PlayerPage({
           ) : undefined
         }
       />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
-        <Grid container columnSpacing={4} rowSpacing={4}>
-          <Grid size={{ xs: 12, md: 7 }}>
+      <div className={styles.blocks}>
+        <div className={styles.row}>
+          <div className={`${styles.col} ${styles.wide}`}>
             <Section title="Week by week">
               {!weeksLoaded && myWeeks.length === 0 ? (
                 <TabSkeleton shape="rows" label="Loading the weeks" />
               ) : (
-                <Box component="ol" sx={{ listStyle: "none", m: 0, p: 0 }}>
+                <ol className={styles.weeks}>
                   {myWeeks.map(({ week, user }) => {
                     const live = week === currentWeek;
                     return (
-                      <Box
-                        component="li"
-                        key={week}
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns: {
-                            xs: "60px 28px minmax(0, 1fr)",
-                            sm: "72px 36px minmax(0, 1fr)",
-                          },
-                          alignItems: "center",
-                          columnGap: 1,
-                          py: 1,
-                          borderBottom: 1,
-                          borderColor: "hsl(220, 30%, 94%)",
-                          "&:last-of-type": { borderBottom: 0 },
-                        }}
-                      >
-                        <Box sx={{ lineHeight: 1.25 }}>
-                          <Typography
-                            sx={{ fontSize: "0.8125rem", fontWeight: 600 }}
-                          >
-                            Week {week}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ color: "text.secondary" }}
-                          >
+                      <li key={week} className={styles.week}>
+                        <div className={styles.weekLabel}>
+                          <p className={styles.weekName}>Week {week}</p>
+                          <span className={styles.weekPlace}>
                             {live
                               ? "this week"
                               : `${ordinal(user.place)} overall`}
-                          </Typography>
-                        </Box>
-                        <Typography
+                          </span>
+                        </div>
+                        <p
                           aria-label={`${user.weekly_score + (live ? user.trending_score : 0)} points`}
-                          sx={{
-                            fontSize: "1.125rem",
-                            fontWeight: 700,
-                            textAlign: "center",
-                            fontVariantNumeric: "tabular-nums",
-                          }}
+                          className={styles.weekScore}
                         >
                           {user.weekly_score + (live ? user.trending_score : 0)}
-                        </Typography>
-                        <Box sx={{ minWidth: 0 }}>
+                        </p>
+                        <div className={styles.weekPicks}>
                           {UserGamePicksStack(
                             user.picks,
                             false,
                             user.has_submitted_picks
                           ) ?? <NotYet>No picks shown yet.</NotYet>}
-                        </Box>
-                      </Box>
+                        </div>
+                      </li>
                     );
                   })}
-                </Box>
+                </ol>
               )}
             </Section>
-          </Grid>
-          <Grid size={{ xs: 12, md: 5 }}>
+          </div>
+          <div className={`${styles.col} ${styles.narrow}`}>
             {/* How they pick: by side and role, then by the size of the line. */}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div className={styles.howTheyPick}>
               <Section
                 title="Home or road, favorite or underdog"
                 note="Win-loss on each kind of pick this season. Green from 60%, red at 40% or less, from 3 graded picks."
@@ -324,25 +265,23 @@ export default function PlayerPage({
                   />
                 )}
               </Section>
-            </Box>
-          </Grid>
-        </Grid>
+            </div>
+          </div>
+        </div>
 
-        <Grid container columnSpacing={4} rowSpacing={4}>
-          <Grid size={{ xs: 12, md: 6 }}>
+        <div className={styles.row}>
+          <div className={`${styles.col} ${styles.half}`}>
             <Section title="Notes">
               {trends ? (
-                <Box
-                  sx={{ mx: { xs: -1, sm: -1.5 }, mt: { xs: -1, sm: -1.5 } }}
-                >
+                <div className={styles.notes}>
                   <UserTrendPanel trends={trends} />
-                </Box>
+                </div>
               ) : (
                 <Skeleton variant="rounded" height={120} />
               )}
             </Section>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          </div>
+          <div className={`${styles.col} ${styles.half}`}>
             <Section
               title="Finishes"
               note={
@@ -369,8 +308,8 @@ export default function PlayerPage({
                 <Skeleton variant="rounded" height={170} />
               )}
             </Section>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
         <Section
           title="Team by team"
@@ -382,7 +321,7 @@ export default function PlayerPage({
             <Skeleton variant="rounded" height={220} />
           )}
         </Section>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

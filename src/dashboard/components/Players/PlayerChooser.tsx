@@ -1,12 +1,11 @@
-import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
-import Typography from "@mui/material/Typography";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { RankedUser } from "../../types";
 import { focusRingColor } from "../../shared-theme/themePrimitives";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import UserAvatar from "../UserAvatar";
+import { Icon } from "../../ui/Icon";
+import styles from "./PlayerChooser.module.css";
 
 // The You tab with no one selected: pick a name to select that player (same
 // as the header picker) and open their page.
@@ -21,33 +20,16 @@ export default function PlayerChooser({
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
   return (
-    <Box sx={{ textAlign: "left" }}>
+    <div className={styles.page}>
       <TabIntro title="Who are you?" />
-      <Typography
-        variant="body2"
-        sx={{ color: "text.secondary", mt: -1, mb: 2, maxWidth: "60ch" }}
-      >
+      <p className={styles.intro}>
         Pick your name to see your page and your picks highlighted on every tab.
         It's saved on this device only.
-      </Typography>
+      </p>
       {roster.length === 0 ? (
         <TabSkeleton shape="rows" label="Loading the players" />
       ) : (
-        <Box
-          component="ul"
-          sx={{
-            listStyle: "none",
-            m: 0,
-            p: 0,
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-            },
-            columnGap: 2,
-          }}
-        >
+        <ul className={styles.list}>
           {roster.map((user) => (
             <li key={user.id}>
               <ButtonBase
@@ -74,18 +56,13 @@ export default function PlayerChooser({
                   size={24}
                   includeName={false}
                 />
-                <Box component="span" sx={{ flex: 1, minWidth: 0 }}>
-                  {user.name}
-                </Box>
-                <ChevronRightIcon
-                  aria-hidden
-                  sx={{ color: "text.disabled", fontSize: "1.1rem" }}
-                />
+                <span className={styles.name}>{user.name}</span>
+                <Icon name="ChevronRight" className={styles.chevron} />
               </ButtonBase>
             </li>
           ))}
-        </Box>
+        </ul>
       )}
-    </Box>
+    </div>
   );
 }

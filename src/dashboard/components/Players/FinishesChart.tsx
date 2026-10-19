@@ -1,7 +1,7 @@
-import Box from "@mui/material/Box";
 import { ordinal } from "../../helper";
 import { useWidth } from "../shared/useWidth";
 import { FinishPoint } from "./playerUtils";
+import styles from "./FinishesChart.module.css";
 
 const HEIGHT = 186;
 const PAD = { top: 22, right: 14, bottom: 36, left: 34 };
@@ -40,7 +40,7 @@ export function FinishesChart({ points }: { points: FinishPoint[] }) {
   const step = plotW / Math.max(1, closed.length - 1) < 34 ? 2 : 1;
 
   return (
-    <Box ref={ref} sx={{ width: "100%", maxWidth: 640 }}>
+    <div ref={ref} className={styles.chart}>
       <svg
         width={width}
         height={HEIGHT}
@@ -126,6 +126,6 @@ export function FinishesChart({ points }: { points: FinishPoint[] }) {
           </g>
         ))}
       </svg>
-    </Box>
+    </div>
   );
 }

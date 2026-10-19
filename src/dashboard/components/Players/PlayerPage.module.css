@@ -1,0 +1,168 @@
+.page {
+  text-align: left;
+}
+
+/* One titled block of the page, with an optional note under it. */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.note {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+
+/* The summary line under the name: place, record, seasons. */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  font-variant-numeric: tabular-nums;
+}
+.fact {
+  white-space: nowrap;
+}
+.strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.money {
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.notYet {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Side-by-side blocks from md, stacked below: MUI's Grid (32px gaps, a
+   column's width is its share of 12 less its share of the gaps). The
+   numbers sit in custom properties, as in MUI, so the minifier can't fold
+   the fractions into a rounded 58.3333%, which lands a sub-pixel short. */
+.row {
+  --player-columns: 12;
+  --player-gap: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--player-gap);
+  min-width: 0;
+  box-sizing: border-box;
+}
+.col {
+  flex-grow: 0;
+  flex-basis: auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+@media (min-width: 900px) {
+  .wide {
+    --player-span: 7;
+  }
+  .narrow {
+    --player-span: 5;
+  }
+  .half {
+    --player-span: 6;
+  }
+  .wide,
+  .narrow,
+  .half {
+    width: calc(
+      100% * var(--player-span) / var(--player-columns) -
+        (var(--player-columns) - var(--player-span)) *
+        (var(--player-gap) / var(--player-columns))
+    );
+  }
+}
+
+.howTheyPick {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Week by week: the week and place, the points, the picks. */
+.weeks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.week {
+  display: grid;
+  grid-template-columns: 60px 28px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.week:last-of-type {
+  border-bottom: 0;
+}
+@media (min-width: 600px) {
+  .week {
+    grid-template-columns: 72px 36px minmax(0, 1fr);
+  }
+}
+.weekLabel {
+  line-height: 1.25;
+}
+.weekName {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.weekPlace {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+.weekScore {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.weekPicks {
+  min-width: 0;
+}
+
+/* Cancels the trend panel's own padding (8px, 12px from sm), so its cards
+   line up with the section title. */
+.notes {
+  margin: -8px -8px 0;
+}
+@media (min-width: 600px) {
+  .notes {
+    margin: -12px -12px 0;
+  }
+}
