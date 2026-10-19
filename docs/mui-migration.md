@@ -179,9 +179,33 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    `WeekDropdown`, …) wait for step 5. Shared bits (`TabIntro`,
    `TabSkeleton`, `ByeTeams`, `AppShellStatus`, `shared/`) go with the
    first batch.
-4. **Interactive pieces** still on MUI: Tooltip (`BadgeTooltip`), Popover,
-   Select (`UserSelectDropdown`, `WeekDropdown`), the desktop Tabs, Table
-   styling, Skeleton, Chip, Avatar, Badge, Collapse.
+4. **Interactive pieces.** Shared pieces first, each proved on real call
+   sites against `main` (closed and open states, keyboard, touch):
+   - **Done 2026-10-19:** `ui/Tooltip` (Base UI Popover opening on hover
+     after 100ms, keyboard focus and a plain tap; every tooltip converted,
+     `BadgeTooltip`'s workaround gone), `ui/Popover` (modal, slides to stay
+     on screen; badge key, prizes help, Standings Key), `ui/Select` (Week
+     pill, player picker), `ui/Tabs` (Records' switcher, the phone leader
+     cards), `ui/table.module.css` + `ui/SortLabel` + `ui/useMediaQuery`
+     (Trends' season team table). Measured MUI's real values first each
+     time; all match `main` (0 px on open states) except two
+     interaction-only differences in Select: the chosen item's focus ring
+     shows only for keyboard opens, and the long player list scrolls the
+     chosen name in at a slightly different offset.
+   - Gotchas: Base UI popups need a z-index (MUI's tooltips 1500, modals
+     1300) or page elements with their own stacking show through; Base UI
+     triggers keep the child's role/tabIndex, so pass the label MUI's
+     Tooltip used to add (`aria-label`); MUI's FormControl is a flex
+     column (a select's wrapper must be too, or the trigger won't fill it);
+     a sorted column's arrow stays at full opacity on hover.
+   - **Left:** tables in `AdminPanel/EventsCard`, `RosterView`,
+     `Nfl/StandingsView`, `TeamPage`, `RecordsSection` (3), `UsersTable`
+     (2), sort labels in 4 of those; `useMediaQuery` in 6 files; Skeleton
+     (6), Chip (5), IconButton (5), ButtonBase (5), Alert (2), Avatar,
+     Badge, Collapse, CircularProgress, Checkbox, TextField and the
+     roster's method select. The small ones used in several folders
+     (Skeleton, Chip, IconButton, a plain-button reset) want shared pieces
+     before any fan-out.
 5. **The shell last:** `MainGrid`, `PhoneTabBar`, `Dashboard`, `App`. Then
    remove `AppTheme`, `CssBaseline` (replace with a small base stylesheet),
    `shared-theme/`, and the `@mui/*` and `@emotion/*` packages; re-measure
