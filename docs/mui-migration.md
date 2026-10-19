@@ -198,14 +198,25 @@ node scripts/visual/diff.mjs .visual/main .visual/after
      Tooltip used to add (`aria-label`); MUI's FormControl is a flex
      column (a select's wrapper must be too, or the trigger won't fill it);
      a sorted column's arrow stays at full opacity on hover.
-   - **Left:** tables in `AdminPanel/EventsCard`, `RosterView`,
-     `Nfl/StandingsView`, `TeamPage`, `RecordsSection` (3), `UsersTable`
-     (2), sort labels in 4 of those; `useMediaQuery` in 6 files; Skeleton
-     (6), Chip (5), IconButton (5), ButtonBase (5), Alert (2), Avatar,
-     Badge, Collapse, CircularProgress, Checkbox, TextField and the
-     roster's method select. The small ones used in several folders
-     (Skeleton, Chip, IconButton, a plain-button reset) want shared pieces
-     before any fan-out.
+   - **Also done 2026-10-19:** `ui/Chip`, `ui/Skeleton`, `ui/IconButton`
+     and `ui.module.css`'s `.plainButton` (pilots: Admin's task cards,
+     TabSkeleton, the recap arrows, the "Who are you?" list; all 0 px).
+   - **Step 4 call sites (a workflow, one agent per folder group).** Swap
+     each MUI interactive piece for its `ui/` version: Tooltip → `Tooltip`,
+     Popover → `Popover`, Select/MenuItem → `Select`, Tabs/Tab → `Tabs`,
+     the Table family → plain `<table>` with `ui/table.module.css`,
+     TableSortLabel → `SortLabel`, `useMediaQuery`/`useTheme` breakpoints
+     → `ui/useMediaQuery` (`DOWN_SM`, `UP_MD`, …), Skeleton → `Skeleton`,
+     Chip → `Chip`, IconButton → `IconButton`, ButtonBase → a `<button>`
+     or `<a>` with `.plainButton`. One-offs with no shared piece (Alert,
+     Collapse, CircularProgress, Avatar, Badge, Checkbox, TextField) are
+     written locally in their folder from MUI's measured look. The `sx` on
+     each replaced piece goes into the folder's CSS module. Same checks as
+     step 3, plus the open/hover/pressed states the pages don't show.
+   - **Left after that, for step 5:** `MainGrid` (desktop Tabs, Badge,
+     IconButton, Skeleton, Grid), `PhoneTabBar` (ButtonBase),
+     `UserSelectDropdown`'s Skeleton, `Dashboard` (CssBaseline), and
+     `PlainLink`'s `sx` path.
 5. **The shell last:** `MainGrid`, `PhoneTabBar`, `Dashboard`, `App`. Then
    remove `AppTheme`, `CssBaseline` (replace with a small base stylesheet),
    `shared-theme/`, and the `@mui/*` and `@emotion/*` packages; re-measure
