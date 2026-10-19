@@ -3,6 +3,15 @@
   width: 340px;
 }
 
+/* The "?" beside the Name header: a small IconButton cut to 28px, in
+   muted ink. */
+.button {
+  width: 28px;
+  height: 28px;
+  margin-left: 2px;
+  color: var(--text-muted);
+}
+
 /* The small IconButton draws its icon at 1rem (theme); the 1.1rem this
    once asked for never applied. */
 .icon {

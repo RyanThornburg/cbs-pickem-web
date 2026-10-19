@@ -1,0 +1,53 @@
+/* The phone User Picks table, on ui/table.module.css: each player is two
+   rows, the numbers and then their picks. */
+
+/* 4px a side, so the name keeps as much of 360px as it can. */
+.cell {
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+/* Header labels: small and bold. */
+.headCell {
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+/* Middle-aligned in the line, as MUI's sort label (a ButtonBase) was; on
+   the baseline it sat up to a pixel higher. */
+.sortLabel {
+  vertical-align: middle;
+}
+
+/* A row opens the player's page; the selected player's rows are lime
+   (selectedRowSx's SELECTED_ROW_BG). */
+.row {
+  cursor: pointer;
+}
+.selected {
+  background-color: #f0f4c3;
+}
+/* A heavier rule above each player's pair of rows. */
+.firstRow {
+  border-top: 2px solid #e0e0e0;
+}
+
+.nameCell {
+  width: 100%;
+  max-width: 0;
+}
+.numberCell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.picksCell {
+  padding-top: 4px;
+  padding-bottom: 10px;
+}
+
+/* The paid line's row: no padding above or below, and no border. */
+.lineCell {
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+}

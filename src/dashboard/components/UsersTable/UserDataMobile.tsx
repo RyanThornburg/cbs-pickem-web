@@ -1,38 +1,16 @@
 import { Fragment } from "react";
 import { flexRender } from "@tanstack/react-table";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import TableCell from "@mui/material/TableCell";
-import { grey } from "@mui/material/colors";
-import { styled } from "@mui/material/styles";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { PaidLineRule } from "./PaidLineRule";
 import { paidLineNote } from "./MoneyLines";
 import { BadgeKey } from "./BadgeKey";
-import { selectedRowSx } from "./selectedRowSx";
+import { SortLabel } from "../../ui/SortLabel";
+import table from "../../ui/table.module.css";
+import styles from "./UserDataMobile.module.css";
 
-const StyledTableCellHeader = styled(TableCell)(() => ({
-  "&.MuiTableCell-head": {
-    fontSize: "0.75rem",
-    fontWeight: 700,
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
-}));
-
-const StyledTableCell = styled(TableCell)(() => ({
-  "&.MuiTableCell-head": {
-    fontSize: "0.75rem",
-    fontWeight: "regular",
-  },
-  paddingLeft: 4,
-  paddingRight: 4,
-}));
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 export default function UserDataMobile({
   userList,
@@ -44,7 +22,7 @@ export default function UserDataMobile({
   trends,
   moneyStandings,
 }: UserGridWithTrendsProps) {
-  const { table, paidLinesAfter } = useUsersTable({
+  const { table: usersTable, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     week,
@@ -53,34 +31,44 @@ export default function UserDataMobile({
   });
 
   return (
-    <TableContainer>
-      <Table size="small" aria-label="Standings and picks">
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+    <div className={table.container}>
+      <table className={table.table} aria-label="Standings and picks">
+        <thead>
+          {usersTable.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
               {headerGroup.headers
                 .filter((header) => header.column.id !== "picks")
                 .map((header) => (
-                  <StyledTableCellHeader
+                  <th
                     key={header.id}
-                    align={header.column.columnDef.meta?.align ?? "left"}
+                    scope="col"
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      table.head,
+                      styles.cell,
+                      styles.headCell,
+                      header.column.columnDef.meta?.align === "center" &&
+                        table.center
+                    )}
                   >
                     {header.column.getCanSort() ? (
-                      <TableSortLabel
+                      <SortLabel
                         // An inactive arrow still takes ~22px per column,
                         // which the name needs at 360px (six columns from
                         // the 2nd half on).
-                        hideSortIcon
+                        hideInactiveIcon
                         active={header.column.getIsSorted() !== false}
                         direction={header.column.getIsSorted() || "asc"}
                         onClick={header.column.getToggleSortingHandler()}
+                        className={styles.sortLabel}
                       >
                         {header.column.columnDef.meta?.mobileHeader ??
                           flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                      </TableSortLabel>
+                      </SortLabel>
                     ) : (
                       (header.column.columnDef.meta?.mobileHeader ??
                       flexRender(
@@ -89,13 +77,13 @@ export default function UserDataMobile({
                       ))
                     )}
                     {header.column.id === "name" && <BadgeKey />}
-                  </StyledTableCellHeader>
+                  </th>
                 ))}
-            </TableRow>
+            </tr>
           ))}
-        </TableHead>
-        <TableBody sx={{ mb: 2 }}>
-          {table.getRowModel().rows.map((row, rowIndex) => {
+        </thead>
+        <tbody>
+          {usersTable.getRowModel().rows.map((row, rowIndex) => {
             const cells = row.getVisibleCells();
             const picksCell = cells.find((cell) => cell.column.id === "picks");
             const mainCells = cells.filter(
@@ -105,67 +93,82 @@ export default function UserDataMobile({
 
             return (
               <Fragment key={row.id}>
-                <TableRow
+                <tr
                   data-user-row={row.id}
                   onClick={() => openPlayer(row.id)}
-                  sx={[
-                    { borderTop: `2px solid ${grey[300]}`, cursor: "pointer" },
-                    isSelected && selectedRowSx,
-                  ]}
+                  className={cx(
+                    styles.row,
+                    styles.firstRow,
+                    isSelected && styles.selected
+                  )}
                 >
                   {mainCells.map((cell) => (
-                    <StyledTableCell
+                    <td
                       key={cell.id}
-                      align={cell.column.columnDef.meta?.align ?? "left"}
-                      // The name takes whatever the number columns leave,
-                      // so it truncates only when it really can't fit.
-                      sx={
+                      className={cx(
+                        table.cell,
+                        table.small,
+                        styles.cell,
+                        cell.column.columnDef.meta?.align === "center" &&
+                          table.center,
+                        // The name takes whatever the number columns leave,
+                        // so it truncates only when it really can't fit.
                         cell.column.id === "name"
-                          ? { width: "100%", maxWidth: 0 }
-                          : { width: "1%", whiteSpace: "nowrap" }
-                      }
+                          ? styles.nameCell
+                          : styles.numberCell
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </StyledTableCell>
+                    </td>
                   ))}
-                </TableRow>
+                </tr>
                 {picksCell && (
-                  <TableRow
+                  <tr
                     onClick={() => openPlayer(row.id)}
-                    sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
+                    className={cx(styles.row, isSelected && styles.selected)}
                   >
-                    <StyledTableCell
-                      style={{ paddingBottom: "10px", paddingTop: "4px" }}
+                    <td
                       colSpan={mainCells.length}
+                      className={cx(
+                        table.cell,
+                        table.small,
+                        styles.cell,
+                        styles.picksCell
+                      )}
                     >
                       {flexRender(
                         picksCell.column.columnDef.cell,
                         picksCell.getContext()
                       )}
-                    </StyledTableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 )}
                 {paidLinesAfter(rowIndex).map((line) => (
-                  <TableRow key={line.label}>
-                    <StyledTableCell
+                  <tr key={line.label}>
+                    <td
                       colSpan={mainCells.length}
-                      sx={{ py: 0, border: 0 }}
+                      className={cx(
+                        table.cell,
+                        table.small,
+                        styles.cell,
+                        styles.lineCell
+                      )}
                     >
                       <PaidLineRule
                         label={line.label}
                         note={paidLineNote(moneyStandings, line.key)}
                       />
-                    </StyledTableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
               </Fragment>
             );
           })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 }

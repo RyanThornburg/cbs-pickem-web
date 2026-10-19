@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import IconButton from "@mui/material/IconButton";
 import { Icon } from "../../ui/Icon";
+import { IconButton } from "../../ui/IconButton";
 import { Popover } from "../../ui/Popover";
 import { GameStatus, UserPick } from "../../types";
 import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
@@ -69,7 +69,7 @@ export function BadgeKey() {
           aria-label="What the marks mean"
           // In a sortable header: opening the key mustn't also sort.
           onClick={(event) => event.stopPropagation()}
-          sx={{ ml: 0.25, width: 28, height: 28, color: "text.secondary" }}
+          className={styles.button}
         >
           <Icon name="HelpOutlineOutlined" className={styles.icon} />
         </IconButton>

@@ -1,5 +1,5 @@
-import IconButton from "@mui/material/IconButton";
 import { Icon } from "../../ui/Icon";
+import { IconButton } from "../../ui/IconButton";
 import { Popover } from "../../ui/Popover";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { MONEY_GOLD } from "./StandingsStatus";
@@ -31,7 +31,8 @@ export function PrizesHelp() {
         <IconButton
           size="small"
           aria-label="How prizes work"
-          sx={{ width: 24, height: 24, my: -0.5, color: MONEY_GOLD }}
+          className={styles.button}
+          style={{ color: MONEY_GOLD }}
         >
           <Icon name="HelpOutlineOutlined" className={styles.icon} />
         </IconButton>

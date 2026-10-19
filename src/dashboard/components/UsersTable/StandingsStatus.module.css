@@ -44,3 +44,14 @@
     padding: 8px 4px;
   }
 }
+
+/* The name's line, up to 10rem; the picks' bar fills the rest up to 380px,
+   pushed to the right end. */
+.skeletonName {
+  flex: 0 1 10rem;
+}
+.skeletonPicks {
+  flex: 1 1 auto;
+  max-width: 380px;
+  margin-left: auto;
+}

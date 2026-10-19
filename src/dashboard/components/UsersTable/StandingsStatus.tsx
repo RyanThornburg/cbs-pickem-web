@@ -1,9 +1,9 @@
-import Skeleton from "@mui/material/Skeleton";
 import { LeaderboardStatus } from "../useWeekData";
 import { formatUpdated } from "../../utils/updatedTime";
 import LoadError from "../shared/LoadError";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import { Skeleton } from "../../ui/Skeleton";
 import styles from "./StandingsStatus.module.css";
 
 // Deep trophy gold for text: 5.1:1 on white (DESIGN.md's #a87f12 was 3.7:1).
@@ -77,7 +77,6 @@ export function StandingsSkeleton({
   label: string;
   animate?: boolean;
 }) {
-  const animation = animate ? "pulse" : false;
   return (
     // Still and faded when nothing is loading (StandingsStatus.module.css).
     <div
@@ -88,23 +87,23 @@ export function StandingsSkeleton({
     >
       {Array.from({ length: 8 }, (_, i) => (
         <div key={i} className={styles.skeletonRow}>
-          <Skeleton animation={animation} variant="text" width={20} />
+          <Skeleton animate={animate} variant="text" width={20} />
           <Skeleton
-            animation={animation}
+            animate={animate}
             variant="circular"
             width={26}
             height={26}
           />
           <Skeleton
-            animation={animation}
+            animate={animate}
             variant="text"
-            sx={{ flex: "0 1 10rem" }}
+            className={styles.skeletonName}
           />
           <Skeleton
-            animation={animation}
+            animate={animate}
             variant="rounded"
             height={24}
-            sx={{ flex: "1 1 auto", maxWidth: 380, ml: "auto" }}
+            className={styles.skeletonPicks}
           />
         </div>
       ))}

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import ButtonBase from "@mui/material/ButtonBase";
 import { RankedUser } from "../../types";
 import { ordinal } from "../../helper";
 import UserAvatar from "../UserAvatar";
 import { ScoreWithCovering } from "./ScoreWithCovering";
 import { pts } from "./MoneyLines";
-import { selectedRowSx } from "./selectedRowSx";
+import { SELECTED_ROW_BG } from "./selectedRowSx";
 import { ShownMoneyStanding } from "./usersTableUtils";
 import { PHONE_TAB_BAR_OFFSET } from "../PhoneTabBar";
-import { focusRingColor } from "../../shared-theme/themePrimitives";
+import uiStyles from "../../ui/ui.module.css";
 import styles from "./PinnedPlayerRow.module.css";
 
 // The prize most worth a line: one you're in, else the closest chase.
@@ -79,28 +78,13 @@ export function PinnedPlayerRow({
       // Just above the phone tab bar.
       style={{ bottom: PHONE_TAB_BAR_OFFSET }}
     >
-      <ButtonBase
+      <button
+        type="button"
         onClick={scrollToRow}
         aria-label={`Go to your row: ${user.place ? `${ordinal(user.place)}, ` : ""}${user.name}${note ? `, ${note}` : ""}`}
-        sx={[
-          {
-            width: "100%",
-            display: "grid",
-            gridTemplateColumns: "2rem minmax(0, 1fr) auto",
-            alignItems: "center",
-            columnGap: 1,
-            rowGap: 0.25,
-            px: 1,
-            py: 0.75,
-            textAlign: "left",
-            fontSize: "0.875rem",
-            "&:focus-visible": {
-              outline: `3px solid ${focusRingColor}`,
-              outlineOffset: -3,
-            },
-          },
-          selectedRowSx,
-        ]}
+        className={`${uiStyles.plainButton} ${styles.button}`}
+        // The player's own row color.
+        style={{ backgroundColor: SELECTED_ROW_BG }}
       >
         <span className={styles.place}>{user.place ?? "–"}</span>
         <UserAvatar
@@ -116,7 +100,7 @@ export function PinnedPlayerRow({
           />
         </span>
         {note && <span className={styles.note}>{note}</span>}
-      </ButtonBase>
+      </button>
     </div>
   );
 }

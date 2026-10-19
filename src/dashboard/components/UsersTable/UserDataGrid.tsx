@@ -1,20 +1,17 @@
 import { Fragment } from "react";
 import { flexRender } from "@tanstack/react-table";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
 import { PaidLineRule } from "./PaidLineRule";
 import { formatUpdated } from "../../utils/updatedTime";
 import { paidLineNote } from "./MoneyLines";
 import { BadgeKey } from "./BadgeKey";
-import { selectedRowSx } from "./selectedRowSx";
+import { SortLabel } from "../../ui/SortLabel";
+import table from "../../ui/table.module.css";
 import styles from "./UserDataGrid.module.css";
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 const UserDataGrid = ({
   userList,
@@ -27,7 +24,7 @@ const UserDataGrid = ({
   moneyStandings,
   leaderboardStatus,
 }: UserGridWithTrendsProps) => {
-  const { table, paidLinesAfter } = useUsersTable({
+  const { table: usersTable, paidLinesAfter } = useUsersTable({
     userList,
     trends,
     week,
@@ -36,28 +33,36 @@ const UserDataGrid = ({
   });
 
   return (
-    <TableContainer>
-      <Table size="small" aria-label="Standings and picks">
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+    <div className={table.container}>
+      <table className={table.table} aria-label="Standings and picks">
+        <thead>
+          {usersTable.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableCell
+                <th
                   key={header.id}
-                  align={header.column.columnDef.meta?.align ?? "left"}
-                  sx={{ fontSize: "0.75rem", fontWeight: 700 }}
+                  scope="col"
+                  className={cx(
+                    table.cell,
+                    table.small,
+                    table.head,
+                    styles.headCell,
+                    header.column.columnDef.meta?.align === "center" &&
+                      table.center
+                  )}
                 >
                   {header.column.getCanSort() ? (
-                    <TableSortLabel
+                    <SortLabel
                       active={header.column.getIsSorted() !== false}
                       direction={header.column.getIsSorted() || "asc"}
                       onClick={header.column.getToggleSortingHandler()}
+                      className={styles.sortLabel}
                     >
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                    </TableSortLabel>
+                    </SortLabel>
                   ) : (
                     flexRender(
                       header.column.columnDef.header,
@@ -74,54 +79,58 @@ const UserDataGrid = ({
                         Updated {formatUpdated(leaderboardStatus.updatedAt)}
                       </span>
                     )}
-                </TableCell>
+                </th>
               ))}
-            </TableRow>
+            </tr>
           ))}
-        </TableHead>
-        <TableBody>
-          {table.getRowModel().rows.map((row, rowIndex) => {
+        </thead>
+        <tbody>
+          {usersTable.getRowModel().rows.map((row, rowIndex) => {
             const isSelected = row.id === userId;
 
             return (
               <Fragment key={row.id}>
-                <TableRow
-                  hover
+                <tr
                   data-user-row={row.id}
                   onClick={() => openPlayer(row.id)}
-                  sx={[{ cursor: "pointer" }, isSelected && selectedRowSx]}
+                  className={cx(styles.row, isSelected && styles.selected)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
+                    <td
                       key={cell.id}
-                      align={cell.column.columnDef.meta?.align ?? "left"}
+                      className={cx(
+                        table.cell,
+                        table.small,
+                        cell.column.columnDef.meta?.align === "center" &&
+                          table.center
+                      )}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </TableCell>
+                    </td>
                   ))}
-                </TableRow>
+                </tr>
                 {paidLinesAfter(rowIndex).map((line) => (
-                  <TableRow key={line.label}>
-                    <TableCell
+                  <tr key={line.label}>
+                    <td
                       colSpan={row.getVisibleCells().length}
-                      sx={{ py: 0, border: 0 }}
+                      className={cx(table.cell, table.small, styles.lineCell)}
                     >
                       <PaidLineRule
                         label={line.label}
                         note={paidLineNote(moneyStandings, line.key)}
                       />
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
               </Fragment>
             );
           })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 };
 

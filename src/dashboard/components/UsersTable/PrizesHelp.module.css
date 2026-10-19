@@ -1,3 +1,13 @@
+/* The "?" on a paid line: a small IconButton cut to 24px, pulled into the
+   line's height so it doesn't push the row apart. Gold comes from
+   MONEY_GOLD inline. */
+.button {
+  width: 24px;
+  height: 24px;
+  margin-top: -4px;
+  margin-bottom: -4px;
+}
+
 /* The small IconButton draws its icon at 1rem (theme). */
 .icon {
   font-size: 1rem;

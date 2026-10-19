@@ -16,6 +16,24 @@
   }
 }
 
+/* Place, avatar and name, score; the money note on a second line under
+   the name. The focus ring sits inside, since the bar runs edge to edge. */
+.button {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  width: 100%;
+  padding: 6px 8px;
+  font-size: var(--text-md);
+  text-align: left;
+}
+.button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -3px;
+}
+
 .place {
   text-align: center;
   font-variant-numeric: tabular-nums;
