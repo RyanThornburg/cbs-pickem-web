@@ -1,10 +1,9 @@
-import ButtonBase from "@mui/material/ButtonBase";
 import { RankedUser } from "../../types";
-import { focusRingColor } from "../../shared-theme/themePrimitives";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import UserAvatar from "../UserAvatar";
 import { Icon } from "../../ui/Icon";
+import uiStyles from "../../ui/ui.module.css";
 import styles from "./PlayerChooser.module.css";
 
 // The You tab with no one selected: pick a name to select that player (same
@@ -32,23 +31,10 @@ export default function PlayerChooser({
         <ul className={styles.list}>
           {roster.map((user) => (
             <li key={user.id}>
-              <ButtonBase
+              <button
+                type="button"
                 onClick={() => onChoose(user.id)}
-                sx={{
-                  width: "100%",
-                  justifyContent: "flex-start",
-                  gap: 1,
-                  px: 1,
-                  py: 1,
-                  borderRadius: 1,
-                  textAlign: "left",
-                  fontSize: "0.875rem",
-                  "&:hover": { bgcolor: "hsl(220, 35%, 97%)" },
-                  "&:focus-visible": {
-                    outline: `2px solid ${focusRingColor}`,
-                    outlineOffset: -2,
-                  },
-                }}
+                className={`${uiStyles.plainButton} ${styles.choice}`}
               >
                 <UserAvatar
                   userId={user.id}
@@ -58,7 +44,7 @@ export default function PlayerChooser({
                 />
                 <span className={styles.name}>{user.name}</span>
                 <Icon name="ChevronRight" className={styles.chevron} />
-              </ButtonBase>
+              </button>
             </li>
           ))}
         </ul>

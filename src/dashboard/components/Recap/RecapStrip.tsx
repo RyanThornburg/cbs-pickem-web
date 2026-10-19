@@ -1,6 +1,7 @@
-import { IconButton, useMediaQuery } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { memo, useEffect, useMemo, useState } from "react";
+import { IconButton } from "../../ui/IconButton";
+import { useMediaQuery } from "../../ui/useMediaQuery";
 import { WeekRecap } from "../../types";
 import { CategoryMark, ScopeTag } from "./recapCategory";
 import { getSeenItems, markItemSeen, orderForRotation } from "./recapUtils";

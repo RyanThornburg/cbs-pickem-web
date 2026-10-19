@@ -128,3 +128,8 @@
   outline-offset: 4px;
   border-radius: 2px;
 }
+
+/* A note under the name ("Every minute"). */
+.note {
+  margin-bottom: 8px;
+}

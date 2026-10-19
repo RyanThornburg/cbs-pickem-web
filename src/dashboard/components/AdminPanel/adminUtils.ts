@@ -69,13 +69,13 @@ export const HEALTH_LABEL: Record<TaskHealth, string> = {
 
 export const HEALTH_COLOR: Record<
   TaskHealth,
-  "success" | "warning" | "error" | "default"
+  "success" | "warning" | "error" | "neutral"
 > = {
   fresh: "success",
   stale: "warning",
   failing: "error",
   never: "warning",
-  idle: "default",
+  idle: "neutral",
   ok: "success",
   done: "success",
   missed: "error",

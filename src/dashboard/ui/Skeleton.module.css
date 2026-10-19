@@ -1,0 +1,47 @@
+/* MUI's Skeleton: a grey placeholder block (rgba(0, 0, 0, 0.11)), 1.2em
+   tall unless sized. "text" is a line squeezed to 60% with rounded ends,
+   "circular" a circle, "rounded" the theme's 8px corners. It pulses while
+   loading and stands still once the load has failed. */
+
+@layer ui {
+  .skeleton {
+    display: block;
+    height: 1.2em;
+    background-color: rgba(0, 0, 0, 0.11);
+  }
+
+  .text {
+    height: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 8px / 13.3px;
+    transform: scale(1, 0.6);
+    transform-origin: 0 55%;
+  }
+  .text:empty::before {
+    content: "\00a0";
+  }
+
+  .circular {
+    border-radius: 50%;
+  }
+
+  .rounded {
+    border-radius: var(--radius);
+  }
+
+  .pulse {
+    animation: pulse 2s ease-in-out 0.5s infinite;
+  }
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}

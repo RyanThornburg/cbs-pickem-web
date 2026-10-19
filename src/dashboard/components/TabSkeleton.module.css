@@ -5,10 +5,25 @@
   opacity: 0.45;
 }
 
+/* The tiles' heading line, at the 20px title size. */
+.tilesTitle {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+}
+
 .tilesRow {
   display: flex;
   gap: 10px;
   overflow: hidden;
+}
+
+/* Tiles and cards: 16px corners, like the real ones. */
+.tile {
+  flex: 0 0 156px;
+  border-radius: 16px;
+}
+.card {
+  border-radius: 16px;
 }
 
 .cards {

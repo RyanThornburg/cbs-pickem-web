@@ -1,4 +1,4 @@
-import Skeleton from "@mui/material/Skeleton";
+import { Skeleton } from "../ui/Skeleton";
 import { StandingsSkeleton } from "./UsersTable/StandingsStatus";
 import styles from "./TabSkeleton.module.css";
 
@@ -18,7 +18,6 @@ export default function TabSkeleton({
   // loading" next to the error.
   animate?: boolean;
 }) {
-  const animation = animate ? "pulse" : false;
   if (shape === "rows") {
     return <StandingsSkeleton label={label} animate={animate} />;
   }
@@ -32,19 +31,19 @@ export default function TabSkeleton({
         className={animate ? undefined : styles.stopped}
       >
         <Skeleton
-          animation={animation}
+          animate={animate}
           variant="text"
           width={140}
-          sx={{ fontSize: "1.25rem", mb: 1 }}
+          className={styles.tilesTitle}
         />
         <div className={styles.tilesRow}>
           {Array.from({ length: 6 }, (_, i) => (
             <Skeleton
               key={i}
-              animation={animation}
+              animate={animate}
               variant="rounded"
               height={150}
-              sx={{ flex: "0 0 156px", borderRadius: 2 }}
+              className={styles.tile}
             />
           ))}
         </div>
@@ -64,10 +63,10 @@ export default function TabSkeleton({
       {Array.from({ length: 6 }, (_, i) => (
         <Skeleton
           key={i}
-          animation={animation}
+          animate={animate}
           variant="rounded"
           height={176}
-          sx={{ borderRadius: 2 }}
+          className={styles.card}
         />
       ))}
     </div>

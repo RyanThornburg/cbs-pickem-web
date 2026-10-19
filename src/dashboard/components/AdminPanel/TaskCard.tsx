@@ -1,4 +1,3 @@
-import { Chip } from "@mui/material";
 import { ReactNode } from "react";
 import {
   formatAgo,
@@ -9,6 +8,7 @@ import {
   isFailing,
   TaskHealth,
 } from "./adminUtils";
+import { Chip } from "../../ui/Chip";
 import styles from "./TaskCard.module.css";
 
 export type TaskRun = {
@@ -67,9 +67,8 @@ export default function TaskCard({
       <div className={styles.header}>
         <h6 className={styles.name}>{name}</h6>
         <Chip
-          size="small"
           label={dimmed ? "Unknown" : HEALTH_LABEL[health]}
-          color={dimmed ? "default" : HEALTH_COLOR[health]}
+          tone={dimmed ? "neutral" : HEALTH_COLOR[health]}
           variant={
             health === "idle" || health === "ok" || dimmed
               ? "outlined"
@@ -77,9 +76,7 @@ export default function TaskCard({
           }
         />
       </div>
-      {note && (
-        <Chip size="small" variant="outlined" label={note} sx={{ mb: 1 }} />
-      )}
+      {note && <Chip variant="outlined" label={note} className={styles.note} />}
       <div className={styles.body}>
         {runs.map((run) => {
           // Attempted more recently than it succeeded: lead with how long

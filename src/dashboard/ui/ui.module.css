@@ -13,4 +13,33 @@
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
+
+  /* MUI's ButtonBase with the theme's focus ring: a bare clickable area
+     (a <button> or <a>) that a caller's own class lays out. */
+  .plainButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    outline: 0;
+    -webkit-tap-highlight-color: transparent;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+  }
+  .plainButton:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
 }
