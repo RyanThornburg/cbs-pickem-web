@@ -1,10 +1,8 @@
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import { useState } from "react";
 import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import styles from "./PickYourselfHint.module.css";
 
 const DISMISSED_KEY = "pickYourselfHintDismissed";
 
@@ -37,34 +35,12 @@ export default function PickYourselfHint({
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexWrap: { xs: "wrap", sm: "nowrap" },
-        gap: 1,
-        mb: 1.5,
-        pl: 1.5,
-        pr: 0.5,
-        py: 1,
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 2,
-        bgcolor: "background.paper",
-        textAlign: "left",
-      }}
-    >
-      <PersonSearchIcon
-        aria-hidden
-        sx={{ color: "text.secondary", fontSize: "1.25rem" }}
-      />
-      <Typography
-        variant="body2"
-        sx={{ flex: "1 1 12rem", minWidth: 0, color: "text.primary" }}
-      >
+    <div className={styles.hint}>
+      <Icon name="PersonSearch" size="small" className={styles.icon} />
+      <p className={styles.text}>
         Pick your name to highlight your row and picks on every tab.
-      </Typography>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: "auto" }}>
+      </p>
+      <div className={styles.actions}>
         <Button variant="outlined" size="small" onClick={onChoose}>
           Choose your name
         </Button>
@@ -73,9 +49,9 @@ export default function PickYourselfHint({
           onClick={dismiss}
           sx={{ width: 36, height: 36 }}
         >
-          <CloseIcon fontSize="small" />
+          <Icon name="Close" size="small" />
         </IconButton>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

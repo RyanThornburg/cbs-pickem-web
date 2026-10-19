@@ -1,7 +1,6 @@
-import PlaceIcon from "@mui/icons-material/Place";
-import PublicIcon from "@mui/icons-material/Public";
 import { Stadium } from "../../types";
 import { getVenueBadge } from "../../utils/venue";
+import { Icon } from "../../ui/Icon";
 
 type Props = {
   stadium?: Stadium;
@@ -18,11 +17,7 @@ export default function VenueBadge({ stadium, neutralSite }: Props) {
       className="gc-venuebadge"
       title={`${isInternational ? "International" : "Neutral-site"} game${stadium?.name ? ` at ${stadium.name}` : ""}`}
     >
-      {isInternational ? (
-        <PublicIcon fontSize="inherit" />
-      ) : (
-        <PlaceIcon fontSize="inherit" />
-      )}
+      <Icon name={isInternational ? "Public" : "Place"} size="inherit" />
       {badge.label}
     </span>
   );

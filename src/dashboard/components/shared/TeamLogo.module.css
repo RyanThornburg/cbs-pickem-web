@@ -1,0 +1,15 @@
+/* The team mark (TeamLogo.tsx); its size comes in as an inline style. */
+.logo {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* The team-color disc with the abbreviation, if a logo is ever missing. */
+.disc {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+}

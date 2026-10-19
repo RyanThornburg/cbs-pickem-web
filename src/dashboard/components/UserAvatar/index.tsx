@@ -1,7 +1,29 @@
-import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar } from "@mui/material";
+import { CSSProperties } from "react";
 import { UserAvatarProps } from "./UserAvatar.types";
 import { createAvatarProps } from "./UserAvatar.util";
 import { ordinal } from "../../helper";
+import styles from "./UserAvatar.module.css";
+
+const px = (value: number | string) =>
+  typeof value === "number" ? `${value}px` : value;
+
+// The name's font size: a plain value inline, or a per-breakpoint one as
+// custom properties for UserAvatar.module.css's .responsive.
+const nameSize = (
+  fontSize: NonNullable<UserAvatarProps["fontSize"]>
+): { className: string; style: CSSProperties } =>
+  typeof fontSize === "object"
+    ? {
+        className: `${styles.text} ${styles.responsive}`,
+        style: Object.fromEntries(
+          Object.entries(fontSize).map(([bp, value]) => [
+            `--size-${bp}`,
+            px(value),
+          ])
+        ),
+      }
+    : { className: styles.text, style: { fontSize: px(fontSize) } };
 
 export const UserAvatar = ({
   userName,
@@ -12,8 +34,9 @@ export const UserAvatar = ({
   includeName = true,
   ...props
 }: UserAvatarProps) => {
+  const name = nameSize(fontSize);
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, minWidth: 0 }}>
+    <div className={styles.row}>
       <Avatar
         {...createAvatarProps(userId, userName ?? "", {
           width: size,
@@ -22,30 +45,21 @@ export const UserAvatar = ({
         {...props}
       />
       {includeName && (
-        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-          <Typography
-            variant="caption"
-            sx={{ fontSize: fontSize, lineHeight: 1 }}
-            noWrap={true}
-          >
+        <div className={styles.nameRow}>
+          <span className={name.className} style={name.style}>
             {userName}
-          </Typography>
+          </span>
           {place > 0 && (
-            <Typography
-              variant="caption"
-              sx={{
-                fontSize: fontSize,
-                lineHeight: 1,
-                ml: 0.5, // adds a small margin between name and place
-              }}
-              noWrap={true}
+            <span
+              className={`${name.className} ${styles.place}`}
+              style={name.style}
             >
               {ordinal(place)}
-            </Typography>
+            </span>
           )}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

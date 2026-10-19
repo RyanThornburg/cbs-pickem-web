@@ -1,0 +1,28 @@
+/* Loading placeholders shaped like the tab (TabSkeleton.tsx). */
+
+/* Once a load has failed, faded so they don't read as "still loading". */
+.stopped {
+  opacity: 0.45;
+}
+
+.tilesRow {
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1536px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

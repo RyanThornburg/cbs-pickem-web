@@ -1,6 +1,6 @@
-import Box from "@mui/material/Box";
 import { getTeamLogoSrc } from "../../utils/teamAssets";
 import { getTeamData } from "../Scoreboard/utils/teamData";
+import styles from "./TeamLogo.module.css";
 
 interface Props {
   abbr: string;
@@ -17,32 +17,27 @@ export const TeamLogo = ({ abbr, size = 28, decorative = false }: Props) => {
   const src = getTeamLogoSrc(abbr);
   if (src) {
     return (
-      <Box
-        component="img"
+      <img
         src={src}
         alt={decorative ? "" : abbr}
-        sx={{ width: size, height: size, flexShrink: 0, objectFit: "contain" }}
+        className={styles.logo}
+        style={{ width: size, height: size }}
       />
     );
   }
   return (
-    <Box
+    <div
       aria-label={decorative ? undefined : abbr}
       aria-hidden={decorative || undefined}
-      sx={{
+      className={styles.disc}
+      style={{
         width: size,
         height: size,
-        borderRadius: "50%",
-        flexShrink: 0,
-        bgcolor: `#${color}`,
-        color: "#fff",
-        display: "grid",
-        placeItems: "center",
+        backgroundColor: `#${color}`,
         fontSize: size * 0.34,
-        fontWeight: 700,
       }}
     >
       {abbr}
-    </Box>
+    </div>
   );
 };

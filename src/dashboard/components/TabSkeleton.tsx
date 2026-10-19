@@ -1,6 +1,6 @@
-import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import { StandingsSkeleton } from "./UsersTable/StandingsStatus";
+import styles from "./TabSkeleton.module.css";
 
 // A loading placeholder shaped like the tab it stands in for, so the page
 // doesn't briefly turn into a table on the Scoreboard: standings rows,
@@ -25,11 +25,11 @@ export default function TabSkeleton({
 
   if (shape === "tiles") {
     return (
-      <Box
+      <div
         role="status"
         aria-busy={animate}
         aria-label={label}
-        sx={{ opacity: animate ? 1 : 0.45 }}
+        className={animate ? undefined : styles.stopped}
       >
         <Skeleton
           animation={animation}
@@ -37,7 +37,7 @@ export default function TabSkeleton({
           width={140}
           sx={{ fontSize: "1.25rem", mb: 1 }}
         />
-        <Box sx={{ display: "flex", gap: 1.25, overflow: "hidden" }}>
+        <div className={styles.tilesRow}>
           {Array.from({ length: 6 }, (_, i) => (
             <Skeleton
               key={i}
@@ -47,26 +47,19 @@ export default function TabSkeleton({
               sx={{ flex: "0 0 156px", borderRadius: 2 }}
             />
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box
+    <div
       role="status"
       aria-busy={animate}
       aria-label={label}
-      sx={{
-        opacity: animate ? 1 : 0.45,
-        display: "grid",
-        gridTemplateColumns: {
-          xs: "1fr",
-          md: "repeat(2, 1fr)",
-          xl: "repeat(3, 1fr)",
-        },
-        gap: 2,
-      }}
+      className={[styles.cards, !animate && styles.stopped]
+        .filter(Boolean)
+        .join(" ")}
     >
       {Array.from({ length: 6 }, (_, i) => (
         <Skeleton
@@ -77,6 +70,6 @@ export default function TabSkeleton({
           sx={{ borderRadius: 2 }}
         />
       ))}
-    </Box>
+    </div>
   );
 }

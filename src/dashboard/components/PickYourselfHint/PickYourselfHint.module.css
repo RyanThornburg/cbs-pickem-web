@@ -1,0 +1,39 @@
+/* The pick-yourself prompt above User Picks (index.tsx). */
+.hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 4px 8px 12px;
+  border: 1px solid var(--divider);
+  border-radius: 16px;
+  background-color: var(--paper);
+  text-align: left;
+}
+@media (min-width: 600px) {
+  .hint {
+    flex-wrap: nowrap;
+  }
+}
+
+.icon {
+  color: var(--text-muted);
+}
+
+.text {
+  flex: 1 1 12rem;
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}

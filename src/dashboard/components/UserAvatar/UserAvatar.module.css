@@ -1,0 +1,63 @@
+/* The avatar with the player's name (and place) beside it (index.tsx). */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* The font size comes in as an inline style. */
+.text {
+  margin: 0;
+  overflow: hidden;
+  font-weight: 400;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A small margin between name and place. */
+.place {
+  margin-left: 4px;
+}
+
+/* A per-breakpoint font size ({ xs: 12, sm: 14 }) arrives as custom
+   properties; a breakpoint without one keeps the one below it. */
+.responsive {
+  font-size: var(--size-xs, var(--text-xs));
+}
+@media (min-width: 600px) {
+  .responsive {
+    font-size: var(--size-sm, var(--size-xs, var(--text-xs)));
+  }
+}
+@media (min-width: 900px) {
+  .responsive {
+    font-size: var(--size-md, var(--size-sm, var(--size-xs, var(--text-xs))));
+  }
+}
+@media (min-width: 1200px) {
+  .responsive {
+    font-size: var(
+      --size-lg,
+      var(--size-md, var(--size-sm, var(--size-xs, var(--text-xs))))
+    );
+  }
+}
+@media (min-width: 1536px) {
+  .responsive {
+    font-size: var(
+      --size-xl,
+      var(
+        --size-lg,
+        var(--size-md, var(--size-sm, var(--size-xs, var(--text-xs))))
+      )
+    );
+  }
+}

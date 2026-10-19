@@ -1,9 +1,8 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import HistoryIcon from "@mui/icons-material/History";
 import { createContext, ReactNode, Ref, useContext } from "react";
 import { useTabActive } from "./tabLinks";
 import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
+import styles from "./TabIntro.module.css";
 
 // Set by MainGrid while a past week is browsed. Weekly tabs' intro rows
 // then say so, with the way back, in place of a separate notice. `noticeRef`
@@ -48,125 +47,51 @@ export default function TabIntro({
   const showPast = weekly && pastWeek !== null;
 
   const titleBlock = (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "baseline",
-        flexWrap: "wrap",
-        columnGap: 1.5,
-        rowGap: 0.5,
-        minWidth: 0,
-      }}
-    >
-      <Typography
-        component="h2"
-        // The headline step (1.25rem), one above the 1.125rem section titles.
-        sx={{ fontSize: "1.25rem", fontWeight: 600, lineHeight: 1.3 }}
-      >
+    <div className={styles.titleBlock}>
+      <h2 className={styles.title}>
         {title}
         {week != null && (
-          <Box
-            component="span"
-            sx={{ color: "text.secondary", fontWeight: 500 }}
-          >
+          <span className={styles.week}>
             {" · "}Week {week}
-          </Box>
+          </span>
         )}
-      </Typography>
+      </h2>
       {showPast && (
-        <Box
+        <div
           ref={active ? pastWeek.noticeRef : undefined}
-          sx={{
-            alignSelf: "center",
-            display: "flex",
-            alignItems: "center",
-            gap: 0.5,
-          }}
+          className={styles.past}
         >
-          <Box
-            component="span"
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 0.5,
-              px: 1,
-              py: 0.25,
-              borderRadius: 999,
-              // DESIGN.md slate-100: a quiet tone, not a warning.
-              bgcolor: "hsl(220, 30%, 94%)",
-              color: "text.secondary",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-            }}
-          >
-            <HistoryIcon aria-hidden sx={{ fontSize: "0.95rem" }} />
+          <span className={styles.pastTag}>
+            <Icon name="History" className={styles.pastIcon} />
             Past week
-          </Box>
+          </span>
           <Button size="small" onClick={pastWeek.onBack}>
             Back to week {pastWeek.currentWeek}
           </Button>
-        </Box>
+        </div>
       )}
-      {meta && (
-        <Typography
-          variant="caption"
-          sx={{ color: "text.secondary", fontSize: "0.75rem" }}
-        >
-          {meta}
-        </Typography>
-      )}
-    </Box>
+      {meta && <span className={styles.meta}>{meta}</span>}
+    </div>
   );
 
   return (
-    <Box sx={{ mb: 2, textAlign: "left" }}>
-      {back && <Box sx={{ mb: 1 }}>{back}</Box>}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-          columnGap: 2,
-          rowGap: 1,
-          // Room for the controls' 40px height, so a tab without any lines
-          // up with one that has them.
-          minHeight: 40,
-        }}
-      >
+    <div className={styles.intro}>
+      {back && <div className={styles.back}>{back}</div>}
+      <div className={styles.row}>
         {leading || subtitle ? (
-          <Box
-            sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0 }}
-          >
+          <div className={styles.leadingRow}>
             {leading}
-            <Box sx={{ minWidth: 0 }}>
+            <div className={styles.leadingText}>
               {titleBlock}
               {subtitle}
-            </Box>
-          </Box>
+            </div>
+          </div>
         ) : (
           titleBlock
         )}
-        {actions && (
-          // On phones the controls always take their own row under the
-          // title, starting at the left edge, so a switch shared by several
-          // views (NFL's Games | Live | Standings) sits in the same spot on
-          // each instead of jumping between right and left as titles change
-          // length. From sm up they sit at the right end of the title row.
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              columnGap: 2,
-              rowGap: 1,
-              flexBasis: { xs: "100%", sm: "auto" },
-              ml: { xs: 0, sm: "auto" },
-            }}
-          >
-            {actions}
-          </Box>
-        )}
-      </Box>
-    </Box>
+        {/* Phones put these on their own row (TabIntro.module.css). */}
+        {actions && <div className={styles.actions}>{actions}</div>}
+      </div>
+    </div>
   );
 }

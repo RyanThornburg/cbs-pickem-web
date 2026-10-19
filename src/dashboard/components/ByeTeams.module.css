@@ -1,0 +1,49 @@
+/* "On bye" box at the bottom of Games and Scoreboard (ByeTeams.tsx). */
+.box {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  color: var(--text);
+}
+
+.heading {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.team {
+  gap: 6px;
+}
+
+.abbr {
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* The nickname only from sm up; phones show the abbreviation alone. */
+.name {
+  display: none;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+@media (min-width: 600px) {
+  .name {
+    display: block;
+  }
+}
