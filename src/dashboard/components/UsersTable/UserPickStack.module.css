@@ -1,0 +1,168 @@
+/* One pick. Its fill and edge colors come from StatusColor. */
+.tile {
+  /* Contains the visually hidden result text, which would otherwise be
+     placed against the page and widen it. */
+  position: relative;
+  width: 100%;
+  padding: 0.5px;
+  border-radius: var(--radius);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.43;
+  text-align: center;
+  color: var(--text);
+}
+@media (min-width: 600px) {
+  .tile {
+    width: 60px;
+    font-size: var(--text-md);
+  }
+}
+@media (min-width: 1200px) {
+  .tile {
+    width: 70px;
+  }
+  /* The header row is tight at 1200-1400px, so its tiles fit their content
+     (abbreviation + result icon) instead of the table's 70px, at the
+     summary's own 13px until xl. On phones the five tiles share the row's
+     width instead, so they fit at 360px. */
+  .headerTile {
+    width: auto;
+    min-width: 44px;
+    padding: 0 5px;
+    font-size: var(--text-sm);
+  }
+}
+@media (min-width: 1536px) {
+  .headerTile {
+    font-size: var(--text-md);
+  }
+}
+
+/* The edge carries the game's state: solid when final, dashed and italic
+   while live. */
+.final {
+  border: thin solid;
+}
+.live {
+  border: medium dashed;
+  font-style: italic;
+}
+
+.tileContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  max-width: 100%;
+}
+
+.resultIcon {
+  font-size: 0.85em;
+}
+
+/* The still-hidden picks as one quiet tile. */
+.hiddenTile {
+  /* Holds the visually hidden note, as PickTile does. */
+  position: relative;
+  padding: 0.5px 6px;
+  border-radius: var(--radius);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.43;
+  text-align: center;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (min-width: 600px) {
+  .hiddenTile {
+    font-size: var(--text-md);
+  }
+}
+/* Same size steps as the PickTiles beside it. */
+@media (min-width: 1200px) {
+  .hiddenHeaderTile {
+    padding: 0 8px;
+    font-size: var(--text-sm);
+  }
+}
+@media (min-width: 1536px) {
+  .hiddenHeaderTile {
+    font-size: var(--text-md);
+  }
+}
+
+.noPicks {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+.stack {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 4px;
+}
+@media (min-width: 600px) {
+  .stack {
+    width: auto;
+    gap: 2.8px;
+  }
+  /* Table rows with a merged tile fill the column so it lines up; the
+     header's group stays its own width. */
+  .fill {
+    width: 100%;
+  }
+}
+@media (min-width: 900px) {
+  .stack {
+    gap: 8px;
+  }
+  .headerStack {
+    gap: 4px;
+  }
+}
+
+/* Hairlines between the table's tiles, from sm up. */
+.divider {
+  display: none;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: 0;
+  border: 0 solid var(--divider);
+  border-right-width: thin;
+}
+@media (min-width: 600px) {
+  .divider {
+    display: block;
+  }
+}
+
+.slot {
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (min-width: 600px) {
+  .slot {
+    flex: none;
+  }
+}
+
+/* On phones it takes the hidden picks' share of the row; from sm up it
+   fills what the shown tiles leave. */
+.hiddenSlot {
+  flex: var(--hidden-picks) var(--hidden-picks) 0;
+  min-width: 0;
+}
+@media (min-width: 600px) {
+  .hiddenSlot {
+    flex: 1 1 auto;
+  }
+}

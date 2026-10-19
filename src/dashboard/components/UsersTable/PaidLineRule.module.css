@@ -1,0 +1,48 @@
+.rule {
+  position: relative;
+  margin: 10px 0;
+}
+
+.line {
+  border-top: 1.5px dashed;
+}
+
+/* The label and its "?" on the line's right end, over a gap in the dashes. */
+.label {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 8px;
+  background-color: var(--paper);
+}
+
+.labelText {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.noteRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+  margin-bottom: 8px;
+}
+@media (min-width: 900px) {
+  .noteRow {
+    display: none;
+  }
+}
+
+.note {
+  border-radius: var(--radius);
+  padding: 0 6px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text);
+}

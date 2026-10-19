@@ -1,0 +1,16 @@
+.score {
+  white-space: nowrap;
+}
+
+/* The green "+N" for picks covering right now. */
+.covering {
+  margin-left: 4px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--success);
+}
+@media (max-width: 599.95px) {
+  .hideOnPhone {
+    display: none;
+  }
+}

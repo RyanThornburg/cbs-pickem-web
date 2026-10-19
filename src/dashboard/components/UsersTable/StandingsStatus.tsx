@@ -1,10 +1,10 @@
-import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { LeaderboardStatus } from "../useWeekData";
 import { formatUpdated } from "../../utils/updatedTime";
 import LoadError from "../shared/LoadError";
 import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import styles from "./StandingsStatus.module.css";
 
 // Deep trophy gold for text: 5.1:1 on white (DESIGN.md's #a87f12 was 3.7:1).
 export const MONEY_GOLD = "#8a6a0f";
@@ -23,28 +23,18 @@ export function RefreshFailedLine({
   const { updatedAt, failed } = leaderboardStatus;
   if (!failed || !updatedAt) return null;
   return (
-    <Box
-      role="status"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexWrap: "wrap",
-        columnGap: 1,
-        mb: 1,
-        px: { xs: 0.5, sm: 2 },
-        color: "text.secondary",
-        fontSize: "0.75rem",
-        textAlign: "left",
-      }}
-    >
-      <Box component="span" sx={{ display: "inline-flex", gap: 0.5 }}>
-        <ErrorOutlineIcon aria-hidden sx={{ fontSize: "0.9rem", mt: "1px" }} />
+    <div role="status" className={styles.refreshFailed}>
+      <span className={styles.refreshFailedText}>
+        <Icon
+          name="ErrorOutlineOutlined"
+          className={styles.refreshFailedIcon}
+        />
         {`Couldn't refresh. Showing ${formatUpdated(updatedAt)}, trying again every minute.`}
-      </Box>
+      </span>
       <Button size="small" onClick={onRetry}>
         Try now
       </Button>
-    </Box>
+    </div>
   );
 }
 
@@ -89,27 +79,15 @@ export function StandingsSkeleton({
 }) {
   const animation = animate ? "pulse" : false;
   return (
-    // Still and faded when nothing is loading, so they hold the page's
-    // shape without reading as "loading".
-    <Box
+    // Still and faded when nothing is loading (StandingsStatus.module.css).
+    <div
       role="status"
       aria-busy={animate}
       aria-label={label}
-      sx={{ opacity: animate ? 1 : 0.45 }}
+      className={animate ? undefined : styles.skeletonStill}
     >
       {Array.from({ length: 8 }, (_, i) => (
-        <Box
-          key={i}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            py: 1,
-            px: { xs: 0.5, sm: 2 },
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
+        <div key={i} className={styles.skeletonRow}>
           <Skeleton animation={animation} variant="text" width={20} />
           <Skeleton
             animation={animation}
@@ -128,8 +106,8 @@ export function StandingsSkeleton({
             height={24}
             sx={{ flex: "1 1 auto", maxWidth: 380, ml: "auto" }}
           />
-        </Box>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 }

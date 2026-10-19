@@ -1,0 +1,17 @@
+/* A round gold tile behind the trophy. */
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(212, 160, 23, 0.18);
+}
+
+/* 3.7:1 on its tile; the brighter #d4a017 was 2.1:1. */
+.icon {
+  font-size: 0.8125rem;
+  color: #9a7410;
+}

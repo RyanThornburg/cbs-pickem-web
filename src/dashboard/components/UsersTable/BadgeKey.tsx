@@ -1,9 +1,7 @@
 import { ReactNode, useState } from "react";
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
+import { Icon } from "../../ui/Icon";
 import { GameStatus, UserPick } from "../../types";
 import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import { DefendingChampionBadge } from "./DefendingChampionBadge";
@@ -12,6 +10,7 @@ import { FormTile } from "./WeeklyFormIcon";
 import { PickTile } from "./UserPickStack";
 import { MONEY_GOLD } from "./StandingsStatus";
 import { WEEKLY_FORM_HOT_PCT, WEEKLY_FORM_COLD_PCT } from "./usersTableUtils";
+import styles from "./BadgeKey.module.css";
 
 const sample = (
   is_correct: boolean | null,
@@ -38,36 +37,19 @@ const tbd: UserPick = {
 
 function Row({ mark, children }: { mark: ReactNode; children: ReactNode }) {
   return (
-    <Box
-      component="li"
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "4.5rem minmax(0, 1fr)",
-        columnGap: 1.5,
-        alignItems: "center",
-        py: 0.5,
-      }}
-    >
-      <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>{mark}</Box>
-      <Typography variant="body2">{children}</Typography>
-    </Box>
+    <li className={styles.row}>
+      <div className={styles.mark}>{mark}</div>
+      <p className={styles.text}>{children}</p>
+    </li>
   );
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Box component="section" sx={{ "& + &": { mt: 1.5 } }}>
-      <Typography
-        component="h3"
-        variant="caption"
-        sx={{ fontWeight: 700, color: "text.secondary" }}
-      >
-        {title}
-      </Typography>
-      <Box component="ul" sx={{ listStyle: "none", m: 0, p: 0 }}>
-        {children}
-      </Box>
-    </Box>
+    <section className={styles.section}>
+      <h3 className={styles.sectionTitle}>{title}</h3>
+      <ul className={styles.list}>{children}</ul>
+    </section>
   );
 }
 
@@ -92,7 +74,7 @@ export function BadgeKey() {
         }}
         sx={{ ml: 0.25, width: 28, height: 28, color: "text.secondary" }}
       >
-        <HelpOutlineIcon sx={{ fontSize: "1.1rem" }} />
+        <Icon name="HelpOutlineOutlined" className={styles.icon} />
       </IconButton>
       <Popover
         open={Boolean(anchor)}
@@ -192,31 +174,18 @@ export function BadgeKey() {
         <Section title="Scores and places">
           <Row
             mark={
-              <Typography variant="body2" component="span">
-                9
-                <Box
-                  component="span"
-                  sx={{
-                    ml: 0.5,
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    color: "success.main",
-                  }}
-                >
-                  +2
-                </Box>
-              </Typography>
+              <span className={styles.score}>
+                9<span className={styles.covering}>+2</span>
+              </span>
             }
           >
             9 settled points, plus 2 picks covering right now
           </Row>
           <Row
             mark={
-              <Box
-                sx={{
-                  width: "100%",
-                  borderTop: `1.5px dashed ${MONEY_GOLD}`,
-                }}
+              <div
+                className={styles.paidLine}
+                style={{ borderTopColor: MONEY_GOLD }}
               />
             }
           >

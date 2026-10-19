@@ -1,0 +1,33 @@
+/* Phones only: sticks to the bottom of the screen, just above the phone tab
+   bar (its offset comes from PhoneTabBar). */
+.pinned {
+  display: block;
+  position: sticky;
+  z-index: 2;
+  margin-top: 8px;
+  background-color: var(--paper);
+  border-top: 1px solid var(--divider);
+  /* Floats above the table, so it gets the float shadow (upward). */
+  box-shadow: 0 -6px 14px -6px hsla(220, 30%, 5%, 0.18);
+}
+@media (min-width: 900px) {
+  .pinned {
+    display: none;
+  }
+}
+
+.place {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.score {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  grid-column: 2 / 4;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}

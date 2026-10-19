@@ -1,0 +1,23 @@
+/* Prize names in one column, standings in the next. */
+.lines {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 10px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.line {
+  display: contents;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+/* "In the money" (in MONEY_GOLD) or "N pts out". */
+.strong {
+  font-weight: 600;
+}

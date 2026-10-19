@@ -1,18 +1,5 @@
 import { ReactNode } from "react";
-import Box from "@mui/material/Box";
-import { Grid } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
-import BalanceIcon from "@mui/icons-material/Balance";
-import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
-import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { Icon, IconName } from "../../ui/Icon";
 import {
   PickBias,
   SpotTeam,
@@ -21,13 +8,18 @@ import {
 } from "../../types";
 import { ordinal } from "../../helper";
 import { PICK_BIAS_MIN_PCT, PICK_BIAS_MIN_PICKS } from "./usersTableUtils";
+import styles from "./UserTrendPanel.module.css";
+
+const cardIcon = (name: IconName, color: string) => (
+  <Icon name={name} size="small" className={color} />
+);
 
 const trendIcon = (direction: string) => {
   if (direction === "improving")
-    return <TrendingUpIcon fontSize="small" color="success" />;
+    return cardIcon("TrendingUp", styles.improving);
   if (direction === "declining")
-    return <TrendingDownIcon fontSize="small" color="error" />;
-  return <TrendingFlatIcon fontSize="small" color="disabled" />;
+    return cardIcon("TrendingDown", styles.declining);
+  return cardIcon("TrendingFlat", styles.flat);
 };
 
 // Both prior_season and last_season are past, CLOSED seasons -- neither one
@@ -173,32 +165,13 @@ interface TrendCardProps {
 
 function TrendCard({ icon, label, value }: TrendCardProps) {
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 1.5,
-        display: "flex",
-        gap: 1.25,
-        alignItems: "flex-start",
-        height: "100%",
-      }}
-    >
-      <Box sx={{ mt: 0.25 }}>{icon}</Box>
-      <Box sx={{ minWidth: 0 }}>
-        <Typography
-          variant="caption"
-          sx={{
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: 0.4,
-            color: "text.secondary",
-          }}
-        >
-          {label}
-        </Typography>
-        <Typography variant="body2">{value}</Typography>
-      </Box>
-    </Paper>
+    <div className={styles.card}>
+      <div className={styles.cardIcon}>{icon}</div>
+      <div className={styles.cardText}>
+        <span className={styles.label}>{label}</span>
+        <p className={styles.value}>{value}</p>
+      </div>
+    </div>
   );
 }
 
@@ -209,15 +182,9 @@ interface UserTrendPanelProps {
 export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   if (!trends) {
     return (
-      <Typography
-        variant="body2"
-        sx={{
-          color: "text.secondary",
-          p: 1.5,
-        }}
-      >
+      <p className={styles.unavailable}>
         Season trends aren't available for this user yet.
-      </Typography>
+      </p>
     );
   }
 
@@ -242,55 +209,55 @@ export function UserTrendPanel({ trends }: UserTrendPanelProps) {
   const matchupCards: TrendCardProps[] = [];
   if (trap_team) {
     matchupCards.push({
-      icon: <SentimentVeryDissatisfiedIcon fontSize="small" color="action" />,
+      icon: cardIcon("SentimentVeryDissatisfied", styles.neutral),
       label: "Trap team",
       value: volumeWeightedTeamText(trap_team),
     });
   }
   if (lucky_team) {
     matchupCards.push({
-      icon: <SentimentVerySatisfiedIcon fontSize="small" color="action" />,
+      icon: cardIcon("SentimentVerySatisfied", styles.neutral),
       label: "Lucky team",
       value: volumeWeightedTeamText(lucky_team),
     });
   }
   if (showBlindSpot) {
     matchupCards.push({
-      icon: <VisibilityOffIcon fontSize="small" color="action" />,
+      icon: cardIcon("VisibilityOff", styles.neutral),
       label: "Blind spot team",
       value: spotTeamText(blind_spot_team as SpotTeam),
     });
   }
   if (showSweetSpot) {
     matchupCards.push({
-      icon: <VisibilityIcon fontSize="small" color="action" />,
+      icon: cardIcon("Visibility", styles.neutral),
       label: "Sweet spot team",
       value: spotTeamText(sweet_spot_team as SpotTeam),
     });
   }
 
   return (
-    <Stack sx={{ p: { xs: 1, sm: 1.5 } }}>
-      <Grid container spacing={1.25}>
-        <Grid size={{ xs: 12, sm: 6 }}>
+    <div className={styles.panel}>
+      <div className={styles.cards}>
+        <div className={styles.cell}>
           <TrendCard
             icon={trendIcon(trends.career.trend?.direction ?? "same")}
             label="Career trend"
             value={careerTrendText(trends)}
           />
-        </Grid>
+        </div>
         {bestFinish && (
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <div className={styles.cell}>
             <TrendCard
-              icon={<EmojiEventsIcon fontSize="small" htmlColor="#d4a017" />}
+              icon={cardIcon("EmojiEvents", styles.gold)}
               label={bestFinish.label}
               value={bestFinish.value}
             />
-          </Grid>
+          </div>
         )}
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <div className={styles.cell}>
           <TrendCard
-            icon={<BalanceIcon fontSize="small" color="action" />}
+            icon={cardIcon("Balance", styles.neutral)}
             label="Pick tendency"
             value={
               bias
@@ -300,13 +267,13 @@ export function UserTrendPanel({ trends }: UserTrendPanelProps) {
                 : "No strong pick lean this season."
             }
           />
-        </Grid>
+        </div>
         {matchupCards.map((card) => (
-          <Grid key={card.label} size={{ xs: 12, sm: 6 }}>
+          <div key={card.label} className={styles.cell}>
             <TrendCard {...card} />
-          </Grid>
+          </div>
         ))}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 }

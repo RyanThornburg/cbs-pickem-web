@@ -1,0 +1,19 @@
+/* A plain place, in body text. */
+.place {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+/* 1st-3rd: a round medal, its colors from MEDAL. */
+.medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}

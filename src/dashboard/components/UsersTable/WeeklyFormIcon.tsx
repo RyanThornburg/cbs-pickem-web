@@ -1,37 +1,15 @@
-import Box from "@mui/material/Box";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import AcUnitIcon from "@mui/icons-material/AcUnit";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import { Icon, IconName } from "../../ui/Icon";
 import { UserPick } from "../../types";
 import { getWeeklyForm, WeeklyForm, WeeklyFormResult } from "./usersTableUtils";
 import { BadgeTooltip } from "./BadgeTooltip";
+import styles from "./WeeklyFormIcon.module.css";
 
-// Icon colors are at least 3:1 on their tinted tiles (the brighter
-// #ff7043 / #4fc3f7 / #9aa4b2 were 1.8 to 2.3:1).
-const FORM_STYLES = {
-  hot: {
-    bg: "rgba(255,112,67,0.18)",
-    icon: (
-      <LocalFireDepartmentIcon
-        sx={{ fontSize: "0.8125rem" }}
-        htmlColor="#d84315"
-      />
-    ),
-    label: "hot",
-  },
-  cold: {
-    bg: "rgba(79,195,247,0.16)",
-    icon: <AcUnitIcon sx={{ fontSize: "0.75rem" }} htmlColor="#0277bd" />,
-    label: "cold",
-  },
-  neutral: {
-    bg: "rgba(154,164,178,0.14)",
-    icon: (
-      <FiberManualRecordIcon sx={{ fontSize: "0.5rem" }} htmlColor="#717a8a" />
-    ),
-    label: "even",
-  },
-} as const;
+// Each form's icon; its tile and icon colors are in the CSS module.
+const FORM_ICONS: Record<WeeklyForm, IconName> = {
+  hot: "LocalFireDepartment",
+  cold: "AcUnit",
+  neutral: "FiberManualRecord",
+};
 
 const weeklyFormTooltip = (result: WeeklyFormResult): string => {
   const parts = [
@@ -68,21 +46,9 @@ export function WeeklyFormIcon({ picks }: { picks: UserPick[] }) {
 
 // The tile alone, also drawn in the badge key.
 export function FormTile({ form }: { form: WeeklyForm }) {
-  const style = FORM_STYLES[form];
   return (
-    <Box
-      sx={{
-        width: 22,
-        height: 22,
-        borderRadius: "50%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-        bgcolor: style.bg,
-      }}
-    >
-      {style.icon}
-    </Box>
+    <div className={`${styles.tile} ${styles[form]}`}>
+      <Icon name={FORM_ICONS[form]} className={styles[`${form}Icon`]} />
+    </div>
   );
 }

@@ -1,0 +1,94 @@
+.unavailable {
+  margin: 0;
+  padding: 12px;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+@media (min-width: 600px) {
+  .panel {
+    padding: 12px;
+  }
+}
+
+/* One card a row on phones, two from sm up, 10px apart. */
+.cards {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 10px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.cell {
+  flex-grow: 0;
+  flex-basis: auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+@media (min-width: 600px) {
+  .cell {
+    width: calc(50% - 5px);
+  }
+}
+
+.card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  height: 100%;
+  padding: 12px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  color: var(--text);
+}
+
+.cardIcon {
+  margin-top: 2px;
+}
+
+.cardText {
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.66;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+.value {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+/* Icon colors: MUI's success and error, and its action / disabled greys. */
+.improving {
+  color: var(--success);
+}
+.declining {
+  color: var(--error);
+}
+.flat {
+  color: var(--disabled);
+}
+.neutral {
+  color: rgba(0, 0, 0, 0.54);
+}
+.gold {
+  color: #d4a017;
+}

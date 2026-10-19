@@ -1,6 +1,6 @@
-import Box from "@mui/material/Box";
 import { MONEY_GOLD } from "./StandingsStatus";
 import { ShownMoneyStanding } from "./usersTableUtils";
+import styles from "./MoneyLines.module.css";
 
 export const pts = (n: number) => `${n} pt${n === 1 ? "" : "s"}`;
 const weeksLeft = (n: number) => `${n} wk${n === 1 ? "" : "s"} left`;
@@ -10,43 +10,28 @@ const weeksLeft = (n: number) => `${n} wk${n === 1 ? "" : "s"} left`;
 // the meaning; gold only marks "in the money".
 export function MoneyLines({ standings }: { standings: ShownMoneyStanding[] }) {
   return (
-    <Box
-      component="span"
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "auto auto",
-        columnGap: 1.25,
-        fontSize: "0.8125rem",
-        lineHeight: 1.4,
-        whiteSpace: "nowrap",
-        textAlign: "left",
-      }}
-    >
+    <span className={styles.lines}>
       {standings.map((standing) => (
-        <Box component="span" key={standing.key} sx={{ display: "contents" }}>
-          <Box component="span" sx={{ color: "text.secondary" }}>
-            {standing.prize}
-          </Box>
-          <Box component="span">
+        <span key={standing.key} className={styles.line}>
+          <span className={styles.muted}>{standing.prize}</span>
+          <span>
             {standing.inMoney ? (
-              <Box component="span" sx={{ color: MONEY_GOLD, fontWeight: 600 }}>
+              <span className={styles.strong} style={{ color: MONEY_GOLD }}>
                 In the money
-              </Box>
+              </span>
             ) : (
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {pts(standing.ptsOut)} out
-              </Box>
+              <span className={styles.strong}>{pts(standing.ptsOut)} out</span>
             )}
-            <Box component="span" sx={{ color: "text.secondary" }}>
+            <span className={styles.muted}>
               {" · "}
               {standing.inMoney
                 ? `top ${standing.cutoff}`
                 : weeksLeft(standing.weeksLeft)}
-            </Box>
-          </Box>
-        </Box>
+            </span>
+          </span>
+        </span>
       ))}
-    </Box>
+    </span>
   );
 }
 

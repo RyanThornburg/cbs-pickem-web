@@ -1,4 +1,4 @@
-import Box from "@mui/material/Box";
+import styles from "./ScoreWithCovering.module.css";
 
 // Settled points, then a green "+N" for picks covering right now, so a
 // score that could still change reads as such. The same format as the
@@ -16,23 +16,16 @@ export function ScoreWithCovering({
 }) {
   if (covering <= 0) return <>{total}</>;
   return (
-    <Box component="span" sx={{ whiteSpace: "nowrap" }}>
+    <span className={styles.score}>
       {total - covering}
-      <Box
-        component="span"
+      <span
         title={`${covering} pick${covering === 1 ? "" : "s"} covering now`}
-        sx={{
-          display: hideCoveringOnPhone
-            ? { xs: "none", sm: "inline" }
-            : "inline",
-          ml: 0.5,
-          fontSize: "0.75rem",
-          fontWeight: 600,
-          color: "success.main",
-        }}
+        className={[styles.covering, hideCoveringOnPhone && styles.hideOnPhone]
+          .filter(Boolean)
+          .join(" ")}
       >
         +{covering}
-      </Box>
-    </Box>
+      </span>
+    </span>
   );
 }

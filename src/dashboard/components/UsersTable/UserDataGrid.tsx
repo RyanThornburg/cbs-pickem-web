@@ -9,12 +9,12 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { UserGridWithTrendsProps } from "./types";
 import { useUsersTable } from "./useUsersTable";
-import Box from "@mui/material/Box";
 import { PaidLineRule } from "./PaidLineRule";
 import { formatUpdated } from "../../utils/updatedTime";
 import { paidLineNote } from "./MoneyLines";
 import { BadgeKey } from "./BadgeKey";
 import { selectedRowSx } from "./selectedRowSx";
+import styles from "./UserDataGrid.module.css";
 
 const UserDataGrid = ({
   userList,
@@ -70,17 +70,9 @@ const UserDataGrid = ({
                   {header.column.id === "picks" &&
                     leaderboardStatus.updatedAt &&
                     !leaderboardStatus.failed && (
-                      <Box
-                        component="span"
-                        sx={{
-                          float: "right",
-                          fontWeight: 400,
-                          color: "text.secondary",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
+                      <span className={styles.updated}>
                         Updated {formatUpdated(leaderboardStatus.updatedAt)}
-                      </Box>
+                      </span>
                     )}
                 </TableCell>
               ))}

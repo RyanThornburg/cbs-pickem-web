@@ -1,0 +1,16 @@
+/* The badge key draws the mark alone. */
+.plain {
+  display: inline-flex;
+}
+
+/* The mark itself: a focus stop that explains itself on tap or focus. */
+.trigger {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 999px;
+  cursor: help;
+}
+.trigger:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}

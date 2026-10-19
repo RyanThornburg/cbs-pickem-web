@@ -1,0 +1,7 @@
+/* The last refresh, at the right end of the Picks header. */
+.updated {
+  float: right;
+  font-weight: 400;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

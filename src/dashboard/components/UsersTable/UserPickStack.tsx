@@ -1,13 +1,9 @@
-import Box from "@mui/material/Box";
+import { CSSProperties, Fragment } from "react";
 import { GameStatus, UserPick } from "../../types";
-import { StatusColor, visuallyHidden } from "../../helper";
-import Paper from "@mui/material/Paper";
-import { Divider, Stack, Typography } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import { SvgIconComponent } from "@mui/icons-material";
+import { StatusColor } from "../../helper";
+import { Icon, IconName } from "../../ui/Icon";
+import uiStyles from "../../ui/ui.module.css";
+import styles from "./UserPickStack.module.css";
 
 const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
   if (!pick.visible) return "TBD";
@@ -26,14 +22,14 @@ const pickStatusKey = (pick: UserPick): keyof typeof StatusColor => {
 const pickResult = (
   pick: UserPick,
   isGameOver: boolean
-): { label: string; Icon?: SvgIconComponent } => {
+): { label: string; icon?: IconName } => {
   if (!pick.visible) return { label: "pick not shown yet" };
-  if (pick.is_correct === true) return { label: "won", Icon: CheckIcon };
-  if (pick.is_correct === false) return { label: "lost", Icon: CloseIcon };
+  if (pick.is_correct === true) return { label: "won", icon: "Check" };
+  if (pick.is_correct === false) return { label: "lost", icon: "Close" };
   if (!isGameOver && pick.trending_status === "CORRECT")
-    return { label: "covering", Icon: TrendingUpIcon };
+    return { label: "covering", icon: "TrendingUp" };
   if (!isGameOver && pick.trending_status === "INCORRECT")
-    return { label: "not covering", Icon: TrendingDownIcon };
+    return { label: "not covering", icon: "TrendingDown" };
   return { label: "not started" };
 };
 
@@ -52,58 +48,34 @@ export const PickTile = ({
   const isGameOver = pick.visible && pick.game_status === GameStatus.Final;
   const inProgress = pick.visible && pick.game_status === GameStatus.Inprogress;
 
-  const { label, Icon } = pickResult(pick, isGameOver);
+  const { label, icon } = pickResult(pick, isGameOver);
   const statusColor = StatusColor[pickStatusKey(pick)];
 
   return (
-    <Paper
-      sx={[
-        {
-          typography: "body2",
-          bgcolor: statusColor.bgColor,
-          // Contains the visually hidden result text, which would otherwise
-          // be placed against the page and widen it.
-          position: "relative",
-          // The header row is tight at 1200-1400px, so its tiles fit their
-          // content (abbreviation + result icon) instead of the table's
-          // 70px, at the summary's own 13px until xl. On phones the five
-          // tiles share the row's width instead, so they fit at 360px.
-          padding: header ? { xs: "0.5px", lg: "0 5px" } : "0.5px",
-          width: { xs: "100%", sm: 60, lg: header ? "auto" : 70 },
-          minWidth: header ? { lg: 44 } : undefined,
-          fontSize: header
-            ? { xs: ".75rem", sm: "0.875rem", lg: "0.8125rem", xl: "0.875rem" }
-            : { xs: ".75rem", sm: "0.875rem" },
-          textAlign: "center",
-          color: "text.primary",
-        },
-        isGameOver && { border: `thin solid ${statusColor.borderColor}` },
-        inProgress && {
-          border: `dashed ${statusColor.borderInProgressColor}`,
-          fontStyle: "italic",
-        },
-        (theme) => theme.applyStyles("dark", { bgcolor: statusColor.bgBack }),
-      ]}
+    <div
+      className={[
+        styles.tile,
+        header && styles.headerTile,
+        isGameOver && styles.final,
+        inProgress && styles.live,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      style={{
+        backgroundColor: statusColor.bgColor,
+        borderColor: isGameOver
+          ? statusColor.borderColor
+          : inProgress
+            ? statusColor.borderInProgressColor
+            : undefined,
+      }}
     >
-      <Box
-        component="span"
-        sx={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "2px",
-          maxWidth: "100%",
-        }}
-      >
+      <span className={styles.tileContent}>
         {team}
-        {Icon && (
-          <Icon aria-hidden sx={{ fontSize: "0.85em", flexShrink: 0 }} />
-        )}
-        <Box component="span" sx={visuallyHidden}>
-          , {label}
-        </Box>
-      </Box>
-    </Paper>
+        {icon && <Icon name={icon} className={styles.resultIcon} />}
+        <span className={uiStyles.visuallyHidden}>, {label}</span>
+      </span>
+    </div>
   );
 };
 
@@ -115,33 +87,25 @@ const HIDDEN_NOTE =
   "Each pick shows at its game's kickoff or the Sunday 1 PM ET deadline, whichever comes first.";
 
 const HiddenPicksTile = ({ header }: { header: boolean }) => (
-  <Paper
+  <div
     title={HIDDEN_NOTE}
-    sx={[
-      {
-        typography: "body2",
-        bgcolor: StatusColor.TBD.bgColor,
-        // Same size steps as the PickTiles beside it.
-        padding: header ? { xs: "0.5px 6px", lg: "0 8px" } : "0.5px 6px",
-        fontSize: header
-          ? { xs: ".75rem", sm: "0.875rem", lg: "0.8125rem", xl: "0.875rem" }
-          : { xs: ".75rem", sm: "0.875rem" },
-        textAlign: "center",
-        color: "text.secondary",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        // Holds the visually hidden note, as PickTile does.
-        position: "relative",
-      },
-      (theme) => theme.applyStyles("dark", { bgcolor: StatusColor.TBD.bgBack }),
-    ]}
+    className={[styles.hiddenTile, header && styles.hiddenHeaderTile]
+      .filter(Boolean)
+      .join(" ")}
+    style={{ backgroundColor: StatusColor.TBD.bgColor }}
   >
     Hidden until kickoff
-    <Box component="span" sx={visuallyHidden}>
-      . {HIDDEN_NOTE}
-    </Box>
-  </Paper>
+    <span className={uiStyles.visuallyHidden}>. {HIDDEN_NOTE}</span>
+  </div>
+);
+
+// A hairline between two of the table's tiles (MUI's vertical Divider).
+const TileDivider = () => (
+  <div
+    role="separator"
+    aria-orientation="vertical"
+    className={styles.divider}
+  />
 );
 
 // GetUserByWeek already returns picks in the right order and padded to 5 (real
@@ -153,17 +117,11 @@ export const UserGamePicksStack = (
   // RankedUser.has_submitted_picks; undefined when the feed didn't say.
   submitted?: boolean
 ) => {
-  const spacingSize = header ? 0.5 : 1;
-
   // The feed says this player hasn't submitted, as opposed to "TBD" tiles
   // (submitted, hidden until kickoff). If it doesn't say, show nothing.
   if (picks.length === 0) {
     if (submitted !== false) return null;
-    return (
-      <Typography variant="body2" sx={{ color: "text.secondary" }}>
-        No picks yet
-      </Typography>
-    );
+    return <p className={styles.noPicks}>No picks yet</p>;
   }
 
   // Two or more hidden picks merge into one tile, in the header and the
@@ -172,50 +130,39 @@ export const UserGamePicksStack = (
   const hidden = picks.filter((pick) => !pick.visible);
   const merge = hidden.length > 1;
   const tiles = merge ? picks.filter((pick) => pick.visible) : picks;
+  // Hairlines between the table's tiles; the header's spaced pills don't
+  // need them (they dropped in and out at fractional offsets).
+  const divided = !header;
 
   return (
-    <Stack
-      sx={{
-        justifyContent: "flex-start",
-        alignItems: "center",
-        // Table rows with a merged tile fill the column so it lines up; the
-        // header's group stays its own width.
-        width: { xs: "100%", sm: merge && !header ? "100%" : "auto" },
-      }}
-      direction="row"
-      spacing={{ xs: 0.5, sm: 0.35, md: spacingSize }}
-      // Hairlines between the table's tiles; the header's spaced pills don't
-      // need them (they dropped in and out at fractional offsets).
-      divider={
-        header ? undefined : (
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ display: { xs: "none", sm: "block" } }}
-          />
-        )
-      }
+    <div
+      className={[
+        styles.stack,
+        header && styles.headerStack,
+        merge && !header && styles.fill,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
-      {tiles.map((pick) => (
-        <Box
-          key={pick.game_id}
-          sx={{ flex: { xs: "1 1 0", sm: "none" }, minWidth: 0 }}
-        >
-          <PickTile pick={pick} header={header} />
-        </Box>
+      {tiles.map((pick, i) => (
+        <Fragment key={pick.game_id}>
+          {divided && i > 0 && <TileDivider />}
+          <div className={styles.slot}>
+            <PickTile pick={pick} header={header} />
+          </div>
+        </Fragment>
       ))}
       {merge && (
-        <Box
-          sx={{
-            // On phones it takes the hidden picks' share of the row; from
-            // sm up it fills what the shown tiles leave.
-            flex: { xs: `${hidden.length} ${hidden.length} 0`, sm: "1 1 auto" },
-            minWidth: 0,
-          }}
-        >
-          <HiddenPicksTile header={header} />
-        </Box>
+        <>
+          {divided && tiles.length > 0 && <TileDivider />}
+          <div
+            className={styles.hiddenSlot}
+            style={{ "--hidden-picks": hidden.length } as CSSProperties}
+          >
+            <HiddenPicksTile header={header} />
+          </div>
+        </>
       )}
-    </Stack>
+    </div>
   );
 };

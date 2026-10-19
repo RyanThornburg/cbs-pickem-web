@@ -1,8 +1,7 @@
 import { ReactNode, useRef, useState } from "react";
-import Box from "@mui/material/Box";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Tooltip from "@mui/material/Tooltip";
-import { brand } from "../../shared-theme/themePrimitives";
+import styles from "./BadgeTooltip.module.css";
 
 // The small marks next to names and in the Week column. Each explains
 // itself on hover, on keyboard focus, or on a tap (no long-press), and is
@@ -30,9 +29,9 @@ export function BadgeTooltip({
   };
   if (plain) {
     return (
-      <Box component="span" aria-hidden sx={{ display: "inline-flex" }}>
+      <span aria-hidden className={styles.plain}>
         {children}
-      </Box>
+      </span>
     );
   }
   return (
@@ -53,8 +52,7 @@ export function BadgeTooltip({
         disableTouchListener
         describeChild={false}
       >
-        <Box
-          component="span"
+        <span
           role="img"
           tabIndex={0}
           aria-label={title}
@@ -65,19 +63,10 @@ export function BadgeTooltip({
             event.stopPropagation();
             setOpen(true);
           }}
-          sx={{
-            display: "inline-flex",
-            flexShrink: 0,
-            borderRadius: "999px",
-            cursor: "help",
-            "&:focus-visible": {
-              outline: `3px solid ${brand[500]}`,
-              outlineOffset: "2px",
-            },
-          }}
+          className={styles.trigger}
         >
           {children}
-        </Box>
+        </span>
       </Tooltip>
     </ClickAwayListener>
   );

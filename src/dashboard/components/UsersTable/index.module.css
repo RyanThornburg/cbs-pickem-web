@@ -1,0 +1,26 @@
+/* The desktop table from sm up, the phone table below it. Widths as the
+   12-column grid around them gave them (16px gutters): full width, and 7
+   of 12 columns from xl. */
+.desktop,
+.phone {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.desktop {
+  display: none;
+}
+@media (min-width: 600px) {
+  .desktop {
+    display: block;
+  }
+  .phone {
+    display: none;
+  }
+}
+@media (min-width: 1536px) {
+  .desktop {
+    width: calc(100% * 7 / 12 - 5 * 16px / 12);
+  }
+}

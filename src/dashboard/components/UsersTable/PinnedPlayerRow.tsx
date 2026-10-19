@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
 import { RankedUser } from "../../types";
 import { ordinal } from "../../helper";
@@ -10,6 +9,7 @@ import { selectedRowSx } from "./selectedRowSx";
 import { ShownMoneyStanding } from "./usersTableUtils";
 import { PHONE_TAB_BAR_OFFSET } from "../PhoneTabBar";
 import { focusRingColor } from "../../shared-theme/themePrimitives";
+import styles from "./PinnedPlayerRow.module.css";
 
 // The prize most worth a line: one you're in, else the closest chase.
 const pinnedNote = (standings: ShownMoneyStanding[]) => {
@@ -74,20 +74,10 @@ export function PinnedPlayerRow({
   };
 
   return (
-    <Box
-      sx={{
-        display: { xs: "block", md: "none" },
-        position: "sticky",
-        // Just above the phone tab bar.
-        bottom: PHONE_TAB_BAR_OFFSET,
-        zIndex: 2,
-        mt: 1,
-        bgcolor: "background.paper",
-        borderTop: 1,
-        borderColor: "divider",
-        // Floats above the table, so it gets the float shadow (upward).
-        boxShadow: "0 -6px 14px -6px hsla(220, 30%, 5%, 0.18)",
-      }}
+    <div
+      className={styles.pinned}
+      // Just above the phone tab bar.
+      style={{ bottom: PHONE_TAB_BAR_OFFSET }}
     >
       <ButtonBase
         onClick={scrollToRow}
@@ -112,40 +102,21 @@ export function PinnedPlayerRow({
           selectedRowSx,
         ]}
       >
-        <Box
-          component="span"
-          sx={{ textAlign: "center", fontVariantNumeric: "tabular-nums" }}
-        >
-          {user.place ?? "–"}
-        </Box>
+        <span className={styles.place}>{user.place ?? "–"}</span>
         <UserAvatar
           userName={user.name}
           userId={user.id}
           size={22}
           fontSize="0.875rem"
         />
-        <Box
-          component="span"
-          sx={{ fontWeight: 600, fontVariantNumeric: "tabular-nums" }}
-        >
+        <span className={styles.score}>
           <ScoreWithCovering
             total={user.cumulative_score + user.trending_score}
             covering={user.trending_score}
           />
-        </Box>
-        {note && (
-          <Box
-            component="span"
-            sx={{
-              gridColumn: "2 / 4",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-            }}
-          >
-            {note}
-          </Box>
-        )}
+        </span>
+        {note && <span className={styles.note}>{note}</span>}
       </ButtonBase>
-    </Box>
+    </div>
   );
 }

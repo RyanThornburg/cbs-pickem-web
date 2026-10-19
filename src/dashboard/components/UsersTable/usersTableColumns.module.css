@@ -1,0 +1,51 @@
+/* On phones the badges wrap to a line under the name (indented past the
+   avatar) so they don't squeeze the name down to a letter. */
+.name {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 2px;
+}
+
+.nameLink {
+  max-width: 100%;
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  padding-left: 32px;
+}
+
+@media (min-width: 600px) {
+  .name,
+  .badges {
+    flex-wrap: nowrap;
+  }
+  .badges {
+    width: auto;
+    padding-left: 0;
+  }
+}
+
+.noneDecided {
+  color: var(--text-muted);
+}
+
+.week {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+/* A margin after an element, not a gap: a bare score is a text node, and
+   the form icon sits right against it (as MUI's Stack spacing did). */
+.week > * ~ * {
+  margin-left: 6px;
+}

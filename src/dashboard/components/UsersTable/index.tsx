@@ -1,5 +1,4 @@
 import { memo, useEffect, useState } from "react";
-import { Grid } from "@mui/material";
 import UserDataGrid from "./UserDataGrid";
 import UserDataMobile from "./UserDataMobile";
 import { UserGridProps } from "./types";
@@ -7,6 +6,7 @@ import { UserSeasonTrends } from "../../types";
 import { GetUserSeasonTrends } from "../../data/GetUserSeasonTrends";
 import { RefreshFailedLine, StandingsPlaceholder } from "./StandingsStatus";
 import { PinnedPlayerRow } from "./PinnedPlayerRow";
+import styles from "./index.module.css";
 
 // Memoized: it stays mounted while other tabs are shown, and MainGrid passes
 // it stable props, so a tab switch doesn't re-render the whole table.
@@ -53,21 +53,12 @@ const UsersTable = memo(function UsersTable(props: UserGridProps) {
         leaderboardStatus={leaderboardStatus}
         onRetry={onRetryLeaderboard}
       />
-      <Grid
-        id="gridUser"
-        size={{ xs: 12, sm: 12, xl: 7 }}
-        sx={{
-          width: "fit-content",
-          justifyContent: "center",
-          alignItems: "center",
-          display: { xs: "none", sm: "block" },
-        }}
-      >
+      <div id="gridUser" className={styles.desktop}>
         <UserDataGrid {...gridProps} />
-      </Grid>
-      <Grid sx={{ display: { xs: "block", sm: "none" } }} size={{ xs: 12 }}>
+      </div>
+      <div className={styles.phone}>
         <UserDataMobile {...gridProps} />
-      </Grid>
+      </div>
       <PinnedPlayerRow
         user={userList.find((user) => user.id === userId)}
         standings={moneyStandings}

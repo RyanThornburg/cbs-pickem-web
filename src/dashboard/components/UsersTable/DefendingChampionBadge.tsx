@@ -1,6 +1,6 @@
-import Box from "@mui/material/Box";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { Icon } from "../../ui/Icon";
 import { BadgeTooltip } from "./BadgeTooltip";
+import styles from "./DefendingChampionBadge.module.css";
 
 // Only the most recently closed season's winner gets this -- not an
 // all-time "ever won a title" badge (career.titles), which isn't shown
@@ -17,21 +17,9 @@ export function DefendingChampionBadge({
 
   return (
     <BadgeTooltip plain={plain} title={`Defending champion (${season})`}>
-      <Box
-        sx={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 20,
-          height: 20,
-          borderRadius: "50%",
-          bgcolor: "rgba(212,160,23,0.18)",
-          flexShrink: 0,
-        }}
-      >
-        {/* 3.7:1 on its tile; the brighter #d4a017 was 2.1:1. */}
-        <EmojiEventsIcon sx={{ fontSize: "0.8125rem" }} htmlColor="#9a7410" />
-      </Box>
+      <div className={styles.tile}>
+        <Icon name="EmojiEvents" className={styles.icon} />
+      </div>
     </BadgeTooltip>
   );
 }

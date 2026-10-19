@@ -1,12 +1,11 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
+import { Icon } from "../../ui/Icon";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import { MONEY_GOLD } from "./StandingsStatus";
 import { periodName, periodWeeksText } from "../../utils/payPeriods";
+import styles from "./PrizesHelp.module.css";
 
 // How scoring and the prizes work, opened from the "?" on each paid line.
 // The prize periods come from meta, so the text follows the season's
@@ -35,7 +34,7 @@ export function PrizesHelp() {
         onClick={(event) => setAnchor(event.currentTarget)}
         sx={{ width: 24, height: 24, my: -0.5, color: MONEY_GOLD }}
       >
-        <HelpOutlineIcon sx={{ fontSize: "1rem" }} />
+        <Icon name="HelpOutlineOutlined" className={styles.icon} />
       </IconButton>
       <Popover
         open={Boolean(anchor)}
@@ -56,38 +55,24 @@ export function PrizesHelp() {
           },
         }}
       >
-        <Typography component="h4" sx={{ fontWeight: 600, mb: 1 }}>
-          How prizes work
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 1.5 }}>
+        <h4 className={styles.title}>How prizes work</h4>
+        <p className={styles.text}>
           Every pick that covers the CBS line is 1 point.
-        </Typography>
-        <Box
-          component="dl"
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "auto 1fr",
-            columnGap: 1.5,
-            rowGap: 0.5,
-            m: 0,
-            fontSize: "0.875rem",
-          }}
-        >
+        </p>
+        <dl className={styles.prizes}>
           {prizes.map(([key, name, span, places]) => (
-            <Box key={key} sx={{ display: "contents" }}>
-              <Box component="dt" sx={{ fontWeight: 600 }}>
-                {name}
-              </Box>
-              <Box component="dd" sx={{ m: 0, color: "text.secondary" }}>
+            <div key={key} className={styles.prize}>
+              <dt className={styles.prizeName}>{name}</dt>
+              <dd className={styles.prizeTerms}>
                 {span} · top {places} paid
-              </Box>
-            </Box>
+              </dd>
+            </div>
           ))}
-        </Box>
-        <Typography variant="body2" sx={{ mt: 1.5, color: "text.secondary" }}>
+        </dl>
+        <p className={styles.footnote}>
           The dashed lines mark the last paid place. Players tied at a paid
           place split its prize.
-        </Typography>
+        </p>
       </Popover>
     </>
   );

@@ -1,6 +1,5 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { MEDAL } from "../Leaders/medals";
+import styles from "./PlaceCell.module.css";
 
 // 1st-3rd get the same gold/silver/bronze medals as the leader cards; every
 // other place is a plain number. Who's paid is shown by the paid lines in
@@ -8,24 +7,13 @@ import { MEDAL } from "../Leaders/medals";
 export function PlaceCell({ place }: { place: number | null | undefined }) {
   if (place == null) return null;
   const medal = MEDAL[place];
-  if (!medal) return <Typography variant="body2">{place}</Typography>;
+  if (!medal) return <p className={styles.place}>{place}</p>;
   return (
-    <Box
-      component="span"
-      sx={{
-        width: 24,
-        height: 24,
-        borderRadius: "50%",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "0.75rem",
-        fontWeight: 700,
-        bgcolor: medal.bg,
-        color: medal.fg,
-      }}
+    <span
+      className={styles.medal}
+      style={{ backgroundColor: medal.bg, color: medal.fg }}
     >
       {place}
-    </Box>
+    </span>
   );
 }

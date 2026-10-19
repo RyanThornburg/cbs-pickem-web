@@ -1,0 +1,46 @@
+/* The "Couldn't refresh" line above the table. */
+.refreshFailed {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  margin-bottom: 8px;
+  padding: 0 16px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-align: left;
+}
+@media (max-width: 599.95px) {
+  .refreshFailed {
+    padding: 0 4px;
+  }
+}
+
+.refreshFailedText {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.refreshFailedIcon {
+  margin-top: 1px;
+  font-size: 0.9rem;
+}
+
+/* Still and faded when nothing is loading, so they hold the page's shape
+   without reading as "loading". */
+.skeletonStill {
+  opacity: 0.45;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--divider);
+}
+@media (max-width: 599.95px) {
+  .skeletonRow {
+    padding: 8px 4px;
+  }
+}

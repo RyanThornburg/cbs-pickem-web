@@ -1,6 +1,4 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
 import {
   PayPeriod,
   RankedUser,
@@ -23,6 +21,7 @@ import {
   rowPeriods,
   SEASON_STREAK_MIN_WEEKS,
 } from "./usersTableUtils";
+import styles from "./usersTableColumns.module.css";
 
 export interface UsersTableRow {
   id: string;
@@ -142,18 +141,10 @@ export const buildUsersTableColumns = (
         return (
           // On phones the badges wrap to a line under the name (indented past
           // the avatar) so they don't squeeze the name down to a letter.
-          <Stack
-            direction="row"
-            sx={{
-              alignItems: "center",
-              flexWrap: { xs: "wrap", sm: "nowrap" },
-              columnGap: 1,
-              rowGap: 0.25,
-            }}
-          >
+          <div className={styles.name}>
             {/* The whole row opens the player's page too; the link is the
               keyboard and screen-reader way in. */}
-            <PlayerLink id={row.id} sx={{ maxWidth: "100%" }}>
+            <PlayerLink id={row.id} className={styles.nameLink}>
               <UserAvatar
                 userName={info.getValue()}
                 userId={row.id}
@@ -162,16 +153,7 @@ export const buildUsersTableColumns = (
               />
             </PlayerLink>
             {hasBadges && (
-              <Stack
-                direction="row"
-                sx={{
-                  alignItems: "center",
-                  width: { xs: "100%", sm: "auto" },
-                  pl: { xs: "32px", sm: 0 },
-                  flexWrap: { xs: "wrap", sm: "nowrap" },
-                  gap: 0.75,
-                }}
-              >
+              <div className={styles.badges}>
                 {/* Most common first, so each badge lands in a predictable spot. */}
                 <MoverBadge move={row.move} />
                 <StreakBadge
@@ -180,9 +162,9 @@ export const buildUsersTableColumns = (
                 />
                 <PerfectWeekBadge perfect={row.perfectWeek} />
                 <DefendingChampionBadge season={row.defendingChampionSeason} />
-              </Stack>
+              </div>
             )}
-          </Stack>
+          </div>
         );
       },
     }),
@@ -218,31 +200,23 @@ export const buildUsersTableColumns = (
         const f = getWeeklyForm(picks);
         if (f.won + f.lost + f.covering + f.notCovering === 0) {
           return (
-            <Box
-              component="span"
+            <span
               aria-label="No picks decided yet"
-              sx={{ color: "text.secondary" }}
+              className={styles.noneDecided}
             >
               –
-            </Box>
+            </span>
           );
         }
         return (
-          <Stack
-            direction="row"
-            spacing={0.75}
-            sx={{
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className={styles.week}>
             <ScoreWithCovering
               total={info.getValue()}
               covering={covering}
               hideCoveringOnPhone
             />
             <WeeklyFormIcon picks={picks} />
-          </Stack>
+          </div>
         );
       },
       meta: { mobileHeader: "Wk", align: "center" },

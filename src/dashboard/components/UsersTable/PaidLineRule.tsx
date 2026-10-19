@@ -1,7 +1,7 @@
-import Box from "@mui/material/Box";
 import { MONEY_GOLD } from "./StandingsStatus";
-import { selectedRowSx } from "./selectedRowSx";
+import { SELECTED_ROW_BG } from "./selectedRowSx";
 import { PrizesHelp } from "./PrizesHelp";
+import styles from "./PaidLineRule.module.css";
 
 // Deep trophy gold: the prize color, dark enough for 12px text (5.1:1).
 const PAID_GOLD = MONEY_GOLD;
@@ -23,67 +23,34 @@ export function PaidLineRule({
       {/* The label and its "?" sit beside the separator, not inside it: a
           separator's children are presentational, which would hide the
           button from screen readers. */}
-      <Box sx={{ position: "relative", my: 1.25 }}>
-        <Box
+      <div className={styles.rule}>
+        <div
           role="separator"
           aria-label={label}
-          sx={{ borderTop: `1.5px dashed ${PAID_GOLD}` }}
+          className={styles.line}
+          style={{ borderTopColor: PAID_GOLD }}
         />
-        <Box
-          sx={{
-            position: "absolute",
-            right: 0,
-            top: -10,
-            display: "flex",
-            alignItems: "center",
-            gap: 0.25,
-            pl: 1,
-            bgcolor: "background.paper",
-          }}
-        >
-          <Box
-            component="span"
+        <div className={styles.label}>
+          <span
             aria-hidden
-            sx={{
-              color: PAID_GOLD,
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              lineHeight: "20px",
-              whiteSpace: "nowrap",
-            }}
+            className={styles.labelText}
+            style={{ color: PAID_GOLD }}
           >
             {label}
-          </Box>
+          </span>
           <PrizesHelp />
-        </Box>
-      </Box>
+        </div>
+      </div>
       {note && (
-        <Box
-          sx={{
-            display: { xs: "flex", md: "none" },
-            justifyContent: "flex-end",
-            mt: -0.25,
-            mb: 1,
-          }}
-        >
-          <Box
-            component="span"
+        <div className={styles.noteRow}>
+          <span
+            className={styles.note}
             // The selected row's highlight: it's about that row's player.
-            sx={[
-              {
-                borderRadius: 1,
-                px: 0.75,
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                lineHeight: "20px",
-                color: "text.primary",
-              },
-              selectedRowSx,
-            ]}
+            style={{ backgroundColor: SELECTED_ROW_BG }}
           >
             {note}
-          </Box>
-        </Box>
+          </span>
+        </div>
       )}
     </>
   );
