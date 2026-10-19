@@ -239,7 +239,7 @@ export default function StandingsView({
                       active={sortKey === column.key}
                       direction="desc"
                       hideInactiveIcon={isPhone}
-                      className={styles.sortLabel}
+
                       onClick={() => setSortKey(column.key as StandingsSortKey)}
                     >
                       {column.label}

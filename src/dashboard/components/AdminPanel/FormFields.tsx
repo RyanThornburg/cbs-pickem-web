@@ -1,8 +1,5 @@
-import { Select as BaseSelect } from "@base-ui/react/select";
 import { InputHTMLAttributes, ReactNode, useState } from "react";
-import { Icon } from "../../ui/Icon";
-import { SelectOption } from "../../ui/Select";
-import selectStyles from "../../ui/Select.module.css";
+import { Select, SelectOption } from "../../ui/Select";
 import styles from "./FormFields.module.css";
 
 // The payment form's fields, as MUI's small outlined TextField looked under
@@ -120,12 +117,11 @@ export function TextField({
   );
 }
 
-// A TextField with `select`: the same box and label around Base UI's
-// Select, in ui/Select's menu look (its classes), which was MUI's standard
-// Select menu. Built here rather than on ui/Select for one thing it can't
-// set: near the bottom of a phone screen MUI kept the menu below and slid
-// it up over the field, where ui/Select flips it above. An empty value
-// shows nothing in the box and leaves the label inside it, as MUI's did.
+// A TextField with `select`: the same box and label around ui/Select. Near
+// the bottom of a phone screen MUI kept the menu below and slid it up over
+// the field, where ui/Select flips it above, so this one shifts instead. An
+// empty value shows nothing in the box and leaves the label inside it, as
+// MUI's did.
 export function SelectField<V extends string>({
   id,
   label,
@@ -156,64 +152,27 @@ export function SelectField<V extends string>({
       <Label as="div" id={`${id}-label`} shrink={shrink} focused={focused}>
         {label}
       </Label>
-      <BaseSelect.Root
+      <Select
+        id={id}
+        labelledBy={`${id}-label`}
         value={value}
-        onValueChange={(next) => onChange(next as V)}
-      >
-        <BaseSelect.Trigger
-          id={id}
-          aria-labelledby={`${id}-label`}
-          className={cx(
-            selectStyles.trigger,
-            styles.box,
-            styles.selectBox,
-            focused && styles.focused
-          )}
-        >
-          <BaseSelect.Value
-            className={cx(selectStyles.value, styles.selectValue)}
-          >
-            {(current: V) =>
-              current === "" ? (
-                <span aria-hidden>{"\u200b"}</span>
-              ) : (
-                renderValue(current)
-              )
-            }
-          </BaseSelect.Value>
-          <BaseSelect.Icon className={cx(selectStyles.icon, styles.selectIcon)}>
-            <Icon name="UnfoldMoreRounded" size="inherit" />
-          </BaseSelect.Icon>
-        </BaseSelect.Trigger>
-        <BaseSelect.Portal>
-          <BaseSelect.Positioner
-            side="bottom"
-            align="start"
-            alignOffset={1}
-            sideOffset={4}
-            // MUI kept 16px from the screen's edges, then moved the menu
-            // 4px down (the theme's top margin on it).
-            collisionPadding={{ top: 20, right: 16, bottom: 12, left: 16 }}
-            collisionAvoidance={{ side: "shift", align: "shift" }}
-            alignItemWithTrigger={false}
-            className={selectStyles.positioner}
-          >
-            <BaseSelect.Popup className={selectStyles.popup}>
-              <BaseSelect.List className={selectStyles.list}>
-                {options.map((option) => (
-                  <BaseSelect.Item
-                    key={option.value}
-                    value={option.value}
-                    className={selectStyles.item}
-                  >
-                    <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
-                  </BaseSelect.Item>
-                ))}
-              </BaseSelect.List>
-            </BaseSelect.Popup>
-          </BaseSelect.Positioner>
-        </BaseSelect.Portal>
-      </BaseSelect.Root>
+        onChange={onChange}
+        options={options}
+        renderValue={(current) =>
+          current === "" ? (
+            <span aria-hidden>{"\u200b"}</span>
+          ) : (
+            renderValue(current)
+          )
+        }
+        className={cx(styles.box, styles.selectBox, focused && styles.focused)}
+        valueClassName={styles.selectValue}
+        iconClassName={styles.selectIcon}
+        // MUI kept 16px from the screen's edges, then moved the menu 4px down
+        // (the theme's top margin on it).
+        collisionPadding={{ top: 20, right: 16, bottom: 12, left: 16 }}
+        collisionAvoidance={{ side: "shift", align: "shift" }}
+      />
     </div>
   );
 }

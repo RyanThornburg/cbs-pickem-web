@@ -57,11 +57,6 @@
 .poolCell {
   background-color: var(--pool-50);
 }
-/* Middle of the header row, as MUI's ButtonBase sat; on the baseline the
-   inline-flex label pushed the header 4px taller. */
-.sortLabel {
-  vertical-align: middle;
-}
 /* The whole row opens the team page. */
 .row {
   cursor: pointer;

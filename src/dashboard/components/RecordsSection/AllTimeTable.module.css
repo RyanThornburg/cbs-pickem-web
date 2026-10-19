@@ -57,11 +57,8 @@
 .placeHead {
   width: 48px;
 }
-/* Middle-aligned in its line, as MUI's sort label sat, so the header row
-   keeps its height. */
 .sortLabel {
   position: relative;
-  vertical-align: middle;
 }
 .place {
   font-weight: 700;

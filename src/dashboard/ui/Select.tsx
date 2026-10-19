@@ -14,7 +14,9 @@ export interface SelectOption<V extends string> {
 // is highlighted and focused when it opens, arrow keys and type-ahead move
 // through it, Enter picks. `renderValue` draws the trigger's value, for the
 // Week pill's "Wk 3" and the player card. `className` styles the trigger
-// (padding, height, corners) from the caller's module.
+// (padding, height, corners) from the caller's module. The menu keeps 16px
+// from the screen's edges and flips above the trigger when there's no room
+// below, unless `collisionPadding` / `collisionAvoidance` say otherwise.
 export function Select<V extends string>({
   value,
   onChange,
@@ -24,6 +26,9 @@ export function Select<V extends string>({
   id,
   className,
   valueClassName,
+  iconClassName,
+  collisionPadding = 16,
+  collisionAvoidance,
   open,
   onOpenChange,
   onOpenChangeComplete,
@@ -37,6 +42,9 @@ export function Select<V extends string>({
   id?: string;
   className?: string;
   valueClassName?: string;
+  iconClassName?: string;
+  collisionPadding?: BaseSelect.Positioner.Props["collisionPadding"];
+  collisionAvoidance?: BaseSelect.Positioner.Props["collisionAvoidance"];
   // Optional control from outside (the "Choose your name" hint opens the
   // player picker).
   open?: boolean;
@@ -62,7 +70,9 @@ export function Select<V extends string>({
         >
           {(current: V) => renderValue(current)}
         </BaseSelect.Value>
-        <BaseSelect.Icon className={styles.icon}>
+        <BaseSelect.Icon
+          className={[styles.icon, iconClassName].filter(Boolean).join(" ")}
+        >
           <Icon name="UnfoldMoreRounded" size="inherit" />
         </BaseSelect.Icon>
       </BaseSelect.Trigger>
@@ -72,7 +82,8 @@ export function Select<V extends string>({
           align="start"
           alignOffset={1}
           sideOffset={4}
-          collisionPadding={16}
+          collisionPadding={collisionPadding}
+          collisionAvoidance={collisionAvoidance}
           alignItemWithTrigger={false}
           className={styles.positioner}
         >

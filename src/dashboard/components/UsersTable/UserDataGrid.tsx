@@ -56,7 +56,6 @@ const UserDataGrid = ({
                       active={header.column.getIsSorted() !== false}
                       direction={header.column.getIsSorted() || "asc"}
                       onClick={header.column.getToggleSortingHandler()}
-                      className={styles.sortLabel}
                     >
                       {flexRender(
                         header.column.columnDef.header,

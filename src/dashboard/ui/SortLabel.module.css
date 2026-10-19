@@ -3,8 +3,11 @@
    and flipped for ascending. */
 
 @layer ui {
+  /* Middle-aligned in the line, as MUI's ButtonBase was: on the baseline
+     the inline-flex label sits higher and can make a header row taller. */
   .label {
     display: inline-flex;
+    vertical-align: middle;
     flex-direction: inherit;
     align-items: center;
     justify-content: flex-start;

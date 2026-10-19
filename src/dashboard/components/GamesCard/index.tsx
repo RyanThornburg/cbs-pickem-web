@@ -13,21 +13,7 @@ import { useGamesWithOdds } from "./hooks/useGamesWithOdds";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import LoadError from "../shared/LoadError";
-
-// MUI's warning Alert icon (ReportProblemOutlined), which ui/Icon doesn't
-// carry: a triangle with an exclamation mark.
-const WarningIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    focusable="false"
-    aria-hidden
-    width="1em"
-    height="1em"
-    fill="currentColor"
-  >
-    <path d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z" />
-  </svg>
-);
+import { Icon } from "../../ui/Icon";
 
 type Props = {
   week: number;
@@ -89,7 +75,7 @@ const GamesCard = memo(function GamesCard({ week, recap, viewSwitch }: Props) {
       {!oddsAvailable && games.length > 0 && (
         <div role="alert" className={styles.alert}>
           <div className={styles.alertIcon}>
-            <WarningIcon />
+            <Icon name="ReportProblemOutlined" size="inherit" />
           </div>
           <div className={styles.alertMessage}>
             Week {week} odds aren't in yet. Vegas lines, O/U and books will show

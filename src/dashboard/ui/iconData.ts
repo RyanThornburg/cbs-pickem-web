@@ -259,6 +259,12 @@ export const ICONS = {
     ],
   ],
   Remove: [["path", { d: "M19 13H5v-2h14z" }]],
+  ReportProblemOutlined: [
+    [
+      "path",
+      { d: "M12 5.99 19.53 19H4.47zM12 2 1 21h22zm1 14h-2v2h2zm0-6h-2v4h2z" },
+    ],
+  ],
   SentimentVeryDissatisfied: [
     ["circle", { cx: "15.5", cy: "9.5", r: "1.5" }],
     ["circle", { cx: "8.5", cy: "9.5", r: "1.5" }],

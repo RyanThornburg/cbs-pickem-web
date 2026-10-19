@@ -61,7 +61,6 @@ export default function UserDataMobile({
                         active={header.column.getIsSorted() !== false}
                         direction={header.column.getIsSorted() || "asc"}
                         onClick={header.column.getToggleSortingHandler()}
-                        className={styles.sortLabel}
                       >
                         {header.column.columnDef.meta?.mobileHeader ??
                           flexRender(
