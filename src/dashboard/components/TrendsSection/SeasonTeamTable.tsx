@@ -8,7 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +15,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -28,8 +26,8 @@ import {
 } from "../../types";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
-import { pool } from "../../shared-theme/themePrimitives";
 import { Button } from "../../ui/Button";
+import styles from "./SeasonTeamTable.module.css";
 
 export type Props = {
   teamPickTotals: TeamPickTotal[];
@@ -120,9 +118,9 @@ const buildColumns = (maxPicks: number) => [
     header: "Team",
     meta: { mobileHeader: "Team" },
     cell: ({ getValue }) => (
-      <TeamLink abbr={getValue()} sx={{ gap: 1 }}>
+      <TeamLink abbr={getValue()} className={styles.teamLink}>
         <TeamLogo abbr={getValue()} size={20} decorative />
-        <Typography variant="body2">{getValue()}</Typography>
+        <p className={styles.text}>{getValue()}</p>
       </TeamLink>
     ),
   }),
@@ -131,44 +129,23 @@ const buildColumns = (maxPicks: number) => [
     meta: { mobileHeader: "Picked", align: "center" },
     sortDescFirst: true,
     cell: ({ row }) => (
-      <Box>
-        <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>
+      <div>
+        <p className={styles.picks}>
           {row.original.picks}
-          <Typography
-            component="span"
-            variant="caption"
-            // The share of all picks only fits from sm up; phones keep the
-            // count so all four columns fit at 360px.
-            sx={{
-              color: "text.secondary",
-              display: { xs: "none", sm: "inline" },
-            }}
-          >
+          <span className={styles.share}>
             {" "}
             · {pct(row.original.pctOfAllPicks)}
-          </Typography>
-        </Typography>
-        <Box
-          sx={{
-            display: { xs: "none", sm: "block" },
-            height: 4,
-            mt: 0.25,
-            borderRadius: 2,
-            bgcolor: pool[100],
-            overflow: "hidden",
-          }}
-        >
-          <Box
-            sx={{
+          </span>
+        </p>
+        <div className={styles.track}>
+          <div
+            className={styles.fill}
+            style={{
               width: `${maxPicks > 0 ? (row.original.picks / maxPicks) * 100 : 0}%`,
-              height: "100%",
-              // The pool's color: this counts the pool's picks. A team color
-              // would read as that team, and red/green are pick results.
-              bgcolor: pool[500],
             }}
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
     ),
   }),
   columnHelper.accessor("pickAccuracy", {
@@ -176,11 +153,7 @@ const buildColumns = (maxPicks: number) => [
     meta: { mobileHeader: "Right", align: "center" },
     sortDescFirst: true,
     sortUndefined: "last",
-    cell: ({ getValue }) => (
-      <Typography variant="body2" sx={{ fontVariantNumeric: "tabular-nums" }}>
-        {pct(getValue())}
-      </Typography>
-    ),
+    cell: ({ getValue }) => <p className={styles.percent}>{pct(getValue())}</p>,
   }),
   columnHelper.accessor("coverPct", {
     header: "Team covered",
@@ -191,12 +164,7 @@ const buildColumns = (maxPicks: number) => [
       const { covers, losses, pushes } = row.original;
       const games = covers + losses + pushes;
       return (
-        <Typography
-          variant="body2"
-          sx={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}
-        >
-          {games ? `${covers} of ${games}` : "—"}
-        </Typography>
+        <p className={styles.number}>{games ? `${covers} of ${games}` : "—"}</p>
       );
     },
   }),
@@ -240,11 +208,7 @@ export default function SeasonTeamTable(props: Props) {
   });
 
   if (data.length === 0) {
-    return (
-      <Typography variant="body2" sx={{ color: "text.secondary" }}>
-        No picks graded yet this season.
-      </Typography>
-    );
+    return <p className={styles.empty}>No picks graded yet this season.</p>;
   }
 
   // Team column stays pinned if the table ever scrolls sideways. Its solid
@@ -260,7 +224,7 @@ export default function SeasonTeamTable(props: Props) {
   const visibleRows = showAll ? rows : rows.slice(0, INITIAL_ROWS);
 
   return (
-    <Box>
+    <div>
       <TableContainer>
         <Table size="small">
           <TableHead>
@@ -329,11 +293,11 @@ export default function SeasonTeamTable(props: Props) {
           size="small"
           onClick={() => setShowAll((s) => !s)}
           aria-expanded={showAll}
-          style={{ marginTop: 4, minHeight: 44 }}
+          className={styles.toggle}
         >
           {showAll ? "Show top 10" : `Show all ${rows.length} teams`}
         </Button>
       )}
-    </Box>
+    </div>
   );
 }

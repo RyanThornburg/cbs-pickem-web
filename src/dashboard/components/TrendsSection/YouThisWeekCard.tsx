@@ -1,10 +1,10 @@
-import { Box, Stack, Typography } from "@mui/material";
 import { GameCoverResult } from "../../data/weekGames";
 import { ordinal } from "../../helper";
 import { AllAlonePick, RankedUser } from "../../types";
 import { Big, CardShell, Sub } from "../Recap/WeekRecapCards";
 import { getWeeklyForm } from "../UsersTable/usersTableUtils";
 import { TeamLogo } from "../shared/TeamLogo";
+import styles from "./YouThisWeekCard.module.css";
 
 export type Props = {
   user: RankedUser;
@@ -47,29 +47,17 @@ export default function YouThisWeekCard({ user, alone, gameResults }: Props) {
         const covered =
           cover?.isFinal && cover.coveringTeamId === pick.picked_team_id;
         return (
-          <Stack
-            key={pick.game_id}
-            direction="row"
-            spacing={0.75}
-            sx={{ alignItems: "center" }}
-          >
+          <div key={pick.game_id} className={styles.alone}>
             <TeamLogo abbr={pick.abbr} size={16} />
-            <Typography sx={{ fontSize: "0.8125rem" }}>
+            <p className={styles.aloneText}>
               Only one on {pick.abbr}
               {cover?.isFinal && (
-                <Box
-                  component="span"
-                  sx={{
-                    fontWeight: 600,
-                    // Darker red than error.main so it holds 4.5:1 on the lime tint.
-                    color: covered ? "success.main" : "#c62828",
-                  }}
-                >
+                <span className={covered ? styles.covered : styles.missed}>
                   {covered ? " · covered" : " · didn't cover"}
-                </Box>
+                </span>
               )}
-            </Typography>
-          </Stack>
+            </p>
+          </div>
         );
       })}
     </CardShell>

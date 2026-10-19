@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
+import { Tooltip } from "@mui/material";
 import { GameCoverResult } from "../../data/weekGames";
 import { OneSidedGame, WeekTrends } from "../../types";
 import { TeamLogo } from "../shared/TeamLogo";
+import { Icon } from "../../ui/Icon";
+import styles from "./ConsensusCard.module.css";
 
 export type Props = {
   trends: WeekTrends;
@@ -83,6 +84,9 @@ const buildGameConsensus = (trends: WeekTrends): GameConsensus[] => {
     });
 };
 
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
+
 // One row per game: the less-picked side on the left, the more-picked side
 // on the right, a neutral bar between them (darker for the bigger side;
 // red, green and team colors would read as a result), and the bigger
@@ -95,7 +99,7 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
   if (games.length === 0) return null;
 
   return (
-    <Stack spacing={1.5}>
+    <div className={styles.list}>
       {games.map(({ game_id, leader, trailer, oneSided }) => {
         const cover = gameResults.get(game_id);
         const trailerCovered =
@@ -108,156 +112,111 @@ export default function ConsensusCard({ trends, gameResults }: Props) {
         const trailerCurrentlyCovering = cover?.coveringTeamId === trailer.id;
 
         return (
-          <Box key={game_id}>
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{
-                alignItems: "center",
-              }}
-            >
+          <div key={game_id}>
+            <div className={styles.row}>
               <TeamLogo abbr={trailer.abbr} size={22} />
-              <Box
-                sx={{
-                  width: 38,
-                  lineHeight: 1.1,
-                  opacity: cover?.isFinal && !trailerCovered ? 0.5 : 1,
-                }}
+              <div
+                className={cx(
+                  styles.side,
+                  cover?.isFinal && !trailerCovered && styles.faded
+                )}
               >
-                <Stack
-                  direction="row"
-                  spacing={0.25}
-                  sx={{
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    component="div"
-                    sx={{
-                      fontWeight: trailerCurrentlyCovering ? 700 : undefined,
-                    }}
+                <div className={styles.sideAbbr}>
+                  <div
+                    className={cx(
+                      styles.caption,
+                      trailerCurrentlyCovering && styles.bold
+                    )}
                   >
                     {trailer.abbr}
-                  </Typography>
+                  </div>
                   {trailerCovered && (
-                    <CheckCircleOutlineIcon
-                      sx={{ fontSize: 12 }}
-                      color="success"
-                      titleAccess="covered"
+                    <Icon
+                      name="CheckCircleOutlined"
+                      label="covered"
+                      className={styles.check}
                     />
                   )}
-                </Stack>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color={
-                    trailerCurrentlyCovering ? "text.primary" : "text.secondary"
-                  }
-                  sx={{
-                    fontWeight: trailerCurrentlyCovering ? 700 : undefined,
-                  }}
+                </div>
+                <div
+                  className={cx(
+                    styles.caption,
+                    trailerCurrentlyCovering && styles.bold
+                  )}
                 >
                   {trailer.pick_count}
-                </Typography>
-              </Box>
-              <Box
+                </div>
+              </div>
+              <div
                 role="img"
                 aria-label={`${trailer.name} ${trailer.pick_count} picks, ${leader.name} ${leader.pick_count} picks`}
-                sx={{
-                  flexGrow: 1,
-                  display: "flex",
-                  height: 10,
-                  borderRadius: 5,
-                  overflow: "hidden",
-                  bgcolor: "action.hover",
-                }}
+                className={styles.bar}
               >
                 {trailer.pick_count > 0 && (
                   <Tooltip
                     title={`${trailer.name}: ${trailer.pick_count} picks`}
                   >
-                    <Box
-                      sx={{
-                        flexGrow: Math.max(trailer.pct, 0.02),
-                        bgcolor: "text.disabled",
-                      }}
+                    <div
+                      className={styles.trailerBar}
+                      style={{ flexGrow: Math.max(trailer.pct, 0.02) }}
                     />
                   </Tooltip>
                 )}
                 <Tooltip title={`${leader.name}: ${leader.pick_count} picks`}>
-                  <Box
-                    sx={{
-                      flexGrow: Math.max(leader.pct, 0.02),
-                      bgcolor: "text.secondary",
-                    }}
+                  <div
+                    className={styles.leaderBar}
+                    style={{ flexGrow: Math.max(leader.pct, 0.02) }}
                   />
                 </Tooltip>
-              </Box>
-              <Box
-                sx={{
-                  width: 38,
-                  lineHeight: 1.1,
-                  textAlign: "right",
-                  opacity: cover?.isFinal && !leaderCovered ? 0.5 : 1,
-                }}
+              </div>
+              <div
+                className={cx(
+                  styles.side,
+                  styles.leaderSide,
+                  cover?.isFinal && !leaderCovered && styles.faded
+                )}
               >
-                <Stack
-                  direction="row"
-                  spacing={0.25}
-                  sx={{
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <div className={cx(styles.sideAbbr, styles.leaderAbbr)}>
                   {leaderCovered && (
-                    <CheckCircleOutlineIcon
-                      sx={{ fontSize: 12 }}
-                      color="success"
-                      titleAccess="covered"
+                    <Icon
+                      name="CheckCircleOutlined"
+                      label="covered"
+                      className={styles.check}
                     />
                   )}
-                  <Typography
-                    variant="caption"
-                    component="div"
-                    sx={{
-                      fontWeight: leaderCurrentlyCovering ? 700 : undefined,
-                    }}
+                  <div
+                    className={cx(
+                      styles.caption,
+                      leaderCurrentlyCovering && styles.bold
+                    )}
                   >
                     {leader.abbr}
-                  </Typography>
-                </Stack>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color={
-                    leaderCurrentlyCovering ? "text.primary" : "text.secondary"
-                  }
-                  sx={{
-                    fontWeight: leaderCurrentlyCovering ? 700 : undefined,
-                  }}
+                  </div>
+                </div>
+                <div
+                  className={cx(
+                    styles.caption,
+                    leaderCurrentlyCovering && styles.bold
+                  )}
                 >
                   {leader.pick_count}
-                </Typography>
-              </Box>
+                </div>
+              </div>
               <TeamLogo abbr={leader.abbr} size={22} />
               {/* No color here: a lopsided split isn't a win or a loss. */}
-              <Typography
-                variant="caption"
-                sx={{
-                  width: 40,
-                  textAlign: "right",
-                  fontVariantNumeric: "tabular-nums",
-                  color: oneSided ? "text.primary" : "text.secondary",
-                  fontWeight: oneSided ? 700 : undefined,
-                }}
+              <span
+                className={cx(
+                  styles.caption,
+                  styles.share,
+                  oneSided ? styles.strong : styles.muted
+                )}
               >
                 {Math.round(leader.pct * 100)}%
-              </Typography>
-            </Stack>
-          </Box>
+              </span>
+            </div>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }

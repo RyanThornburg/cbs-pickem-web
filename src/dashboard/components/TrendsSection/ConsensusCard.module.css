@@ -1,0 +1,83 @@
+/* One row per game: less-picked side, the split bar, more-picked side, and
+   the bigger side's share of the pool. */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side {
+  width: 38px;
+  line-height: 1.1;
+}
+.leaderSide {
+  text-align: right;
+}
+/* Once final, the side that didn't cover fades. */
+.faded {
+  opacity: 0.5;
+}
+
+.sideAbbr {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.leaderAbbr {
+  justify-content: flex-end;
+}
+
+.caption {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+.muted {
+  color: var(--text-muted);
+}
+/* Bold tracks the live cover; the share is bold for a one-sided game. */
+.strong {
+  color: var(--text);
+  font-weight: 700;
+}
+/* The abbreviations and pick counts keep the row's ink either way. The
+   counts were meant to go muted when not covering, but MUI 9's Typography
+   `color` prop never applied it, so the page has always shown them dark. */
+.bold {
+  font-weight: 700;
+}
+
+.check {
+  font-size: 12px;
+  color: var(--success);
+}
+
+/* Neutral: darker for the bigger side. Red, green and team colors would
+   read as a result. */
+.bar {
+  display: flex;
+  flex-grow: 1;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background-color: var(--hover);
+}
+.trailerBar {
+  background-color: var(--text-faint);
+}
+.leaderBar {
+  background-color: var(--text-muted);
+}
+
+.share {
+  width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

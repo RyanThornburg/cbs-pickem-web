@@ -1,0 +1,66 @@
+/* The cells of the season team table (the table itself is still MUI's). */
+.teamLink {
+  gap: 8px;
+}
+
+.text,
+.picks,
+.percent,
+.number,
+.empty {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+.picks {
+  white-space: nowrap;
+}
+.percent,
+.number {
+  font-variant-numeric: tabular-nums;
+}
+.number {
+  white-space: nowrap;
+}
+.empty {
+  color: var(--text-muted);
+}
+
+/* The share of all picks only fits from sm up; phones keep the count so all
+   four columns fit at 360px. */
+.share {
+  display: none;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.track {
+  display: none;
+  height: 4px;
+  margin-top: 2px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--pool-100);
+}
+/* The pool's color: this counts the pool's picks. A team color would read
+   as that team, and red/green are pick results. */
+.fill {
+  height: 100%;
+  background-color: var(--pool-500);
+}
+
+@media (min-width: 600px) {
+  .share {
+    display: inline;
+  }
+  .track {
+    display: block;
+  }
+}
+
+.toggle {
+  min-height: 44px;
+  margin-top: 4px;
+}

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
 import { GameCoverResult } from "../../data/weekGames";
 import { SeasonAllAlonePick } from "../../types";
 import UserAvatar from "../UserAvatar";
-import { CoverResultIcon, selectedRowSx } from "./AllAloneCard";
+import { CoverResultIcon, selectedRowClass } from "./AllAloneCard";
 import { TeamLogo } from "../shared/TeamLogo";
 import { Button } from "../../ui/Button";
+import styles from "./SeasonAllAloneCard.module.css";
 
 export type Props = {
   allAlonePicksSeason: SeasonAllAlonePick[];
@@ -31,17 +31,17 @@ export default function SeasonAllAloneCard({
 
   if (sorted.length === 0) {
     return (
-      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+      <p className={styles.empty}>
         Nobody has been the only one on a team yet this season.
-      </Typography>
+      </p>
     );
   }
 
   const rows = showAll ? sorted : sorted.slice(0, INITIAL_ROWS);
 
   return (
-    <Box>
-      <Stack spacing={0.5}>
+    <div>
+      <div className={styles.list}>
         {rows.map((pick) => {
           const cover = gameResults.get(`${pick.week_number}:${pick.game_id}`);
           const covered =
@@ -49,76 +49,45 @@ export default function SeasonAllAloneCard({
           const you = String(pick.user_id) === selectedUserId;
 
           return (
-            <Stack
+            <div
               key={`${pick.week_number}-${pick.game_id}-${pick.user_id}`}
-              direction="row"
-              spacing={1.25}
-              sx={{
-                alignItems: "center",
-                minHeight: 36,
-                px: 0.75,
-                borderRadius: 1,
-                ...(you ? selectedRowSx : {}),
-              }}
+              className={[styles.row, you && selectedRowClass]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <Typography
-                variant="caption"
-                sx={{
-                  width: 40,
-                  flexShrink: 0,
-                  color: "text.secondary",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                Wk {pick.week_number}
-              </Typography>
+              <span className={styles.week}>Wk {pick.week_number}</span>
               <UserAvatar
                 userName={pick.name}
                 userId={String(pick.user_id)}
                 includeName={false}
                 size={24}
               />
-              <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
+              <p className={styles.name}>
                 {pick.name}
                 {you && " (you)"}
-              </Typography>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{ alignItems: "center", flexShrink: 0 }}
-              >
+              </p>
+              <div className={styles.team}>
                 <TeamLogo abbr={pick.abbr} size={18} />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {pick.abbr}
-                </Typography>
-              </Stack>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: "text.secondary",
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                1 vs {pick.opposing_count}
-              </Typography>
-              <Box sx={{ width: 20, display: "flex", flexShrink: 0 }}>
+                <p className={styles.abbr}>{pick.abbr}</p>
+              </div>
+              <span className={styles.split}>1 vs {pick.opposing_count}</span>
+              <div className={styles.result}>
                 {cover?.isFinal && <CoverResultIcon covered={!!covered} />}
-              </Box>
-            </Stack>
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
       {sorted.length > INITIAL_ROWS && (
         <Button
           size="small"
           onClick={() => setShowAll((s) => !s)}
           aria-expanded={showAll}
-          style={{ marginTop: 4, minHeight: 44 }}
+          className={styles.toggle}
         >
           {showAll ? "Show fewer" : `Show all ${sorted.length}`}
         </Button>
       )}
-    </Box>
+    </div>
   );
 }

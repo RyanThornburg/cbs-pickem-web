@@ -1,0 +1,55 @@
+/* One row per pick nobody else made: avatar, name and team, and once the
+   game is final whether it covered. */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid var(--divider);
+  border-radius: 8px;
+}
+
+/* The selected player's row, as on User Picks (DESIGN.md selected-lime). */
+.selected {
+  background-color: #f0f4c3;
+}
+
+.text {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.43;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.note {
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.covered {
+  color: var(--success);
+}
+.missed {
+  color: var(--error);
+}

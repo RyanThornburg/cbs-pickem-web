@@ -1,6 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Box, Skeleton, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Skeleton } from "@mui/material";
 import { GetTrendsByWeek } from "../../data/GetTrendsByWeek";
 import { GetSeasonTrends } from "../../data/GetSeasonTrends";
 import {
@@ -22,6 +21,7 @@ import TabIntro from "../TabIntro";
 import LoadError from "../shared/LoadError";
 import { Button } from "../../ui/Button";
 import { SegmentedControl } from "../../ui/SegmentedControl";
+import styles from "./TrendsSection.module.css";
 
 export type Props = {
   season: number;
@@ -68,28 +68,19 @@ function SectionHeading({
   note?: React.ReactNode;
 }) {
   return (
-    <Box sx={{ mb: 1.5 }}>
-      <Typography variant="h6" component="h3">
-        {children}
-      </Typography>
-      {note && (
-        <Typography
-          variant="body2"
-          sx={{ color: "text.secondary", maxWidth: "65ch" }}
-        >
-          {note}
-        </Typography>
-      )}
-    </Box>
+    <div className={styles.heading}>
+      <h3 className={styles.title}>{children}</h3>
+      {note && <p className={styles.note}>{note}</p>}
+    </div>
   );
 }
 
 const LoadingRows = ({ label }: { label: string }) => (
-  <Stack spacing={1} aria-label={label} aria-busy="true">
+  <div className={styles.loading} aria-label={label} aria-busy="true">
     {[0, 1, 2, 3].map((i) => (
       <Skeleton key={i} variant="rounded" height={28} />
     ))}
-  </Stack>
+  </div>
 );
 
 const LoadFailed = ({
@@ -298,14 +289,14 @@ const TrendsSection = memo(function TrendsSection({
     <Button
       size="small"
       onClick={() => handleViewChange("season")}
-      style={{ minHeight: 44, paddingLeft: 8, paddingRight: 8, marginLeft: -8 }}
+      className={styles.seasonLink}
     >
       See the season so far
     </Button>
   );
 
   const weekView = (
-    <Stack spacing={4}>
+    <div className={styles.view}>
       <WeekRecapSection
         title="Recap"
         status={status}
@@ -313,14 +304,14 @@ const TrendsSection = memo(function TrendsSection({
         lead={youCard}
         selectedUserId={userId}
         empty={
-          <Box>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <div>
+            <p className={styles.muted}>
               {hasConsensus
                 ? "The recap fills in as games finish."
                 : "Nothing to show yet. The pool's picks show up here once games kick off, and the recap fills in as they finish."}
-            </Typography>
+            </p>
             {seasonLink}
-          </Box>
+          </div>
         }
       />
 
@@ -337,14 +328,14 @@ const TrendsSection = memo(function TrendsSection({
         <LoadingRows label={`Loading week ${week} pick trends`} />
       ) : (
         hasConsensus && (
-          <Grid container spacing={{ xs: 4, md: 3 }}>
-            <Grid component="section" size={{ xs: 12, md: 7 }}>
+          <div className={styles.split}>
+            <section className={styles.weekWide}>
               <SectionHeading note="Most lopsided game first. The more-picked side is on the right.">
                 How the pool split
               </SectionHeading>
               <ConsensusCard trends={weekTrends} gameResults={gameResults} />
-            </Grid>
-            <Grid component="section" size={{ xs: 12, md: 5 }}>
+            </section>
+            <section className={styles.weekNarrow}>
               <SectionHeading note="Picks nobody else in the pool made.">
                 Only one on a team
               </SectionHeading>
@@ -355,19 +346,17 @@ const TrendsSection = memo(function TrendsSection({
                   selectedUserId={userId}
                 />
               ) : (
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Nobody went it alone this week.
-                </Typography>
+                <p className={styles.muted}>Nobody went it alone this week.</p>
               )}
-            </Grid>
-          </Grid>
+            </section>
+          </div>
         )
       )}
-    </Stack>
+    </div>
   );
 
   const seasonView = (
-    <Stack spacing={4}>
+    <div className={styles.view}>
       {seasonItems.length > 0 && (
         <WeekRecapSection
           title="Season so far"
@@ -379,10 +368,10 @@ const TrendsSection = memo(function TrendsSection({
 
       {((weekRecap?.series.pool_accuracy.length ?? 0) > 0 ||
         (weekRecap?.series.chaos.length ?? 0) > 0) && (
-        <Box component="section">
+        <section>
           <SectionHeading>Week by week</SectionHeading>
           <SeasonRecapCharts recap={weekRecap} selectedUserId={userId} />
-        </Box>
+        </section>
       )}
 
       {seasonFailed && !seasonTrends ? (
@@ -397,8 +386,8 @@ const TrendsSection = memo(function TrendsSection({
       ) : !seasonTrends ? (
         <LoadingRows label="Loading season pick trends" />
       ) : (
-        <Grid container spacing={{ xs: 4, md: 3 }}>
-          <Grid component="section" size={{ xs: 12, lg: 7 }}>
+        <div className={styles.split}>
+          <section className={styles.seasonWide}>
             <SectionHeading note="Picks right: how often a pick on that team covered. Team covered: the team's own cover record, all games.">
               Teams the pool picks
             </SectionHeading>
@@ -408,8 +397,8 @@ const TrendsSection = memo(function TrendsSection({
               teamAtsRecord={seasonTrends.team_ats_record}
               teamBelieversFaders={seasonTrends.team_believers_faders}
             />
-          </Grid>
-          <Grid component="section" size={{ xs: 12, lg: 5 }}>
+          </section>
+          <section className={styles.seasonNarrow}>
             <SectionHeading note="Every pick nobody else made, newest first. 1 vs 14 means 14 took the other side.">
               Only one on a team
             </SectionHeading>
@@ -418,14 +407,14 @@ const TrendsSection = memo(function TrendsSection({
               gameResults={seasonGameResults}
               selectedUserId={userId}
             />
-          </Grid>
-        </Grid>
+          </section>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 
   return (
-    <Box sx={{ textAlign: "left" }}>
+    <div className={styles.root}>
       {/* No week in the title: the switch names it, and it can be on
           Season. A switch between two views of the page, not a second tab
           row: the same segmented control as the Scoreboard's layout. */}
@@ -445,7 +434,7 @@ const TrendsSection = memo(function TrendsSection({
         }
       />
       {view === "week" ? weekView : seasonView}
-    </Box>
+    </div>
   );
 });
 

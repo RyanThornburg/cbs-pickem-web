@@ -1,0 +1,24 @@
+/* A pick nobody else made, under the week's numbers. */
+.alone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aloneText {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.covered,
+.missed {
+  font-weight: 600;
+}
+.covered {
+  color: var(--success);
+}
+/* Darker red than error.main so it holds 4.5:1 on the lime tint. */
+.missed {
+  color: var(--error-dark);
+}

@@ -1,0 +1,76 @@
+/* The season's all-alone log: one compact row per pick, newest first. */
+.empty {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 6px;
+  border-radius: 8px;
+}
+
+.week {
+  flex-shrink: 0;
+  width: 40px;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--text-md);
+  line-height: 1.43;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.abbr {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.43;
+}
+
+.split {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Holds its width before the game is final, so the rows line up. */
+.result {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.toggle {
+  min-height: 44px;
+  margin-top: 4px;
+}

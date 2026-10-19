@@ -1,0 +1,81 @@
+.root {
+  text-align: left;
+}
+
+/* Each view's sections, 32px apart. */
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* One heading style for every section on the tab. */
+.heading {
+  margin-bottom: 12px;
+}
+.title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.6;
+}
+.note,
+.muted {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+  color: var(--text-muted);
+}
+.note {
+  max-width: 65ch;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seasonLink {
+  min-height: 44px;
+  margin-left: -8px;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+/* Two sections side by side: stacked 32px apart on phones, a wide and a
+   narrow column 24px apart from md (Week) or lg (Season, whose team table
+   needs the room). The widths are MUI Grid's 7 and 5 of 12 columns. */
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  min-width: 0;
+}
+.weekWide,
+.weekNarrow,
+.seasonWide,
+.seasonNarrow {
+  width: 100%;
+  min-width: 0;
+}
+@media (min-width: 900px) {
+  .split {
+    gap: 24px;
+  }
+  .weekWide {
+    width: calc(100% * 7 / 12 - 5 * 24px / 12);
+  }
+  .weekNarrow {
+    width: calc(100% * 5 / 12 - 7 * 24px / 12);
+  }
+}
+@media (min-width: 1200px) {
+  .seasonWide {
+    width: calc(100% * 7 / 12 - 5 * 24px / 12);
+  }
+  .seasonNarrow {
+    width: calc(100% * 5 / 12 - 7 * 24px / 12);
+  }
+}

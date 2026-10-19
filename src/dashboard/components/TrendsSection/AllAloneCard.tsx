@@ -1,10 +1,9 @@
-import { Box, Stack, Typography } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
-import CloseIcon from "@mui/icons-material/Close";
 import { GameCoverResult } from "../../data/weekGames";
 import { AllAlonePick } from "../../types";
 import UserAvatar from "../UserAvatar";
 import { TeamLogo } from "../shared/TeamLogo";
+import { Icon } from "../../ui/Icon";
+import styles from "./AllAloneCard.module.css";
 
 export type Props = {
   allAlonePicks: AllAlonePick[];
@@ -13,19 +12,25 @@ export type Props = {
 };
 
 // The selected player's row, as on User Picks (DESIGN.md selected-lime).
-export const selectedRowSx = { bgcolor: "#f0f4c3" } as const;
+export const selectedRowClass = styles.selected;
 
 // Final-game result for a pick: a drawn icon plus its word for screen
 // readers, so it doesn't rest on color alone.
 export function CoverResultIcon({ covered }: { covered: boolean }) {
   return covered ? (
-    <CheckCircleOutlineIcon
-      fontSize="small"
-      color="success"
-      titleAccess="Covered"
+    <Icon
+      name="CheckCircleOutlined"
+      size="small"
+      label="Covered"
+      className={styles.covered}
     />
   ) : (
-    <CloseIcon fontSize="small" color="error" titleAccess="Didn't cover" />
+    <Icon
+      name="Close"
+      size="small"
+      label="Didn't cover"
+      className={styles.missed}
+    />
   );
 }
 
@@ -37,7 +42,7 @@ export default function AllAloneCard({
   if (allAlonePicks.length === 0) return null;
 
   return (
-    <Stack spacing={1}>
+    <div className={styles.list}>
       {allAlonePicks.map((pick) => {
         const cover = gameResults.get(pick.game_id);
         const covered =
@@ -45,18 +50,11 @@ export default function AllAloneCard({
         const you = String(pick.user_id) === selectedUserId;
 
         return (
-          <Stack
+          <div
             key={`${pick.game_id}-${pick.user_id}`}
-            direction="row"
-            spacing={1.5}
-            sx={{
-              alignItems: "center",
-              p: 1,
-              borderRadius: 1,
-              border: "1px solid",
-              borderColor: "divider",
-              ...(you ? selectedRowSx : {}),
-            }}
+            className={[styles.row, you && styles.selected]
+              .filter(Boolean)
+              .join(" ")}
           >
             <UserAvatar
               userName={pick.name}
@@ -64,27 +62,23 @@ export default function AllAloneCard({
               includeName={false}
               size={28}
             />
-            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-              <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
+            <div className={styles.text}>
+              <p className={styles.name}>
                 {pick.name}
                 {you && " (you)"}
-              </Typography>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{ alignItems: "center" }}
-              >
+              </p>
+              <div className={styles.team}>
                 <TeamLogo abbr={pick.abbr} size={18} />
-                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                <span className={styles.note}>
                   Only one on {pick.abbr} · {pick.opposing_count} took the other
                   side
-                </Typography>
-              </Stack>
-            </Box>
+                </span>
+              </div>
+            </div>
             {cover?.isFinal && <CoverResultIcon covered={!!covered} />}
-          </Stack>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }
