@@ -158,9 +158,17 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    `UsersTable`). Merged as one commit per folder; on the merged build 39 of
    40 shots match `main` exactly (the 40th is the tab-underline noise), the
    click-through passes, 369 tests pass. `sx` in those folders went from 507
-   to 32 (all on step 4 components). **Left for batch 2:** `AdminPanel`,
-   `RecordsSection`, `Leaders` (only shows from week 10: needs a faked
-   page first).
+   to 32 (all on step 4 components). **Batch 2 done the same day**
+   (`AdminPanel`, `RecordsSection`, `Leaders`, the last checked on
+   `picks-segment`, a faked second-half page): 39 of 42 shots identical, the
+   other 3 the tab-underline noise; click-through passes. Step 3 is
+   complete: `sx` app-wide 823 → 145, the rest in the shell (step 5) and on
+   step 4 components. Two spots kept what `main` actually renders, not what
+   its code asked for (user's call: nothing visible changes): Trends' pool
+   split pick counts stay dark, and Records' champion tiles keep 8px 12px
+   padding (a responsive key collision dropped the intended 10px). Records'
+   gold, you-lime and hatch colors are written in its CSS modules and in
+   `recordsTheme.ts` until the tables move in step 4.
    Running it, learned the hard way: worktrees are created from `main`, so
    each agent must `git checkout -b mui/<folder> <migration tip>` itself;
    only six agents run at once here; agents share the session scratchpad,
