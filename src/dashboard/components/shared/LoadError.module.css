@@ -1,0 +1,41 @@
+/* A quiet bordered box: what failed, when it retries, and Try now. */
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 16px;
+  border: 1px solid var(--divider);
+  border-radius: 16px;
+  background-color: var(--paper);
+  text-align: left;
+}
+
+.icon {
+  color: var(--text-muted);
+}
+
+.text {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.title,
+.detail {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+.title {
+  font-weight: 600;
+}
+.detail {
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

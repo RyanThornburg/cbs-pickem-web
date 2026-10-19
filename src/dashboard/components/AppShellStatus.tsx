@@ -27,7 +27,7 @@ export default function AppShellStatus({
           title="Can't reach the pool data right now."
           detail={`Trying again every ${META_RETRY_INTERVAL_MS / 1000} seconds.`}
           onRetry={onRetry}
-          sx={{ mb: 2 }}
+          style={{ marginBottom: 16 }}
           actions={
             cbsPoolUrl && (
               <Button

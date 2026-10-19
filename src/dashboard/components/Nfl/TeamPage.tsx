@@ -379,7 +379,7 @@ export default function TeamPage({
         <LoadError
           title={`There's no team at “${slug}”.`}
           detail="Pick one from the standings."
-          sx={{ mt: 2 }}
+          style={{ marginTop: 16 }}
         />
       </Box>
     );
@@ -394,7 +394,7 @@ export default function TeamPage({
             title="Couldn't load this team."
             detail="Trying again every 5 minutes."
             onRetry={standingsFailed ? retryStandings : retryProfile}
-            sx={{ mt: 2 }}
+            style={{ marginTop: 16 }}
           />
         ) : (
           <TabSkeleton shape="cards" label="Loading the team" />

@@ -1,9 +1,7 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import styles from "./LoadError.module.css";
 
 // The one way a tab says it couldn't load something: a quiet bordered box
 // (not an orange alert; nothing the viewer did is wrong) with what failed,
@@ -15,7 +13,7 @@ export default function LoadError({
   detail,
   onRetry,
   actions,
-  sx,
+  style,
 }: {
   title: ReactNode;
   // The automatic retry, e.g. "Trying again every minute."
@@ -23,53 +21,33 @@ export default function LoadError({
   onRetry?: () => void;
   // Extra buttons before Try now (the app shell's "Pool on CBS").
   actions?: ReactNode;
-  sx?: object;
+  // Spacing from the page around it (callers still on MUI pass a margin).
+  style?: CSSProperties;
 }) {
-  const Icon = onRetry ? ErrorOutlineIcon : InfoOutlinedIcon;
   return (
-    <Box
+    <div
       role={onRetry ? "alert" : "status"}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexWrap: "wrap",
-        columnGap: 1.5,
-        rowGap: 1,
-        p: 2,
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 2,
-        bgcolor: "background.paper",
-        textAlign: "left",
-        ...sx,
-      }}
+      className={styles.box}
+      style={style}
     >
-      <Icon aria-hidden sx={{ color: "text.secondary" }} />
-      <Box sx={{ flex: "1 1 14rem", minWidth: 0 }}>
-        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-          {title}
-        </Typography>
-        {detail && (
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {detail}
-          </Typography>
-        )}
-      </Box>
+      <Icon
+        name={onRetry ? "ErrorOutlineOutlined" : "InfoOutlined"}
+        className={styles.icon}
+      />
+      <div className={styles.text}>
+        <p className={styles.title}>{title}</p>
+        {detail && <p className={styles.detail}>{detail}</p>}
+      </div>
       {(actions || onRetry) && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+        <div className={styles.actions}>
           {actions}
           {onRetry && (
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={onRetry}
-              sx={{ minHeight: 36 }}
-            >
+            <Button variant="outlined" size="small" onClick={onRetry}>
               Try now
             </Button>
           )}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

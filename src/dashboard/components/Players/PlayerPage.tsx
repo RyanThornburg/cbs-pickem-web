@@ -119,14 +119,14 @@ export default function PlayerPage({
           <LoadError
             title="There's no player here this season."
             detail="Pick one from User Picks."
-            sx={{ mt: 2 }}
+            style={{ marginTop: 16 }}
           />
         ) : (
           <LoadError
             title="Couldn't load this player."
             detail="Trying again every 30 minutes."
             onRetry={retry}
-            sx={{ mt: 2 }}
+            style={{ marginTop: 16 }}
           />
         )}
       </Box>

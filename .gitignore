@@ -37,3 +37,6 @@ node_modules
 .impeccable/config.local.json
 .impeccable/hook.cache.json
 .impeccable/critique/
+
+# screenshot diffs (scripts/visual); recorded data has real names
+.visual/

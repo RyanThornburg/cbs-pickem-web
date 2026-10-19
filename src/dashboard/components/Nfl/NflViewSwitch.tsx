@@ -1,9 +1,8 @@
-import Box from "@mui/material/Box";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { createContext, useContext } from "react";
-import { visuallyHidden } from "../../helper";
+import { SegmentedControl } from "../../ui/SegmentedControl";
+import uiStyles from "../../ui/ui.module.css";
 import { NflView } from "./nflView";
+import styles from "./NflViewSwitch.module.css";
 
 const LABELS: Record<NflView, string> = {
   games: "Games",
@@ -32,36 +31,26 @@ export const NflViewContext = createContext<NflViewState>({
 export default function NflViewSwitch() {
   const { view, onChange, hasLiveGame } = useContext(NflViewContext);
   return (
-    <ToggleButtonGroup
-      size="small"
-      exclusive
+    <SegmentedControl
       value={view}
-      onChange={(_, next: NflView | null) => next && onChange(next)}
-      aria-label="NFL view"
-    >
-      {(Object.keys(LABELS) as NflView[]).map((value) => (
-        <ToggleButton key={value} value={value}>
-          {LABELS[value]}
-          {value === "live" && hasLiveGame && (
-            <>
-              <Box
-                component="span"
-                aria-hidden
-                sx={{
-                  ml: 0.75,
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  bgcolor: "error.main",
-                }}
-              />
-              <Box component="span" sx={visuallyHidden}>
-                , games in progress
-              </Box>
-            </>
-          )}
-        </ToggleButton>
-      ))}
-    </ToggleButtonGroup>
+      onChange={onChange}
+      label="NFL view"
+      segments={(Object.keys(LABELS) as NflView[]).map((value) => ({
+        value,
+        children: (
+          <>
+            {LABELS[value]}
+            {value === "live" && hasLiveGame && (
+              <>
+                <span aria-hidden className={styles.liveDot} />
+                <span className={uiStyles.visuallyHidden}>
+                  , games in progress
+                </span>
+              </>
+            )}
+          </>
+        ),
+      }))}
+    />
   );
 }

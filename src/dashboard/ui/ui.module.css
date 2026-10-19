@@ -1,0 +1,14 @@
+/* Shared utility classes for components written without MUI. */
+
+/* Read by screen readers, not shown (helper.ts's visuallyHidden). */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,0 +1,107 @@
+/* Design tokens for components written without MUI (CSS modules under
+   src/dashboard/ui and each component's own .module.css).
+
+   While MUI is still in the app these mirror it: the scales are
+   shared-theme/themePrimitives.ts (tokens.test.ts checks they match), and
+   the --mui-* names are the MUI palette values `sx` strings like
+   "text.secondary" resolve to in the light theme. Once MUI is gone this file
+   is the only source.
+
+   Breakpoints can't be custom properties inside @media, so CSS modules write
+   them out: sm 600px, md 900px, lg 1200px, xl 1536px. MUI's up("md") is
+   (min-width: 900px); its down("md") is (max-width: 899.95px). */
+
+:root {
+  /* Type */
+  --font-sans:
+    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-xs: 0.75rem; /* 12px: labels, chips, captions */
+  --text-sm: 0.8125rem; /* 13px: compact rows */
+  --text-md: 0.875rem; /* 14px: body */
+  --text-lg: 1.125rem; /* 18px: section titles */
+  --text-xl: 1.25rem; /* 20px: tab titles */
+
+  /* Shape */
+  --radius: 8px;
+  --radius-lg: 10px;
+  --focus-ring: 3px solid var(--brand-500);
+
+  /* MUI's light palette, as `sx` color strings read it */
+  --text: rgba(0, 0, 0, 0.87); /* text.primary */
+  --text-muted: rgba(0, 0, 0, 0.6); /* text.secondary */
+  --text-faint: rgba(0, 0, 0, 0.38); /* text.disabled */
+  --divider: rgba(0, 0, 0, 0.12);
+  --paper: #fff; /* background.paper and background.default */
+  --hover: rgba(0, 0, 0, 0.04); /* action.hover */
+  --disabled: rgba(0, 0, 0, 0.26); /* action.disabled */
+  --disabled-bg: rgba(0, 0, 0, 0.12); /* action.disabledBackground */
+  --primary: #1976d2;
+  --success: #2e7d32;
+  --success-dark: #1b5e20;
+  --error: #d32f2f;
+  --error-dark: #c62828;
+  --warning: #ed6c02;
+  --warning-dark: #e65100;
+
+  /* Scales (themePrimitives.ts) */
+  --brand-50: hsl(210, 100%, 95%);
+  --brand-100: hsl(210, 100%, 92%);
+  --brand-200: hsl(210, 100%, 80%);
+  --brand-300: hsl(210, 100%, 65%);
+  --brand-400: hsl(210, 98%, 48%);
+  --brand-500: hsl(210, 98%, 42%);
+  --brand-600: hsl(210, 98%, 55%);
+  --brand-700: hsl(210, 100%, 35%);
+  --brand-800: hsl(210, 100%, 16%);
+  --brand-900: hsl(210, 100%, 21%);
+
+  --gray-50: hsl(220, 35%, 97%);
+  --gray-100: hsl(220, 30%, 94%);
+  --gray-200: hsl(220, 20%, 88%);
+  --gray-300: hsl(220, 20%, 80%);
+  --gray-400: hsl(220, 20%, 65%);
+  --gray-500: hsl(220, 20%, 42%);
+  --gray-600: hsl(220, 20%, 35%);
+  --gray-700: hsl(220, 20%, 25%);
+  --gray-800: hsl(220, 30%, 6%);
+  --gray-900: hsl(220, 35%, 3%);
+
+  --green-50: hsl(120, 80%, 98%);
+  --green-100: hsl(120, 75%, 94%);
+  --green-200: hsl(120, 75%, 87%);
+  --green-300: hsl(120, 61%, 77%);
+  --green-400: hsl(120, 44%, 53%);
+  --green-500: hsl(120, 59%, 30%);
+  --green-600: hsl(120, 70%, 25%);
+  --green-700: hsl(120, 75%, 16%);
+  --green-800: hsl(120, 84%, 10%);
+  --green-900: hsl(120, 87%, 6%);
+
+  --orange-50: hsl(45, 100%, 97%);
+  --orange-100: hsl(45, 92%, 90%);
+  --orange-200: hsl(45, 94%, 80%);
+  --orange-300: hsl(45, 90%, 65%);
+  --orange-400: hsl(45, 90%, 40%);
+  --orange-500: hsl(45, 90%, 35%);
+  --orange-600: hsl(45, 91%, 25%);
+  --orange-700: hsl(45, 94%, 20%);
+  --orange-800: hsl(45, 95%, 16%);
+  --orange-900: hsl(45, 93%, 12%);
+
+  --red-50: hsl(0, 100%, 97%);
+  --red-100: hsl(0, 92%, 90%);
+  --red-200: hsl(0, 94%, 80%);
+  --red-300: hsl(0, 90%, 65%);
+  --red-400: hsl(0, 90%, 40%);
+  --red-500: hsl(0, 90%, 30%);
+  --red-600: hsl(0, 91%, 25%);
+  --red-700: hsl(0, 94%, 18%);
+  --red-800: hsl(0, 95%, 12%);
+  --red-900: hsl(0, 93%, 6%);
+
+  --pool-50: #f4f2fd;
+  --pool-100: #e7e2fa;
+  --pool-200: #d9d2f6;
+  --pool-500: #5b45c2;
+  --pool-700: #4a36a8;
+}
