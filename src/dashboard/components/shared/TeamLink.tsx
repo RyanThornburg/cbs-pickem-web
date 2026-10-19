@@ -1,19 +1,17 @@
-import { SxProps, Theme } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { teamPath } from "../Nfl/nflView";
-import { PlainLink } from "./PlainLink";
+import { PlainLink, PlainLinkStyle } from "./PlainLink";
 
 // A team mark (logo, abbreviation, nickname) that opens the team's page.
 export const TeamLink = ({
   abbr,
   children,
-  sx,
-}: {
+  ...style
+}: PlainLinkStyle & {
   abbr: string;
   children: ReactNode;
-  sx?: SxProps<Theme>;
 }) => (
-  <PlainLink to={teamPath(abbr)} sx={sx}>
+  <PlainLink to={teamPath(abbr)} {...style}>
     {children}
   </PlainLink>
 );

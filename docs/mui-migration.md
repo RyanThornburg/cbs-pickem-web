@@ -120,12 +120,36 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    `SegmentedControl`; all 30-odd `Button`s onto `ui/Button`. Matches
    `main` on every page; the click-through (taps, arrow keys, Key popover,
    box score groups, Admin forms) passes at 360 and 1280.
-3. **Leaf folders, one at a time** (each its own commit, pixel-diffed), small
-   to large: `shared`, `UserAvatar`, `PickYourselfHint`, `GamesCard`,
-   `Leaders`, Scoreboard's `shared`/`GameRow`/`GameCard`/`GameDetails`,
-   `TrendsSection`, `Players`, `Recap`, `Nfl`, `UsersTable`, `AdminPanel`,
-   `RecordsSection`. This is the part that can fan out to parallel agents
-   once 2 is done, one folder each, all following this file.
+3. **Layout and type, folder by folder** (a workflow: one agent per folder,
+   each in its own git worktree on a `mui/<folder>` branch, merged here
+   after). Scope, so folders can go in parallel:
+   - **Convert:** `Box`, `Stack`, `Typography`, `Grid`, `Paper`, `Card`,
+     `CardContent`, `Divider`, MUI `Link`, MUI icons (→ `ui/Icon`; every
+     icon the app imports is already in `iconData.ts`), and every `sx` on
+     those. `Stack`'s `spacing` puts margins on the children
+     (`> :not(style) ~ :not(style)`), not a gap; a `gap` is the same unless
+     a child is hidden, absolutely placed or has its own margin. Check the
+     theme overrides (`shared-theme/customizations/`) for anything you
+     replace (`surfaces.ts` styles Card and Paper).
+   - **Leave for step 4, as they are (their `sx` too):** Tooltip, Popover,
+     Popper, ClickAwayListener, Select, MenuItem, FormControl,
+     OutlinedInput, TextField, Checkbox, Tabs, Tab, the Table family and
+     TableSortLabel, Skeleton, Chip, Avatar, Badge, Collapse,
+     CircularProgress, Alert, IconButton, ButtonBase, `useMediaQuery`,
+     `useTheme`.
+   - **Don't touch** `src/dashboard/ui/`, `iconData.ts`, `tokens.css`,
+     `shared-theme/` or another folder's files, and don't rename or change
+     the props of anything imported from outside the folder (`selectedRowSx`
+     stays exported). `TeamLink`/`PlayerLink`/`PlainLink` take `className`
+     and `style` now: a converted caller passes a class; `sx` is only for
+     callers still on MUI.
+   - **Check** with `snap.mjs --pages <the folder's pages> --port <own
+     port>` against the shared `.visual/main`, and `measure.mjs` (same
+     data, any selector) on both builds when a page changes.
+   Shell files (`MainGrid`, `PhoneTabBar`, `Dashboard`, `UserSelectDropdown`,
+   `WeekDropdown`, …) wait for step 5. Shared bits (`TabIntro`,
+   `TabSkeleton`, `ByeTeams`, `AppShellStatus`, `shared/`) go with the
+   first batch.
 4. **Interactive pieces** still on MUI: Tooltip (`BadgeTooltip`), Popover,
    Select (`UserSelectDropdown`, `WeekDropdown`), the desktop Tabs, Table
    styling, Skeleton, Chip, Avatar, Badge, Collapse.

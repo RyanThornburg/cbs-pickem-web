@@ -1,6 +1,5 @@
-import { SxProps, Theme } from "@mui/material/styles";
 import { ReactNode } from "react";
-import { PlainLink } from "./PlainLink";
+import { PlainLink, PlainLinkStyle } from "./PlainLink";
 
 export const playerPath = (id: string) => `/players/${id}`;
 
@@ -8,15 +7,14 @@ export const playerPath = (id: string) => `/players/${id}`;
 export const PlayerLink = ({
   id,
   children,
-  sx,
   label,
-}: {
+  ...style
+}: PlainLinkStyle & {
   id: string;
   children: ReactNode;
-  sx?: SxProps<Theme>;
   label?: string;
 }) => (
-  <PlainLink to={playerPath(id)} sx={sx} label={label}>
+  <PlainLink to={playerPath(id)} {...style} label={label}>
     {children}
   </PlainLink>
 );
