@@ -213,6 +213,38 @@ node scripts/visual/diff.mjs .visual/main .visual/after
      written locally in their folder from MUI's measured look. The `sx` on
      each replaced piece goes into the folder's CSS module. Same checks as
      step 3, plus the open/hover/pressed states the pages don't show.
+   - **Call sites done 2026-10-19** (workflow, 6 agents: `be421fc`
+     AdminPanel, `afdb894` RecordsSection, `40f09eb` Nfl, `02ae612`
+     UsersTable, `c501560` Scoreboard + GamesCard + PickYourselfHint +
+     UserAvatar, `70ae43c` Players + TrendsSection + Recap). Merged build:
+     40 of 42 shots identical to `main`, the other two known noise
+     (re-shot); click-through passes; 369 tests. Each agent also compared
+     its open/hover/pressed/loading/error states against `main` (Admin
+     alone did 26 states at both widths). `sx` app-wide 823 → 40. Main
+     chunk 750 KB / 234 gzip while MUI and its replacements coexist.
+     Kept differences (all invisible or interaction-only): sort labels
+     and clickable chips are real `<button>`s (MUI used `div`/`span`
+     role=button); skeletons are `aria-hidden` (their `role=status`
+     wrappers still announce); the "All N notes" list animates with a
+     grid-row transition (same 300ms easing, identical open and closed);
+     on Admin, a focused Note field draws the Method label's text with
+     slightly different antialiasing, and the Method select is Base UI
+     written locally (see follow-ups).
+   - **Follow-ups found by the agents:** `ui/SortLabel` lacks MUI's
+     `vertical-align: middle` (Nfl and UsersTable patched it locally with
+     a `.sortLabel` class; fold it into the ui piece and re-check the
+     Trends pilot); `ui/Select` can't take `collisionAvoidance` /
+     `collisionPadding`, so Admin's Method select copies it in
+     `AdminPanel/FormFields.tsx` (add the props, then move it back);
+     `diff.mjs` runs pixelmatch with antialiased pixels ignored, which can
+     hide a one-pixel border color change (a strict `includeAA` mode would
+     have caught one sooner); an open Base UI Select puts a page-wide
+     backdrop in the stacking order, so `z-index`ed text under it can
+     switch to grey antialiasing (Admin fixed its labels with z-index 0);
+     the `nfl-standings@1280` baseline is flaky (NFC logos paint late);
+     GamesCard's no-odds icon (`ReportProblemOutlined`) is an inline SVG
+     until it's added with `gen-icons.mjs`; Admin's checkboxes still have
+     no keyboard focus ring, as on `main` (a pre-existing gap).
    - **Left after that, for step 5:** `MainGrid` (desktop Tabs, Badge,
      IconButton, Skeleton, Grid), `PhoneTabBar` (ButtonBase),
      `UserSelectDropdown`'s Skeleton, `Dashboard` (CssBaseline), and
