@@ -60,6 +60,7 @@ export const PAGES = [
   ["picks-error", "/picks", { fail: /\/leaderboard$/ }],
   ["picks-nouser", "/picks", { user: "" }],
   ["records-nouser", "/records", { user: "" }],
+  ["you-nouser", "/players", { user: "" }],
   [
     "shell-error",
     "/picks",
