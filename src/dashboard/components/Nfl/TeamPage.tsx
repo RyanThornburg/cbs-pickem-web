@@ -1,15 +1,8 @@
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import dayjs from "dayjs";
 import { ReactNode, useEffect, useState } from "react";
 import { ordinal } from "../../helper";
 import { AtsSplit, PoolPicker, TeamGame, TeamProfile } from "../../types";
 import { getTeamFullName, teamBandColors } from "../../utils/teamAssets";
-import { gray } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
 import { BackLink } from "../shared/BackLink";
 import TabIntro from "../TabIntro";
@@ -28,11 +21,30 @@ import { useStandings, useTeamProfile } from "./useNflData";
 import LoadError from "../shared/LoadError";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import tableStyles from "../../ui/table.module.css";
 import uiStyles from "../../ui/ui.module.css";
 import styles from "./TeamPage.module.css";
 
 const cx = (...names: (string | false | undefined)[]) =>
   names.filter(Boolean).join(" ");
+
+// Schedule cells on ui/table.module.css; `right` for the number columns.
+const headCell = (right = false) =>
+  cx(
+    tableStyles.cell,
+    tableStyles.small,
+    tableStyles.head,
+    right && tableStyles.right,
+    styles.cell,
+    styles.headCell
+  );
+const bodyCell = (right = false) =>
+  cx(
+    tableStyles.cell,
+    tableStyles.small,
+    right && tableStyles.right,
+    styles.cell
+  );
 
 // How many believers or faders show before "Show all".
 const PEOPLE_SHOWN = 8;
@@ -433,63 +445,69 @@ function TeamPageBody({
               Line is their CBS line. Pool is how many picked them vs. their
               opponent; it grows as picks show at kickoff.
             </span>
-            <TableContainer>
-              <Table
-                size="small"
+            <div className={tableStyles.container}>
+              <table
                 aria-label={`${abbr} schedule`}
-                sx={{
-                  "& td, & th": {
-                    px: { xs: 0.5, sm: 1 },
-                    whiteSpace: "nowrap",
-                    fontVariantNumeric: "tabular-nums",
-                  },
-                  "& th": { fontSize: "0.75rem", color: "text.secondary" },
-                }}
+                className={tableStyles.table}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Wk</TableCell>
-                    <TableCell>Opp</TableCell>
-                    <TableCell align="right">Line</TableCell>
-                    <TableCell align="right">Result</TableCell>
-                    <TableCell align="right">ATS</TableCell>
-                    <TableCell
-                      align="right"
+                <thead>
+                  <tr>
+                    <th scope="col" className={headCell()}>
+                      Wk
+                    </th>
+                    <th scope="col" className={headCell()}>
+                      Opp
+                    </th>
+                    <th scope="col" className={headCell(true)}>
+                      Line
+                    </th>
+                    <th scope="col" className={headCell(true)}>
+                      Result
+                    </th>
+                    <th scope="col" className={headCell(true)}>
+                      ATS
+                    </th>
+                    <th
+                      scope="col"
+                      className={headCell(true)}
                       title="Pool picks of them vs. the opponent"
                     >
                       Pool
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                   {withByes(profile.games).map((game) =>
                     "bye" in game ? (
-                      <TableRow key={`bye-${game.bye}`}>
-                        <TableCell>{game.bye}</TableCell>
-                        <TableCell colSpan={5} sx={{ color: "text.secondary" }}>
+                      <tr key={`bye-${game.bye}`}>
+                        <td className={bodyCell()}>{game.bye}</td>
+                        <td
+                          colSpan={5}
+                          className={cx(bodyCell(), styles.byeCell)}
+                        >
                           Bye
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ) : (
-                      <TableRow
+                      <tr
                         key={game.game_id}
                         // This week: a slate-50 row in bold, with "this week" spoken
                         // after the week number.
-                        sx={
+                        className={
                           game.week_number === currentWeek
-                            ? { bgcolor: gray[50], "& td": { fontWeight: 600 } }
+                            ? styles.thisWeek
                             : undefined
                         }
                       >
-                        <TableCell>
+                        <td className={bodyCell()}>
                           {game.week_number}
                           {game.week_number === currentWeek && (
                             <span className={uiStyles.visuallyHidden}>
                               , this week
                             </span>
                           )}
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className={bodyCell()}>
                           <div className={styles.opponent}>
                             <span className={styles.side}>
                               {game.side === "home" ? "vs" : "@"}
@@ -508,23 +526,23 @@ function TeamPageBody({
                               </span>
                             </TeamLink>
                           </div>
-                        </TableCell>
-                        <TableCell align="right">
+                        </td>
+                        <td className={bodyCell(true)}>
                           {formatLine(game.line)}
-                        </TableCell>
-                        <TableCell align="right">{resultText(game)}</TableCell>
-                        <TableCell align="right">
+                        </td>
+                        <td className={bodyCell(true)}>{resultText(game)}</td>
+                        <td className={bodyCell(true)}>
                           <Covered covered={game.covered} />
-                        </TableCell>
-                        <TableCell align="right">
+                        </td>
+                        <td className={bodyCell(true)}>
                           <PoolSplit game={game} />
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     )
                   )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className={styles.pickers}>
             <h3 className={styles.sectionTitle}>Who's picked them</h3>

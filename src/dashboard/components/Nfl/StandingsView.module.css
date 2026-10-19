@@ -16,6 +16,57 @@
   vertical-align: bottom;
 }
 
+/* The standings tables, on ui/table.module.css: fixed column widths
+   (below), 4px a side on phones and 8px from sm. */
+.table {
+  table-layout: fixed;
+}
+.cell {
+  padding-right: 4px;
+  padding-left: 4px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@media (min-width: 600px) {
+  .cell {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+.headCell {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+.bodyCell {
+  overflow: hidden;
+  font-size: var(--text-sm);
+}
+@media (min-width: 600px) {
+  .bodyCell {
+    font-size: var(--text-md);
+  }
+}
+/* The pool's own columns (everyone's record on the team, the selected
+   player's) get a faint brand tint: they're what a general standings page
+   can't show. */
+.poolHead {
+  color: var(--pool-700);
+  font-weight: 700;
+}
+.poolHead,
+.poolCell {
+  background-color: var(--pool-50);
+}
+/* Middle of the header row, as MUI's ButtonBase sat; on the baseline the
+   inline-flex label pushed the header 4px taller. */
+.sortLabel {
+  vertical-align: middle;
+}
+/* The whole row opens the team page. */
+.row {
+  cursor: pointer;
+}
+
 /* Narrow columns at their phone width, then from sm up (set per column). */
 .col {
   width: var(--col-xs);

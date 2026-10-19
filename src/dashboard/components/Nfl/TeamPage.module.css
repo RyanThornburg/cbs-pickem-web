@@ -288,6 +288,35 @@
   gap: 16px;
 }
 
+/* The schedule, on ui/table.module.css: 4px a side on phones and 8px
+   from sm, numbers in even widths. */
+.cell {
+  padding-right: 4px;
+  padding-left: 4px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@media (min-width: 600px) {
+  .cell {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+.headCell {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+.byeCell {
+  color: var(--text-muted);
+}
+/* This week: a slate-50 row in bold. */
+.thisWeek {
+  background-color: var(--gray-50);
+}
+.thisWeek > td {
+  font-weight: 600;
+}
+
 /* Opponent: "vs" or "@", then the team mark. */
 .opponent {
   display: inline-flex;

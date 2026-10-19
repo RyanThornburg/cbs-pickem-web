@@ -1,19 +1,9 @@
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
 import { formatUpdated } from "../../utils/updatedTime";
 import { CSSProperties, ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PickRecord, StandingsTeam } from "../../types";
 import TabIntro from "../TabIntro";
-import { pool } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
 import LoadError from "../shared/LoadError";
 import { TeamLink } from "../shared/TeamLink";
@@ -36,15 +26,13 @@ import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
 import { Popover } from "../../ui/Popover";
 import { SegmentedControl } from "../../ui/SegmentedControl";
+import { SortLabel } from "../../ui/SortLabel";
+import tableStyles from "../../ui/table.module.css";
+import { DOWN_SM, useMediaQuery } from "../../ui/useMediaQuery";
 import styles from "./StandingsView.module.css";
 
 type Layout = "divisions" | "league";
 type Conference = "AFC" | "NFC";
-
-// The pool's own columns (everyone's record on the team, the selected
-// player's) get a faint brand tint: they're what a general standings page
-// can't show.
-const POOL_TINT = pool[50];
 
 interface Column {
   key: StandingsSortKey | "streak" | "team";
@@ -58,6 +46,9 @@ interface Column {
 
 const Muted = () => <span className={styles.muted}>–</span>;
 
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
+
 export default function StandingsView({
   season,
   userId,
@@ -70,8 +61,7 @@ export default function StandingsView({
   // The NFL view switch, for the intro row.
   intro: ReactNode;
 }) {
-  const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
+  const isPhone = useMediaQuery(DOWN_SM);
   const navigate = useNavigate();
   const { standings, failed, retry } = useStandings(season);
   // The standings key carries each team's pool record; an older key
@@ -203,19 +193,8 @@ export default function StandingsView({
     label: string,
     { sortable = false, ranked = false } = {}
   ) => (
-    <TableContainer>
-      <Table
-        size="small"
-        aria-label={label}
-        sx={{
-          tableLayout: "fixed",
-          "& td, & th": {
-            px: { xs: 0.5, sm: 1 },
-            fontVariantNumeric: "tabular-nums",
-            whiteSpace: "nowrap",
-          },
-        }}
-      >
+    <div className={tableStyles.container}>
+      <table aria-label={label} className={cx(tableStyles.table, styles.table)}>
         <colgroup>
           {columns.map((column) => (
             <col
@@ -232,77 +211,82 @@ export default function StandingsView({
             />
           ))}
         </colgroup>
-        <TableHead>
-          <TableRow>
+        <thead>
+          <tr>
             {columns.map((column) => {
               const canSort =
                 sortable && column.key !== "team" && column.key !== "streak";
               return (
-                <TableCell
+                <th
                   key={column.key}
-                  align={column.key === "team" ? "left" : "right"}
+                  scope="col"
                   title={column.title}
                   aria-sort={
                     canSort && sortKey === column.key ? "descending" : undefined
                   }
-                  sx={{
-                    fontSize: "0.75rem",
-                    fontWeight: column.pool ? 700 : 500,
-                    color: column.pool ? pool[700] : "text.secondary",
-                    bgcolor: column.pool ? POOL_TINT : undefined,
-                  }}
+                  className={cx(
+                    tableStyles.cell,
+                    tableStyles.small,
+                    tableStyles.head,
+                    column.key !== "team" && tableStyles.right,
+                    styles.cell,
+                    styles.headCell,
+                    column.pool && styles.poolHead
+                  )}
                 >
                   {canSort ? (
-                    <TableSortLabel
+                    <SortLabel
                       active={sortKey === column.key}
                       direction="desc"
-                      hideSortIcon={isPhone}
+                      hideInactiveIcon={isPhone}
+                      className={styles.sortLabel}
                       onClick={() => setSortKey(column.key as StandingsSortKey)}
                     >
                       {column.label}
-                    </TableSortLabel>
+                    </SortLabel>
                   ) : (
                     column.label
                   )}
-                </TableCell>
+                </th>
               );
             })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
+          </tr>
+        </thead>
+        <tbody>
           {rows.map((row, index) => (
-            <TableRow
+            <tr
               key={row.team.id}
-              hover
+              className={cx(tableStyles.hover, styles.row)}
               // The team link is the keyboard way in; the whole row is a
               // bigger target for a mouse or a thumb.
               onClick={() => {
                 navigate(teamPath(row.team.abbr));
                 window.scrollTo({ top: 0 });
               }}
-              sx={{ cursor: "pointer" }}
             >
               {columns.map((column) => (
-                <TableCell
+                <td
                   key={column.key}
-                  align={column.key === "team" ? "left" : "right"}
-                  sx={{
-                    fontSize: { xs: "0.8125rem", sm: "0.875rem" },
-                    bgcolor: column.pool ? POOL_TINT : undefined,
-                    overflow: "hidden",
-                  }}
+                  className={cx(
+                    tableStyles.cell,
+                    tableStyles.small,
+                    column.key !== "team" && tableStyles.right,
+                    styles.cell,
+                    styles.bodyCell,
+                    column.pool && styles.poolCell
+                  )}
                 >
                   {ranked && column.key === "team" && (
                     <span className={styles.rank}>{index + 1}</span>
                   )}
                   {cell(column, row)}
-                </TableCell>
+                </td>
               ))}
-            </TableRow>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 
   // Under the controls from sm up; behind the Key button on phones, where
