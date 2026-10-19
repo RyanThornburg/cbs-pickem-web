@@ -253,8 +253,52 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    remove `AppTheme`, `CssBaseline` (replace with a small base stylesheet),
    `shared-theme/`, and the `@mui/*` and `@emotion/*` packages; re-measure
    the bundle.
+   **Done 2026-10-19** (one session, no workflow: five files and the
+   theme). `Dashboard`, `MainGrid`, `PhoneTabBar`, `UserSelectDropdown` and
+   `PlainLink` are on CSS modules; the desktop tab row is `DesktopTabs.tsx`
+   (plain links, an underline that measures the selected one with a
+   ResizeObserver) plus the dot badge written locally; `src/index.css` is
+   the base stylesheet in CssBaseline's place (unlayered, as CssBaseline
+   was); `shared-theme/` is gone, and the scales the Season charts draw
+   with moved to `src/styles/palette.ts`. `gamesCard.css` and
+   `FinishesGrid.module.css` read MUI's `--template-palette-*` variables,
+   which vanish with the theme: now tokens. `helper.tsx`'s pick tile
+   colors are MUI's palette written out; `selectedRowSx` was unused and
+   went (`selectedRow.ts` keeps `SELECTED_ROW_BG`). Packages removed:
+   `@mui/material`, `@mui/icons-material`, `@emotion/react`,
+   `@emotion/styled`. Also done: GamesCard's no-odds icon is
+   `ReportProblemOutlined` in `iconData.ts` (generated while MUI was still
+   installed), `ui/SortLabel` has `vertical-align: middle` (the four local
+   patches are gone; Trends unchanged), and `ui/Select` takes
+   `collisionPadding` / `collisionAvoidance` / `iconClassName`, so Admin's
+   Method select is back on it (open menu 0 px vs the step 4 build at 360
+   and 1280, same boxes).
+   **Checked:** every shell element's full computed style dumped on the
+   step 4 build and this one (header, both tab rows, hover, stuck row,
+   another player's page, Admin, the phone past-week strip, the loading
+   shell, the skip link) and diffed: only invisible differences (MUI's
+   `0px solid` borders, a 7992px vs 999px pill radius, the empty dot's
+   inner text styles). 42 shots: 31 identical to `main`, 11 differ by 1-4
+   px, all at the ends of the desktop tab underline: MUI measured it before
+   Inter loaded and never re-measured (User Picks 89.48px under a 90px tab;
+   this is the "underline noise" above), `DesktopTabs` draws it at the
+   tab's real width. Click-through passes (46), plus a shell check: every
+   tab by click and tap, the underline under each, ctrl-click opens a new
+   tab, the skip link, keyboard focus ring on the tabs (it animates in over
+   100ms, as MUI's did), the stuck row and its shadow, the live dot, the
+   phone past-week strip and its Back, the phone CBS link. 365 tests (the
+   token test now checks palette.ts's two values instead of six scales).
+   **Bundle** (same measure as the baseline): all JavaScript 937 → 763 KB;
+   first load (JS + CSS) 882 → 806 KB raw, 265 → 243 KB gzip. CSS grew
+   11 → 117 KB raw since styles moved out of Emotion's JS into
+   stylesheets. The up-front shared chunk is now Base UI (147 KB, named
+   after `CSPContext`) instead of MUI's (189 KB, `TableRow`).
+   **Left:** merging `mui-migration` into `main` is the user's call (a
+   push to `main` deploys). Still open from step 4: a strict `includeAA`
+   mode for `diff.mjs`, the flaky `nfl-standings@1280` baseline, and
+   Admin's checkboxes have no keyboard focus ring (as on `main`).
 
-## Remaining MUI by folder (2026-10-18)
+## Remaining MUI by folder (2026-10-18, before step 1; all gone now)
 
 | Folder | Files | `sx` |
 |---|---|---|
