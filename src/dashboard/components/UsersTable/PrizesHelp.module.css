@@ -3,6 +3,11 @@
   font-size: 1rem;
 }
 
+/* The panel's width (ui/Popover keeps it inside the screen). */
+.popup {
+  width: 320px;
+}
+
 .title {
   margin: 0 0 8px;
   font-size: var(--text-md);

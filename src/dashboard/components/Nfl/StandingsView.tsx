@@ -5,7 +5,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Popover from "@mui/material/Popover";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
@@ -35,6 +34,7 @@ import {
 import { useAllTeamProfiles, useStandings } from "./useNflData";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import { Popover } from "../../ui/Popover";
 import { SegmentedControl } from "../../ui/SegmentedControl";
 import styles from "./StandingsView.module.css";
 
@@ -94,7 +94,6 @@ export default function StandingsView({
   const [layout, setLayout] = useState<Layout>("divisions");
   const [conference, setConference] = useState<Conference>("AFC");
   const [sortKey, setSortKey] = useState<StandingsSortKey>("record");
-  const [keyAnchor, setKeyAnchor] = useState<HTMLElement | null>(null);
 
   const playerRecords = trends?.current_season.records?.teams;
   const playerRecord = (teamId: number): PickRecord | undefined =>
@@ -363,34 +362,21 @@ export default function StandingsView({
         />
       )}
       {isPhone && (
-        <>
-          <Button
-            size="small"
-            startIcon={<Icon name="HelpOutlineOutlined" />}
-            aria-haspopup="dialog"
-            aria-expanded={Boolean(keyAnchor)}
-            onClick={(event) => setKeyAnchor(event.currentTarget)}
-            style={{ color: "var(--text-muted)" }}
-          >
-            Key
-          </Button>
-          <Popover
-            open={Boolean(keyAnchor)}
-            anchorEl={keyAnchor}
-            onClose={() => setKeyAnchor(null)}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-            slotProps={{
-              paper: {
-                role: "dialog",
-                "aria-label": "What the columns mean",
-                sx: { p: 2, maxWidth: "calc(100vw - 32px)", textAlign: "left" },
-              },
-            }}
-          >
-            {legend}
-          </Popover>
-        </>
+        <Popover
+          label="What the columns mean"
+          align="end"
+          trigger={
+            <Button
+              size="small"
+              startIcon={<Icon name="HelpOutlineOutlined" />}
+              style={{ color: "var(--text-muted)" }}
+            >
+              Key
+            </Button>
+          }
+        >
+          {legend}
+        </Popover>
       )}
     </div>
   );
