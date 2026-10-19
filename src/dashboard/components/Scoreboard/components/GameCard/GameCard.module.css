@@ -28,6 +28,10 @@
 .spacer {
   flex: 1;
 }
+/* The off-site chip: an outlined chip's icon sits 2px in, not 4px. */
+.venue > span:first-child {
+  margin-left: 2px;
+}
 
 /* Team, a column per quarter (and OT), then the total. */
 .linescore {

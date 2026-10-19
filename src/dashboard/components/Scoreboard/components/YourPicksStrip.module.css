@@ -71,7 +71,34 @@
   }
 }
 
-/* A chip: the clock and where, the team and line, the state in words. */
+/* A chip: the clock and where, the team and line, the state in words.
+   --tint and --ink come from the your-pick badge's per-state class. */
+.chip {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background-color: rgba(var(--tint), 0.12);
+  box-shadow: inset 0 0 0 1px rgba(var(--tint), 0.6);
+  text-align: left;
+  transition: all 100ms ease-in;
+}
+/* Not started yet: a lighter fill and no ring. */
+.notStarted {
+  background-color: rgba(var(--tint), 0.08);
+  box-shadow: none;
+}
+/* A close game (same rule as the card border) gets the amber ring. */
+.close {
+  box-shadow: inset 0 0 0 2px var(--warning);
+}
+.chip:hover {
+  background-color: rgba(var(--tint), 0.2);
+}
+
 .chipTop {
   display: flex;
   justify-content: space-between;
@@ -108,6 +135,7 @@
 }
 /* Its color is the state's ink, from the chip. */
 .state {
+  color: var(--ink);
   font-size: var(--text-sm);
   font-weight: 600;
   line-height: 1.35;

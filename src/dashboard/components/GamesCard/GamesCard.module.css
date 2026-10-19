@@ -1,0 +1,29 @@
+/* The no-odds warning (index.tsx), as the theme drew MUI's warning Alert:
+   pale amber with a faint amber hairline, a 22px warning icon, 14px text. */
+.alert {
+  display: flex;
+  margin: 0 0 12px;
+  padding: 6px 16px;
+  border: 1px solid hsla(45, 90%, 65%, 0.5);
+  border-radius: 10px;
+  background-color: var(--orange-100);
+  color: var(--text);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.alertIcon {
+  display: flex;
+  margin-right: 12px;
+  padding: 7px 0;
+  color: var(--orange-500);
+  font-size: 22px;
+  opacity: 0.9;
+}
+
+.alertMessage {
+  min-width: 0;
+  padding: 8px 0;
+  overflow: auto;
+}

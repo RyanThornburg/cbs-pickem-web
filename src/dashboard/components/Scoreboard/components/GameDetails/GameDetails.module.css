@@ -38,6 +38,48 @@
   min-width: 0;
 }
 
+/* The loading spinner (index.tsx's Spinner), as MUI's CircularProgress
+   drew it: primary blue, 1.4s a turn. */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+  animation: spinnerTurn 1.4s linear infinite;
+}
+.spinnerSvg {
+  display: block;
+}
+.spinnerArc {
+  stroke: currentColor;
+  /* A fair arc to show before the animation starts. */
+  stroke-dasharray: 80px, 200px;
+  stroke-dashoffset: 0;
+  animation: spinnerDash 1.4s ease-in-out infinite;
+}
+@keyframes spinnerTurn {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinnerDash {
+  0% {
+    stroke-dasharray: 1px, 200px;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -15px;
+  }
+  100% {
+    stroke-dasharray: 1px, 200px;
+    stroke-dashoffset: -126px;
+  }
+}
+
 .muted {
   color: var(--text-muted);
 }

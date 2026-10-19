@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useState } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
 import {
   Game,
   GameDetails as GameDetailsData,
@@ -228,6 +227,23 @@ const BoxScore = ({
   );
 };
 
+// While the team stats load: MUI's 18px spinner (a 3.6-wide arc in a 44
+// unit box, turning while its dash grows and shrinks).
+const Spinner = () => (
+  <span role="progressbar" className={styles.spinner}>
+    <svg viewBox="22 22 44 44" className={styles.spinnerSvg}>
+      <circle
+        cx={44}
+        cy={44}
+        r={20.2}
+        fill="none"
+        strokeWidth={3.6}
+        className={styles.spinnerArc}
+      />
+    </svg>
+  </span>
+);
+
 // Opened from a card: leaders and scoring plays come with the games feed;
 // team stats are fetched from the per-game details key on first open.
 // `columns`: wide rows (compact layout) put team stats beside the leaders
@@ -299,7 +315,7 @@ export const GameDetails = ({
         <ScoringPlays game={game} />
       </div>
       <div className={styles.shrink}>
-        {state === "loading" && !details && <CircularProgress size={18} />}
+        {state === "loading" && !details && <Spinner />}
         {details && <BoxScore game={game} details={details} />}
       </div>
       {details?.players && (

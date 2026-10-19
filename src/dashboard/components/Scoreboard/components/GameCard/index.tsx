@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import Chip from "@mui/material/Chip";
+import { Chip } from "../../../../ui/Chip";
 import { Game, GameStatus, LinescoreSide } from "../../../../types";
 import { getVenueBadge } from "../../../../utils/venue";
 import { roofText, weatherLine } from "../../../../utils/weatherText";
@@ -234,18 +234,17 @@ export const GameCard = memo(
           {venueBadge && (
             <Chip
               icon={
-                // Caption-sized, as the theme sizes a chip's MUI icons (by
-                // their MuiSvgIcon class, which this one doesn't carry).
+                // Caption-sized: the chip's icon slot sets the font size.
                 <Icon
                   name={
                     venueBadge.kind === "international" ? "Public" : "Place"
                   }
-                  style={{ fontSize: "0.75rem" }}
+                  size="inherit"
                 />
               }
               label={venueBadge.label}
-              size="small"
               variant="outlined"
+              className={styles.venue}
             />
           )}
           <div className={styles.spacer} />

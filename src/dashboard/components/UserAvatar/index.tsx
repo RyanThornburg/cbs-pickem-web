@@ -1,29 +1,31 @@
-import { Avatar } from "@mui/material";
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import { UserAvatarProps } from "./UserAvatar.types";
 import { createAvatarProps } from "./UserAvatar.util";
 import { ordinal } from "../../helper";
+import { Icon } from "../../ui/Icon";
 import styles from "./UserAvatar.module.css";
+
+type Size = NonNullable<UserAvatarProps["size"]>;
 
 const px = (value: number | string) =>
   typeof value === "number" ? `${value}px` : value;
 
-// The name's font size: a plain value inline, or a per-breakpoint one as
-// custom properties for UserAvatar.module.css's .responsive.
-const nameSize = (
-  fontSize: NonNullable<UserAvatarProps["fontSize"]>
-): { className: string; style: CSSProperties } =>
-  typeof fontSize === "object"
+// A plain value inline, or a per-breakpoint one as custom properties
+// (`--{name}-xs`, …) for UserAvatar.module.css's responsive classes.
+const sized = (
+  value: Size,
+  name: string,
+  responsive: string,
+  inline: (value: string) => CSSProperties
+): { className?: string; style: CSSProperties } =>
+  typeof value === "object"
     ? {
-        className: `${styles.text} ${styles.responsive}`,
+        className: responsive,
         style: Object.fromEntries(
-          Object.entries(fontSize).map(([bp, value]) => [
-            `--size-${bp}`,
-            px(value),
-          ])
+          Object.entries(value).map(([bp, v]) => [`--${name}-${bp}`, px(v)])
         ),
       }
-    : { className: styles.text, style: { fontSize: px(fontSize) } };
+    : { style: inline(px(value)) };
 
 export const UserAvatar = ({
   userName,
@@ -32,28 +34,56 @@ export const UserAvatar = ({
   place = 0,
   userId,
   includeName = true,
-  ...props
+  className,
+  style,
 }: UserAvatarProps) => {
-  const name = nameSize(fontSize);
+  const name = sized(fontSize, "size", styles.responsive, (value) => ({
+    fontSize: value,
+  }));
+  const nameClass = [styles.text, name.className].filter(Boolean).join(" ");
+  const box = sized(size, "avatar", styles.avatarResponsive, (value) => ({
+    width: value,
+    height: value,
+  }));
+  const { src, alt } = createAvatarProps(userId, userName ?? "");
+  // MUI Avatar's fallback if the image ever fails: the name's first letter,
+  // or a person icon without one.
+  const [failedSrc, setFailedSrc] = useState<string>();
+  const failed = failedSrc === src;
+
   return (
     <div className={styles.row}>
-      <Avatar
-        {...createAvatarProps(userId, userName ?? "", {
-          width: size,
-          height: size,
-        })}
-        {...props}
-      />
+      <span
+        className={[
+          styles.avatar,
+          box.className,
+          failed && styles.fallback,
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        style={{ ...box.style, ...style }}
+      >
+        {!failed ? (
+          <img
+            src={src}
+            alt={alt}
+            className={styles.img}
+            onError={() => setFailedSrc(src)}
+          />
+        ) : alt ? (
+          alt[0]
+        ) : (
+          <Icon name="Person" className={styles.fallbackIcon} />
+        )}
+      </span>
       {includeName && (
         <div className={styles.nameRow}>
-          <span className={name.className} style={name.style}>
+          <span className={nameClass} style={name.style}>
             {userName}
           </span>
           {place > 0 && (
-            <span
-              className={`${name.className} ${styles.place}`}
-              style={name.style}
-            >
+            <span className={`${nameClass} ${styles.place}`} style={name.style}>
               {ordinal(place)}
             </span>
           )}

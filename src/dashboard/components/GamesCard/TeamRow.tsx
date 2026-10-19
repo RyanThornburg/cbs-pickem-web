@@ -18,7 +18,7 @@ export default function TeamRow({
   const data = getTeamData(team.abbr);
   return (
     <div className="gc-mrow">
-      <TeamLink abbr={team.abbr} sx={{ gap: "inherit", flex: "0 1 auto" }}>
+      <TeamLink abbr={team.abbr} className="gc-team-link">
         <TeamLogo abbr={team.abbr} size={20} decorative />
         <span className="gc-abbr">{team.abbr}</span>
         <span className="gc-mname">{data.name}</span>

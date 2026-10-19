@@ -69,6 +69,12 @@
   align-items: center;
   gap: 8px;
 }
+/* The team mark's link spaces its logo and names like the row, and can
+   shrink. */
+.games-card .gc-team-link {
+  gap: inherit;
+  flex: 0 1 auto;
+}
 .games-card .gc-mrow .gc-rec {
   color: var(--gc-text-muted);
   font-size: 0.8125rem;

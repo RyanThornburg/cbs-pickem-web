@@ -1,4 +1,3 @@
-import { SxProps, Theme } from "@mui/material";
 import { minidenticon } from "minidenticons";
 import { UserStringProps } from "./UserAvatar.types";
 
@@ -12,19 +11,8 @@ const identiconDataUri = (userId: string): string =>
 
 export const createAvatarProps = (
   userId: string,
-  name: string,
-  props: SxProps
+  name: string
 ): UserStringProps => ({
   src: identiconDataUri(userId),
   alt: name,
-  // minidenticon's "off" cells are transparent, not a painted background --
-  // give the avatar itself a subtle neutral tile so the pattern reads
-  // against something in both themes.
-  sx: (theme: Theme) => ({
-    ...(props as object),
-    bgcolor:
-      theme.palette.mode === "dark"
-        ? "rgba(255,255,255,0.08)"
-        : "rgba(0,0,0,0.06)",
-  }),
 });

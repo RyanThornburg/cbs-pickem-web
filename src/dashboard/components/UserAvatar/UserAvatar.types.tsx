@@ -1,20 +1,23 @@
-import { AvatarProps, Breakpoint, SxProps, Theme } from "@mui/material";
+import { CSSProperties } from "react";
 
-// A plain sx value or a per-breakpoint one, e.g. { xs: 18, sm: 20 }.
-type SxSize = number | string | Partial<Record<Breakpoint, number | string>>;
+type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl";
 
-export interface UserAvatarProps extends Omit<AvatarProps, "children"> {
+// A plain size or a per-breakpoint one, e.g. { xs: 18, sm: 20 }.
+type Size = number | string | Partial<Record<Breakpoint, number | string>>;
+
+export interface UserAvatarProps {
   userName: string | undefined;
   userId: string;
-  size?: SxSize;
-  fontSize?: SxSize;
+  size?: Size;
+  fontSize?: Size;
   place?: number;
   includeName?: boolean;
-  sx?: SxProps;
+  // On the avatar itself, as MUI's Avatar took them.
+  className?: string;
+  style?: CSSProperties;
 }
 
 export interface UserStringProps {
   src: string;
   alt: string;
-  sx: SxProps<Theme>;
 }

@@ -1,7 +1,7 @@
-import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import { IconButton } from "../../ui/IconButton";
 import styles from "./PickYourselfHint.module.css";
 
 const DISMISSED_KEY = "pickYourselfHintDismissed";
@@ -47,7 +47,7 @@ export default function PickYourselfHint({
         <IconButton
           aria-label="Dismiss"
           onClick={dismiss}
-          sx={{ width: 36, height: 36 }}
+          className={styles.dismiss}
         >
           <Icon name="Close" size="small" />
         </IconButton>
