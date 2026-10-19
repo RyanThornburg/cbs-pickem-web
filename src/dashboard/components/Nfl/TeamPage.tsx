@@ -1,28 +1,21 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
 import dayjs from "dayjs";
 import { ReactNode, useEffect, useState } from "react";
-import { ordinal, visuallyHidden } from "../../helper";
+import { ordinal } from "../../helper";
 import { AtsSplit, PoolPicker, TeamGame, TeamProfile } from "../../types";
 import { getTeamFullName, teamBandColors } from "../../utils/teamAssets";
-import { gray, pool } from "../../shared-theme/themePrimitives";
+import { gray } from "../../shared-theme/themePrimitives";
 import TabSkeleton from "../TabSkeleton";
 import { BackLink } from "../shared/BackLink";
 import TabIntro from "../TabIntro";
 import { PlayerLink } from "../shared/PlayerLink";
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
-import { selectedRowSx } from "../UsersTable/selectedRowSx";
 import { usePlayerSeason } from "../Players/usePlayerData";
 import UserAvatar from "../UserAvatar";
 import {
@@ -34,6 +27,12 @@ import {
 import { useStandings, useTeamProfile } from "./useNflData";
 import LoadError from "../shared/LoadError";
 import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import uiStyles from "../../ui/ui.module.css";
+import styles from "./TeamPage.module.css";
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 // How many believers or faders show before "Show all".
 const PEOPLE_SHOWN = 8;
@@ -64,154 +63,81 @@ const StatCard = ({
   highlight?: boolean;
   tone?: "pool";
 }) => (
-  <Paper
-    variant="outlined"
-    sx={[
-      {
-        p: 1.75,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
-      },
-      highlight && selectedRowSx,
-      tone === "pool" && { bgcolor: pool[50], borderColor: pool[200] },
-    ]}
+  <div
+    className={cx(
+      styles.card,
+      highlight && styles.highlight,
+      tone === "pool" && styles.poolTone
+    )}
   >
-    <Typography
-      component="h3"
-      sx={{
-        fontSize: "0.8125rem",
-        fontWeight: 600,
-        color: tone === "pool" ? pool[700] : undefined,
-      }}
-    >
-      {title}
-    </Typography>
+    <h3 className={styles.cardTitle}>{title}</h3>
     {children}
-  </Paper>
+  </div>
 );
 
 const BigRecord = ({ value, note }: { value: string; note?: string }) => (
-  <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.75 }}>
-    <Typography
-      sx={{
-        fontSize: "1.75rem",
-        fontWeight: 700,
-        lineHeight: 1.1,
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
-      {value}
-    </Typography>
-    {note && (
-      <Typography variant="body2" sx={{ color: "text.secondary" }}>
-        {note}
-      </Typography>
-    )}
-  </Box>
+  <div className={styles.bigRecord}>
+    <p className={styles.bigValue}>{value}</p>
+    {note && <p className={styles.note2}>{note}</p>}
+  </div>
 );
 
 const Pair = ({ items }: { items: { value: string; label: string }[] }) => (
-  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2.5 }}>
+  <div className={styles.pair}>
     {items.map(({ value, label }) => (
-      <Box key={label} sx={{ display: "flex", flexDirection: "column" }}>
-        <Typography
-          sx={{
-            fontSize: "1.25rem",
-            fontWeight: 700,
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          {value}
-        </Typography>
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          {label}
-        </Typography>
-      </Box>
+      <div key={label} className={styles.stack}>
+        <p className={styles.pairValue}>{value}</p>
+        <span className={styles.caption}>{label}</span>
+      </div>
     ))}
-  </Box>
+  </div>
 );
 
 const Split = ({ label, ats }: { label: string; ats: AtsSplit }) => (
-  <Box sx={{ display: "flex", flexDirection: "column" }}>
-    <Typography
-      sx={{
-        fontSize: "0.875rem",
-        fontWeight: 600,
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
-      {formatAts(ats)}
-    </Typography>
-    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-      {label}
-    </Typography>
-  </Box>
+  <div className={styles.stack}>
+    <p className={styles.splitValue}>{formatAts(ats)}</p>
+    <span className={styles.caption}>{label}</span>
+  </div>
 );
 
 const Covered = ({ covered }: { covered: boolean | null }) => {
-  if (covered == null) return <Box sx={{ color: "text.disabled" }}>–</Box>;
-  const Icon = covered ? CheckIcon : CloseIcon;
+  if (covered == null) return <div className={styles.none}>–</div>;
   return (
-    <Box
-      component="span"
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 0.25,
-        fontWeight: 600,
-        // DESIGN.md's dark green/red, for text on white.
-        color: covered ? "success.dark" : "error.dark",
-      }}
+    <span
+      className={cx(
+        styles.covered,
+        covered ? styles.coveredYes : styles.coveredNo
+      )}
     >
-      <Icon aria-hidden sx={{ fontSize: "1rem" }} />
+      <Icon
+        name={covered ? "Check" : "Close"}
+        size="inherit"
+        className={styles.coveredIcon}
+      />
       {/* Phones keep only the mark; the word is still read out. */}
-      <Box
-        component="span"
-        sx={(theme) => ({ [theme.breakpoints.down("sm")]: visuallyHidden })}
-      >
+      <span className={styles.coveredWord}>
         {covered ? "Covered" : "Missed"}
-      </Box>
-    </Box>
+      </span>
+    </span>
   );
 };
 
 // How many in the pool took this team vs. their opponent, as a bar.
 const PoolSplit = ({ game }: { game: TeamGame }) => {
   const total = game.pool_picked + game.pool_against;
-  if (!total) return <Box sx={{ color: "text.disabled" }}>–</Box>;
+  if (!total) return <div className={styles.none}>–</div>;
   return (
-    <Box
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-        gap: 1,
-      }}
-    >
-      <Box component="span" sx={{ fontSize: "0.8125rem" }}>
+    <div className={styles.poolSplit}>
+      <span className={styles.poolCount}>
         {game.pool_picked}–{game.pool_against}
-      </Box>
-      <Box
-        aria-hidden
-        sx={{
-          display: { xs: "none", sm: "flex" },
-          width: 72,
-          height: 6,
-          borderRadius: 3,
-          overflow: "hidden",
-          bgcolor: pool[100],
-        }}
-      >
-        <Box
-          sx={{
-            width: `${(game.pool_picked / total) * 100}%`,
-            bgcolor: pool[500],
-          }}
+      </span>
+      <div aria-hidden className={styles.poolBar}>
+        <div
+          className={styles.poolBarFill}
+          style={{ width: `${(game.pool_picked / total) * 100}%` }}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
@@ -256,74 +182,38 @@ const People = ({
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? people : people.slice(0, PEOPLE_SHOWN);
   return (
-    <Box>
-      <Typography
-        component="h4"
-        sx={{ fontSize: "0.8125rem", fontWeight: 600, mb: 0.5 }}
-      >
-        {title}{" "}
-        <Box component="span" sx={{ color: "text.secondary", fontWeight: 400 }}>
-          ({people.length})
-        </Box>
-      </Typography>
+    <div>
+      <h4 className={styles.peopleTitle}>
+        {title} <span className={styles.peopleCount}>({people.length})</span>
+      </h4>
       {people.length === 0 ? (
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          {empty}
-        </Typography>
+        <p className={styles.note2}>{empty}</p>
       ) : (
-        <Box component="ul" sx={{ listStyle: "none", m: 0, p: 0 }}>
+        <ul className={styles.people}>
           {shown.map((person) => {
             const id = String(person.user_id);
             return (
-              <Box
-                component="li"
+              <li
                 key={id}
-                sx={[
-                  {
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    px: 0.75,
-                    py: 0.5,
-                    borderRadius: 1,
-                    fontSize: "0.8125rem",
-                  },
-                  id === userId && selectedRowSx,
-                ]}
+                className={cx(styles.person, id === userId && styles.highlight)}
               >
-                <PlayerLink id={id} sx={{ flex: 1, minWidth: 0, gap: 0.75 }}>
+                <PlayerLink id={id} className={styles.personLink}>
                   <UserAvatar
                     userId={id}
                     userName={person.name}
                     size={20}
                     includeName={false}
                   />
-                  <Box
-                    component="span"
-                    sx={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {person.name}
-                  </Box>
+                  <span className={styles.personName}>{person.name}</span>
                 </PlayerLink>
-                <Box
-                  component="span"
-                  sx={{
-                    color: "text.secondary",
-                    fontVariantNumeric: "tabular-nums",
-                    whiteSpace: "nowrap",
-                  }}
-                >
+                <span className={styles.personPicks}>
                   {person.picks} {person.picks === 1 ? "pick" : "picks"} ·{" "}
                   {person.wins}-{person.losses}
-                </Box>
-              </Box>
+                </span>
+              </li>
             );
           })}
-        </Box>
+        </ul>
       )}
       {people.length > PEOPLE_SHOWN && (
         <Button
@@ -334,7 +224,7 @@ const People = ({
           {showAll ? "Show fewer" : `Show all ${people.length}`}
         </Button>
       )}
-    </Box>
+    </div>
   );
 };
 
@@ -374,20 +264,20 @@ export default function TeamPage({
 
   if (standings && !placed) {
     return (
-      <Box sx={{ textAlign: "left" }}>
+      <div className={styles.page}>
         {back}
         <LoadError
           title={`There's no team at “${slug}”.`}
           detail="Pick one from the standings."
           style={{ marginTop: 16 }}
         />
-      </Box>
+      </div>
     );
   }
 
   if (!profile || !placed) {
     return (
-      <Box sx={{ textAlign: "left" }}>
+      <div className={styles.page}>
         {back}
         {failed || standingsFailed ? (
           <LoadError
@@ -399,7 +289,7 @@ export default function TeamPage({
         ) : (
           <TabSkeleton shape="cards" label="Loading the team" />
         )}
-      </Box>
+      </div>
     );
   }
 
@@ -451,54 +341,33 @@ function TeamPageBody({
   const { band, stripe } = teamBandColors(abbr);
 
   return (
-    <Box sx={{ textAlign: "left" }}>
+    <div className={styles.page}>
       {/* The team's own colors open its page: white text on the team color
           (darkened where it's light), the alternate color as a stripe. */}
-      <Box
-        sx={{
-          bgcolor: `#${band}`,
-          color: "#fff",
-          borderRadius: 2,
-          borderBottom: `4px solid #${stripe}`,
-          px: { xs: 1.5, sm: 2 },
-          pt: 1.5,
-          pb: 0.5,
-          mb: 2.5,
-        }}
+      <div
+        className={styles.band}
+        style={{ backgroundColor: `#${band}`, borderBottomColor: `#${stripe}` }}
       >
         <TabIntro
           back={back}
           leading={
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                flex: "none",
-                borderRadius: "50%",
-                bgcolor: "#fff",
-                display: "grid",
-                placeItems: "center",
-              }}
-            >
+            <div className={styles.logoDisc}>
               <TeamLogo abbr={abbr} size={40} decorative />
-            </Box>
+            </div>
           }
           title={getTeamFullName(abbr)}
           subtitle={
-            <Typography
-              variant="body2"
-              sx={{ color: "rgba(255, 255, 255, 0.85)" }}
-            >
+            <p className={styles.subtitle}>
               {ordinal(row.rank)} in {division} · {formatWinLoss(row)}
               {row.streak && ` · ${row.streak}`} · {row.points_for}–
               {row.points_against} pts
-            </Typography>
+            </p>
           }
         />
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-        <Grid container spacing={1.5}>
-          <Grid size={{ xs: 12, md: 4 }}>
+      </div>
+      <div className={styles.sections}>
+        <div className={styles.cards}>
+          <div className={styles.cardCell}>
             <StatCard title="Against the CBS line">
               <BigRecord
                 value={formatAts(ats.overall)}
@@ -508,21 +377,15 @@ function TeamPageBody({
                     : `${pct(ats.overall.cover_pct)} covered`
                 }
               />
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                  gap: 1,
-                }}
-              >
+              <div className={styles.splits}>
                 <Split label="Home" ats={ats.home} />
                 <Split label="Road" ats={ats.away} />
                 <Split label="Favored" ats={ats.favorite} />
                 <Split label="Underdog" ats={ats.underdog} />
-              </Box>
+              </div>
             </StatCard>
-          </Grid>
-          <Grid size={{ xs: 12, sm: userId ? 6 : 12, md: 4 }}>
+          </div>
+          <div className={cx(styles.cardCell, userId && styles.cardHalf)}>
             <StatCard title="The pool on them" tone="pool">
               <Pair
                 items={[
@@ -537,9 +400,9 @@ function TeamPageBody({
                 ]}
               />
             </StatCard>
-          </Grid>
+          </div>
           {userId && userName && (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <div className={cx(styles.cardCell, styles.cardHalf)}>
               <StatCard title={userName} highlight>
                 {playerRecord &&
                 playerRecord.picked.picks + playerRecord.against.picks > 0 ? (
@@ -556,30 +419,20 @@ function TeamPageBody({
                     ]}
                   />
                 ) : (
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    Hasn't picked their games yet.
-                  </Typography>
+                  <p className={styles.note2}>Hasn't picked their games yet.</p>
                 )}
               </StatCard>
-            </Grid>
+            </div>
           )}
-        </Grid>
+        </div>
 
-        <Grid container columnSpacing={3} rowSpacing={2.5}>
-          <Grid size={{ xs: 12, lg: 8 }}>
-            <Typography
-              component="h3"
-              sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
-            >
-              Schedule
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", display: "block", mb: 1 }}
-            >
+        <div className={styles.columns}>
+          <div className={styles.schedule}>
+            <h3 className={styles.sectionTitle}>Schedule</h3>
+            <span className={cx(styles.caption, styles.sectionNote)}>
               Line is their CBS line. Pool is how many picked them vs. their
               opponent; it grows as picks show at kickoff.
-            </Typography>
+            </span>
             <TableContainer>
               <Table
                 size="small"
@@ -631,43 +484,30 @@ function TeamPageBody({
                         <TableCell>
                           {game.week_number}
                           {game.week_number === currentWeek && (
-                            <Box component="span" sx={visuallyHidden}>
+                            <span className={uiStyles.visuallyHidden}>
                               , this week
-                            </Box>
+                            </span>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Box
-                            sx={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 0.75,
-                            }}
-                          >
-                            <Box
-                              component="span"
-                              sx={{
-                                color: "text.secondary",
-                                width: 18,
-                                fontSize: "0.75rem",
-                              }}
-                            >
+                          <div className={styles.opponent}>
+                            <span className={styles.side}>
                               {game.side === "home" ? "vs" : "@"}
-                            </Box>
+                            </span>
                             <TeamLink
                               abbr={game.opponent.abbr}
-                              sx={{ gap: 0.75 }}
+                              className={styles.opponentLink}
                             >
                               <TeamLogo
                                 abbr={game.opponent.abbr}
                                 size={20}
                                 decorative
                               />
-                              <Box component="span" sx={{ fontWeight: 600 }}>
+                              <span className={styles.opponentAbbr}>
                                 {game.opponent.abbr}
-                              </Box>
+                              </span>
                             </TeamLink>
-                          </Box>
+                          </div>
                         </TableCell>
                         <TableCell align="right">
                           {formatLine(game.line)}
@@ -685,22 +525,14 @@ function TeamPageBody({
                 </TableBody>
               </Table>
             </TableContainer>
-          </Grid>
-          <Grid size={{ xs: 12, lg: 4 }}>
-            <Typography
-              component="h3"
-              sx={{ fontSize: "1.125rem", fontWeight: 600, mb: 1 }}
-            >
-              Who's picked them
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", display: "block", mb: 1 }}
-            >
+          </div>
+          <div className={styles.pickers}>
+            <h3 className={styles.sectionTitle}>Who's picked them</h3>
+            <span className={cx(styles.caption, styles.sectionNote)}>
               Believers picked them, faders picked their opponent. One player
               can be both over a season.
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            </span>
+            <div className={styles.peopleLists}>
               <People
                 title="Believers"
                 people={poolRecord.believers}
@@ -713,10 +545,10 @@ function TeamPageBody({
                 empty="No one has picked against them yet."
                 userId={userId}
               />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

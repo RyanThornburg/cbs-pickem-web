@@ -1,0 +1,307 @@
+.page {
+  text-align: left;
+}
+
+/* StatCard: an outlined card. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 14px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  color: var(--text);
+}
+/* The selected player, lime as on every tab (UsersTable's selectedRowSx). */
+.highlight {
+  background-color: #f0f4c3;
+}
+/* The pool's own violet, for the card that counts the pool's picks. */
+.poolTone {
+  background-color: var(--pool-50);
+  border-color: var(--pool-200);
+}
+.cardTitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.poolTone .cardTitle {
+  color: var(--pool-700);
+}
+
+.bigRecord {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.bigValue {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* body2: a quiet note or empty line. */
+.note2 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+.pairValue,
+.splitValue {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.pairValue {
+  font-size: var(--text-xl);
+}
+.splitValue {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+.caption {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+
+.splits {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* A dash where there's nothing to show yet. */
+.none {
+  color: var(--text-faint);
+}
+
+.covered {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+}
+/* DESIGN.md's dark green/red, for text on white. */
+.coveredYes {
+  color: var(--success-dark);
+}
+.coveredNo {
+  color: var(--error-dark);
+}
+.coveredIcon {
+  font-size: 1rem;
+}
+/* Phones keep only the mark; the word is still read out. */
+@media (max-width: 599.95px) {
+  .coveredWord {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+.poolSplit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.poolCount {
+  font-size: var(--text-sm);
+}
+.poolBar {
+  display: none;
+  width: 72px;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: var(--pool-100);
+}
+@media (min-width: 600px) {
+  .poolBar {
+    display: flex;
+  }
+}
+.poolBarFill {
+  background-color: var(--pool-500);
+}
+
+.peopleTitle {
+  margin: 0 0 4px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.peopleCount {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.people {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+}
+.personLink {
+  flex: 1;
+  min-width: 0;
+  gap: 6px;
+}
+.personName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.personPicks {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The team's own colors open its page: white text on the team color
+   (darkened where it's light), the alternate color as a stripe. The colors
+   are set inline per team. */
+.band {
+  margin-bottom: 20px;
+  padding: 12px 12px 4px;
+  border-radius: 16px;
+  border-bottom: 4px solid;
+  color: #fff;
+}
+@media (min-width: 600px) {
+  .band {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+.logoDisc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+.subtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* The stat cards: stacked on phones, two from sm (the pool card spans both
+   when there's no player card), three from md. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+}
+.cardCell {
+  grid-column: span 12;
+}
+@media (min-width: 600px) {
+  .cardHalf {
+    grid-column: span 6;
+  }
+}
+@media (min-width: 900px) {
+  .cardCell {
+    grid-column: span 4;
+  }
+}
+
+/* Schedule, then who's picked them beside it from lg up. */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px 24px;
+}
+.schedule,
+.pickers {
+  grid-column: span 12;
+}
+@media (min-width: 1200px) {
+  .schedule {
+    grid-column: span 8;
+  }
+  .pickers {
+    grid-column: span 4;
+  }
+}
+
+.sectionTitle {
+  margin: 0 0 8px;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.sectionNote {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.peopleLists {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Opponent: "vs" or "@", then the team mark. */
+.opponent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.side {
+  width: 18px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+.opponentLink {
+  gap: 6px;
+}
+.opponentAbbr {
+  font-weight: 600;
+}

@@ -1,5 +1,3 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,12 +6,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
 import { formatUpdated } from "../../utils/updatedTime";
-import { ReactNode, useMemo, useState } from "react";
+import { CSSProperties, ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PickRecord, StandingsTeam } from "../../types";
 import TabIntro from "../TabIntro";
@@ -39,6 +36,7 @@ import { useAllTeamProfiles, useStandings } from "./useNflData";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
 import { SegmentedControl } from "../../ui/SegmentedControl";
+import styles from "./StandingsView.module.css";
 
 type Layout = "divisions" | "league";
 type Conference = "AFC" | "NFC";
@@ -58,11 +56,7 @@ interface Column {
   title?: string;
 }
 
-const Muted = () => (
-  <Box component="span" sx={{ color: "text.disabled" }}>
-    –
-  </Box>
-);
+const Muted = () => <span className={styles.muted}>–</span>;
 
 export default function StandingsView({
   season,
@@ -134,20 +128,7 @@ export default function StandingsView({
       ? [
           {
             key: "player" as const,
-            label: (
-              <Box
-                component="span"
-                sx={{
-                  display: "inline-block",
-                  maxWidth: "7ch",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  verticalAlign: "bottom",
-                }}
-              >
-                {playerLabel}
-              </Box>
-            ),
+            label: <span className={styles.playerLabel}>{playerLabel}</span>,
             width: { xs: 52, sm: 68 },
             phone: true,
             pool: true,
@@ -191,23 +172,11 @@ export default function StandingsView({
     switch (column.key) {
       case "team":
         return (
-          <TeamLink abbr={row.team.abbr} sx={{ gap: 1, maxWidth: "100%" }}>
+          <TeamLink abbr={row.team.abbr} className={styles.teamLink}>
             <TeamLogo abbr={row.team.abbr} size={22} decorative />
-            <Box component="span" sx={{ fontWeight: 600 }}>
-              {row.team.abbr}
-            </Box>
+            <span className={styles.teamAbbr}>{row.team.abbr}</span>
             {!isPhone && (
-              <Box
-                component="span"
-                sx={{
-                  color: "text.secondary",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {row.team.name}
-              </Box>
+              <span className={styles.teamName}>{row.team.name}</span>
             )}
           </TeamLink>
         );
@@ -250,15 +219,17 @@ export default function StandingsView({
       >
         <colgroup>
           {columns.map((column) => (
-            <Box
-              component="col"
+            <col
               key={column.key}
-              sx={{
-                width:
-                  column.key === "team"
-                    ? "auto"
-                    : { xs: column.width.xs, sm: column.width.sm },
-              }}
+              className={column.key === "team" ? undefined : styles.col}
+              style={
+                column.key === "team"
+                  ? undefined
+                  : ({
+                      "--col-xs": `${column.width.xs}px`,
+                      "--col-sm": `${column.width.sm}px`,
+                    } as CSSProperties)
+              }
             />
           ))}
         </colgroup>
@@ -323,20 +294,7 @@ export default function StandingsView({
                   }}
                 >
                   {ranked && column.key === "team" && (
-                    <Box
-                      component="span"
-                      sx={{
-                        display: "inline-block",
-                        width: 22,
-                        mr: 0.5,
-                        color: "text.secondary",
-                        fontSize: "0.75rem",
-                        textAlign: "right",
-                        verticalAlign: "middle",
-                      }}
-                    >
-                      {index + 1}
-                    </Box>
+                    <span className={styles.rank}>{index + 1}</span>
                   )}
                   {cell(column, row)}
                 </TableCell>
@@ -351,54 +309,28 @@ export default function StandingsView({
   // Under the controls from sm up; behind the Key button on phones, where
   // its three lines pushed the first division down.
   const legend = (
-    <Typography
-      variant="caption"
-      component="p"
-      sx={{
-        color: "text.secondary",
-        display: "flex",
-        flexDirection: isPhone ? "column" : "row",
-        flexWrap: "wrap",
-        columnGap: 2,
-        rowGap: isPhone ? 0.75 : 0.25,
-        mb: isPhone ? 0 : 1.5,
-        fontSize: "0.75rem",
-      }}
+    <p
+      className={[styles.legend, isPhone && styles.legendPhone]
+        .filter(Boolean)
+        .join(" ")}
     >
       <span>
-        <Box component="b" sx={{ color: "text.primary" }}>
-          ATS
-        </Box>{" "}
-        record against the CBS line
+        <b className={styles.legendTerm}>ATS</b> record against the CBS line
       </span>
       <span>
-        <Box component="b" sx={{ color: pool[700] }}>
-          Pool
-        </Box>{" "}
-        everyone's record picking them
+        <b className={styles.legendPool}>Pool</b> everyone's record picking them
       </span>
       {userId && userName && (
         <span>
-          <Box component="b" sx={{ color: pool[700] }}>
-            {playerLabel}
-          </Box>{" "}
-          {userName} picking them
+          <b className={styles.legendPool}>{playerLabel}</b> {userName} picking
+          them
         </span>
       )}
-    </Typography>
+    </p>
   );
 
   const controls = (
-    <Box
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 1,
-        mb: 1.5,
-      }}
-    >
+    <div className={styles.controls}>
       {isPhone ? (
         // Phones: one control. AFC and NFC show that conference's
         // divisions; All 32 is the league table.
@@ -460,7 +392,7 @@ export default function StandingsView({
           </Popover>
         </>
       )}
-    </Box>
+    </div>
   );
 
   let body: ReactNode;
@@ -480,41 +412,29 @@ export default function StandingsView({
     body = table(sorted, "All 32 teams", { sortable: true, ranked: true });
   } else {
     body = (
-      <Grid container columnSpacing={4} rowSpacing={3}>
+      <div className={styles.conferences}>
         {standings.conferences
           .filter((c) => !isPhone || c.abbr === conference)
           .map((c) => (
-            <Grid key={c.abbr} size={{ xs: 12, md: 6 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                {c.divisions.map((division) => (
-                  <Box key={division.name}>
-                    <Typography
-                      component="h3"
-                      sx={{
-                        fontSize: "0.875rem",
-                        fontWeight: 600,
-                        ml: 1,
-                        mb: 0.5,
-                      }}
-                    >
-                      {division.name}
-                    </Typography>
-                    {table(division.teams, division.name)}
-                  </Box>
-                ))}
-              </Box>
-            </Grid>
+            <div key={c.abbr} className={styles.divisions}>
+              {c.divisions.map((division) => (
+                <div key={division.name}>
+                  <h3 className={styles.divisionTitle}>{division.name}</h3>
+                  {table(division.teams, division.name)}
+                </div>
+              ))}
+            </div>
           ))}
-      </Grid>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ textAlign: "left" }}>
+    <div className={styles.page}>
       {header}
       {controls}
       {!isPhone && legend}
       {body}
-    </Box>
+    </div>
   );
 }

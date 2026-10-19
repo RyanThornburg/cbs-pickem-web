@@ -1,0 +1,110 @@
+.page {
+  text-align: left;
+}
+
+/* A dash where there's nothing to show yet. */
+.muted {
+  color: var(--text-faint);
+}
+
+/* The selected player's first name heads their column; a long one is cut. */
+.playerLabel {
+  display: inline-block;
+  max-width: 7ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+/* Narrow columns at their phone width, then from sm up (set per column). */
+.col {
+  width: var(--col-xs);
+}
+@media (min-width: 600px) {
+  .col {
+    width: var(--col-sm);
+  }
+}
+
+.teamLink {
+  gap: 8px;
+  max-width: 100%;
+}
+.teamAbbr {
+  font-weight: 600;
+}
+.teamName {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Place in the All 32 table, before the team. */
+.rank {
+  display: inline-block;
+  width: 22px;
+  margin-right: 4px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-align: right;
+  vertical-align: middle;
+}
+
+.legend {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+/* Phones: one line per column, inside the Key popover. */
+.legendPhone {
+  flex-direction: column;
+  row-gap: 6px;
+  margin-bottom: 0;
+}
+.legendTerm {
+  color: var(--text);
+}
+.legendPool {
+  color: var(--pool-700);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Divisions: the two conferences side by side from md up. */
+.conferences {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px 32px;
+}
+@media (min-width: 900px) {
+  .conferences {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.divisions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.divisionTitle {
+  margin: 0 0 4px 8px;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.5;
+}
