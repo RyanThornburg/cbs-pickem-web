@@ -166,3 +166,11 @@
     margin: -12px -12px 0;
   }
 }
+
+/* Loading placeholders no wider than the grid and ladder they stand in for. */
+.sideRoleSkeleton {
+  max-width: 440px;
+}
+.ladderSkeleton {
+  max-width: 640px;
+}

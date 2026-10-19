@@ -1,5 +1,4 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Skeleton } from "@mui/material";
 import { GetTrendsByWeek } from "../../data/GetTrendsByWeek";
 import { GetSeasonTrends } from "../../data/GetSeasonTrends";
 import {
@@ -8,6 +7,7 @@ import {
   GameCoverResult,
 } from "../../data/weekGames";
 import { RankedUser, SeasonTrends, WeekRecap, WeekTrends } from "../../types";
+import { Skeleton } from "../../ui/Skeleton";
 import WeekRecapSection from "../Recap/WeekRecapSection";
 import SeasonRecapCharts from "../Recap/SeasonRecapCharts";
 import { itemsForScope } from "../Recap/weekCards";

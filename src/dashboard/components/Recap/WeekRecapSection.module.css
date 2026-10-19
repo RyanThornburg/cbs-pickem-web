@@ -37,6 +37,27 @@
   color: var(--text-muted);
 }
 
+/* The "All N notes" list slides open and shut by its own height (MUI
+   Collapse's 300ms and easing). The single grid row goes 0fr -> 1fr;
+   @starting-style gives the first frame after mounting the closed size. */
+.reveal {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@starting-style {
+  .reveal {
+    grid-template-rows: 0fr;
+  }
+}
+.revealClosed {
+  grid-template-rows: 0fr;
+}
+.revealInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .list {
   display: flex;
   flex-direction: column;

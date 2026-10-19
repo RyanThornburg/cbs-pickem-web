@@ -1,4 +1,3 @@
-import { useTheme } from "@mui/material";
 import { useWidth } from "../shared/useWidth";
 import { useState } from "react";
 import { focusRingColor, pool } from "../../shared-theme/themePrimitives";
@@ -31,6 +30,13 @@ const GOLD = "#d4a017";
 // DESIGN.md streak-pill-end.
 const WINLESS = "#c62828";
 const REFERENCE = "rgba(0, 0, 0, 0.6)";
+
+// The light palette (tokens.css), written out since SVG attributes take
+// plain colors.
+const TEXT = "rgba(0, 0, 0, 0.87)"; // --text
+const TEXT_MUTED = "rgba(0, 0, 0, 0.6)"; // --text-muted
+const DIVIDER = "rgba(0, 0, 0, 0.12)"; // --divider
+const PAPER = "#fff"; // --paper
 
 const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
 
@@ -258,7 +264,6 @@ function PoolAccuracyChart({
   inProgressWeek: number | null;
   selectedUserId?: string;
 }) {
-  const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
   const n = weeks.length;
@@ -278,7 +283,7 @@ function PoolAccuracyChart({
   const activePt = active == null ? undefined : pts.find((q) => q.i === active);
   const last = pts[pts.length - 1];
   const markY = H - 14;
-  const text = theme.palette.text.secondary;
+  const text = TEXT_MUTED;
   const line = pool[500];
 
   return (
@@ -326,7 +331,7 @@ function PoolAccuracyChart({
               x2={W - PAD.right}
               y1={y(v)}
               y2={y(v)}
-              stroke={theme.palette.divider}
+              stroke={DIVIDER}
               strokeWidth={1}
             />
             <text
@@ -364,8 +369,8 @@ function PoolAccuracyChart({
               cx={x}
               cy={py}
               r={active === i ? 6 : 5}
-              fill={hollow ? theme.palette.background.paper : line}
-              stroke={hollow ? line : theme.palette.background.paper}
+              fill={hollow ? PAPER : line}
+              stroke={hollow ? line : PAPER}
               strokeWidth={2}
             />
           );
@@ -377,7 +382,7 @@ function PoolAccuracyChart({
             textAnchor="middle"
             fontSize="12"
             fontWeight={700}
-            fill={theme.palette.text.primary}
+            fill={TEXT}
           >
             {pct(last.p.accuracy)}
           </text>
@@ -464,7 +469,6 @@ function ChaosChart({
   series: RecapChaosPoint[];
   weeks: number[];
 }) {
-  const theme = useTheme();
   const [active, setActive] = useState<number | null>(null);
   const [plotRef, W] = useWidth(460);
   const n = weeks.length;
@@ -474,7 +478,7 @@ function ChaosChart({
   const g = geom(W, n);
   const y = (v: number) => PAD.top + ((10 - v) / 10) * PLOT_H;
   const barW = Math.min(48, g.band * 0.6);
-  const text = theme.palette.text.secondary;
+  const text = TEXT_MUTED;
   const bar = pool[500];
   const base = y(0);
   const last = series[series.length - 1];
@@ -505,7 +509,7 @@ function ChaosChart({
               x2={W - PAD.right}
               y1={y(v)}
               y2={y(v)}
-              stroke={theme.palette.divider}
+              stroke={DIVIDER}
               strokeWidth={1}
             />
             <text
@@ -546,7 +550,7 @@ function ChaosChart({
             textAnchor="middle"
             fontSize="12"
             fontWeight={700}
-            fill={theme.palette.text.primary}
+            fill={TEXT}
           >
             {last.index.toFixed(1)}
           </text>

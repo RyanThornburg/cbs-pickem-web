@@ -1,5 +1,11 @@
-import { Collapse } from "@mui/material";
-import { CSSProperties, useId, useMemo, useState } from "react";
+import {
+  CSSProperties,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { RecapItem } from "../../types";
 import { CategoryMark } from "./recapCategory";
 import { WeekRecapCard } from "./WeekRecapCards";
@@ -14,6 +20,11 @@ import styles from "./WeekRecapSection.module.css";
 // cards), then up to 4 cards (see weekCards.ts for the rule). `lead` is an
 // extra first card (the selected player's "You this week") that takes one
 // of the 4 slots. With no item cards, `empty` shows under the row.
+
+// How long the "All N notes" list takes to open or close: MUI Collapse's
+// standard 300ms, which it replaced.
+const REVEAL_MS = 300;
+
 export default function WeekRecapSection({
   title,
   status,
@@ -30,6 +41,20 @@ export default function WeekRecapSection({
   selectedUserId?: string;
 }) {
   const [showAll, setShowAll] = useState(false);
+  // The list stays mounted while it closes, then leaves the DOM.
+  const [listMounted, setListMounted] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+  const toggleAll = () => {
+    clearTimeout(closeTimer.current);
+    if (showAll) {
+      setShowAll(false);
+      closeTimer.current = setTimeout(() => setListMounted(false), REVEAL_MS);
+    } else {
+      setShowAll(true);
+      setListMounted(true);
+    }
+  };
   const headingId = useId();
   const hasLead = !!lead;
   const cards = useMemo(
@@ -52,7 +77,7 @@ export default function WeekRecapSection({
         {items.length > 0 && (
           <Button
             size="small"
-            onClick={() => setShowAll((s) => !s)}
+            onClick={toggleAll}
             endIcon={
               <Icon
                 name="ExpandMore"
@@ -70,16 +95,24 @@ export default function WeekRecapSection({
         )}
       </div>
 
-      <Collapse in={showAll} unmountOnExit>
-        <ul className={styles.list}>
-          {items.map((t) => (
-            <li key={t.id} className={styles.item}>
-              <CategoryMark category={t.category} size={20} />
-              <p className={styles.headline}>{t.headline}</p>
-            </li>
-          ))}
-        </ul>
-      </Collapse>
+      {listMounted && (
+        <div
+          className={
+            showAll ? styles.reveal : `${styles.reveal} ${styles.revealClosed}`
+          }
+        >
+          <div className={styles.revealInner}>
+            <ul className={styles.list}>
+              {items.map((t) => (
+                <li key={t.id} className={styles.item}>
+                  <CategoryMark category={t.category} size={20} />
+                  <p className={styles.headline}>{t.headline}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <div
         className={

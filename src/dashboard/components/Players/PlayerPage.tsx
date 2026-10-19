@@ -1,9 +1,9 @@
-import Skeleton from "@mui/material/Skeleton";
 import { ReactNode, useEffect } from "react";
 import { ordinal } from "../../helper";
 import { PayPeriod, RankedUser } from "../../types";
 import { periodName, shownSegment } from "../../utils/payPeriods";
 import TabSkeleton from "../TabSkeleton";
+import { Skeleton } from "../../ui/Skeleton";
 import UserAvatar from "../UserAvatar";
 import { useStandings } from "../Nfl/useNflData";
 import { BackLink } from "../shared/BackLink";
@@ -245,7 +245,7 @@ export default function PlayerPage({
                   <Skeleton
                     variant="rounded"
                     height={150}
-                    sx={{ maxWidth: 440 }}
+                    className={styles.sideRoleSkeleton}
                   />
                 )}
               </Section>
@@ -261,7 +261,7 @@ export default function PlayerPage({
                   <Skeleton
                     variant="rounded"
                     height={170}
-                    sx={{ maxWidth: 640 }}
+                    className={styles.ladderSkeleton}
                   />
                 )}
               </Section>
