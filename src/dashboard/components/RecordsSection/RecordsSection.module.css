@@ -12,6 +12,17 @@
   gap: 12px;
 }
 
+/* The table switcher and its table keep the section's 12px gap; a
+   hairline runs under the tabs. */
+.tables {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tableTabs {
+  border-bottom: 1px solid var(--divider);
+}
+
 .title {
   margin: 0;
   font-size: var(--text-lg);

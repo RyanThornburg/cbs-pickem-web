@@ -1,5 +1,3 @@
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
 import { memo, useState } from "react";
 import { PayPeriod, RankedUser } from "../../types";
 import { useCurrentWeek } from "../CurrentWeekContext";
@@ -7,6 +5,7 @@ import { UserAvatar } from "../UserAvatar";
 import { LeaderBoard, LeaderList, LeaderRow, leaderList } from "./leadersUtils";
 import { MEDAL } from "./medals";
 import { overallPeriod, periodName } from "../../utils/payPeriods";
+import { Tabs } from "../../ui/Tabs";
 import styles from "./SegmentLeaders.module.css";
 
 type Props = {
@@ -128,15 +127,16 @@ const SegmentLeaders = memo(function SegmentLeaders({
       <div className={`${styles.card} ${styles.tabbed}`}>
         <Tabs
           value={tab}
-          onChange={(_, v: LeaderBoard) => setTab(v)}
-          sx={{ minHeight: 40, mb: 1, "& .MuiTab-root": { minHeight: 40 } }}
+          onChange={setTab}
+          tabs={boards.map((b) => ({ value: b.key, label: b.title }))}
+          listClassName={styles.tabList}
+          tabClassName={styles.tab}
         >
-          {boards.map((b) => (
-            <Tab key={b.key} value={b.key} label={b.title} />
-          ))}
+          <span className={`${styles.caption} ${styles.sub}`}>
+            {active.sub}
+          </span>
+          <Rows list={active.list} userId={userId} />
         </Tabs>
-        <span className={`${styles.caption} ${styles.sub}`}>{active.sub}</span>
-        <Rows list={active.list} userId={userId} />
       </div>
     </div>
   );

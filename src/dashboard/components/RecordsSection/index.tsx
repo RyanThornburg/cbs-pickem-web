@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Tab, Tabs } from "@mui/material";
 import { GetHistorical } from "../../data/GetHistorical";
 import TabSkeleton from "../TabSkeleton";
 import LoadError from "../shared/LoadError";
@@ -17,6 +16,7 @@ import {
   buildRecordTiles,
   closedSeasons,
 } from "./recordsUtils";
+import { Tabs } from "../../ui/Tabs";
 import styles from "./RecordsSection.module.css";
 
 type TableTab = "finishes" | "all-time" | "season";
@@ -150,28 +150,11 @@ export default function RecordsSection({
         <SectionTitle>Every season</SectionTitle>
         <Tabs
           value={tab}
-          onChange={(_, value: TableTab) => setParams({ view: value })}
-          aria-label="Record tables"
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
-          sx={{ borderBottom: 1, borderColor: "divider" }}
-        >
-          {TABLE_TABS.map((t) => (
-            <Tab
-              key={t.value}
-              value={t.value}
-              label={t.label}
-              id={`records-tab-${t.value}`}
-              aria-controls="records-tabpanel"
-            />
-          ))}
-        </Tabs>
-
-        <div
-          role="tabpanel"
-          id="records-tabpanel"
-          aria-labelledby={`records-tab-${tab}`}
+          onChange={(value) => setParams({ view: value })}
+          label="Record tables"
+          tabs={TABLE_TABS}
+          className={styles.tables}
+          listClassName={styles.tableTabs}
         >
           {tab === "finishes" && (
             <FinishesGrid data={data} rows={careerRows} userId={userId} />
@@ -187,7 +170,7 @@ export default function RecordsSection({
               userId={userId}
             />
           )}
-        </div>
+        </Tabs>
       </div>
 
       <div className={styles.section}>
