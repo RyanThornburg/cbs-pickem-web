@@ -1,0 +1,54 @@
+/* MUI's Table parts at their defaults (the theme never restyled them), as
+   classes for plain <table> markup. Each table adds its own module on top
+   for its widths, padding and sticky columns; this layer always loses to
+   it. Use: .container around the table, .table on it, .cell on every th
+   and td (.small for size="small"), .head on header cells, .right or
+   .center for MUI's align, .hover on rows that highlight. */
+
+@layer ui {
+  /* TableContainer: tables wider than the screen scroll sideways. */
+  .container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .cell {
+    display: table-cell;
+    padding: 16px;
+    border-bottom: 1px solid rgb(224, 224, 224);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-md);
+    font-weight: 400;
+    line-height: 1.43;
+    text-align: left;
+    vertical-align: inherit;
+  }
+  .small {
+    padding: 6px 16px;
+  }
+  .head {
+    font-weight: 500;
+    line-height: 1.5rem;
+  }
+  /* MUI's align="right": numbers right, and a sort label's arrow before
+     its text (the label inherits the cell's row-reverse). */
+  .right {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  .center {
+    text-align: center;
+  }
+
+  .hover:hover {
+    background-color: var(--hover);
+  }
+}

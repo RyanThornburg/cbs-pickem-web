@@ -8,17 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import {
   ColdTeamSeason,
   TeamAtsRecord,
   TeamBelieversFaders,
@@ -27,6 +16,9 @@ import {
 import { TeamLink } from "../shared/TeamLink";
 import { TeamLogo } from "../shared/TeamLogo";
 import { Button } from "../../ui/Button";
+import { SortLabel } from "../../ui/SortLabel";
+import table from "../../ui/table.module.css";
+import { DOWN_SM, useMediaQuery } from "../../ui/useMediaQuery";
 import styles from "./SeasonTeamTable.module.css";
 
 export type Props = {
@@ -170,12 +162,14 @@ const buildColumns = (maxPicks: number) => [
   }),
 ];
 
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
+
 // The top of the current sort; the rest is one tap away.
 const INITIAL_ROWS = 10;
 
 export default function SeasonTeamTable(props: Props) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(DOWN_SM);
   const [showAll, setShowAll] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "picks", desc: true },
@@ -197,7 +191,7 @@ export default function SeasonTeamTable(props: Props) {
   );
   const columns = useMemo(() => buildColumns(maxPicks), [maxPicks]);
 
-  const table = useReactTable({
+  const reactTable = useReactTable({
     data,
     columns,
     state: { sorting },
@@ -211,44 +205,34 @@ export default function SeasonTeamTable(props: Props) {
     return <p className={styles.empty}>No picks graded yet this season.</p>;
   }
 
-  // Team column stays pinned if the table ever scrolls sideways. Its solid
-  // background hides cells scrolling under it, so the row hover tint is
-  // painted on top of it as a gradient.
-  const stickySx = {
-    position: "sticky",
-    left: 0,
-    zIndex: 1,
-    bgcolor: "background.paper",
-  } as const;
-  const rows = table.getRowModel().rows;
+  const rows = reactTable.getRowModel().rows;
   const visibleRows = showAll ? rows : rows.slice(0, INITIAL_ROWS);
 
   return (
     <div>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+      <div className={table.container}>
+        <table className={table.table}>
+          <thead>
+            {reactTable.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, i) => (
-                  <TableCell
+                  <th
                     key={header.id}
-                    align={header.column.columnDef.meta?.align ?? "left"}
-                    sx={{
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      py: 0,
-                      px: { xs: 1, sm: 2 },
-                      height: 44,
-                      ...(i === 0 ? { ...stickySx, zIndex: 3 } : {}),
-                    }}
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      table.head,
+                      styles.headCell,
+                      header.column.columnDef.meta?.align === "center" &&
+                        table.center,
+                      i === 0 && styles.stickyHead
+                    )}
                   >
-                    <TableSortLabel
+                    <SortLabel
                       active={header.column.getIsSorted() !== false}
                       direction={header.column.getIsSorted() || "desc"}
                       onClick={header.column.getToggleSortingHandler()}
-                      sx={{ minHeight: 44 }}
+                      className={styles.sortLabel}
                     >
                       {isMobile
                         ? header.column.columnDef.meta?.mobileHeader
@@ -256,38 +240,35 @@ export default function SeasonTeamTable(props: Props) {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableSortLabel>
-                  </TableCell>
+                    </SortLabel>
+                  </th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableHead>
-          <TableBody>
+          </thead>
+          <tbody>
             {visibleRows.map((row) => (
-              <TableRow
-                key={row.id}
-                hover
-                sx={{
-                  "&:hover > td:first-of-type": {
-                    backgroundImage:
-                      "linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04))",
-                  },
-                }}
-              >
+              <tr key={row.id} className={cx(table.hover, styles.row)}>
                 {row.getVisibleCells().map((cell, i) => (
-                  <TableCell
+                  <td
                     key={cell.id}
-                    align={cell.column.columnDef.meta?.align ?? "left"}
-                    sx={{ px: { xs: 1, sm: 2 }, ...(i === 0 ? stickySx : {}) }}
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      styles.bodyCell,
+                      cell.column.columnDef.meta?.align === "center" &&
+                        table.center,
+                      i === 0 && styles.sticky
+                    )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  </td>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
       {rows.length > INITIAL_ROWS && (
         <Button
           size="small"

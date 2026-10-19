@@ -1,0 +1,57 @@
+/* MUI's TableSortLabel: the header text as a button, its arrow hidden
+   until hovered (half) or sorted on (full), pointing down for descending
+   and flipped for ascending. */
+
+@layer ui {
+  .label {
+    display: inline-flex;
+    flex-direction: inherit;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .label:focus,
+  .label:hover {
+    color: var(--text-muted);
+  }
+  .label:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .active,
+  .active:focus,
+  .active:hover {
+    color: var(--text);
+  }
+
+  .icon {
+    margin: 0 4px;
+    font-size: 18px;
+    opacity: 0;
+    transition:
+      opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+  }
+  .label:hover .icon {
+    opacity: 0.5;
+  }
+  /* Sorted on: the arrow stays fully shown, hovered or not. */
+  .active .icon,
+  .active:hover .icon {
+    opacity: 1;
+    color: var(--text-muted);
+  }
+  .asc .icon {
+    transform: rotate(180deg);
+  }
+}

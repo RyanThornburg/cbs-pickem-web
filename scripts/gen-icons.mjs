@@ -2,7 +2,7 @@
 // @mui/icons-material icon the app imports, so ui/Icon can draw them
 // without MUI. Re-run after importing a new MUI icon somewhere:
 //
-//   node scripts/gen-icons.mjs
+//   node scripts/gen-icons.mjs [ExtraIconName ...]
 //
 // The shapes are Google's Material icons (Apache 2.0), as MUI ships them.
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -38,6 +38,9 @@ const existing = (() => {
   }
 })();
 const names = new Set(existing);
+// Extra names on the command line, for icons MUI drew from its own
+// internals rather than an import (TableSortLabel's ArrowDownward).
+for (const name of process.argv.slice(2)) names.add(name);
 for (const source of sources) {
   for (const m of source.matchAll(/from "@mui\/icons-material\/(\w+)"/g)) {
     names.add(m[1]);

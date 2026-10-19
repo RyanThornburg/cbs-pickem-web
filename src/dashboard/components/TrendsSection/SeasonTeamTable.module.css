@@ -1,4 +1,48 @@
-/* The cells of the season team table (the table itself is still MUI's). */
+/* The season team table, on ui/table.module.css. */
+
+/* Header labels: small and bold on one line, 44px tall (a tap target),
+   8px a side on phones and 16px from sm. */
+.headCell {
+  height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sortLabel {
+  min-height: 44px;
+}
+.headCell,
+.bodyCell {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+@media (min-width: 600px) {
+  .headCell,
+  .bodyCell {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}
+
+/* The Team column stays pinned if the table ever scrolls sideways. Its
+   solid background hides cells scrolling under it, so the row hover tint
+   is painted on top of it as a gradient. */
+.sticky,
+.stickyHead {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--paper);
+}
+.stickyHead {
+  z-index: 3;
+}
+.row:hover > .sticky {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+}
+
 .teamLink {
   gap: 8px;
 }
