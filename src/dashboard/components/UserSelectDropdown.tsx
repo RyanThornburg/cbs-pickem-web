@@ -1,12 +1,10 @@
-import { MenuItem } from "@mui/material";
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Skeleton from "@mui/material/Skeleton";
 import { PayPeriod, RankedUser } from "../types";
 import { periodName } from "../utils/payPeriods";
-import { ordinal, visuallyHidden } from "../helper";
+import { ordinal } from "../helper";
+import { Select } from "../ui/Select";
+import uiStyles from "../ui/ui.module.css";
+import styles from "./UserSelectDropdown.module.css";
 import UserAvatar from "./UserAvatar";
 import { ScoreWithCovering } from "./UsersTable/ScoreWithCovering";
 import { MoneyLines } from "./UsersTable/MoneyLines";
@@ -58,10 +56,6 @@ export default function UserSelectDropdown({
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
 
-  const handleChange = (event: SelectChangeEvent) => {
-    onUserChange(event.target.value);
-  };
-
   // The card's facts are laid out without words between them, so screen
   // readers get a spoken summary instead of the layout.
   const renderValue = (value: string) => {
@@ -71,10 +65,7 @@ export default function UserSelectDropdown({
     // placeholder, not "Find yourself…", which would invite a re-pick.
     if (user && users.length === 0) {
       return (
-        <Box
-          component="span"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
+        <span className={styles.waiting}>
           <Skeleton
             variant="circular"
             width={26}
@@ -82,32 +73,28 @@ export default function UserSelectDropdown({
             animation={false}
           />
           <Skeleton variant="text" width={110} animation={false} />
-          <Box component="span" sx={visuallyHidden}>
+          <span className={uiStyles.visuallyHidden}>
             Your player, waiting for the standings
-          </Box>
-        </Box>
+          </span>
+        </span>
       );
     }
     if (!value || !selected) {
-      return (
-        <Box component="span" sx={{ color: "text.secondary" }}>
-          Find yourself…
-        </Box>
-      );
+      return <span className={styles.placeholder}>Find yourself…</span>;
     }
     return (
       <>
-        <Box component="span" sx={visuallyHidden}>
+        <span className={uiStyles.visuallyHidden}>
           {playerSummaryText(
             selected,
             segment,
             summary === "card" ? standings : [],
             asOfWeek
           )}
-        </Box>
-        <Box component="span" aria-hidden sx={{ display: "contents" }}>
+        </span>
+        <span aria-hidden className={styles.layout}>
           {renderCard(selected)}
-        </Box>
+        </span>
       </>
     );
   };
@@ -131,148 +118,77 @@ export default function UserSelectDropdown({
 
     if (summary === "compact") {
       return (
-        <Box
-          component="span"
-          sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}
-        >
+        <span className={styles.compactRow}>
           {avatar}
-          <Box
-            component="span"
-            sx={{
-              flex: 1,
-              minWidth: 0,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {selected.name}
-          </Box>
+          <span className={styles.compactName}>{selected.name}</span>
           {selected.place != null && (
-            <Box
-              component="span"
-              sx={{
-                fontSize: "0.8125rem",
-                color: "text.secondary",
-                whiteSpace: "nowrap",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              <Box
-                component="span"
-                sx={{ color: "text.primary", fontWeight: 600 }}
-              >
+            <span className={styles.compactStanding}>
+              <span className={styles.compactPlace}>
                 {ordinal(selected.place)}
-              </Box>
+              </span>
               {" · "}
               {score}
-            </Box>
+            </span>
           )}
-        </Box>
+        </span>
       );
     }
 
     return (
-      <Box
-        component="span"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-          minWidth: 0,
-          textAlign: "left",
-        }}
-      >
+      <span className={styles.cardRow}>
         {avatar}
-        <Box component="span" sx={{ display: "grid", minWidth: 0 }}>
-          <Box
-            component="span"
-            sx={{ fontWeight: 600, lineHeight: 1.3, whiteSpace: "nowrap" }}
-          >
-            {selected.name}
-          </Box>
-          <Box
-            component="span"
-            sx={{
-              fontSize: "0.8125rem",
-              lineHeight: 1.3,
-              color: "text.secondary",
-              whiteSpace: "nowrap",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
+        <span className={styles.cardText}>
+          <span className={styles.cardName}>{selected.name}</span>
+          <span className={styles.cardLine}>
             {selected.place != null && `${ordinal(selected.place)} · `}
             {score} pts
             {segmentPlace != null &&
               ` · ${periodName(segment!)} ${ordinal(segmentPlace)}`}
             {asOfWeek != null && ` · as of week ${asOfWeek}`}
-          </Box>
-        </Box>
+          </span>
+        </span>
         {standings.length > 0 && (
           <>
-            <Divider orientation="vertical" flexItem />
+            <span aria-hidden className={styles.divider} />
             <MoneyLines standings={standings} />
           </>
         )}
-      </Box>
+      </span>
     );
   };
 
+  // Out of the roster (not loaded yet, or the leaderboard is down): shown
+  // as no one, without un-picking them.
+  const value = user && users.some((u) => u.id === user) ? user : "";
+
   return (
-    <FormControl
-      variant="standard"
-      sx={{ minWidth: 150, flex: { xs: 1, md: "none" }, maxWidth: "100%" }}
-    >
-      <Box component="span" id="user-select-label" sx={visuallyHidden}>
+    <div className={styles.wrap}>
+      <span id="user-select-label" className={uiStyles.visuallyHidden}>
         Player
-      </Box>
+      </span>
       <Select
-        // 40px tall on phones so it's an easy tap target.
-        sx={{
-          pl: summary === "card" ? 1.5 : "10px",
-          py: summary === "card" ? 0.75 : 0,
-          // The card's height with a player in it, so choosing yourself
-          // doesn't make the header jump.
-          minHeight: summary === "card" ? 59 : 40,
-          // About the card's width with money lines in it, so it doesn't
-          // shrink on tabs that leave them out (it still grows for a long
-          // name).
-          minWidth: summary === "card" ? 360 : undefined,
-          borderRadius: summary === "card" ? "10px" : undefined,
-          "& .MuiSelect-select": { minWidth: 0 },
-        }}
-        labelId="user-select-label"
         id="user-drop-down"
-        // Out of the roster (not loaded yet, or the leaderboard is down):
-        // shown as no one, without un-picking them.
-        value={user && users.some((u) => u.id === user) ? user : ""}
-        onChange={handleChange}
+        labelledBy="user-select-label"
+        className={summary === "card" ? styles.card : styles.compact}
+        valueClassName={styles.value}
+        value={value}
+        onChange={onUserChange}
         open={open}
-        onOpen={() => onOpenChange(true)}
-        onClose={() => onOpenChange(false)}
-        MenuProps={{ slotProps: { transition: { onExited: onMenuClosed } } }}
-        displayEmpty
+        onOpenChange={onOpenChange}
+        onOpenChangeComplete={(isOpen) => {
+          if (!isOpen) onMenuClosed?.();
+        }}
         renderValue={renderValue}
-      >
-        {/* Only to clear a choice; with no one chosen it would just be
-            the highlighted first item when the menu opens. */}
-        {user && (
-          <MenuItem value="">
-            <em>No one</em>
-          </MenuItem>
-        )}
-        {users.map((userItem: RankedUser) => {
-          return (
-            <MenuItem
-              key={userItem.id}
-              value={userItem.id}
-              selected={user === userItem.id}
-            >
-              {userItem.name}
-            </MenuItem>
-          );
-        })}
-      </Select>
-    </FormControl>
+        options={[
+          // Only to clear a choice; with no one chosen it would just be
+          // the highlighted first item when the menu opens.
+          ...(user ? [{ value: "", label: <em>No one</em> }] : []),
+          ...users.map((userItem) => ({
+            value: userItem.id,
+            label: userItem.name,
+          })),
+        ]}
+      />
+    </div>
   );
 }

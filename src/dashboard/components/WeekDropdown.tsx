@@ -1,8 +1,6 @@
-import { MenuItem } from "@mui/material";
-import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { visuallyHidden } from "../helper";
+import { Select } from "../ui/Select";
+import uiStyles from "../ui/ui.module.css";
+import styles from "./WeekDropdown.module.css";
 
 export type Props = {
   currentWeek: number;
@@ -16,61 +14,36 @@ export default function WeekDropdown({
   selectedWeek,
   onWeekChange,
 }: Props) {
-  const handleChange = (event: SelectChangeEvent) => {
-    onWeekChange(Number(event.target.value));
-  };
-
   return (
-    <FormControl variant="standard" sx={{ flex: "none" }}>
-      <Box component="span" id="week-select-label" sx={visuallyHidden}>
+    <div className={styles.wrap}>
+      <span id="week-select-label" className={uiStyles.visuallyHidden}>
         Week
-      </Box>
+      </span>
       <Select
-        // 40px tall so it's an easy tap target and matches the picker.
-        sx={{
-          pl: "12px",
-          minHeight: 40,
-          borderRadius: "999px",
-          fontWeight: 600,
-          fontSize: "0.875rem",
-          whiteSpace: "nowrap",
-        }}
-        labelId="week-select-label"
         id="week-drop-down"
+        labelledBy="week-select-label"
+        className={styles.trigger}
         value={selectedWeek === 0 ? "1" : selectedWeek.toString()}
-        onChange={handleChange}
-        // One span: the select lays its value out as flex, which would
-        // drop the space between "Week" and the number. The word is hidden
-        // from screen readers, since the label already says "Week".
+        onChange={(value) => onWeekChange(Number(value))}
+        options={[...Array(currentWeek)].map((_, index) => {
+          const weekNum = String(currentWeek - index);
+          return { value: weekNum, label: `Week ${weekNum}` };
+        })}
+        // One span, so the space between "Week" and the number survives
+        // the value's flex layout. The word is hidden from screen readers,
+        // since the label already says "Week".
         renderValue={(value) => (
           <span>
-            <Box
-              component="span"
-              aria-hidden
-              sx={{ display: { xs: "none", md: "inline" } }}
-            >
+            <span aria-hidden className={styles.long}>
               Week{" "}
-            </Box>
-            <Box
-              component="span"
-              aria-hidden
-              sx={{ display: { xs: "inline", md: "none" } }}
-            >
+            </span>
+            <span aria-hidden className={styles.short}>
               Wk{" "}
-            </Box>
+            </span>
             {value}
           </span>
         )}
-      >
-        {[...Array(currentWeek)].map((_, index) => {
-          const weekNum = currentWeek - index;
-          return (
-            <MenuItem key={weekNum} value={weekNum}>
-              Week {weekNum}
-            </MenuItem>
-          );
-        })}
-      </Select>
-    </FormControl>
+      />
+    </div>
   );
 }

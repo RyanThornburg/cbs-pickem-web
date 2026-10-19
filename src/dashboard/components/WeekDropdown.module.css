@@ -1,0 +1,30 @@
+/* The Week pill: 40px tall so it's an easy tap target and matches the
+   player picker, fully rounded, the value in semibold. */
+.wrap {
+  /* MUI's FormControl: a column, so the trigger fills its width. */
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: top;
+  flex: none;
+}
+
+.trigger {
+  min-height: 40px;
+  padding-left: 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* "Week 3" from md, "Wk 3" below. */
+.long {
+  display: none;
+}
+@media (min-width: 900px) {
+  .long {
+    display: inline;
+  }
+  .short {
+    display: none;
+  }
+}

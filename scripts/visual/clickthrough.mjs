@@ -2,7 +2,8 @@
 // recorded data and frozen clock as snap.mjs, at 360 and 1280: segmented
 // controls (tap and arrow keys), Live's layout, the box score and its stat
 // groups, the Standings Key popover, the team page back link, tooltips
-// (tap, click, Escape), and Admin's views, filter and payment form. Prints PASS/FAIL per check; exits 1 on any
+// (tap, click, Escape), the Week pill and player picker, and Admin's views,
+// filter and payment form. Prints PASS/FAIL per check; exits 1 on any
 // failure. Screenshots say a page looks right; this says it still works.
 //
 //   node scripts/visual/clickthrough.mjs [--dist build] [--port 3490]
@@ -283,6 +284,41 @@ try {
     ok(
       splitOpened && !(await tooltipOpen()),
       "Tooltip: the pick split opens, and Escape closes it"
+    );
+
+    // Week pill (ui/Select): pick a past week from the menu by keyboard.
+    await page.goto(`${BASE}/picks`);
+    await wait(2500);
+    await page.locator("#week-drop-down").click();
+    await wait(500);
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await wait(600);
+    ok(
+      /[?&]week=\d/.test(page.url()),
+      "Week pill: ArrowDown + Enter picks a past week"
+    );
+
+    // Player picker (ui/Select): "No one" clears the pick, and the
+    // "Choose your name" hint opens the picker again.
+    await page.goto(`${BASE}/picks`);
+    await wait(2500);
+    const picker = page.locator("#user-drop-down");
+    await picker.click();
+    await wait(500);
+    await page.getByRole("option", { name: "No one" }).click();
+    await wait(800);
+    ok(
+      (await picker.innerText()).includes("Find yourself"),
+      "Player picker: No one clears the pick"
+    );
+    await page.getByRole("button", { name: "Choose your name" }).click();
+    await wait(600);
+    await page.getByRole("option", { name: "Scott Miller" }).click();
+    await wait(1200);
+    ok(
+      (await picker.innerText()).includes("Scott Miller"),
+      "Player picker: the hint opens it and a pick shows"
     );
 
     // User Picks: a row opens the player page.
