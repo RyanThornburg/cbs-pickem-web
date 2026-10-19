@@ -1,5 +1,101 @@
+/* Capped so eight defense columns don't spread across a full-width row. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 720px;
+}
+
+/* An overline, like the section titles above it. */
+.title {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.groupScroll {
+  overflow-x: auto;
+  margin: 0 -4px;
+  padding: 0 4px 2px;
+}
+
 /* Seven stat groups don't fit a phone, so the switch scrolls sideways;
    each label stays on one line. */
 .groups > * {
   white-space: nowrap;
+}
+
+.team {
+  min-width: 0;
+}
+
+.teamHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+/* The team's box score color comes inline. */
+.teamStripe {
+  width: 18px;
+  height: 3px;
+  border-radius: 16px;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.cell {
+  padding: 6px;
+  border-bottom: 1px solid var(--divider);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.colHead {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.left {
+  text-align: left;
+}
+
+.none {
+  color: var(--text-muted);
+}
+
+.name {
+  max-width: 14ch;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+/* The name column, pinned; clear unless the table scrolls (see TeamTable). */
+.pinned {
+  position: sticky;
+  left: 0;
+  background-color: transparent;
+}
+.solid {
+  background-color: var(--paper);
+}
+
+.showAll {
+  margin-top: 2px;
 }

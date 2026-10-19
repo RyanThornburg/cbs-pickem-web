@@ -1,0 +1,169 @@
+/* Wide rows (compact layout) put team stats beside the leaders and scoring
+   plays from md up instead of under them. */
+.panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 12px;
+  padding-top: 8px;
+}
+@media (min-width: 900px) {
+  .columns {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+.empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.66;
+}
+
+/* The charts and player stats span both columns. */
+.fullWidth {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.shrink {
+  min-width: 0;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+/* An overline: a small uppercase label over each section. Inline, as MUI's
+   overline span was. */
+.sectionTitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+/* Leaders: "Passing" with a logo, then the player's line. */
+.leaders {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: var(--text-sm);
+}
+
+.leaderLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+/* Scoring plays: clock, logo, description, running score. */
+.plays {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: start;
+  gap: 6px 8px;
+  font-size: var(--text-sm);
+}
+
+.playClock {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.playScore {
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Team stats */
+.statsHead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.statsTitle {
+  text-align: center;
+}
+
+.keyedLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Bar colors come inline from STAT_BAR_COLORS. */
+.keyStripe {
+  width: 22px;
+  height: 3px;
+  border-radius: 16px;
+}
+
+.statRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.statLine {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  column-gap: 8px;
+}
+
+.statLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
+.statSide {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+.statSideRight {
+  justify-content: flex-end;
+}
+
+.statMain {
+  font-weight: 600;
+}
+
+.statSub {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.bar {
+  display: flex;
+  gap: 4px;
+  height: 4px;
+  margin-top: 3px;
+}
+
+/* Widths and colors come inline. */
+.barPart {
+  min-width: 3px;
+  border-radius: 16px;
+}

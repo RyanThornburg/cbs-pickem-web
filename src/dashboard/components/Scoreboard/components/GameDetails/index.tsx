@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { Fragment, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
   Game,
@@ -15,6 +13,7 @@ import { TeamLogo } from "../../../shared/TeamLogo";
 import { STAT_BAR_COLORS, teamStatRows } from "../../utils/teamStats";
 import { GameFlow } from "./GameFlow";
 import { PlayerStats } from "./PlayerStats";
+import styles from "./GameDetails.module.css";
 
 // The details key is rewritten at most every 15 seconds while a game is
 // live (its win probability curve grows with each snapshot), so an open
@@ -70,29 +69,16 @@ const LEADER_FORMATS: {
 ];
 
 const SectionTitle = ({ children }: { children: string }) => (
-  <Typography
-    variant="overline"
-    sx={{ color: "text.secondary", lineHeight: 1.6, fontWeight: 700 }}
-  >
-    {children}
-  </Typography>
+  <span className={styles.sectionTitle}>{children}</span>
 );
 
 const Leaders = ({ game }: { game: Game }) => {
   const leaders = game.leaders;
   if (!leaders) return null;
   return (
-    <Box>
+    <div>
       <SectionTitle>Leaders</SectionTitle>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "auto 1fr",
-          columnGap: 1.5,
-          rowGap: 0.75,
-          fontSize: "0.8125rem",
-        }}
-      >
+      <div className={styles.leaders}>
         {LEADER_FORMATS.flatMap(({ key, label, line }) =>
           (["away", "home"] as const).map((side) => {
             const player = leaders[side][key];
@@ -100,30 +86,21 @@ const Leaders = ({ game }: { game: Game }) => {
             const abbr = (side === "home" ? game.home_team : game.away_team)
               .abbr;
             return (
-              <Box key={`${key}-${side}`} sx={{ display: "contents" }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.75,
-                    color: "text.secondary",
-                  }}
-                >
+              <Fragment key={`${key}-${side}`}>
+                <div className={styles.leaderLabel}>
                   <TeamLogo abbr={abbr} size={16} />
                   {label}
-                </Box>
-                <Box sx={{ minWidth: 0 }}>
+                </div>
+                <div className={styles.shrink}>
                   <b>{player.name}</b>{" "}
-                  <Box component="span" sx={{ color: "text.secondary" }}>
-                    {line(player.stats)}
-                  </Box>
-                </Box>
-              </Box>
+                  <span className={styles.muted}>{line(player.stats)}</span>
+                </div>
+              </Fragment>
             );
           })
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
@@ -132,45 +109,30 @@ const ScoringPlays = ({ game }: { game: Game }) => {
   if (!plays.length) return null;
   // Array order is the real order -- clock is null on ~15% of plays.
   return (
-    <Box>
+    <div>
       <SectionTitle>Scoring plays</SectionTitle>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "auto auto 1fr auto",
-          columnGap: 1,
-          rowGap: 0.75,
-          fontSize: "0.8125rem",
-          alignItems: "start",
-        }}
-      >
+      <div className={styles.plays}>
         {plays.map((play, i) => {
           const abbr =
             play.team_id === game.home_team.id
               ? game.home_team.abbr
               : game.away_team.abbr;
           return (
-            <Box key={i} sx={{ display: "contents" }}>
-              <Box sx={{ color: "text.secondary", whiteSpace: "nowrap" }}>
+            <Fragment key={i}>
+              <div className={styles.playClock}>
                 {play.quarter > 4 ? "OT" : `Q${play.quarter}`}{" "}
                 {play.clock ?? ""}
-              </Box>
+              </div>
               <TeamLogo abbr={abbr} size={16} />
-              <Box sx={{ minWidth: 0 }}>{play.description}</Box>
-              <Box
-                sx={{
-                  whiteSpace: "nowrap",
-                  fontVariantNumeric: "tabular-nums",
-                  color: "text.secondary",
-                }}
-              >
+              <div className={styles.shrink}>{play.description}</div>
+              <div className={styles.playScore}>
                 {play.away_score}–{play.home_score}
-              </Box>
-            </Box>
+              </div>
+            </Fragment>
           );
         })}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
@@ -183,35 +145,21 @@ const StatSide = ({
   sub?: string | number;
   align: "left" | "right";
 }) => (
-  <Box
-    sx={{
-      display: "flex",
-      gap: 0.5,
-      alignItems: "baseline",
-      justifyContent: align === "left" ? "flex-start" : "flex-end",
-      whiteSpace: "nowrap",
-    }}
+  <div
+    className={
+      align === "left"
+        ? styles.statSide
+        : `${styles.statSide} ${styles.statSideRight}`
+    }
   >
     {align === "right" && sub != null && (
-      <Box
-        component="span"
-        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
-      >
-        ({sub})
-      </Box>
+      <span className={styles.statSub}>({sub})</span>
     )}
-    <Box component="span" sx={{ fontWeight: 600 }}>
-      {main}
-    </Box>
+    <span className={styles.statMain}>{main}</span>
     {align === "left" && sub != null && (
-      <Box
-        component="span"
-        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
-      >
-        ({sub})
-      </Box>
+      <span className={styles.statSub}>({sub})</span>
     )}
-  </Box>
+  </div>
 );
 
 // ESPN-style: each stat gets a split bar in the two teams' colors, so who's
@@ -230,92 +178,53 @@ const BoxScore = ({
   const colors = STAT_BAR_COLORS;
   // Logo with a stripe in its bar color underneath, as the key
   const keyedLogo = (abbr: string, color: string) => (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "3px",
-      }}
-    >
+    <div className={styles.keyedLogo}>
       <TeamLogo abbr={abbr} size={22} />
-      <Box sx={{ width: 22, height: 3, borderRadius: 2, bgcolor: color }} />
-    </Box>
+      <div className={styles.keyStripe} style={{ backgroundColor: color }} />
+    </div>
   );
 
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "auto 1fr auto",
-          alignItems: "center",
-          mb: 0.5,
-        }}
-      >
+    <div>
+      <div className={styles.statsHead}>
         {keyedLogo(game.away_team.abbr, colors.away)}
-        <Box sx={{ textAlign: "center" }}>
+        <div className={styles.statsTitle}>
           <SectionTitle>Team stats</SectionTitle>
-        </Box>
+        </div>
         {keyedLogo(game.home_team.abbr, colors.home)}
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          fontSize: "0.8125rem",
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
+      </div>
+      <div className={styles.statRows}>
         {rows.map((row) => (
-          <Box key={row.label}>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto 1fr",
-                alignItems: "baseline",
-                columnGap: 1,
-              }}
-            >
+          <div key={row.label}>
+            <div className={styles.statLine}>
               <StatSide {...row.away} align="left" />
-              <Box
-                sx={{
-                  color: "text.secondary",
-                  textAlign: "center",
-                  fontSize: "0.75rem",
-                }}
-              >
-                {row.label}
-              </Box>
+              <div className={styles.statLabel}>{row.label}</div>
               <StatSide {...row.home} align="right" />
-            </Box>
-            <Box
+            </div>
+            <div
               role="img"
               aria-label={`${row.label}: ${game.away_team.abbr} ${row.away.main}, ${game.home_team.abbr} ${row.home.main}`}
-              sx={{ display: "flex", gap: "4px", mt: "3px", height: 4 }}
+              className={styles.bar}
             >
-              <Box
-                sx={{
+              <div
+                className={styles.barPart}
+                style={{
                   width: `${row.awayShare * 100}%`,
-                  bgcolor: colors.away,
-                  borderRadius: 2,
-                  minWidth: 3,
+                  backgroundColor: colors.away,
                 }}
               />
-              <Box
-                sx={{
+              <div
+                className={styles.barPart}
+                style={{
                   width: `${(1 - row.awayShare) * 100}%`,
-                  bgcolor: colors.home,
-                  borderRadius: 2,
-                  minWidth: 3,
+                  backgroundColor: colors.home,
                 }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
@@ -374,42 +283,30 @@ export const GameDetails = ({
     state !== "loading" &&
     !details?.box_score;
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gap: 1.5,
-        pt: 1,
-        alignItems: "start",
-        gridTemplateColumns: columns
-          ? { xs: "1fr", md: "minmax(0, 3fr) minmax(0, 2fr)" }
-          : "1fr",
-      }}
+    <div
+      className={columns ? `${styles.panel} ${styles.columns}` : styles.panel}
     >
       {nothing && (
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          No stats for this game yet.
-        </Typography>
+        <span className={styles.empty}>No stats for this game yet.</span>
       )}
       {curve.length > 1 && (
-        <Box sx={{ gridColumn: "1 / -1", minWidth: 0 }}>
+        <div className={styles.fullWidth}>
           <GameFlow game={game} points={curve} final={!live} />
-        </Box>
+        </div>
       )}
-      <Box
-        sx={{ display: "flex", flexDirection: "column", gap: 1.5, minWidth: 0 }}
-      >
+      <div className={styles.stack}>
         <Leaders game={game} />
         <ScoringPlays game={game} />
-      </Box>
-      <Box sx={{ minWidth: 0 }}>
+      </div>
+      <div className={styles.shrink}>
         {state === "loading" && !details && <CircularProgress size={18} />}
         {details && <BoxScore game={game} details={details} />}
-      </Box>
+      </div>
       {details?.players && (
-        <Box sx={{ gridColumn: "1 / -1", minWidth: 0 }}>
+        <div className={styles.fullWidth}>
           <PlayerStats game={game} players={details.players} />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };

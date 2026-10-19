@@ -1,0 +1,43 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Each chart's title on the left, its headline on the right. */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.title {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.headline {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The moment being read, or the cover count when nothing is. */
+.note {
+  min-height: 1.5em;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.moment {
+  font-variant-numeric: tabular-nums;
+}
+
+.strong {
+  color: var(--text);
+}

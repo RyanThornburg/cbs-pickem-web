@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { Game, GameDetails, PlayerLine } from "../../../../types";
-import { visuallyHidden } from "../../../../helper";
 import { TeamLogo } from "../../../shared/TeamLogo";
 import { STAT_BAR_COLORS } from "../../utils/teamStats";
 import {
@@ -13,6 +10,7 @@ import {
 } from "../../utils/playerStats";
 import { Button } from "../../../../ui/Button";
 import { SegmentedControl } from "../../../../ui/SegmentedControl";
+import uiStyles from "../../../../ui/ui.module.css";
 import styles from "./PlayerStats.module.css";
 
 // Every player's line from the details key, one stat group at a time, both
@@ -20,14 +18,7 @@ import styles from "./PlayerStats.module.css";
 // stats above). Only shown once the key has players; a group with nobody
 // on either team isn't offered.
 
-const cellSx = {
-  py: 0.75,
-  px: 0.75,
-  textAlign: "right",
-  whiteSpace: "nowrap",
-  borderBottom: 1,
-  borderColor: "divider",
-} as const;
+const cx = (...names: (string | false)[]) => names.filter(Boolean).join(" ");
 
 function TeamTable({
   abbr,
@@ -55,129 +46,92 @@ function TeamTable({
     ro.observe(el);
     return () => ro.disconnect();
   }, [all, group.id]);
-  const pinned = {
-    position: "sticky",
-    left: 0,
-    bgcolor: scrolls ? "background.paper" : "transparent",
-  } as const;
+  const pinned = cx(styles.pinned, scrolls && styles.solid);
   const cut = group.top != null && !all && rows.length > group.top;
   const shown = cut ? rows.slice(0, group.top) : rows;
   return (
-    <Box sx={{ minWidth: 0 }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 0.75,
-          fontWeight: 700,
-          fontSize: "0.8125rem",
-          mb: 0.25,
-        }}
-      >
+    <div className={styles.team}>
+      <div className={styles.teamHead}>
         <TeamLogo abbr={abbr} size={18} decorative />
         {abbr}
-        <Box
+        <div
           aria-hidden
-          sx={{ width: 18, height: 3, borderRadius: 2, bgcolor: color }}
+          className={styles.teamStripe}
+          style={{ backgroundColor: color }}
         />
-      </Box>
+      </div>
       {/* Scrolls sideways on its own on a phone, the name pinned. */}
-      <Box ref={scrollRef} sx={{ overflowX: "auto" }}>
-        <Box
-          component="table"
-          sx={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "0.8125rem",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          <Box component="caption" sx={visuallyHidden}>
+      <div ref={scrollRef} className={styles.scroll}>
+        <table className={styles.table}>
+          <caption className={uiStyles.visuallyHidden}>
             {abbr} {group.label.toLowerCase()}
-          </Box>
+          </caption>
           <thead>
             <tr>
-              <Box
-                component="th"
+              <th
                 scope="col"
-                sx={{
-                  ...cellSx,
-                  textAlign: "left",
-                  ...pinned,
-                  fontSize: "0.75rem",
-                  color: "text.secondary",
-                }}
+                className={cx(styles.cell, styles.left, pinned, styles.colHead)}
               >
                 {group.id === "returns" ? "Returner" : "Player"}
-              </Box>
+              </th>
               {group.columns.map((column) => (
-                <Box
-                  component="th"
+                <th
                   scope="col"
                   key={column.key}
                   title={column.title}
-                  sx={{
-                    ...cellSx,
-                    fontSize: "0.75rem",
-                    color: "text.secondary",
-                  }}
+                  className={cx(styles.cell, styles.colHead)}
                 >
                   {column.label}
-                </Box>
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {shown.length === 0 ? (
               <tr>
-                <Box
-                  component="td"
+                <td
                   colSpan={group.columns.length + 1}
-                  sx={{ ...cellSx, textAlign: "left", color: "text.secondary" }}
+                  className={cx(styles.cell, styles.left, styles.none)}
                 >
                   None
-                </Box>
+                </td>
               </tr>
             ) : (
               shown.map((player) => (
                 <tr key={`${player.name}-${player.stats.kind ?? ""}`}>
-                  <Box
-                    component="th"
+                  <th
                     scope="row"
                     title={player.name}
-                    sx={{
-                      ...cellSx,
-                      textAlign: "left",
-                      fontWeight: 600,
-                      ...pinned,
-                      maxWidth: "14ch",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
+                    className={cx(
+                      styles.cell,
+                      styles.left,
+                      styles.name,
+                      pinned
+                    )}
                   >
                     {player.name}
-                  </Box>
+                  </th>
                   {group.columns.map((column) => (
-                    <Box component="td" key={column.key} sx={cellSx}>
+                    <td key={column.key} className={styles.cell}>
                       {statCell(player.stats[column.key])}
-                    </Box>
+                    </td>
                   ))}
                 </tr>
               ))
             )}
           </tbody>
-        </Box>
-      </Box>
+        </table>
+      </div>
       {cut && (
         <Button
           size="small"
           onClick={() => setAll(true)}
-          style={{ marginTop: 2 }}
+          className={styles.showAll}
         >
           Show all {rows.length}
         </Button>
       )}
-    </Box>
+    </div>
   );
 }
 
@@ -194,23 +148,10 @@ export function PlayerStats({
   const group = groups.find((g) => g.id === picked) ?? groups[0];
 
   return (
-    // Capped so eight defense columns don't spread across a full-width row.
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 1.25,
-        maxWidth: 720,
-      }}
-    >
-      <Typography
-        variant="overline"
-        sx={{ color: "text.secondary", lineHeight: 1.6, fontWeight: 700 }}
-      >
-        Player stats
-      </Typography>
+    <div className={styles.root}>
+      <span className={styles.title}>Player stats</span>
       {/* Seven groups don't fit a phone, so the switch scrolls sideways. */}
-      <Box sx={{ overflowX: "auto", mx: -0.5, px: 0.5, pb: 0.25 }}>
+      <div className={styles.groupScroll}>
         <SegmentedControl
           value={group.id}
           onChange={setPicked}
@@ -218,7 +159,7 @@ export function PlayerStats({
           className={styles.groups}
           segments={groups.map((g) => ({ value: g.id, children: g.label }))}
         />
-      </Box>
+      </div>
       <TeamTable
         key={`away-${group.id}`}
         abbr={game.away_team.abbr}
@@ -233,6 +174,6 @@ export function PlayerStats({
         group={group}
         rows={group.rows(players.home)}
       />
-    </Box>
+    </div>
   );
 }

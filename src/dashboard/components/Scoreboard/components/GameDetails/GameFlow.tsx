@@ -1,5 +1,4 @@
 import { KeyboardEvent, PointerEvent, useId, useState } from "react";
-import Box from "@mui/material/Box";
 import { Game, WinProbabilityPoint } from "../../../../types";
 import { useWidth } from "../../../shared/useWidth";
 import { STAT_BAR_COLORS } from "../../utils/teamStats";
@@ -13,6 +12,7 @@ import {
   scoringMarkers,
   winText,
 } from "../../utils/gameFlow";
+import styles from "./GameFlow.module.css";
 
 // Win probability over the game, and the margin against the CBS line under
 // it on the same time axis: who's going to win, then who's covering and by
@@ -176,37 +176,12 @@ function Chart({
   };
 
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          gap: 1,
-          flexWrap: "wrap",
-          mb: 0.25,
-        }}
-      >
-        <Box
-          component="span"
-          sx={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "text.secondary",
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-          }}
-        >
-          {title}
-        </Box>
-        <Box
-          component="span"
-          sx={{ fontSize: "0.8125rem", fontVariantNumeric: "tabular-nums" }}
-        >
-          {headline}
-        </Box>
-      </Box>
-      <Box ref={ref}>
+    <div>
+      <div className={styles.head}>
+        <span className={styles.title}>{title}</span>
+        <span className={styles.headline}>{headline}</span>
+      </div>
+      <div ref={ref}>
         <svg
           width={width}
           height={height}
@@ -358,8 +333,8 @@ function Chart({
             </>
           )}
         </svg>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -384,27 +359,16 @@ export function GameFlow({
   const changes = spread == null ? 0 : coverChanges(points, spread);
 
   const tooltip = shown && (
-    <Box
-      role="status"
-      sx={{
-        fontSize: "0.75rem",
-        lineHeight: 1.5,
-        fontVariantNumeric: "tabular-nums",
-        color: "text.secondary",
-        minHeight: "1.5em",
-      }}
-    >
-      <Box component="b" sx={{ color: "text.primary" }}>
-        {clockLabel(shown)}
-      </Box>
+    <div role="status" className={`${styles.note} ${styles.moment}`}>
+      <b className={styles.strong}>{clockLabel(shown)}</b>
       {` · ${away} ${shown.away_score}, ${home} ${shown.home_score} · ${winText(shown, home, away)}`}
       {spread != null && ` · ${coverText(shown, spread, home, away)}`}
       {scorer && " · scoring play"}
-    </Box>
+    </div>
   );
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+    <div className={styles.root}>
       <Chart
         kind="wp"
         title="Win probability"
@@ -440,26 +404,19 @@ export function GameFlow({
       {/* The moment being read sits in a line under the charts rather than
           a floating tooltip, so it never covers the curve on a phone. */}
       {tooltip ?? (
-        <Box
-          sx={{
-            fontSize: "0.75rem",
-            lineHeight: 1.5,
-            color: "text.secondary",
-            minHeight: "1.5em",
-          }}
-        >
+        <div className={styles.note}>
           {spread != null && (
             <>
               The cover changed hands{" "}
-              <Box component="b" sx={{ color: "text.primary" }}>
+              <b className={styles.strong}>
                 {changes} {changes === 1 ? "time" : "times"}
-              </Box>
+              </b>
               {final ? "" : " so far"}.{" "}
             </>
           )}
           Hover or tap a chart to read any moment.
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
