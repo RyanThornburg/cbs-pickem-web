@@ -42,8 +42,36 @@ const SELECTED_USER = "35";
 // `fail` answers matching API paths with a 500 (error states), `user` is the
 // selected player ("" for nobody), `storage` adds localStorage entries,
 // `admin` serves made-up admin data (adminFixtures.mjs; otherwise the admin
-// routes 401, like a local `wrangler dev`), and `action` runs before the
-// shot (opening a panel).
+// routes 401, like a local `wrangler dev`), `rewrite(path, json)` changes a
+// recorded answer before it's served (faking a state the data isn't in),
+// and `action` runs before the shot (opening a panel).
+// The recorded week is in the first half, so nothing shows the second half's
+// leader cards and columns. This moves the second half's start to week 4
+// and gives everyone a made-up second-half score (with ties at the cutoff).
+const SECOND_HALF_FROM = 4;
+const secondHalfNow = (path, json) => {
+  if (!json?.periods) return json;
+  const periods = json.periods.map((period) =>
+    period.key === "first_half"
+      ? { ...period, end_week: SECOND_HALF_FROM - 1 }
+      : period.key === "second_half"
+        ? { ...period, start_week: SECOND_HALF_FROM }
+        : period
+  );
+  const users = json.users?.map((user) => {
+    const overall = user.periods?.overall?.score ?? 0;
+    const score = Math.max(0, overall - 8 - (Number(user.user_id) % 4));
+    return {
+      ...user,
+      periods: {
+        ...user.periods,
+        second_half: { ...user.periods?.second_half, score, place: null },
+      },
+    };
+  });
+  return users ? { ...json, periods, users } : { ...json, periods };
+};
+
 export const PAGES = [
   ["picks", "/picks"],
   ["picks-past", "/picks?week=3"],
@@ -86,6 +114,7 @@ export const PAGES = [
   ],
   ["admin", "/admin", { admin: true }],
   ["admin-roster", "/admin?view=roster", { admin: true }],
+  ["picks-segment", "/picks", { rewrite: secondHalfNow }],
 ];
 const WIDTHS = [360, 1280];
 
@@ -195,9 +224,15 @@ async function main() {
               };
             }
             const saved = fixtures.responses[key] ?? { status: 404, body: "" };
+            const body =
+              options.rewrite && saved.status === 200
+                ? JSON.stringify(
+                    options.rewrite(url.pathname, JSON.parse(saved.body))
+                  )
+                : saved.body;
             return route.fulfill({
               status: saved.status,
-              body: saved.body,
+              body,
               headers: { "content-type": "application/json" },
             });
           }
