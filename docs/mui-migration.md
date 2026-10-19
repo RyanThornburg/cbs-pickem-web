@@ -105,6 +105,12 @@ node scripts/visual/diff.mjs .visual/main .visual/after
   step didn't touch.
 - **CHANGED** is a real difference until shown otherwise. Compare the
   computed styles of the element in both builds.
+- `node scripts/visual/clickthrough.mjs` clicks through every converted
+  control at 360 and 1280 (switches by tap and arrow keys, box score groups,
+  the Key popover, the team back link, a User Picks row, Admin's form).
+- `SeasonRecapCharts` can measure its width late right after load (on
+  `main` too), so a fresh season shot can draw the charts at another scale:
+  re-shoot before chasing it.
 - Then `npm run lint`, `npm run format:check`, `npm run test:all` (not while
   Playwright is running: worker start-up timeouts skip test files).
 
@@ -146,6 +152,21 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    - **Check** with `snap.mjs --pages <the folder's pages> --port <own
      port>` against the shared `.visual/main`, and `measure.mjs` (same
      data, any selector) on both builds when a page changes.
+   **Batch 1 done 2026-10-19** (8 agents: shared pieces with `TabIntro`,
+   `TabSkeleton`, `ByeTeams`, `UserAvatar`, `PickYourselfHint`, `GamesCard`;
+   `TrendsSection`; `Scoreboard`; `GameDetails`; `Players`; `Recap`; `Nfl`;
+   `UsersTable`). Merged as one commit per folder; on the merged build 39 of
+   40 shots match `main` exactly (the 40th is the tab-underline noise), the
+   click-through passes, 369 tests pass. `sx` in those folders went from 507
+   to 32 (all on step 4 components). **Left for batch 2:** `AdminPanel`,
+   `RecordsSection`, `Leaders` (only shows from week 10: needs a faked
+   page first).
+   Running it, learned the hard way: worktrees are created from `main`, so
+   each agent must `git checkout -b mui/<folder> <migration tip>` itself;
+   only six agents run at once here; agents share the session scratchpad,
+   so give each its own subfolder for throwaway scripts; a session ending
+   stops the workflow, so save each worktree's work as a WIP commit and let
+   the rerun pick it up.
    Shell files (`MainGrid`, `PhoneTabBar`, `Dashboard`, `UserSelectDropdown`,
    `WeekDropdown`, …) wait for step 5. Shared bits (`TabIntro`,
    `TabSkeleton`, `ByeTeams`, `AppShellStatus`, `shared/`) go with the
