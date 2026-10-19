@@ -1,5 +1,5 @@
 import { MONEY_GOLD } from "./StandingsStatus";
-import { SELECTED_ROW_BG } from "./selectedRowSx";
+import { SELECTED_ROW_BG } from "./selectedRow";
 import { PrizesHelp } from "./PrizesHelp";
 import styles from "./PaidLineRule.module.css";
 

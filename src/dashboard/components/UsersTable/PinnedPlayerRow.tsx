@@ -4,7 +4,7 @@ import { ordinal } from "../../helper";
 import UserAvatar from "../UserAvatar";
 import { ScoreWithCovering } from "./ScoreWithCovering";
 import { pts } from "./MoneyLines";
-import { SELECTED_ROW_BG } from "./selectedRowSx";
+import { SELECTED_ROW_BG } from "./selectedRow";
 import { ShownMoneyStanding } from "./usersTableUtils";
 import { PHONE_TAB_BAR_OFFSET } from "../PhoneTabBar";
 import uiStyles from "../../ui/ui.module.css";

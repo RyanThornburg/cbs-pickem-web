@@ -1,0 +1,98 @@
+/* Below md, the tab bar fixed to the bottom of the screen (PhoneTabBar). */
+.bar {
+  display: block;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--divider);
+  background-color: var(--paper);
+  /* Floats above the page, so it gets the float shadow (upward). */
+  box-shadow: 0 -6px 14px -10px hsla(220, 30%, 5%, 0.25);
+}
+@media (min-width: 900px) {
+  .bar {
+    display: none;
+  }
+}
+
+/* PAST_WEEK_STRIP_HEIGHT tall. A quiet slate-50, not a warning. */
+.pastWeek {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding-left: 16px;
+  padding-right: 8px;
+  border-bottom: 1px solid var(--divider);
+  background-color: var(--gray-50);
+  font-size: var(--text-sm);
+}
+.pastIcon {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+.pastText {
+  flex: 1;
+  min-width: 0;
+}
+.pastWeekName {
+  font-weight: 600;
+}
+.muted {
+  color: var(--text-muted);
+}
+
+.items {
+  display: grid;
+}
+
+/* PHONE_TAB_BAR_HEIGHT tall: the icon's pill over its label. */
+.item {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  height: 60px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  /* A link inherits the body's line height; keep a button's. */
+  line-height: normal;
+  transition: all 100ms ease-in;
+}
+.item:focus-visible {
+  outline-offset: -3px;
+}
+.selected {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.pill {
+  position: relative;
+  display: inline-flex;
+  padding: 2px 14px;
+  border-radius: 999px;
+}
+/* DESIGN.md slate-200: a filled pill marks the current tab. */
+.selected .pill {
+  background-color: var(--gray-200);
+}
+
+.icon {
+  font-size: 22px;
+}
+
+.liveDot {
+  position: absolute;
+  top: 1px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--error);
+  box-shadow: 0 0 0 2px var(--paper);
+}

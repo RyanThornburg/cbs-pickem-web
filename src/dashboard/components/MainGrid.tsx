@@ -1,16 +1,3 @@
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import Badge from "@mui/material/Badge";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Grid";
-import Skeleton from "@mui/material/Skeleton";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
 import {
   lazy,
   startTransition,
@@ -64,20 +51,26 @@ import PlayerPage from "./Players/PlayerPage";
 import UsersTable from "./UsersTable";
 import { UserGamePicksStack } from "./UsersTable/UserPickStack";
 import { useMoneyStandings } from "./UsersTable/useMoneyStandings";
-import { ordinal, visuallyHidden } from "../helper";
-import { PHONE_TAB_BAR_OFFSET, PhoneTabBar } from "./PhoneTabBar";
+import { ordinal } from "../helper";
+import { PhoneTabBar } from "./PhoneTabBar";
 import RecapStrip from "./Recap/RecapStrip";
 import SegmentLeaders from "./Leaders/SegmentLeaders";
 import { shownSegment } from "../utils/payPeriods";
 import { useCurrentWeek } from "./CurrentWeekContext";
 import { useIsAdmin, useSelectedUser, useWeekData } from "./useWeekData";
-import { MONEY_GOLD } from "./UsersTable/StandingsStatus";
 import { TabActiveContext, followTabLink, tabHref } from "./tabLinks";
 import { useStableHandler } from "./shared/useStableHandler";
 import { playerPath } from "./shared/PlayerLink";
 import type { View as TrendsView } from "./TrendsSection";
 import { Button } from "../ui/Button";
 import { Icon } from "../ui/Icon";
+import { IconButton } from "../ui/IconButton";
+import { Skeleton } from "../ui/Skeleton";
+import { UP_MD, useMediaQuery } from "../ui/useMediaQuery";
+import uiStyles from "../ui/ui.module.css";
+import { DesktopTabs } from "./DesktopTabs";
+import tabStyles from "./DesktopTabs.module.css";
+import styles from "./MainGrid.module.css";
 
 // All-time records and the owner-only admin page aren't weekly, and most
 // visits never open them, so they load on first open.
@@ -168,8 +161,7 @@ export default function MainGrid() {
     selectedWeek,
     weekComplete
   );
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDesktop = useMediaQuery(UP_MD);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // After picking someone on User Picks, bring their row into view if it's
@@ -360,18 +352,20 @@ export default function MainGrid() {
   // A past week carries over to the next tab; other params (Trends'
   // ?view=) belong to the tab they were set on.
   const weekSearch = isCurrentWeek ? "" : `?week=${selectedWeek}`;
-  // Each desktop tab is a link to its route (see tabLinks.ts). MUI's Tabs
-  // still draws the row and the indicator, but its tab roles and roving
-  // focus are swapped for plain links, each in the tab order.
-  const navTabProps = (value: AppTab) => ({
-    value,
-    component: "a" as const,
+  // Each desktop tab is a link to its route (see tabLinks.ts), in the tab
+  // order like any link; DesktopTabs draws the row and the underline.
+  const navTabProps = (value: AppTab, className?: string) => ({
     href: tabHref(value, weekSearch),
     onClick: (event: React.MouseEvent) => followTabLink(event, value, goToTab),
-    role: undefined,
-    tabIndex: 0,
-    "aria-selected": undefined,
     "aria-current": shownTab === value ? ("page" as const) : undefined,
+    "data-tab": value,
+    className: [
+      tabStyles.tab,
+      shownTab === value && tabStyles.selected,
+      className,
+    ]
+      .filter(Boolean)
+      .join(" "),
   });
 
   useLayoutEffect(() => {
@@ -453,82 +447,27 @@ export default function MainGrid() {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        maxWidth: { sm: "100%", md: "1700px" },
-        // Room for the phone tab bar, so it never covers the page's end.
-        pb: { xs: PHONE_TAB_BAR_OFFSET, md: 0 },
-      }}
-    >
+    <div className={styles.page}>
       {activeTab !== null && (
         <>
-          <Box
-            component="a"
+          <a
             href="#main-content"
             onClick={skipToContent}
-            sx={{
-              ...visuallyHidden,
-              "&:focus": {
-                clip: "auto",
-                clipPath: "none",
-                width: "auto",
-                height: "auto",
-                margin: 0,
-                position: "fixed",
-                top: 8,
-                left: 8,
-                zIndex: "tooltip",
-                px: 2,
-                py: 1,
-                borderRadius: 2,
-                bgcolor: "background.paper",
-                color: "text.primary",
-                fontWeight: 600,
-                fontSize: "0.875rem",
-                boxShadow: "0 6px 14px -6px hsla(220, 30%, 5%, 0.35)",
-              },
-            }}
+            className={styles.skipLink}
           >
             Skip to content
-          </Box>
+          </a>
           {/* Desktop: a small site name, then the week's picks, the Week
               pill and the player card (place, score, money lines). Phones
               drop the visible site name (the browser tab carries it) and
               put the Week pill and player picker on one row, picks below
               (also below from md to lg, where the row can't fit them). */}
-          <Box
-            component="header"
-            sx={{
-              mt: 2,
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              columnGap: { xs: 1, md: 2 },
-              rowGap: 1.25,
-            }}
-          >
-            <Typography
-              component="h1"
-              sx={(theme) => ({
-                mr: "auto",
-                fontSize: "0.875rem",
-                fontWeight: 700,
-                letterSpacing: "-0.01em",
-                whiteSpace: "nowrap",
-                [theme.breakpoints.down("md")]: visuallyHidden,
-              })}
-            >
-              Morlocked{" "}
-              <Box
-                component="span"
-                sx={{ color: "text.secondary", fontWeight: 500 }}
-              >
-                Pick'em
-              </Box>
-            </Typography>
+          <header className={styles.header}>
+            <h1 className={styles.siteName}>
+              Morlocked <span className={styles.siteNameEnd}>Pick'em</span>
+            </h1>
             {showPlayerControls && selectedUser && (
-              <Box
+              <div
                 // Beside the Week pill from lg. Below that the row can't
                 // fit them, so they drop under it: under the card (right
                 // aligned) from md, full width on phones.
@@ -537,63 +476,43 @@ export default function MainGrid() {
                 // login), so the visible label stays neutral; the name sits
                 // beside it, but screen readers need it in the group name.
                 aria-label={`${selectedUser.name}'s picks`}
-                sx={{
-                  order: { xs: 3, lg: 0 },
-                  width: { xs: "100%", lg: "auto" },
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: { xs: "flex-start", md: "flex-end" },
-                  gap: 1,
-                }}
+                className={styles.headerPicks}
               >
-                <Box
-                  component="span"
-                  aria-hidden
-                  sx={{
-                    flexShrink: 0,
-                    fontSize: "0.75rem",
-                    lineHeight: 1.2,
-                    fontWeight: 500,
-                    color: "text.secondary",
-                  }}
-                >
+                <span aria-hidden className={styles.headerPicksLabel}>
                   Picks
-                </Box>
+                </span>
                 {UserGamePicksStack(
                   selectedUser.picks,
                   true,
                   selectedUser.has_submitted_picks
                 )}
-              </Box>
+              </div>
             )}
             {showPlayerControls && !metaReady && (
               // The Week pill and player picker, sized like the real ones;
               // still and faded once the load has failed.
-              <Box
-                sx={{
-                  display: "contents",
-                  "& .MuiSkeleton-root": {
-                    opacity: metaStatus === "failed" ? 0.45 : 1,
-                  },
-                }}
-              >
+              <>
                 <Skeleton
-                  animation={metaStatus === "failed" ? false : "pulse"}
                   variant="rounded"
-                  height={40}
-                  sx={{ width: { xs: 72, md: 88 }, borderRadius: "999px" }}
+                  animate={metaStatus !== "failed"}
+                  className={[
+                    styles.weekSkeleton,
+                    metaStatus === "failed" && styles.failedSkeleton,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                 />
                 <Skeleton
-                  animation={metaStatus === "failed" ? false : "pulse"}
                   variant="rounded"
-                  sx={{
-                    height: { xs: 40, md: 59 },
-                    width: { md: 300 },
-                    flex: { xs: 1, md: "none" },
-                    borderRadius: { xs: 1, md: "10px" },
-                  }}
+                  animate={metaStatus !== "failed"}
+                  className={[
+                    styles.playerSkeleton,
+                    metaStatus === "failed" && styles.failedSkeleton,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                 />
-              </Box>
+              </>
             )}
             {metaReady && showPlayerControls && (
               // Kept on Records too: it sets the week the header's picks,
@@ -626,137 +545,74 @@ export default function MainGrid() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open the pool on CBS Sports (new tab)"
-                sx={{
-                  display: { xs: "inline-flex", md: "none" },
-                  width: 36,
-                  height: 40,
-                  mr: -0.5,
-                  color: "text.secondary",
-                }}
+                className={styles.phoneCbsLink}
               >
-                <OpenInNewIcon fontSize="small" />
+                <Icon name="OpenInNew" size="small" />
               </IconButton>
             )}
-          </Box>
+          </header>
 
-          <Box ref={tabRowSentinel} aria-hidden sx={{ height: 0 }} />
+          <div ref={tabRowSentinel} aria-hidden className={styles.sentinel} />
           {/* Desktop only; phones get PhoneTabBar at the bottom. */}
-          <Box
-            component="nav"
+          <nav
             aria-label="Sections"
-            sx={{
-              mt: 1.5,
-              borderBottom: 1,
-              borderColor: "divider",
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              // Out into the page's side margins, so rows don't show beside
-              // the bar once it's stuck.
-              mx: -3,
-              px: 3,
-              position: "sticky",
-              top: 0,
-              zIndex: "appBar",
-              bgcolor: "background.paper",
-              // Floats once stuck, so it gets the float shadow then.
-              boxShadow: tabRowStuck
-                ? "0 6px 14px -8px hsla(220, 30%, 5%, 0.25)"
-                : "none",
-              transition: "box-shadow 150ms ease-out",
-            }}
+            className={[styles.tabRow, tabRowStuck && styles.tabRowStuck]
+              .filter(Boolean)
+              .join(" ")}
           >
-            <Tabs
-              value={shownTab ?? false}
-              variant="scrollable"
-              slotProps={{ list: { role: undefined } }}
-              // No arrows: with "auto", MUI showed them on some tabs and not
-              // others at the same width, shifting every label sideways on a
-              // tab switch. The row still scrolls on a narrow window.
-              scrollButtons={false}
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                "& .MuiTab-root": { px: 1 },
-                // The scroller clips anything outside the tabs, so the
-                // focus ring goes inside the tab instead of around it.
-                "& .MuiTab-root:focus-visible": { outlineOffset: "-3px" },
-              }}
-            >
-              <Tab label="User Picks" {...navTabProps("picks")} />
-              <Tab
-                label={
-                  <Badge
-                    color="error"
-                    variant="dot"
-                    invisible={!hasLiveGame || activeTab === "nfl"}
-                  >
-                    NFL
-                    {hasLiveGame && activeTab !== "nfl" && (
-                      <Box component="span" sx={visuallyHidden}>
-                        , games in progress
-                      </Box>
-                    )}
-                  </Badge>
-                }
-                {...navTabProps("nfl")}
-              />
-              <Tab label="Trends" {...navTabProps("trends")} />
-              <Tab label="You" {...navTabProps(PLAYERS_TAB)} />
+            <DesktopTabs selected={shownTab}>
+              <a {...navTabProps("picks")}>User Picks</a>
+              <a {...navTabProps("nfl")}>
+                <span className={tabStyles.badge}>
+                  NFL
+                  {hasLiveGame && activeTab !== "nfl" && (
+                    <span className={uiStyles.visuallyHidden}>
+                      , games in progress
+                    </span>
+                  )}
+                  <span
+                    aria-hidden
+                    className={[
+                      tabStyles.dot,
+                      (!hasLiveGame || activeTab === "nfl") &&
+                        tabStyles.dotHidden,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  />
+                </span>
+              </a>
+              <a {...navTabProps("trends")}>Trends</a>
+              <a {...navTabProps(PLAYERS_TAB)}>You</a>
               {/* Set apart like Admin: all-time data, not this week's. */}
-              <Tab
-                label="Records"
-                {...navTabProps(RECORDS_TAB)}
-                icon={<EmojiEventsIcon fontSize="small" />}
-                iconPosition="start"
-                sx={{
-                  ml: 1,
-                  pl: 1.5,
-                  minWidth: 0,
-                  // The theme gives every tab a transparent border on all
-                  // four sides; only the left one is the divider.
-                  borderLeftColor: "divider",
-                  borderRadius: 0,
-                  color: MONEY_GOLD,
-                  "& .MuiTab-icon": { mr: 1 },
-                  "&.Mui-selected": { color: MONEY_GOLD },
-                }}
-              />
-              {/* Also rendered while on /admin itself so the Tabs value stays
-                  valid even before (or if) the admin check comes back. */}
-              {(isAdmin || activeTab === ADMIN_TAB) && (
-                <Tab
-                  label="Admin"
-                  {...navTabProps(ADMIN_TAB)}
-                  icon={<AdminPanelSettingsIcon fontSize="small" />}
-                  iconPosition="start"
-                  sx={{
-                    ml: 1,
-                    pl: 1.5,
-                    borderLeftColor: "divider",
-                    borderRadius: 0,
-                    color: "warning.main",
-                    "&.Mui-selected": { color: "warning.main" },
-                  }}
-                />
-              )}
-            </Tabs>
-            {tabRowStuck && (
-              <Typography
-                variant="body2"
-                sx={{
-                  flexShrink: 0,
-                  px: 1,
-                  color: "text.secondary",
-                  whiteSpace: "nowrap",
-                  fontVariantNumeric: "tabular-nums",
-                }}
+              <a
+                {...navTabProps(
+                  RECORDS_TAB,
+                  `${tabStyles.divided} ${tabStyles.records}`
+                )}
               >
+                <Icon name="EmojiEvents" size="small" />
+                Records
+              </a>
+              {/* Also rendered while on /admin itself, before (or if) the
+                  admin check comes back. */}
+              {(isAdmin || activeTab === ADMIN_TAB) && (
+                <a
+                  {...navTabProps(
+                    ADMIN_TAB,
+                    `${tabStyles.divided} ${tabStyles.admin}`
+                  )}
+                >
+                  <Icon name="AdminPanelSettings" size="small" />
+                  Admin
+                </a>
+              )}
+            </DesktopTabs>
+            {tabRowStuck && (
+              <p className={styles.stuckLine}>
                 {metaReady && activeTab !== ADMIN_TAB && (
                   <>
-                    Week{" "}
-                    <Box component="span" sx={{ color: "text.primary" }}>
-                      {selectedWeek}
-                    </Box>
+                    Week <span className={styles.ink}>{selectedWeek}</span>
                     {!isCurrentWeek && ", past week"}
                   </>
                 )}
@@ -766,15 +622,12 @@ export default function MainGrid() {
                 {selectedUser?.place != null && activeTab !== ADMIN_TAB && (
                   <>
                     {" · "}
-                    <Box
-                      component="span"
-                      sx={{ color: "text.primary", fontWeight: 600 }}
-                    >
+                    <span className={styles.stuckPlace}>
                       {ordinal(selectedUser.place)}
-                    </Box>
+                    </span>
                   </>
                 )}
-              </Typography>
+              </p>
             )}
             {cbsPoolUrl && (
               <Button
@@ -789,13 +642,13 @@ export default function MainGrid() {
                 CBS Pool
               </Button>
             )}
-          </Box>
+          </nav>
 
-          <Box
+          <div
             id="main-content"
             ref={mainContentRef}
             tabIndex={-1}
-            sx={{ outline: "none" }}
+            className={styles.mainContent}
           >
             <NflViewContext.Provider value={nflViewState}>
               <PastWeekContext.Provider value={pastWeekInfo}>
@@ -803,7 +656,7 @@ export default function MainGrid() {
                 the weekly tab components render their own, since the
                 controls are theirs; the rest are here. */}
                 {!metaReady && (
-                  <Box sx={{ mt: 2 }}>
+                  <div className={styles.shellBody}>
                     <TabIntro title={TAB_TITLES[activeTab]} />
                     <AppShellStatus
                       metaStatus={metaStatus}
@@ -811,13 +664,13 @@ export default function MainGrid() {
                       shape={TAB_SKELETONS[activeTab]}
                       cbsPoolUrl={cbsPoolUrl}
                     />
-                  </Box>
+                  </div>
                 )}
                 {metaReady && (
-                  <Grid container spacing={2} columns={12} sx={{ mt: 2 }}>
-                    <Grid
-                      size={{ xs: 12, lg: 12 }}
-                      sx={{ display: activeTab === "picks" ? "block" : "none" }}
+                  <div className={styles.tabPanels}>
+                    <div
+                      className={styles.tabPanel}
+                      hidden={activeTab !== "picks"}
                     >
                       <TabActiveContext.Provider value={activeTab === "picks"}>
                         <TabIntro
@@ -849,23 +702,18 @@ export default function MainGrid() {
                         moneyStandings={moneyStandings}
                         onOpenPlayer={openPlayer}
                       />
-                    </Grid>
+                    </div>
                     {/* NFL: Games and Live stay mounted while hidden (their
                       polls pause), like the other weekly tabs; Standings and
                       team pages mount only while open. */}
-                    <Grid
-                      size={{ xs: 12, lg: 12 }}
-                      sx={{ display: onNflList ? "block" : "none" }}
-                    >
+                    <div className={styles.tabPanel} hidden={!onNflList}>
                       {onNflList && nflView === null && (
                         <>
                           <TabIntro title="NFL" week={selectedWeek} />
                           <TabSkeleton shape="cards" label="Loading" />
                         </>
                       )}
-                      <Box
-                        sx={{ display: nflView === "games" ? "block" : "none" }}
-                      >
+                      <div hidden={nflView !== "games"}>
                         <TabActiveContext.Provider
                           value={onNflList && nflView === "games"}
                         >
@@ -875,10 +723,8 @@ export default function MainGrid() {
                             viewSwitch={VIEW_SWITCH}
                           />
                         </TabActiveContext.Provider>
-                      </Box>
-                      <Box
-                        sx={{ display: nflView === "live" ? "block" : "none" }}
-                      >
+                      </div>
+                      <div hidden={nflView !== "live"}>
                         <TabActiveContext.Provider
                           value={onNflList && nflView === "live"}
                         >
@@ -890,7 +736,7 @@ export default function MainGrid() {
                             viewSwitch={VIEW_SWITCH}
                           />
                         </TabActiveContext.Provider>
-                      </Box>
+                      </div>
                       {onNflList && nflView === "standings" && (
                         <StandingsView
                           season={season}
@@ -899,9 +745,9 @@ export default function MainGrid() {
                           intro={VIEW_SWITCH}
                         />
                       )}
-                    </Grid>
+                    </div>
                     {activeTab === "nfl" && teamSlug && (
-                      <Grid size={{ xs: 12, lg: 12 }}>
+                      <div className={styles.tabPanel}>
                         <TeamPage
                           season={season}
                           slug={teamSlug}
@@ -909,10 +755,10 @@ export default function MainGrid() {
                           userId={user}
                           userName={selectedUser?.name}
                         />
-                      </Grid>
+                      </div>
                     )}
                     {activeTab === PLAYERS_TAB && (
-                      <Grid size={{ xs: 12, lg: 12 }}>
+                      <div className={styles.tabPanel}>
                         {pagePlayerId ? (
                           <PlayerPage
                             key={pagePlayerId}
@@ -934,13 +780,11 @@ export default function MainGrid() {
                             }}
                           />
                         )}
-                      </Grid>
+                      </div>
                     )}
-                    <Grid
-                      size={{ xs: 12, lg: 12 }}
-                      sx={{
-                        display: activeTab === "trends" ? "block" : "none",
-                      }}
+                    <div
+                      className={styles.tabPanel}
+                      hidden={activeTab !== "trends"}
                     >
                       <TabActiveContext.Provider value={activeTab === "trends"}>
                         <TrendsSection
@@ -953,9 +797,9 @@ export default function MainGrid() {
                           onUrlViewChange={changeTrendsView}
                         />
                       </TabActiveContext.Provider>
-                    </Grid>
+                    </div>
                     {activeTab === RECORDS_TAB && (
-                      <Grid size={{ xs: 12, lg: 12 }}>
+                      <div className={styles.tabPanel}>
                         <TabIntro title={TAB_TITLES[RECORDS_TAB]} />
                         <Suspense
                           fallback={
@@ -971,12 +815,12 @@ export default function MainGrid() {
                             onChoosePlayer={openUserMenu}
                           />
                         </Suspense>
-                      </Grid>
+                      </div>
                     )}
                     {/* Mounted only while open, so admin data is never polled in the
                 background from the public tabs. */}
                     {activeTab === ADMIN_TAB && (
-                      <Grid size={{ xs: 12, lg: 12 }}>
+                      <div className={styles.tabPanel}>
                         <Suspense
                           fallback={
                             <TabSkeleton
@@ -987,13 +831,13 @@ export default function MainGrid() {
                         >
                           <AdminPanel />
                         </Suspense>
-                      </Grid>
+                      </div>
                     )}
-                  </Grid>
+                  </div>
                 )}
               </PastWeekContext.Provider>
             </NflViewContext.Provider>
-          </Box>
+          </div>
           <PhoneTabBar
             activeTab={shownTab}
             onChange={goToTab}
@@ -1017,6 +861,6 @@ export default function MainGrid() {
           />
         </>
       )}
-    </Box>
+    </div>
   );
 }

@@ -1,8 +1,8 @@
-import Skeleton from "@mui/material/Skeleton";
 import { PayPeriod, RankedUser } from "../types";
 import { periodName } from "../utils/payPeriods";
 import { ordinal } from "../helper";
 import { Select } from "../ui/Select";
+import { Skeleton } from "../ui/Skeleton";
 import uiStyles from "../ui/ui.module.css";
 import styles from "./UserSelectDropdown.module.css";
 import UserAvatar from "./UserAvatar";
@@ -66,13 +66,8 @@ export default function UserSelectDropdown({
     if (user && users.length === 0) {
       return (
         <span className={styles.waiting}>
-          <Skeleton
-            variant="circular"
-            width={26}
-            height={26}
-            animation={false}
-          />
-          <Skeleton variant="text" width={110} animation={false} />
+          <Skeleton variant="circular" width={26} height={26} animate={false} />
+          <Skeleton variant="text" width={110} animate={false} />
           <span className={uiStyles.visuallyHidden}>
             Your player, waiting for the standings
           </span>

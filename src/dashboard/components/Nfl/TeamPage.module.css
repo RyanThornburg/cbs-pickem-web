@@ -14,7 +14,7 @@
   background-color: var(--paper);
   color: var(--text);
 }
-/* The selected player, lime as on every tab (UsersTable's selectedRowSx). */
+/* The selected player, lime as on every tab (UsersTable's SELECTED_ROW_BG). */
 .highlight {
   background-color: #f0f4c3;
 }

@@ -5,11 +5,6 @@
   font-size: var(--text-xs);
   font-weight: 700;
 }
-/* Middle-aligned in the line, as MUI's sort label (a ButtonBase) was; on
-   the baseline it sat up to a pixel higher. */
-.sortLabel {
-  vertical-align: middle;
-}
 
 /* The last refresh, at the right end of the Picks header. */
 .updated {
@@ -20,7 +15,7 @@
 }
 
 /* A row opens the player's page. The selected player's row is lime
-   (selectedRowSx's SELECTED_ROW_BG); hovering still tints it grey, as
+   (selectedRow.ts's SELECTED_ROW_BG); hovering still tints it grey, as
    MUI's hover rule outranked the lime. */
 .row {
   cursor: pointer;

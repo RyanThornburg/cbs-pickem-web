@@ -126,11 +126,7 @@
   right: -10px;
   width: 10px;
   pointer-events: none;
-  background: linear-gradient(
-    to right,
-    var(--template-palette-background-paper, #fff),
-    transparent
-  );
+  background: linear-gradient(to right, var(--paper), transparent);
 }
 
 /* A finish's tile, a button that shows its score above the grid. */

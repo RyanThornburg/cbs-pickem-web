@@ -1,0 +1,229 @@
+/* The page frame: header, desktop tab row and the tab panels. The desktop
+   tabs themselves are DesktopTabs.module.css; the phone bar is
+   PhoneTabBar.module.css. */
+
+/* Room at the bottom for the phone tab bar (PHONE_TAB_BAR_OFFSET in
+   PhoneTabBar.tsx), so it never covers the page's end. */
+.page {
+  width: 100%;
+  padding-bottom: calc(
+    60px + var(--phone-tab-bar-extra, 0px) + env(safe-area-inset-bottom, 0px)
+  );
+}
+@media (min-width: 600px) {
+  .page {
+    max-width: 100%;
+  }
+}
+@media (min-width: 900px) {
+  .page {
+    max-width: 1700px;
+    padding-bottom: 0;
+  }
+}
+
+/* Hidden until it's reached by keyboard, then a card at the top left. */
+.skipLink {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.skipLink:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1500;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 8px 16px;
+  clip: auto;
+  clip-path: none;
+  border-radius: 16px;
+  background-color: var(--paper);
+  color: var(--text);
+  font-size: var(--text-md);
+  font-weight: 600;
+  box-shadow: 0 6px 14px -6px hsla(220, 30%, 5%, 0.35);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 10px;
+  margin-top: 16px;
+}
+@media (min-width: 900px) {
+  .header {
+    column-gap: 16px;
+  }
+}
+
+/* Desktop only; on phones the browser tab carries the name. */
+.siteName {
+  margin: 0 auto 0 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+@media (max-width: 899.95px) {
+  .siteName {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+.siteNameEnd {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* The selected player's picks: full width on phones, under the card and
+   right aligned from md, beside the Week pill from lg. */
+.headerPicks {
+  order: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+@media (min-width: 900px) {
+  .headerPicks {
+    justify-content: flex-end;
+  }
+}
+@media (min-width: 1200px) {
+  .headerPicks {
+    order: 0;
+    width: auto;
+  }
+}
+.headerPicksLabel {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Until meta loads: the Week pill and the player picker, sized like the
+   real ones. */
+.weekSkeleton {
+  width: 72px;
+  height: 40px;
+  border-radius: 999px;
+}
+.playerSkeleton {
+  flex: 1;
+  height: 40px;
+}
+@media (min-width: 900px) {
+  .weekSkeleton {
+    width: 88px;
+  }
+  .playerSkeleton {
+    flex: none;
+    width: 300px;
+    height: 59px;
+    border-radius: var(--radius-lg);
+  }
+}
+.failedSkeleton {
+  opacity: 0.45;
+}
+
+.phoneCbsLink {
+  width: 36px;
+  height: 40px;
+  margin-right: -4px;
+  color: var(--text-muted);
+}
+@media (min-width: 900px) {
+  .phoneCbsLink {
+    display: none;
+  }
+}
+
+.sentinel {
+  height: 0;
+}
+
+/* Desktop's tab row. It reaches out into the page's side margins, so rows
+   don't show beside it once it's stuck to the top. */
+.tabRow {
+  display: none;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  margin: 12px -24px 0;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--divider);
+  background-color: var(--paper);
+  transition: box-shadow 150ms ease-out;
+}
+@media (min-width: 900px) {
+  .tabRow {
+    display: flex;
+  }
+}
+/* Floats once stuck, so it gets the float shadow then. */
+.tabRowStuck {
+  box-shadow: 0 6px 14px -8px hsla(220, 30%, 5%, 0.25);
+}
+
+/* Once stuck, the row names the week and player the header did. */
+.stuckLine {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 8px;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  line-height: 1.43;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ink {
+  color: var(--text);
+}
+.stuckPlace {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.mainContent {
+  outline: none;
+}
+
+.shellBody {
+  margin-top: 16px;
+}
+
+/* One panel per tab; only the open one shows. A flex box, so the panels'
+   own top margins don't collapse into this one. */
+.tabPanels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+.tabPanel {
+  width: 100%;
+  min-width: 0;
+}

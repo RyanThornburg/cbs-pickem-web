@@ -1,27 +1,26 @@
 /* The Games tab, in the app's own palette (DESIGN.md's League Office):
-   every --gc-* name below points at a theme token (the theme emits them as
-   --template-palette-*: AppTheme sets cssVarPrefix "template") or the slate scale, so
-   Games reads like User Picks and Scoreboard. Only team colors (logos) are
-   unique per team. Scoped under .games-card so it can't leak. */
+   every --gc-* name below points at a token from styles/tokens.css or the
+   slate scale, so Games reads like User Picks and Scoreboard. Only team
+   colors (logos) are unique per team. Scoped under .games-card so it can't leak. */
 .games-card {
-  --gc-surface: var(--template-palette-background-paper);
-  /* slate-100 / slate-200 (themePrimitives gray[100] / gray[200]): the
+  --gc-surface: var(--paper);
+  /* slate-100 / slate-200 (tokens.css --gray-100 / --gray-200): the
      app's chip and selected-pill fills. */
   --gc-surface-2: hsl(220, 30%, 94%);
   --gc-surface-3: hsl(220, 20%, 88%);
-  --gc-border: var(--template-palette-divider);
-  --gc-text: var(--template-palette-text-primary);
-  --gc-text-muted: var(--template-palette-text-secondary);
+  --gc-border: var(--divider);
+  --gc-text: var(--text);
+  --gc-text-muted: var(--text-muted);
   /* Green is a cover, as on every tab (the dark shade for small text). */
-  --gc-good: var(--template-palette-success-dark);
+  --gc-good: var(--success-dark);
   --gc-good-soft: #e8f5e9;
   /* The app's blue, for the CBS edge tag. */
-  --gc-info: var(--template-palette-primary-main);
+  --gc-info: var(--primary);
   /* Caution is the app's warning orange, as on the Scoreboard's "Close"
      flag: solid for an official alert, a tint with dark amber ink for a
      weather flag (5.4:1). Weather itself has no hue of its own: icons are
      muted ink and the wettest hour is a slate tile. */
-  --gc-caution: var(--template-palette-warning-main);
+  --gc-caution: var(--warning);
   --gc-caution-ink: #1b1300;
   --gc-accent: #8a560a;
   --gc-accent-soft: #fbe9d7;
@@ -447,7 +446,7 @@ a.gc-wx-link:hover .gc-temp,
    tab's own buttons and links. */
 .games-card .gc-expandbtn:focus-visible,
 .games-card a.gc-wx-link:focus-visible {
-  outline: 3px solid hsl(210, 98%, 42%); /* themePrimitives focusRingColor */
+  outline: 3px solid hsl(210, 98%, 42%); /* --brand-500, the focus ring */
   outline-offset: 2px;
 }
 .games-card .gc-expandbtn:hover {

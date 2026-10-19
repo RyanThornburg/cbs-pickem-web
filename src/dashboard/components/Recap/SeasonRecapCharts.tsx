@@ -1,6 +1,6 @@
 import { useWidth } from "../shared/useWidth";
 import { useState } from "react";
-import { focusRingColor, pool } from "../../shared-theme/themePrimitives";
+import { focusRingColor, pool } from "../../../styles/palette";
 import { MIN_WEEK_STAT_FINALS } from "./recapUtils";
 import {
   RecapChaosPoint,

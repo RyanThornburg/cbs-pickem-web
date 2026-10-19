@@ -1,5 +1,36 @@
-body {
-  margin: 0;
+/* The page's base styles, as MUI's CssBaseline set them before the app
+   moved off MUI: border-box sizing everywhere, smoothed text, and the body
+   in the app's 14px Inter on white. Unlayered, like CssBaseline was, so it
+   wins over the ui layer (src/dashboard/ui) where they overlap. */
+html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.5;
+  background-color: var(--paper);
+}
+
+body::backdrop {
+  background-color: var(--paper);
 }

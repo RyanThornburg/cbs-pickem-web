@@ -1,0 +1,28 @@
+.frame {
+  display: flex;
+}
+
+.main {
+  flex-grow: 1;
+  /* Clip rather than scroll: a scroll box here (that never scrolls, since
+     the window does) would break position: sticky for everything inside,
+     like User Picks' pinned row. */
+  min-width: 0;
+  overflow-x: clip;
+  background-color: var(--paper);
+}
+
+/* The page column, centered, with 16px side margins on phones and 24px
+   from sm. */
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 16px;
+  padding-bottom: 40px;
+}
+@media (min-width: 600px) {
+  .column {
+    margin: 0 24px;
+  }
+}

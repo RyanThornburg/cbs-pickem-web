@@ -1,16 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  brand,
-  gray,
-  green,
-  orange,
-  pool,
-  red,
-} from "../dashboard/shared-theme/themePrimitives";
+import { focusRingColor, pool } from "./palette";
 
-// tokens.css repeats the theme's scales for the components written without
-// MUI. Until the theme is gone, the two must not drift apart.
+// palette.ts repeats a few tokens for code that draws SVG; the two must not
+// drift apart.
 const css = readFileSync(join(__dirname, "tokens.css"), "utf8");
 const declared = new Map(
   [...css.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)].map(([, name, value]) => [
@@ -19,13 +12,14 @@ const declared = new Map(
   ])
 );
 
-describe("tokens.css", () => {
-  it.each(Object.entries({ brand, gray, green, orange, red, pool }))(
-    "matches themePrimitives' %s scale",
-    (scale, steps) => {
-      for (const [step, value] of Object.entries(steps)) {
-        expect(declared.get(`${scale}-${step}`)).toBe(value);
-      }
+describe("palette.ts", () => {
+  it("matches tokens.css' pool scale", () => {
+    for (const [step, value] of Object.entries(pool)) {
+      expect(declared.get(`pool-${step}`)).toBe(value);
     }
-  );
+  });
+
+  it("uses --brand-500 for the focus ring", () => {
+    expect(declared.get("brand-500")).toBe(focusRingColor);
+  });
 });

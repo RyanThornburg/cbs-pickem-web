@@ -1,15 +1,12 @@
-/* Design tokens for components written without MUI (CSS modules under
-   src/dashboard/ui and each component's own .module.css).
-
-   While MUI is still in the app these mirror it: the scales are
-   shared-theme/themePrimitives.ts (tokens.test.ts checks they match), and
-   the --mui-* names are the MUI palette values `sx` strings like
-   "text.secondary" resolve to in the light theme. Once MUI is gone this file
-   is the only source.
+/* Design tokens: every color and size the CSS modules use (each
+   component's own .module.css and src/dashboard/ui). The palette names
+   (--text, --text-muted, --primary, ...) keep the values of MUI's light
+   palette, which the app used before it moved off MUI. palette.ts repeats
+   the few that code needs for SVG (tokens.test.ts checks they match).
 
    Breakpoints can't be custom properties inside @media, so CSS modules write
-   them out: sm 600px, md 900px, lg 1200px, xl 1536px. MUI's up("md") is
-   (min-width: 900px); its down("md") is (max-width: 899.95px). */
+   them out: sm 600px, md 900px, lg 1200px, xl 1536px. "Up from md" is
+   (min-width: 900px); "below md" is (max-width: 899.95px). */
 
 :root {
   /* Type */
@@ -26,7 +23,7 @@
   --radius-lg: 10px;
   --focus-ring: 3px solid var(--brand-500);
 
-  /* MUI's light palette, as `sx` color strings read it */
+  /* MUI's light palette, as the app's colors were named in it */
   --text: rgba(0, 0, 0, 0.87); /* text.primary */
   --text-muted: rgba(0, 0, 0, 0.6); /* text.secondary */
   --text-faint: rgba(0, 0, 0, 0.38); /* text.disabled */
@@ -43,7 +40,7 @@
   --warning: #ed6c02;
   --warning-dark: #e65100;
 
-  /* Scales (themePrimitives.ts) */
+  /* Scales */
   --brand-50: hsl(210, 100%, 95%);
   --brand-100: hsl(210, 100%, 92%);
   --brand-200: hsl(210, 100%, 80%);

@@ -90,7 +90,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The selected player, lime as on User Picks (selectedRowSx). */
+/* The selected player, lime as on User Picks (SELECTED_ROW_BG). */
 .selected {
   background-color: #f0f4c3;
 }

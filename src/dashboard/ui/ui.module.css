@@ -1,7 +1,7 @@
 /* Shared utility classes for components written without MUI. */
 
 @layer ui {
-  /* Read by screen readers, not shown (helper.ts's visuallyHidden). */
+  /* Read by screen readers, not shown. */
   .visuallyHidden {
     position: absolute;
     width: 1px;

@@ -1,8 +1,7 @@
-import { blue, green, orange, red } from "@mui/material/colors";
-
+// A pick tile's fill and border by result (UserPickStack), in MUI's color
+// palette, which the tiles have always used.
 interface StatusColorType {
   bgColor: string;
-  bgBack: string;
   borderColor: string;
   borderInProgressColor: string;
 }
@@ -15,36 +14,33 @@ interface StatusColorMap {
   NONE: StatusColorType;
 }
 
+// green[50] / [400] / A400, and the same steps of red (100 for the fill),
+// orange (100) and blue (50).
 export const StatusColor: StatusColorMap = {
   CORRECT: {
-    bgColor: green[50],
-    bgBack: green[800],
-    borderColor: green[400],
-    borderInProgressColor: green["A400"],
+    bgColor: "#e8f5e9",
+    borderColor: "#66bb6a",
+    borderInProgressColor: "#00e676",
   },
   INCORRECT: {
-    bgColor: red[100],
-    bgBack: red[800],
-    borderColor: red[400],
-    borderInProgressColor: red["A400"],
+    bgColor: "#ffcdd2",
+    borderColor: "#ef5350",
+    borderInProgressColor: "#ff1744",
   },
   MISSING: {
-    bgColor: orange[100],
-    bgBack: orange[800],
-    borderColor: orange[400],
-    borderInProgressColor: orange["A400"],
+    bgColor: "#ffe0b2",
+    borderColor: "#ffa726",
+    borderInProgressColor: "#ff9100",
   },
   TBD: {
-    bgColor: blue[50],
-    bgBack: blue[800],
-    borderColor: blue[400],
-    borderInProgressColor: blue["A400"],
+    bgColor: "#e3f2fd",
+    borderColor: "#42a5f5",
+    borderInProgressColor: "#2979ff",
   },
   NONE: {
-    bgColor: blue[50],
-    bgBack: blue[800],
-    borderColor: blue[400],
-    borderInProgressColor: blue["A400"],
+    bgColor: "#e3f2fd",
+    borderColor: "#42a5f5",
+    borderInProgressColor: "#2979ff",
   },
 } as const;
 
@@ -55,16 +51,3 @@ export const ordinal = (n: number): string => {
   const suffix = ["th", "st", "nd", "rd"][n % 10] ?? "th";
   return `${n}${suffix}`;
 };
-
-// Read by screen readers, not shown.
-export const visuallyHidden = {
-  position: "absolute",
-  width: "1px",
-  height: "1px",
-  margin: "-1px",
-  padding: 0,
-  border: 0,
-  overflow: "hidden",
-  clip: "rect(0 0 0 0)",
-  whiteSpace: "nowrap",
-} as const;

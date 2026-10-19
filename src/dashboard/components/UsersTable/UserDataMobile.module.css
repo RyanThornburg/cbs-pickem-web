@@ -12,14 +12,9 @@
   font-size: var(--text-xs);
   font-weight: 700;
 }
-/* Middle-aligned in the line, as MUI's sort label (a ButtonBase) was; on
-   the baseline it sat up to a pixel higher. */
-.sortLabel {
-  vertical-align: middle;
-}
 
 /* A row opens the player's page; the selected player's rows are lime
-   (selectedRowSx's SELECTED_ROW_BG). */
+   (selectedRow.ts's SELECTED_ROW_BG). */
 .row {
   cursor: pointer;
 }

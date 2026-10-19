@@ -1,8 +1,10 @@
-// Writes src/dashboard/ui/iconData.ts: the SVG shapes of every
-// @mui/icons-material icon the app imports, so ui/Icon can draw them
-// without MUI. Re-run after importing a new MUI icon somewhere:
+// Writes src/dashboard/ui/iconData.ts: the SVG shapes of the icons ui/Icon
+// draws, taken from @mui/icons-material. The app no longer depends on it, so
+// install it for the run, add the new icon's name, and format the result:
 //
-//   node scripts/gen-icons.mjs [ExtraIconName ...]
+//   npm i --no-save @mui/icons-material@9 @mui/material@9 @emotion/react @emotion/styled
+//   node scripts/gen-icons.mjs NewIconName
+//   npx prettier --write src/dashboard/ui/iconData.ts
 //
 // The shapes are Google's Material icons (Apache 2.0), as MUI ships them.
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";

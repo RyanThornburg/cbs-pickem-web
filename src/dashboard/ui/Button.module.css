@@ -1,5 +1,5 @@
-/* MUI's Button as the theme (shared-theme/customizations/inputs.tsx) styles
-   it, so a swapped button looks the same. */
+/* MUI's Button as the app's old MUI theme styled it, so the swapped
+   buttons looked the same. */
 
 /* In the `ui` layer, so a component's own (unlayered) CSS module always
    overrides these defaults, whatever order the stylesheets load in. */
