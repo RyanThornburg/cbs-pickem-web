@@ -1,9 +1,7 @@
 import {
-  Box,
   Checkbox,
   Chip,
   MenuItem,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -11,7 +9,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography,
 } from "@mui/material";
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { AdminUnauthorizedError } from "../../data/GetAdminStatus";
@@ -21,6 +18,7 @@ import {
   SavePayment,
 } from "../../data/GetRoster";
 import { gray, green } from "../../shared-theme/themePrimitives";
+import uiStyles from "../../ui/ui.module.css";
 import {
   PaymentMethod,
   Roster,
@@ -33,7 +31,7 @@ import LoadError from "../shared/LoadError";
 import { PlayerLink } from "../shared/PlayerLink";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
-import { LogoutButton } from "./AdminControls";
+import { AdminActions, LogoutButton } from "./AdminControls";
 import {
   filterMembers,
   formatDollars,
@@ -49,6 +47,7 @@ import {
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
 import { SegmentedControl } from "../../ui/SegmentedControl";
+import styles from "./RosterView.module.css";
 
 // Admin › Roster: who's paid this season, and a Gmail draft to whoever's
 // picked. Payments save to roster:{season} through the Worker; names and
@@ -61,75 +60,40 @@ const FILTERS: { value: RosterFilter; label: string }[] = [
 ];
 
 const Stat = ({ value, label }: { value: ReactNode; label: string }) => (
-  <Box>
-    <Typography
-      sx={{
-        fontSize: "1.75rem",
-        fontWeight: 700,
-        lineHeight: 1.2,
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
-      {value}
-    </Typography>
-    <Typography
-      variant="caption"
-      sx={{ color: "text.secondary", fontWeight: 500 }}
-    >
-      {label}
-    </Typography>
-  </Box>
+  <div>
+    <p className={styles.statValue}>{value}</p>
+    <span className={styles.statLabel}>{label}</span>
+  </div>
 );
 
 const Totals = ({ roster }: { roster: Roster }) => {
   const fee = roster.entry_fee;
   const t = rosterTotals(roster.users, fee);
   return (
-    <Box
-      component="section"
-      aria-label="Payment totals"
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        columnGap: 3,
-        rowGap: 1.5,
-        p: 2,
-        borderRadius: 2,
-        bgcolor: gray[50],
-      }}
-    >
+    <section aria-label="Payment totals" className={styles.totals}>
       <Stat value={`${t.paid} of ${t.members}`} label="Paid in full" />
       <Stat value={formatDollars(t.collected)} label="Collected" />
       {t.owed !== null && (
         <Stat value={formatDollars(t.owed)} label="Still owed" />
       )}
-      <Box sx={{ flex: "1 1 12rem", alignSelf: "center", minWidth: 0 }}>
+      <div className={styles.progress}>
         {t.pot !== null && (
-          <Box
-            role="presentation"
-            sx={{
-              height: 8,
-              borderRadius: 999,
-              bgcolor: gray[200],
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                height: "100%",
+          <div role="presentation" className={styles.track}>
+            <div
+              className={styles.fill}
+              style={{
                 width: `${Math.min(100, (t.collected / Math.max(1, t.pot)) * 100)}%`,
-                bgcolor: green[600],
               }}
             />
-          </Box>
+          </div>
         )}
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+        <span className={styles.caption}>
           {fee === null
             ? "No entry fee from the season settings yet, so nothing counts as owed."
             : `${formatDollars(t.collected)} of ${formatDollars(t.pot ?? 0)} · ${formatDollars(fee)} entry`}
-        </Typography>
-      </Box>
-    </Box>
+        </span>
+      </div>
+    </section>
   );
 };
 
@@ -214,16 +178,10 @@ const PaymentForm = ({
   };
   const idBase = `roster-${member.user_id}`;
   return (
-    <Box
-      component="form"
+    <form
       onSubmit={submit}
       aria-label={`Payment for ${member.name}`}
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 1,
-        alignItems: "flex-start",
-      }}
+      className={styles.form}
     >
       <TextField
         id={`${idBase}-amount`}
@@ -276,11 +234,7 @@ const PaymentForm = ({
         slotProps={{ htmlInput: { maxLength: 200 } }}
         sx={{ flex: "1 1 12rem", minWidth: 0 }}
       />
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ alignItems: "center", py: 0.25 }}
-      >
+      <div className={styles.formButtons}>
         <Button
           type="submit"
           variant="contained"
@@ -302,17 +256,13 @@ const PaymentForm = ({
             Mark unpaid
           </Button>
         )}
-      </Stack>
+      </div>
       {error && (
-        <Typography
-          role="alert"
-          variant="body2"
-          sx={{ width: "100%", color: "error.main" }}
-        >
+        <p role="alert" className={styles.saveError}>
           Couldn't save: {error}. Nothing changed; try again.
-        </Typography>
+        </p>
       )}
-    </Box>
+    </form>
   );
 };
 
@@ -403,18 +353,13 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
             : `Roster ${season}`
         }
         actions={
-          <Stack
-            direction="row"
-            spacing={1}
-            useFlexGap
-            sx={{ flexWrap: "wrap", alignItems: "center" }}
-          >
+          <AdminActions>
             {viewSwitch}
             <LogoutButton />
-          </Stack>
+          </AdminActions>
         }
       />
-      <Stack spacing={2} sx={{ textAlign: "left" }}>
+      <div className={styles.page}>
         {unauthorized ? (
           <LoadError
             title="Your admin session has expired or you're not signed in."
@@ -448,12 +393,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
           <>
             <Totals roster={roster} />
 
-            <Stack
-              direction="row"
-              useFlexGap
-              spacing={1}
-              sx={{ flexWrap: "wrap", alignItems: "center" }}
-            >
+            <div className={styles.controls}>
               <SegmentedControl
                 value={filter}
                 onChange={changeFilter}
@@ -463,7 +403,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                   children: `${f.label} ${filterMembers(roster.users, f.value, fee).length}`,
                 }))}
               />
-              <Box sx={{ flex: 1 }} />
+              <div className={styles.spacer} />
               <Button
                 variant="outlined"
                 startIcon={<Icon name="ContentCopy" />}
@@ -486,7 +426,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                   ? `Email ${emails.length} in Gmail`
                   : "Email in Gmail"}
               </Button>
-            </Stack>
+            </div>
 
             <TableContainer
               sx={{ border: 1, borderColor: "divider", borderRadius: 2 }}
@@ -531,9 +471,7 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                       Paid
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={visuallyHidden}>
-                        Edit
-                      </Box>
+                      <span className={uiStyles.visuallyHidden}>Edit</span>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -567,42 +505,23 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                         <TableCell sx={{ minWidth: 0 }}>
                           <PlayerLink
                             id={String(m.user_id)}
-                            sx={{ fontWeight: 500 }}
+                            className={styles.name}
                           >
                             {m.name}
                           </PlayerLink>
                           {/* Email, status and payment move under the name
                               where their columns are hidden. */}
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              display: { xs: "block", md: "none" },
-                              color: "text.secondary",
-                              // Long addresses break only where they must.
-                              overflowWrap: "anywhere",
-                            }}
-                          >
+                          <span className={styles.emailUnder}>
                             {m.email ?? "No email on file"}
-                          </Typography>
+                          </span>
                           {m.payment && (
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                display: { xs: "block", sm: "none" },
-                                color: "text.secondary",
-                              }}
-                            >
+                            <span className={styles.paymentUnder}>
                               {paymentDetail(m.payment)}
-                            </Typography>
+                            </span>
                           )}
-                          <Box
-                            sx={{
-                              display: { xs: "block", sm: "none" },
-                              mt: 0.5,
-                            }}
-                          >
+                          <div className={styles.statusUnder}>
                             <StatusChip payment={m.payment} fee={fee} />
-                          </Box>
+                          </div>
                         </TableCell>
                         <TableCell
                           sx={{
@@ -666,26 +585,16 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
               </Table>
             </TableContainer>
 
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            <span className={styles.caption}>
               Active members from CBS, refreshed daily
               {roster.users_updated_at &&
                 ` (last ${formatUpdated(roster.users_updated_at)})`}
               . Payments are admin-only and never shown on public pages. The
               Gmail draft puts everyone in BCC.
-            </Typography>
+            </span>
           </>
         )}
-      </Stack>
+      </div>
     </>
   );
 }
-
-const visuallyHidden = {
-  position: "absolute",
-  // Strings: in sx, a bare 1 means 100%.
-  width: "1px",
-  height: "1px",
-  overflow: "hidden",
-  clip: "rect(0 0 0 0)",
-  whiteSpace: "nowrap",
-} as const;

@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Chip,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Chip } from "@mui/material";
 import { ReactNode } from "react";
 import {
   formatAgo,
@@ -16,6 +9,7 @@ import {
   isFailing,
   TaskHealth,
 } from "./adminUtils";
+import styles from "./TaskCard.module.css";
 
 export type TaskRun = {
   label?: string;
@@ -60,122 +54,68 @@ export default function TaskCard({
   // ones; the chip alone was easy to miss.
   const severity = dimmed ? null : healthSeverity(health);
   return (
-    <Card
-      variant="outlined"
+    <div
       id={id}
-      sx={{
-        height: "100%",
-        scrollMarginTop: 96,
-        // The theme pads the Card itself (CardContent has none); a little
-        // less on phones.
-        p: { xs: 1.5, sm: 2 },
-        opacity: dimmed ? 0.55 : 1,
-        ...(severity && {
-          borderColor: `${severity}.main`,
-          borderLeftWidth: 4,
-        }),
-      }}
+      className={[
+        styles.card,
+        dimmed && styles.dimmed,
+        severity && styles[severity],
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
-      <CardContent>
-        <Stack
-          direction="row"
-          useFlexGap
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            columnGap: 1,
-            rowGap: 0.5,
-            mb: 1,
-          }}
-        >
-          <Typography variant="subtitle2">{name}</Typography>
-          <Chip
-            size="small"
-            label={dimmed ? "Unknown" : HEALTH_LABEL[health]}
-            color={dimmed ? "default" : HEALTH_COLOR[health]}
-            variant={
-              health === "idle" || health === "ok" || dimmed
-                ? "outlined"
-                : "filled"
-            }
-          />
-        </Stack>
-        {note && (
-          <Chip size="small" variant="outlined" label={note} sx={{ mb: 1 }} />
-        )}
-        <Stack spacing={0.5}>
-          {runs.map((run) => {
-            // Attempted more recently than it succeeded: lead with how long
-            // it's been since it worked, then the failed try.
-            const failing = isFailing(run.lastAt, run.lastSuccessAt);
-            return (
-              <div key={run.label ?? "run"}>
-                {/* Wraps to two lines in a narrow card, one line on a phone. */}
-                <Stack
-                  direction="row"
-                  useFlexGap
-                  sx={{
-                    flexWrap: "wrap",
-                    alignItems: "baseline",
-                    columnGap: 1,
-                  }}
-                >
-                  <Typography variant="body2">
-                    {run.label && (
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        {run.label}:{" "}
-                      </Typography>
-                    )}
-                    {failing ? "last success" : "ok"}{" "}
-                    {formatAgo(run.lastSuccessAt, now)}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "text.secondary" }}
-                  >
-                    {formatEt(run.lastSuccessAt)}
-                  </Typography>
-                </Stack>
-                {failing && (
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "error.dark", display: "block" }}
-                  >
-                    last try {formatAgo(run.lastAt, now)}, failed
-                  </Typography>
-                )}
+      <div className={styles.header}>
+        <h6 className={styles.name}>{name}</h6>
+        <Chip
+          size="small"
+          label={dimmed ? "Unknown" : HEALTH_LABEL[health]}
+          color={dimmed ? "default" : HEALTH_COLOR[health]}
+          variant={
+            health === "idle" || health === "ok" || dimmed
+              ? "outlined"
+              : "filled"
+          }
+        />
+      </div>
+      {note && (
+        <Chip size="small" variant="outlined" label={note} sx={{ mb: 1 }} />
+      )}
+      <div className={styles.body}>
+        {runs.map((run) => {
+          // Attempted more recently than it succeeded: lead with how long
+          // it's been since it worked, then the failed try.
+          const failing = isFailing(run.lastAt, run.lastSuccessAt);
+          return (
+            <div key={run.label ?? "run"}>
+              {/* Wraps to two lines in a narrow card, one line on a phone. */}
+              <div className={styles.run}>
+                <p className={styles.text}>
+                  {run.label && (
+                    <span className={styles.muted}>{run.label}: </span>
+                  )}
+                  {failing ? "last success" : "ok"}{" "}
+                  {formatAgo(run.lastSuccessAt, now)}
+                </p>
+                <span className={styles.caption}>
+                  {formatEt(run.lastSuccessAt)}
+                </span>
               </div>
-            );
-          })}
-          {detail}
-          {event && (
-            <Typography
-              variant="caption"
-              sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                fontFamily: "monospace",
-                wordBreak: "break-word",
-                color: "text.secondary",
-              }}
-            >
-              {event}
-            </Typography>
-          )}
-          {event && eventsHref && (
-            <Link href={eventsHref} variant="caption">
-              See System events
-            </Link>
-          )}
-        </Stack>
-      </CardContent>
-    </Card>
+              {failing && (
+                <span className={styles.failed}>
+                  last try {formatAgo(run.lastAt, now)}, failed
+                </span>
+              )}
+            </div>
+          );
+        })}
+        {detail}
+        {event && <span className={styles.event}>{event}</span>}
+        {event && eventsHref && (
+          <a href={eventsHref} className={styles.link}>
+            See System events
+          </a>
+        )}
+      </div>
+    </div>
   );
 }

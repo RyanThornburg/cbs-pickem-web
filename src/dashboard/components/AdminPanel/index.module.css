@@ -1,0 +1,118 @@
+/* Admin › Pipeline (index.tsx). */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: left;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+}
+
+.caption {
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+/* The banner's first line. */
+.alertTitle {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.43;
+}
+.alertNote {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+/* MUI's Link as the theme styled it (navigation.tsx), in the banner's own
+   ink: a faint rule under it that shrinks away on hover. */
+.link {
+  position: relative;
+  width: fit-content;
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+.link::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--text-muted);
+  opacity: 0.3;
+  transform-origin: left;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+.link:hover::before {
+  transform: scaleX(0);
+}
+.link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+/* Task cards: one a row on phones, then 2, 3 and 5. The widths are MUI
+   Grid's (a share of the row less its part of the 16px gaps), so the cards
+   land on the same pixels. */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-width: 0;
+  margin-top: 8px;
+}
+.cell {
+  flex: 0 0 auto;
+  width: calc(100% * 12 / 12 - (12 - 12) * (16px / 12));
+  min-width: 0;
+}
+@media (min-width: 600px) {
+  .cell {
+    width: calc(100% * 6 / 12 - (12 - 6) * (16px / 12));
+  }
+}
+@media (min-width: 900px) {
+  .cell {
+    width: calc(100% * 4 / 12 - (12 - 4) * (16px / 12));
+  }
+}
+@media (min-width: 1200px) {
+  .cell {
+    width: calc(100% * 2.4 / 12 - (12 - 2.4) * (16px / 12));
+  }
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* An event message or unmapped value, as the source wrote it. */
+.code {
+  margin: 0;
+  font-family: monospace;
+  font-size: var(--text-md);
+  line-height: 1.43;
+  word-break: break-word;
+}

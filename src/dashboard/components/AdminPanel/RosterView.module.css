@@ -1,0 +1,121 @@
+/* Admin › Roster (RosterView.tsx). */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.caption {
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+/* Paid, collected and owed, then the bar toward the pot. */
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: var(--gray-50);
+}
+
+.statValue {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.statLabel {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.progress {
+  flex: 1 1 12rem;
+  align-self: center;
+  min-width: 0;
+}
+.track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--gray-200);
+}
+/* Width set inline: the share of the pot collected. */
+.fill {
+  height: 100%;
+  background-color: var(--green-600);
+}
+
+/* The filter, then the email buttons pushed to the right. */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.spacer {
+  flex: 1;
+}
+
+.name {
+  font-weight: 500;
+}
+
+/* Email, status and payment under the name where their columns are
+   hidden: email below md, the other two below sm. */
+.emailUnder {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+  /* Long addresses break only where they must. */
+  overflow-wrap: anywhere;
+}
+.paymentUnder {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+.statusUnder {
+  display: block;
+  margin-top: 4px;
+}
+@media (min-width: 600px) {
+  .paymentUnder,
+  .statusUnder {
+    display: none;
+  }
+}
+@media (min-width: 900px) {
+  .emailUnder {
+    display: none;
+  }
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+.formButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+.saveError {
+  width: 100%;
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+  color: var(--error);
+}

@@ -1,0 +1,106 @@
+/* The theme's outlined Card, padded by the theme. */
+.card {
+  height: 100%;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background: hsl(0, 0%, 100%);
+  color: var(--text);
+  /* Clear of the sticky tab row when the banner links here. */
+  scroll-margin-top: 96px;
+  transition: all 100ms ease;
+}
+
+.header {
+  display: flex;
+  /* On a phone the counts drop under the title instead of squeezing it
+     onto two lines. */
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.counts {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.text,
+.countsText {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+}
+.countsText {
+  color: var(--text-muted);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.noWrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 16px 0 0;
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.lastSeen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.compactRows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.compactRow {
+  padding: 12px 0;
+  border-top: 1px solid var(--divider);
+}
+
+/* Columns set inline, one per short column. */
+.shortColumns {
+  display: grid;
+  justify-content: space-between;
+  column-gap: 12px;
+}
+
+.shortColumn {
+  overflow-wrap: anywhere;
+}
+
+.label {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.wideColumn {
+  margin-top: 8px;
+}

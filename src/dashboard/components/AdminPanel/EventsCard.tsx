@@ -1,20 +1,16 @@
 import {
-  Box,
-  Card,
-  CardContent,
   Chip,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { formatAgo, formatEt } from "./adminUtils";
+import styles from "./EventsCard.module.css";
 
 export type Column<T> = {
   header: string;
@@ -50,26 +46,13 @@ export function LastSeenCell({
   active?: boolean;
 }) {
   return (
-    <Stack
-      spacing={0.25}
-      sx={{
-        alignItems: "flex-start",
-      }}
-    >
-      <Typography variant="body2" noWrap>
-        {formatAgo(iso, now)}
-      </Typography>
-      <Typography
-        variant="caption"
-        noWrap
-        sx={{
-          color: "text.secondary",
-        }}
-      >
+    <div className={styles.lastSeen}>
+      <p className={`${styles.text} ${styles.noWrap}`}>{formatAgo(iso, now)}</p>
+      <span className={`${styles.caption} ${styles.noWrap}`}>
         {formatEt(iso)}
-      </Typography>
+      </span>
       {active && <Chip size="small" color="error" label="Active" />}
-    </Stack>
+    </div>
   );
 }
 
@@ -87,49 +70,40 @@ function CompactRows<T>({
   const short = columns.filter((column) => !column.wide);
   const wide = columns.filter((column) => column.wide);
   return (
-    <Stack sx={{ mt: 1 }}>
+    <div className={styles.compactRows}>
       {rows.map((row) => (
-        <Box
-          key={rowKey(row)}
-          sx={{ py: 1.5, borderTop: 1, borderColor: "divider" }}
-        >
+        <div key={rowKey(row)} className={styles.compactRow}>
           {/* One line: the short columns shrink (and wrap inside) before
               anything drops to a second row. */}
-          <Box
-            sx={{
-              display: "grid",
+          <div
+            className={styles.shortColumns}
+            style={{
               gridTemplateColumns: short
                 .map((column) =>
                   column.align === "right" ? "auto" : "minmax(0, auto)"
                 )
                 .join(" "),
-              justifyContent: "space-between",
-              columnGap: 1.5,
             }}
           >
             {short.map((column) => (
-              <Box
+              <div
                 key={column.header}
-                sx={{ textAlign: column.align, overflowWrap: "anywhere" }}
+                className={styles.shortColumn}
+                style={{ textAlign: column.align }}
               >
-                <Typography
-                  variant="caption"
-                  sx={{ display: "block", color: "text.secondary" }}
-                >
-                  {column.header}
-                </Typography>
+                <span className={styles.label}>{column.header}</span>
                 {column.render(row)}
-              </Box>
+              </div>
             ))}
-          </Box>
+          </div>
           {wide.map((column) => (
-            <Box key={column.header} sx={{ mt: 1 }}>
+            <div key={column.header} className={styles.wideColumn}>
               {column.render(row)}
-            </Box>
+            </div>
           ))}
-        </Box>
+        </div>
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -149,112 +123,59 @@ export default function EventsCard<T>({
   // Last seen and Count off screen.
   const compact = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   return (
-    <Card
-      variant="outlined"
-      id={id}
-      sx={{ height: "100%", scrollMarginTop: 96 }}
-    >
-      <CardContent>
-        <Stack
-          direction="row"
-          useFlexGap
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            // On a phone the counts drop under the title instead of
-            // squeezing it onto two lines.
-            flexWrap: "wrap",
-            columnGap: 2,
-          }}
-        >
-          <Typography
-            component="h3"
-            variant="subtitle1"
-            sx={{
-              fontWeight: 600,
-            }}
-          >
-            {title}
-          </Typography>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: "center", flexShrink: 0 }}
-          >
-            {activeCount !== undefined && activeCount > 0 && (
-              <Chip
-                size="small"
-                color="error"
-                label={`${activeCount} active`}
-              />
-            )}
-            <Typography
-              variant="body2"
-              noWrap
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              {distinctCount} distinct · {totalOccurrences} total
-            </Typography>
-          </Stack>
-        </Stack>
-        <Typography
-          variant="caption"
-          sx={{
-            color: "text.secondary",
-          }}
-        >
-          {description}
-        </Typography>
+    <div id={id} className={styles.card}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>{title}</h3>
+        <div className={styles.counts}>
+          {activeCount !== undefined && activeCount > 0 && (
+            <Chip size="small" color="error" label={`${activeCount} active`} />
+          )}
+          <p className={`${styles.countsText} ${styles.noWrap}`}>
+            {distinctCount} distinct · {totalOccurrences} total
+          </p>
+        </div>
+      </div>
+      <span className={styles.caption}>{description}</span>
 
-        {rows.length === 0 ? (
-          <Typography
-            sx={{
-              color: "text.secondary",
-              mt: 2,
-            }}
-          >
-            {emptyText}
-          </Typography>
-        ) : compact ? (
-          <CompactRows rows={rows} columns={columns} rowKey={rowKey} />
-        ) : (
-          <Table size="small" sx={{ mt: 1 }}>
-            <TableHead>
-              <TableRow>
+      {rows.length === 0 ? (
+        <p className={styles.empty}>{emptyText}</p>
+      ) : compact ? (
+        <CompactRows rows={rows} columns={columns} rowKey={rowKey} />
+      ) : (
+        <Table size="small" sx={{ mt: 1 }}>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.header}
+                  align={column.align}
+                  sx={column.wide ? undefined : NARROW_CELL_SX}
+                >
+                  {column.header}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={rowKey(row)}>
                 {columns.map((column) => (
                   <TableCell
                     key={column.header}
                     align={column.align}
-                    sx={column.wide ? undefined : NARROW_CELL_SX}
+                    sx={{
+                      verticalAlign: "top",
+                      ...(column.wide ? undefined : NARROW_CELL_SX),
+                    }}
                   >
-                    {column.header}
+                    {column.render(row)}
                   </TableCell>
                 ))}
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow key={rowKey(row)}>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.header}
-                      align={column.align}
-                      sx={{
-                        verticalAlign: "top",
-                        ...(column.wide ? undefined : NARROW_CELL_SX),
-                      }}
-                    >
-                      {column.render(row)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
   );
 }

@@ -1,6 +1,8 @@
+import { ReactNode } from "react";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
 import { SegmentedControl } from "../../ui/SegmentedControl";
+import styles from "./AdminControls.module.css";
 
 export type AdminView = "pipeline" | "roster";
 
@@ -34,4 +36,9 @@ export const LogoutButton = () => (
   >
     Log out
   </Button>
+);
+
+// The controls on both views' TabIntro row: the view switch, then buttons.
+export const AdminActions = ({ children }: { children: ReactNode }) => (
+  <div className={styles.actions}>{children}</div>
 );

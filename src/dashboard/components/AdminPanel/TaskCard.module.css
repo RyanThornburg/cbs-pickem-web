@@ -1,0 +1,130 @@
+/* The theme's outlined Card. It pads the card itself; a little less on
+   phones. */
+.card {
+  height: 100%;
+  overflow: hidden;
+  padding: 12px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background: hsl(0, 0%, 100%);
+  color: var(--text);
+  /* Clear of the sticky tab row when the banner links here. */
+  scroll-margin-top: 96px;
+  transition: all 100ms ease;
+}
+@media (min-width: 600px) {
+  .card {
+    padding: 16px;
+  }
+}
+.dimmed {
+  opacity: 0.55;
+}
+/* A problem card's colored edge. */
+.error {
+  border-color: var(--error);
+  border-left-width: 4px;
+}
+.warning {
+  border-color: var(--warning);
+  border-left-width: 4px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-bottom: 8px;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1.57;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.run {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.43;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--text-muted);
+}
+
+.failed {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  color: var(--error-dark);
+}
+
+/* The newest active event, cut to three lines. */
+.event {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: monospace;
+  font-size: var(--text-xs);
+  line-height: 1.66;
+  word-break: break-word;
+  color: var(--text-muted);
+}
+
+/* MUI's Link as the theme styled it (navigation.tsx): ink text over a
+   faint rule that shrinks away on hover. */
+.link {
+  position: relative;
+  width: fit-content;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.66;
+  color: var(--text);
+  text-decoration: none;
+}
+.link::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--text-muted);
+  opacity: 0.3;
+  transform-origin: left;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+.link:hover::before {
+  transform: scaleX(0);
+}
+.link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+  border-radius: 2px;
+}

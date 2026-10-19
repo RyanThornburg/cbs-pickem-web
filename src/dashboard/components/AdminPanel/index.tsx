@@ -1,8 +1,7 @@
 import { Fragment, ReactNode, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Alert, AlertColor, Link, Stack, Typography } from "@mui/material";
+import { Alert, AlertColor } from "@mui/material";
 import { alpha, Theme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
 import {
   AdminUnauthorizedError,
   GetAdminStatus,
@@ -36,12 +35,18 @@ import {
   TaskHealth,
   taskHealth,
 } from "./adminUtils";
-import { AdminView, AdminViewSwitch, LogoutButton } from "./AdminControls";
+import {
+  AdminActions,
+  AdminView,
+  AdminViewSwitch,
+  LogoutButton,
+} from "./AdminControls";
 import EventsCard, { LastSeenCell } from "./EventsCard";
 import RosterView from "./RosterView";
 import TaskCard, { TaskRun } from "./TaskCard";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
+import styles from "./index.module.css";
 
 type SectionKey = "always" | "quiet" | "live" | "changes" | "other";
 
@@ -278,12 +283,10 @@ const buildCards = (
       // Bare date, not a timestamp -- not run through the UTC->ET formatting.
       detail: (
         <>
-          <Typography variant="body2">
+          <p className={styles.text}>
             {sunday ? `Ran for Sun ${formatShortDate(sunday)}` : "Never run"}
-          </Typography>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            Sundays after 1 PM ET
-          </Typography>
+          </p>
+          <span className={styles.caption}>Sundays after 1 PM ET</span>
         </>
       ),
     },
@@ -330,18 +333,18 @@ const Summary = ({
         .map((c, i) => (
           <Fragment key={c.id}>
             {i > 0 && ", "}
-            <Link href={`#${anchorId(c.id)}`} color="inherit">
+            <a href={`#${anchorId(c.id)}`} className={styles.link}>
               {c.name}
-            </Link>
+            </a>
           </Fragment>
         ))}
     </Fragment>
   ));
   if (activeEvents > 0) {
     parts.push(
-      <Link key="events" href="#admin-events" color="inherit">
+      <a key="events" href="#admin-events" className={styles.link}>
         {activeEvents} active event{activeEvents === 1 ? "" : "s"}
-      </Link>
+      </a>
     );
   }
   return (
@@ -366,15 +369,9 @@ const TaskSection = ({
   children: ReactNode;
 }) => (
   <section>
-    <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 600 }}>
-      {title}
-    </Typography>
-    <Typography variant="caption" sx={{ color: "text.secondary" }}>
-      {caption}
-    </Typography>
-    <Grid container spacing={2} sx={{ mt: 1 }}>
-      {children}
-    </Grid>
+    <h3 className={styles.sectionTitle}>{title}</h3>
+    <span className={styles.caption}>{caption}</span>
+    <div className={styles.cards}>{children}</div>
   </section>
 );
 
@@ -386,8 +383,6 @@ const severitySx = (severity: AlertColor) => ({
   borderColor: (theme: Theme) => alpha(theme.palette[severity].main, 0.4),
   "& .MuiAlert-icon": { color: `${severity}.main` },
 });
-
-const CARD_SIZE = { xs: 12, sm: 6, md: 4, lg: 2.4 };
 
 // Earliest kickoff among the current week's live games (ms), or null.
 const liveSinceOf = (games: Game[]): number | null => {
@@ -498,7 +493,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
     cards
       .filter((c) => c.section === key)
       .map((c) => (
-        <Grid key={c.id} size={CARD_SIZE}>
+        <div key={c.id} className={styles.cell}>
           <TaskCard
             id={anchorId(c.id)}
             name={c.name}
@@ -511,7 +506,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
             event={c.source ? eventBySource.get(c.source) : undefined}
             eventsHref="#admin-events"
           />
-        </Grid>
+        </div>
       ));
   const otherCards = section("other");
 
@@ -525,12 +520,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
             : "Pipeline status"
         }
         actions={
-          <Stack
-            direction="row"
-            spacing={1}
-            useFlexGap
-            sx={{ flexWrap: "wrap", alignItems: "center" }}
-          >
+          <AdminActions>
             {viewSwitch}
             <Button
               variant="outlined"
@@ -541,10 +531,10 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
               Refresh
             </Button>
             <LogoutButton />
-          </Stack>
+          </AdminActions>
         }
       />
-      <Stack spacing={3} sx={{ textAlign: "left" }}>
+      <div className={styles.page}>
         {unauthorized && (
           <Alert
             severity="warning"
@@ -563,12 +553,12 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
         )}
         {error && !unauthorized && (
           <Alert severity="error" sx={severitySx("error")}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            <p className={styles.alertTitle}>
               Can't reach admin status ({error.message})
               {failingSince &&
                 ` since ${formatEt(new Date(failingSince).toISOString())}`}
               .
-            </Typography>
+            </p>
             This is the page's own request, not the pipeline.{" "}
             {fetchedAt
               ? `Showing what was loaded ${formatAgo(new Date(fetchedAt).toISOString(), now)}. `
@@ -597,18 +587,15 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
                   severity={summarySeverity}
                   sx={severitySx(summarySeverity)}
                 >
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  <p className={styles.alertTitle}>
                     <Summary cards={cards} activeEvents={activeEvents} />
-                  </Typography>
+                  </p>
                   Pipeline heartbeat {formatAgo(status.updated_at, now)} (
                   {formatEt(status.updated_at)}).
-                  <Typography
-                    variant="caption"
-                    sx={{ display: "block", color: "text.secondary" }}
-                  >
+                  <span className={styles.alertNote}>
                     Rewritten every minute. If it goes stale, the pipeline isn't
                     running.
-                  </Typography>
+                  </span>
                 </Alert>
               )
             )}
@@ -656,112 +643,85 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
               </TaskSection>
             )}
 
-            <Grid container spacing={2}>
-              <Grid size={12}>
-                <EventsCard<AdminSystemEvent>
-                  id="admin-events"
-                  title="System events"
-                  description="Caught failures. Active means seen in the last 24h."
-                  distinctCount={status.system_events.distinct_count}
-                  totalOccurrences={status.system_events.total_occurrences}
-                  activeCount={activeEvents}
-                  rows={status.system_events.recent}
-                  rowKey={(row) => `${row.source}|${row.message}`}
-                  emptyText="No recorded failures."
-                  columns={[
-                    { header: "Source", render: (row) => row.source },
-                    {
-                      header: "Message",
-                      wide: true,
-                      render: (row) => (
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontFamily: "monospace",
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {row.message}
-                        </Typography>
-                      ),
-                    },
-                    {
-                      header: "Last seen",
-                      render: (row) => (
-                        <LastSeenCell
-                          iso={row.last_seen_at}
-                          now={now}
-                          active={isEventActive(row, now)}
-                        />
-                      ),
-                    },
-                    {
-                      header: "Count",
-                      align: "right",
-                      render: (row) => row.occurrences,
-                    },
-                  ]}
-                />
-              </Grid>
-              <Grid size={12}>
-                <EventsCard<AdminMappingGap>
-                  title="Mapping gaps"
-                  description="Source values a loader couldn't match to a D1 row. They never raise an error."
-                  distinctCount={status.mapping_gaps.distinct_count}
-                  totalOccurrences={status.mapping_gaps.total_occurrences}
-                  rows={status.mapping_gaps.recent}
-                  rowKey={(row) =>
-                    `${row.source}|${row.entity_type}|${row.raw_value}`
-                  }
-                  emptyText="No unmapped values."
-                  columns={[
-                    {
-                      header: "Source",
-                      render: (row) => `${row.source} · ${row.entity_type}`,
-                    },
-                    {
-                      header: "Value",
-                      wide: true,
-                      render: (row) => (
-                        <>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: "monospace",
-                              wordBreak: "break-word",
-                            }}
-                          >
-                            {row.raw_value}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: "text.secondary",
-                            }}
-                          >
-                            {row.context}
-                          </Typography>
-                        </>
-                      ),
-                    },
-                    {
-                      header: "Last seen",
-                      render: (row) => (
-                        <LastSeenCell iso={row.last_seen_at} now={now} />
-                      ),
-                    },
-                    {
-                      header: "Count",
-                      align: "right",
-                      render: (row) => row.occurrences,
-                    },
-                  ]}
-                />
-              </Grid>
-            </Grid>
+            <div className={styles.events}>
+              <EventsCard<AdminSystemEvent>
+                id="admin-events"
+                title="System events"
+                description="Caught failures. Active means seen in the last 24h."
+                distinctCount={status.system_events.distinct_count}
+                totalOccurrences={status.system_events.total_occurrences}
+                activeCount={activeEvents}
+                rows={status.system_events.recent}
+                rowKey={(row) => `${row.source}|${row.message}`}
+                emptyText="No recorded failures."
+                columns={[
+                  { header: "Source", render: (row) => row.source },
+                  {
+                    header: "Message",
+                    wide: true,
+                    render: (row) => (
+                      <p className={styles.code}>{row.message}</p>
+                    ),
+                  },
+                  {
+                    header: "Last seen",
+                    render: (row) => (
+                      <LastSeenCell
+                        iso={row.last_seen_at}
+                        now={now}
+                        active={isEventActive(row, now)}
+                      />
+                    ),
+                  },
+                  {
+                    header: "Count",
+                    align: "right",
+                    render: (row) => row.occurrences,
+                  },
+                ]}
+              />
+              <EventsCard<AdminMappingGap>
+                title="Mapping gaps"
+                description="Source values a loader couldn't match to a D1 row. They never raise an error."
+                distinctCount={status.mapping_gaps.distinct_count}
+                totalOccurrences={status.mapping_gaps.total_occurrences}
+                rows={status.mapping_gaps.recent}
+                rowKey={(row) =>
+                  `${row.source}|${row.entity_type}|${row.raw_value}`
+                }
+                emptyText="No unmapped values."
+                columns={[
+                  {
+                    header: "Source",
+                    render: (row) => `${row.source} · ${row.entity_type}`,
+                  },
+                  {
+                    header: "Value",
+                    wide: true,
+                    render: (row) => (
+                      <>
+                        <p className={styles.code}>{row.raw_value}</p>
+                        <span className={styles.caption}>{row.context}</span>
+                      </>
+                    ),
+                  },
+                  {
+                    header: "Last seen",
+                    render: (row) => (
+                      <LastSeenCell iso={row.last_seen_at} now={now} />
+                    ),
+                  },
+                  {
+                    header: "Count",
+                    align: "right",
+                    render: (row) => row.occurrences,
+                  },
+                ]}
+              />
+            </div>
           </>
         )}
-      </Stack>
+      </div>
     </>
   );
 }
