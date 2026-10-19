@@ -1,15 +1,3 @@
-import {
-  Checkbox,
-  Chip,
-  MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@mui/material";
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { AdminUnauthorizedError } from "../../data/GetAdminStatus";
 import {
@@ -17,7 +5,7 @@ import {
   RosterNotReadyError,
   SavePayment,
 } from "../../data/GetRoster";
-import { gray, green } from "../../shared-theme/themePrimitives";
+import table from "../../ui/table.module.css";
 import uiStyles from "../../ui/ui.module.css";
 import {
   PaymentMethod,
@@ -32,6 +20,8 @@ import { PlayerLink } from "../shared/PlayerLink";
 import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import { AdminActions, LogoutButton } from "./AdminControls";
+import { Checkbox } from "./Checkbox";
+import { SelectField, TextField } from "./FormFields";
 import {
   filterMembers,
   formatDollars,
@@ -45,6 +35,7 @@ import {
   todayIso,
 } from "./rosterUtils";
 import { Button } from "../../ui/Button";
+import { Chip } from "../../ui/Chip";
 import { Icon } from "../../ui/Icon";
 import { SegmentedControl } from "../../ui/SegmentedControl";
 import styles from "./RosterView.module.css";
@@ -52,6 +43,9 @@ import styles from "./RosterView.module.css";
 // Admin › Roster: who's paid this season, and a Gmail draft to whoever's
 // picked. Payments save to roster:{season} through the Worker; names and
 // emails come from the pipeline's admin:users.
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 const FILTERS: { value: RosterFilter; label: string }[] = [
   { value: "unpaid", label: "Unpaid" },
@@ -106,17 +100,10 @@ const StatusChip = ({
 }) => {
   const status = paymentStatus(payment, fee);
   if (status.kind === "paid") {
-    return (
-      <Chip
-        size="small"
-        label="Paid"
-        sx={{ bgcolor: green[50], color: green[800], fontWeight: 500 }}
-      />
-    );
+    return <Chip label="Paid" className={styles.paidChip} />;
   }
   return (
     <Chip
-      size="small"
       label={
         status.kind === "partial"
           ? `Owes ${formatDollars(status.owed)}`
@@ -125,6 +112,10 @@ const StatusChip = ({
     />
   );
 };
+
+// MUI's small TableCell classes, for header and body cells.
+const HEAD = [table.cell, table.small, table.head];
+const BODY = [table.cell, table.small];
 
 type Draft = {
   amount: string;
@@ -164,8 +155,8 @@ const PaymentForm = ({
   const amount = Number(draft.amount);
   const amountOk =
     draft.amount.trim() !== "" && Number.isInteger(amount) && amount >= 0;
-  const set = (field: keyof Draft) => (e: { target: { value: string } }) =>
-    setDraft((d) => ({ ...d, [field]: e.target.value }));
+  const set = (field: keyof Draft) => (value: string) =>
+    setDraft((d) => ({ ...d, [field]: value }));
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (!amountOk) return;
@@ -186,53 +177,44 @@ const PaymentForm = ({
       <TextField
         id={`${idBase}-amount`}
         label="Amount ($)"
-        size="small"
         type="number"
         value={draft.amount}
         onChange={set("amount")}
         error={!amountOk}
         helperText={amountOk ? undefined : "Whole dollars"}
-        slotProps={{ htmlInput: { min: 0, step: 1, inputMode: "numeric" } }}
-        sx={{ width: 120 }}
+        inputProps={{ min: 0, step: 1, inputMode: "numeric" }}
+        className={styles.amountField}
         autoFocus
       />
       <TextField
         id={`${idBase}-date`}
         label="Date"
-        size="small"
         type="date"
         value={draft.date}
         onChange={set("date")}
-        slotProps={{ inputLabel: { shrink: true } }}
-        sx={{ width: 160 }}
+        shrink
+        className={styles.dateField}
       />
-      <TextField
+      <SelectField<PaymentMethod | "">
         id={`${idBase}-method`}
         label="Method"
-        size="small"
-        select
         value={draft.method}
         onChange={set("method")}
-        sx={{ width: 140 }}
-      >
-        <MenuItem value="">
-          <em>Not set</em>
-        </MenuItem>
-        {METHODS.map((m) => (
-          <MenuItem key={m} value={m}>
-            {METHOD_LABEL[m]}
-          </MenuItem>
-        ))}
-      </TextField>
+        options={[
+          { value: "", label: <em>Not set</em> },
+          ...METHODS.map((m) => ({ value: m, label: METHOD_LABEL[m] })),
+        ]}
+        renderValue={(m) => (m === "" ? "" : METHOD_LABEL[m])}
+        className={styles.methodField}
+      />
       <TextField
         id={`${idBase}-note`}
         label="Note"
-        size="small"
         value={draft.note}
         onChange={set("note")}
         placeholder="Optional"
-        slotProps={{ htmlInput: { maxLength: 200 } }}
-        sx={{ flex: "1 1 12rem", minWidth: 0 }}
+        inputProps={{ maxLength: 200 }}
+        className={styles.noteField}
       />
       <div className={styles.formButtons}>
         <Button
@@ -428,13 +410,14 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
               </Button>
             </div>
 
-            <TableContainer
-              sx={{ border: 1, borderColor: "divider", borderRadius: 2 }}
-            >
-              <Table size="small" sx={{ fontVariantNumeric: "tabular-nums" }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox">
+            <div className={cx(table.container, styles.tableBox)}>
+              <table className={cx(table.table, styles.table)}>
+                <thead>
+                  <tr>
+                    <th
+                      scope="col"
+                      className={cx(table.cell, table.head, styles.checkCell)}
+                    >
                       <Checkbox
                         checked={allSelected}
                         indeterminate={
@@ -449,60 +432,52 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                               : new Set(selectable.map((u) => u.user_id))
                           )
                         }
-                        slotProps={{
-                          input: { "aria-label": "Select everyone shown" },
-                        }}
+                        label="Select everyone shown"
                       />
-                    </TableCell>
-                    <TableCell>Member</TableCell>
-                    <TableCell
-                      sx={{ display: { xs: "none", md: "table-cell" } }}
-                    >
+                    </th>
+                    <th scope="col" className={cx(...HEAD)}>
+                      Member
+                    </th>
+                    <th scope="col" className={cx(...HEAD, styles.mdUp)}>
                       Email
-                    </TableCell>
-                    <TableCell
-                      sx={{ display: { xs: "none", sm: "table-cell" } }}
-                    >
+                    </th>
+                    <th scope="col" className={cx(...HEAD, styles.smUp)}>
                       Status
-                    </TableCell>
-                    <TableCell
-                      sx={{ display: { xs: "none", sm: "table-cell" } }}
-                    >
+                    </th>
+                    <th scope="col" className={cx(...HEAD, styles.smUp)}>
                       Paid
-                    </TableCell>
-                    <TableCell>
+                    </th>
+                    <th scope="col" className={cx(...HEAD)}>
                       <span className={uiStyles.visuallyHidden}>Edit</span>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                   {shown.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        sx={{ color: "text.secondary", py: 2 }}
-                      >
+                    <tr>
+                      <td colSpan={6} className={cx(...BODY, styles.emptyCell)}>
                         {filter === "unpaid"
                           ? "Everyone has paid in full."
                           : "No one here yet."}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   )}
                   {shown.map((m) => {
                     const isSelected = selected.has(m.user_id);
                     return [
-                      <TableRow key={m.user_id} selected={isSelected}>
-                        <TableCell padding="checkbox">
+                      <tr
+                        key={m.user_id}
+                        className={cx(isSelected && styles.selectedRow)}
+                      >
+                        <td className={cx(table.cell, styles.checkCell)}>
                           <Checkbox
                             checked={isSelected}
                             disabled={!m.email}
                             onChange={() => toggle(m.user_id)}
-                            slotProps={{
-                              input: { "aria-label": `Select ${m.name}` },
-                            }}
+                            label={`Select ${m.name}`}
                           />
-                        </TableCell>
-                        <TableCell sx={{ minWidth: 0 }}>
+                        </td>
+                        <td className={cx(...BODY, styles.nameCell)}>
                           <PlayerLink
                             id={String(m.user_id)}
                             className={styles.name}
@@ -522,29 +497,23 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                           <div className={styles.statusUnder}>
                             <StatusChip payment={m.payment} fee={fee} />
                           </div>
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            display: { xs: "none", md: "table-cell" },
-                            color: m.email ? "text.secondary" : "text.disabled",
-                          }}
+                        </td>
+                        <td
+                          className={cx(
+                            ...BODY,
+                            styles.mdUp,
+                            m.email ? styles.muted : styles.faint
+                          )}
                         >
                           {m.email ?? "No email on file"}
-                        </TableCell>
-                        <TableCell
-                          sx={{ display: { xs: "none", sm: "table-cell" } }}
-                        >
+                        </td>
+                        <td className={cx(...BODY, styles.smUp)}>
                           <StatusChip payment={m.payment} fee={fee} />
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            display: { xs: "none", sm: "table-cell" },
-                            color: "text.secondary",
-                          }}
-                        >
+                        </td>
+                        <td className={cx(...BODY, styles.smUp, styles.muted)}>
                           {m.payment ? paymentDetail(m.payment) : "–"}
-                        </TableCell>
-                        <TableCell align="right">
+                        </td>
+                        <td className={cx(...BODY, table.right)}>
                           <Button
                             size="small"
                             onClick={() => {
@@ -559,13 +528,13 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                           >
                             {m.payment ? "Edit" : "Mark paid"}
                           </Button>
-                        </TableCell>
-                      </TableRow>,
+                        </td>
+                      </tr>,
                       editing === m.user_id && (
-                        <TableRow key={`${m.user_id}-edit`}>
-                          <TableCell
+                        <tr key={`${m.user_id}-edit`}>
+                          <td
                             colSpan={6}
-                            sx={{ bgcolor: gray[50], py: 1.5 }}
+                            className={cx(...BODY, styles.formCell)}
                           >
                             <PaymentForm
                               member={m}
@@ -576,14 +545,14 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                               onClear={() => save(m.user_id, null)}
                               onCancel={() => setEditing(null)}
                             />
-                          </TableCell>
-                        </TableRow>
+                          </td>
+                        </tr>
                       ),
                     ];
                   })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                </tbody>
+              </table>
+            </div>
 
             <span className={styles.caption}>
               Active members from CBS, refreshed daily

@@ -1,16 +1,12 @@
-import {
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  useMediaQuery,
-} from "@mui/material";
-import { Theme } from "@mui/material/styles";
 import { ReactNode } from "react";
+import { Chip } from "../../ui/Chip";
+import table from "../../ui/table.module.css";
+import { DOWN_SM, useMediaQuery } from "../../ui/useMediaQuery";
 import { formatAgo, formatEt } from "./adminUtils";
 import styles from "./EventsCard.module.css";
+
+const cx = (...names: (string | false | undefined)[]) =>
+  names.filter(Boolean).join(" ");
 
 export type Column<T> = {
   header: string;
@@ -51,14 +47,10 @@ export function LastSeenCell({
       <span className={`${styles.caption} ${styles.noWrap}`}>
         {formatEt(iso)}
       </span>
-      {active && <Chip size="small" color="error" label="Active" />}
+      {active && <Chip tone="error" label="Active" />}
     </div>
   );
 }
-
-// Shrink-to-fit, so the wide column gets the rest of the row and nothing
-// narrow (a count, a timestamp) wraps or gets clipped.
-const NARROW_CELL_SX = { width: "1%", whiteSpace: "nowrap" } as const;
 
 // Phone layout: the short columns side by side with their headers as small
 // labels, then the wide column on its own line underneath.
@@ -121,14 +113,14 @@ export default function EventsCard<T>({
 }: Props<T>) {
   // Four columns don't fit a phone: the message got squeezed and pushed
   // Last seen and Count off screen.
-  const compact = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const compact = useMediaQuery(DOWN_SM);
   return (
     <div id={id} className={styles.card}>
       <div className={styles.header}>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.counts}>
           {activeCount !== undefined && activeCount > 0 && (
-            <Chip size="small" color="error" label={`${activeCount} active`} />
+            <Chip tone="error" label={`${activeCount} active`} />
           )}
           <p className={`${styles.countsText} ${styles.noWrap}`}>
             {distinctCount} distinct · {totalOccurrences} total
@@ -142,39 +134,47 @@ export default function EventsCard<T>({
       ) : compact ? (
         <CompactRows rows={rows} columns={columns} rowKey={rowKey} />
       ) : (
-        <Table size="small" sx={{ mt: 1 }}>
-          <TableHead>
-            <TableRow>
+        <table className={cx(table.table, styles.table)}>
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <TableCell
+                <th
                   key={column.header}
-                  align={column.align}
-                  sx={column.wide ? undefined : NARROW_CELL_SX}
+                  scope="col"
+                  className={cx(
+                    table.cell,
+                    table.small,
+                    table.head,
+                    column.align === "right" && table.right,
+                    !column.wide && styles.narrow
+                  )}
                 >
                   {column.header}
-                </TableCell>
+                </th>
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
+            </tr>
+          </thead>
+          <tbody>
             {rows.map((row) => (
-              <TableRow key={rowKey(row)}>
+              <tr key={rowKey(row)}>
                 {columns.map((column) => (
-                  <TableCell
+                  <td
                     key={column.header}
-                    align={column.align}
-                    sx={{
-                      verticalAlign: "top",
-                      ...(column.wide ? undefined : NARROW_CELL_SX),
-                    }}
+                    className={cx(
+                      table.cell,
+                      table.small,
+                      styles.bodyCell,
+                      column.align === "right" && table.right,
+                      !column.wide && styles.narrow
+                    )}
                   >
                     {column.render(row)}
-                  </TableCell>
+                  </td>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       )}
     </div>
   );

@@ -1,0 +1,69 @@
+/* MUI's standard Alert with the theme's 10px corners (measured on the main
+   build): icon, message, then any action pushed to the right. The fill
+   and edge are the severity's color at 12% and 40%, the icon its full
+   color; the text stays in ink. */
+.alert {
+  display: flex;
+  padding: 6px 16px;
+  border: 1px solid;
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.icon {
+  display: flex;
+  margin-right: 12px;
+  padding: 7px 0;
+  font-size: 22px;
+  opacity: 0.9;
+}
+.icon svg {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  user-select: none;
+}
+
+.message {
+  min-width: 0;
+  padding: 8px 0;
+  overflow: auto;
+}
+
+.action {
+  display: flex;
+  align-items: flex-start;
+  margin-left: auto;
+  margin-right: -8px;
+  padding: 4px 0 0 16px;
+}
+
+.success {
+  border-color: rgba(46, 125, 50, 0.4);
+  background-color: rgba(46, 125, 50, 0.12);
+}
+.success .icon {
+  color: var(--success);
+}
+
+.warning {
+  border-color: rgba(237, 108, 2, 0.4);
+  background-color: rgba(237, 108, 2, 0.12);
+}
+.warning .icon {
+  color: var(--warning);
+}
+
+.error {
+  border-color: rgba(211, 47, 47, 0.4);
+  background-color: rgba(211, 47, 47, 0.12);
+}
+.error .icon {
+  color: var(--error);
+}

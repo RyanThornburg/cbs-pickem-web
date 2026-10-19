@@ -64,8 +64,79 @@
   flex: 1;
 }
 
+/* The member table, in a rounded hairline box that scrolls sideways if it
+   must. */
+.tableBox {
+  border: 1px solid var(--divider);
+  border-radius: 16px;
+}
+.table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* MUI's small checkbox cell: 24px for the box, no padding around it. */
+.checkCell {
+  width: 24px;
+  padding: 0 12px 0 16px;
+}
+
+/* MUI's selected TableRow: primary at 8%, 12% under the pointer. */
+.selectedRow {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+.selectedRow:hover {
+  background-color: rgba(25, 118, 210, 0.12);
+}
+
+/* Email from md, status and payment from sm. */
+.mdUp,
+.smUp {
+  display: none;
+}
+@media (min-width: 600px) {
+  .smUp {
+    display: table-cell;
+  }
+}
+@media (min-width: 900px) {
+  .mdUp {
+    display: table-cell;
+  }
+}
+
+.muted {
+  color: var(--text-muted);
+}
+.faint {
+  color: var(--text-faint);
+}
+
+.emptyCell {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  color: var(--text-muted);
+}
+
+.nameCell {
+  min-width: 0;
+}
+
 .name {
   font-weight: 500;
+}
+
+/* The theme's grey neutral chip on a pale green fill. */
+.paidChip {
+  background-color: var(--green-50);
+  color: var(--green-800);
+  font-weight: 500;
+}
+
+/* The payment form's row. */
+.formCell {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background-color: var(--gray-50);
 }
 
 /* Email, status and payment under the name where their columns are
@@ -106,6 +177,20 @@
   align-items: flex-start;
   gap: 8px;
 }
+.amountField {
+  width: 120px;
+}
+.dateField {
+  width: 160px;
+}
+.methodField {
+  width: 140px;
+}
+.noteField {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
 .formButtons {
   display: flex;
   align-items: center;

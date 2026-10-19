@@ -1,0 +1,60 @@
+/* MUI's Checkbox (Checkbox.tsx): a round hit area around the icon, with
+   the native input stretched invisibly over it. MUI drew no focus ring on
+   it here (the theme's ring was on the wrapper, which never takes focus),
+   and this keeps that. */
+.checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--text-muted);
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 100ms ease-in;
+}
+.checkbox:hover {
+  background-color: rgba(25, 118, 210, 0.04);
+}
+/* No hover tint on touch screens. */
+@media (hover: none) {
+  .checkbox:hover {
+    background-color: transparent;
+  }
+}
+.on {
+  color: var(--primary);
+}
+.disabled {
+  color: var(--disabled);
+  cursor: default;
+  pointer-events: none;
+}
+
+.input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.checkbox svg {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  font-size: 1.5rem;
+  fill: currentColor;
+  user-select: none;
+}

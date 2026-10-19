@@ -1,7 +1,5 @@
 import { Fragment, ReactNode, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Alert, AlertColor } from "@mui/material";
-import { alpha, Theme } from "@mui/material/styles";
 import {
   AdminUnauthorizedError,
   GetAdminStatus,
@@ -41,6 +39,7 @@ import {
   AdminViewSwitch,
   LogoutButton,
 } from "./AdminControls";
+import { AdminAlert, AlertSeverity } from "./AdminAlert";
 import EventsCard, { LastSeenCell } from "./EventsCard";
 import RosterView from "./RosterView";
 import TaskCard, { TaskRun } from "./TaskCard";
@@ -375,15 +374,6 @@ const TaskSection = ({
   </section>
 );
 
-// The shared theme paints every Alert orange (a leftover from the MUI
-// template), which would make a healthy heartbeat and a dead one look alike --
-// re-color by severity here rather than changing Alerts app-wide.
-const severitySx = (severity: AlertColor) => ({
-  backgroundColor: (theme: Theme) => alpha(theme.palette[severity].main, 0.12),
-  borderColor: (theme: Theme) => alpha(theme.palette[severity].main, 0.4),
-  "& .MuiAlert-icon": { color: `${severity}.main` },
-});
-
 // Earliest kickoff among the current week's live games (ms), or null.
 const liveSinceOf = (games: Game[]): number | null => {
   const kickoffs = games
@@ -478,7 +468,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
   const dimmed = heartbeatDead || error !== null;
   const cards = status ? buildCards(status, liveSince, now) : [];
   const activeEvents = status ? activeEventCount(status.system_events, now) : 0;
-  const summarySeverity: AlertColor =
+  const summarySeverity: AlertSeverity =
     summarizeHealth(cards.map((c) => c.health)).severity ??
     (activeEvents > 0 ? "warning" : "success");
   // The newest active event per source, shown on that task's card.
@@ -536,9 +526,8 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
       />
       <div className={styles.page}>
         {unauthorized && (
-          <Alert
+          <AdminAlert
             severity="warning"
-            sx={severitySx("warning")}
             action={
               // Full page load so it goes back through the Access login.
               <Button size="small" href="/admin">
@@ -549,10 +538,10 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
             Your admin session has expired or you're not signed in.
             {fetchedAt &&
               ` Showing what was loaded ${formatAgo(new Date(fetchedAt).toISOString(), now)}.`}
-          </Alert>
+          </AdminAlert>
         )}
         {error && !unauthorized && (
-          <Alert severity="error" sx={severitySx("error")}>
+          <AdminAlert severity="error">
             <p className={styles.alertTitle}>
               Can't reach admin status ({error.message})
               {failingSince &&
@@ -564,7 +553,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
               ? `Showing what was loaded ${formatAgo(new Date(fetchedAt).toISOString(), now)}. `
               : ""}
             Retrying every minute.
-          </Alert>
+          </AdminAlert>
         )}
 
         {!status && !error && (
@@ -574,19 +563,16 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
         {status && (
           <>
             {heartbeatDead ? (
-              <Alert severity="error" sx={severitySx("error")}>
+              <AdminAlert severity="error">
                 Pipeline heartbeat is {formatAgo(status.updated_at, now)} (
                 {formatEt(status.updated_at)}). meta:admin normally updates
                 every minute, so the pipeline isn't running: the machine is off,
                 the cron has stopped, or it crashes on startup. Everything below
                 is out of date too, so it's greyed out.
-              </Alert>
+              </AdminAlert>
             ) : (
               !error && (
-                <Alert
-                  severity={summarySeverity}
-                  sx={severitySx(summarySeverity)}
-                >
+                <AdminAlert severity={summarySeverity}>
                   <p className={styles.alertTitle}>
                     <Summary cards={cards} activeEvents={activeEvents} />
                   </p>
@@ -596,7 +582,7 @@ function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {
                     Rewritten every minute. If it goes stale, the pipeline isn't
                     running.
                   </span>
-                </Alert>
+                </AdminAlert>
               )
             )}
 

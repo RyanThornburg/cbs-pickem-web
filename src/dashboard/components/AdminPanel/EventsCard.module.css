@@ -104,3 +104,18 @@
 .wideColumn {
   margin-top: 8px;
 }
+
+.table {
+  margin-top: 8px;
+}
+
+/* Shrink-to-fit, so the wide column gets the rest of the row and nothing
+   narrow (a count, a timestamp) wraps or gets clipped. */
+.narrow {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.bodyCell {
+  vertical-align: top;
+}
