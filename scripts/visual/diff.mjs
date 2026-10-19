@@ -3,8 +3,9 @@
 //
 //   node scripts/visual/diff.mjs .visual/main .visual/after
 //
-// Exits 1 when any page differs, so a step that should look identical can
-// be checked in one command.
+// Compares the pages in the after folder (a `--pages` run shoots only
+// some), each against its baseline. Exits 1 when any page differs, so a
+// step that should look identical can be checked in one command.
 import {
   existsSync,
   mkdirSync,
@@ -27,17 +28,17 @@ const out = resolve(outArg ?? join(after, "../diff"));
 mkdirSync(out, { recursive: true });
 
 let changed = 0;
-for (const file of readdirSync(before)
+for (const file of readdirSync(after)
   .filter((f) => f.endsWith(".png"))
   .sort()) {
-  const otherPath = join(after, file);
-  if (!existsSync(otherPath)) {
-    console.log(`MISSING  ${file}`);
+  const basePath = join(before, file);
+  if (!existsSync(basePath)) {
+    console.log(`NO BASE  ${file}`);
     changed++;
     continue;
   }
-  const a = PNG.sync.read(readFileSync(join(before, file)));
-  const b = PNG.sync.read(readFileSync(otherPath));
+  const a = PNG.sync.read(readFileSync(basePath));
+  const b = PNG.sync.read(readFileSync(join(after, file)));
   // Pages of different heights are compared over the taller one, so extra
   // or missing content counts as changed.
   const width = Math.max(a.width, b.width);
