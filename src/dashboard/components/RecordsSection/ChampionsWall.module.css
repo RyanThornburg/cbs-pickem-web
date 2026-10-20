@@ -12,6 +12,7 @@
   gap: 8px;
 }
 .title {
+  font-family: var(--font-display);
   margin: 0;
   font-size: var(--text-lg);
   font-weight: 600;

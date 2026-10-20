@@ -69,11 +69,11 @@
 
 /* Desktop only; on phones the browser tab carries the name. */
 .siteName {
+  font-family: var(--font-display);
   margin: 0 auto 0 0;
-  font-size: var(--text-md);
-  font-weight: 700;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.2;
   white-space: nowrap;
 }
 @media (max-width: 899.95px) {

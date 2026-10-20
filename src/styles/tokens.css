@@ -10,13 +10,18 @@
 
 :root {
   /* Type */
+  /* Two families, one per role (DESIGN.md, Typography): the display face for
+     the site name, tab and section titles, big stats and scores; the body
+     face for everything else. */
   --font-sans:
-    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --text-xs: 0.75rem; /* 12px: labels, chips, captions */
   --text-sm: 0.8125rem; /* 13px: compact rows */
   --text-md: 0.875rem; /* 14px: body */
   --text-lg: 1.125rem; /* 18px: section titles */
-  --text-xl: 1.25rem; /* 20px: tab titles */
+  --text-xl: 1.25rem; /* 20px: compact scores */
+  --text-2xl: 1.5rem; /* 24px: tab titles */
 
   /* Shape */
   --radius: 8px;

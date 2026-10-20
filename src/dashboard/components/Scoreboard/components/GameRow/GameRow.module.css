@@ -98,11 +98,12 @@
   white-space: nowrap;
 }
 .score {
+  font-family: var(--font-display);
   min-width: 28px;
   margin-left: auto;
   color: var(--text);
   font-size: var(--text-xl);
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   text-align: right;

@@ -1,6 +1,6 @@
 /* The page's base styles, as MUI's CssBaseline set them before the app
    moved off MUI: border-box sizing everywhere, smoothed text, and the body
-   in the app's 14px Inter on white. Unlayered, like CssBaseline was, so it
+   in the app's 14px body font on white. Unlayered, like CssBaseline was, so it
    wins over the ui layer (src/dashboard/ui) where they overlap. */
 html {
   -webkit-font-smoothing: antialiased;

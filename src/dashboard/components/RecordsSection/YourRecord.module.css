@@ -24,13 +24,15 @@
 
 /* The one big number: their all-time place. */
 .place {
+  font-family: var(--font-display);
   margin: 0;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .placeNote {
+  font-family: var(--font-sans);
   margin-left: 6px;
   font-size: var(--text-md);
   font-weight: 600;

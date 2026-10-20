@@ -37,10 +37,11 @@
   min-width: 0;
 }
 
-/* The headline step (1.25rem), one above the 1.125rem section titles. */
+/* The headline step (1.5rem), clearly above the 1.125rem section titles. */
 .title {
+  font-family: var(--font-display);
   margin: 0;
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: 600;
   line-height: 1.3;
 }

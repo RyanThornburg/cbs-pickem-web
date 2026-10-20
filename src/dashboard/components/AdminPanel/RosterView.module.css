@@ -23,9 +23,10 @@
 }
 
 .statValue {
+  font-family: var(--font-display);
   margin: 0;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }

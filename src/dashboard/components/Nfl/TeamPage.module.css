@@ -39,9 +39,10 @@
   gap: 6px;
 }
 .bigValue {
+  font-family: var(--font-display);
   margin: 0;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
@@ -272,6 +273,7 @@
 }
 
 .sectionTitle {
+  font-family: var(--font-display);
   margin: 0 0 8px;
   font-size: var(--text-lg);
   font-weight: 600;

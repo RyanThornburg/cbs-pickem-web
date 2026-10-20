@@ -36,9 +36,9 @@ export const PRECIP_TREND = {
 export const BIG_MOVE_PTS = 2;
 export const CBS_DIVERGE_PTS = 1;
 
-// A real minus sign (U+2212), not a hyphen: with tabular figures Inter gives
-// the hyphen a digit-wide slot, which reads as "- 3.5". The minus fills it
-// the way "+" does.
+// A real minus sign (U+2212), not a hyphen: with tabular figures a hyphen
+// gets a digit-wide slot, which reads as "- 3.5". The minus fills it the way
+// "+" does.
 const signed = (n: number): string =>
   n > 0 ? `+${n}` : `\u2212${Math.abs(n)}`;
 

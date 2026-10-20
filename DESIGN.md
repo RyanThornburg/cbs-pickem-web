@@ -41,30 +41,30 @@ colors:
   focus-ring: "hsl(210, 98%, 42%)"
 typography:
   headline:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
-    fontSize: "1.25rem"
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
+    fontSize: "1.5rem"
     fontWeight: 600
   title:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 600
   body:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Source Sans 3, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.43
   compact:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Source Sans 3, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "0.8125rem"
     fontWeight: 400
   label:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Source Sans 3, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
   stat:
-    fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Barlow Condensed, Arial Narrow, system-ui, sans-serif"
     fontSize: "1.75rem"
-    fontWeight: 700
+    fontWeight: 600
     fontFeature: "tnum"
 rounded:
   hairline: "4px"
@@ -159,7 +159,7 @@ This is where the pool's record gets kept. It should feel like the back office o
 
 Density is high but never cramped. A player should be able to find their row, their five picks and their place in one glance on a phone during a Sunday game. Color is reserved for meaning. Green and red say won or lost (or covering or not, while a game is live), blue says not decided yet, and gold says honor. Everything else is ink on paper.
 
-The whole app is set in Inter and speaks one voice, **Office**: MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab once had its own Kickoff Board palette and fonts; since 2026-10-02 its `--gc-*` names point at the same theme tokens, so only team logos differ from tab to tab.
+The whole app speaks one voice, **Office**, in two type families with fixed jobs (see Typography): MUI's light theme, neutral chrome and MUI's default blue as the accent. The Games tab once had its own Kickoff Board palette and fonts; since 2026-10-02 its `--gc-*` names point at the same theme tokens, so only team logos differ from tab to tab.
 
 **Key Characteristics:**
 - White paper, hairline dividers, no resting shadows.
@@ -213,31 +213,34 @@ Games uses the app palette: its `--gc-*` CSS names in `gamesCard.css` all point 
 
 ## Typography
 
-**Body Font:** Inter (with system-ui, -apple-system, Segoe UI, Roboto, sans-serif), loaded from Google Fonts.
-One family everywhere, Games tab included.
+**Display Font:** Barlow Condensed (`--font-display`; 500 and 600 loaded), for the site name, tab titles, section titles, the big stat numbers and game scores.
+**Body Font:** Source Sans 3 (`--font-sans`, with system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 400–700 loaded), for everything else: tables, cards, card titles, labels, chips, alerts, buttons, tabs.
+Both load from Google Fonts. Inter was the one family until 2026-10-20 (user's call, after <https://www.bruvora.com/blog/stop-ai-slop-typography>; mock <https://claude.ai/artifact/CVshfag4aTYmhENBVZ3xPE>, option A).
 
-**Character:** Inter is a friendly, even workhorse that keeps a dense table legible at 13–14px on a phone.
+**The One Job per Family Rule.** A role always uses the same family, on every tab: every tab and section title in the display face, every alert, chip and card title in the body face. Two families, never a third. Small h3s that act as labels (Live's group labels, Standings' division names, the team page's card titles, all 12–14px) are body type, like card titles: the condensed face is for 18px and up.
+
+**Character:** Barlow Condensed reads like stadium signs and jersey numbers, so titles and scores look like a scoreboard. Source Sans 3 is a quiet, slightly narrow workhorse that keeps a dense table legible at 13–14px on a phone, with tabular figures and a real minus.
 
 ### Hierarchy
-- **Headline** (600, 1.25rem): each tab's title, the `TabIntro` h2 ("Games · Week 4"). The site name in the header is deliberately quieter (700, 0.875rem). The theme's h1–h4 sizes (3rem–1.5rem) exist but aren't used on screen.
-- **Title** (600, 1.125rem, h6 variant): section headings inside a tab (h3: "Season so far", "Champions", Admin groups), one step under the tab title. Live team abbreviations use this size in bold (data, not a heading).
+- **Headline** (display 600, 1.5rem): each tab's title, the `TabIntro` h2 ("Games · Week 4"), a clear step over the 18px section titles (it was 1.25rem until 2026-10-20, too close). The site name in the header is the display face at the title size (600, 1.125rem).
+- **Title** (display 600, 1.125rem): section headings inside a tab (h3: "Season so far", "Champions", Admin groups), one step under the tab title. Live team abbreviations use this size in bold body type (data, not a heading).
 - **Card title** (700, 0.875rem): h4 card and chart titles ("Popular picks"); body size, set apart by weight.
 - **Body** (400, 0.875rem, 1.43): everything in tables, cards and panels. The theme sets both body1 and body2 to 14px.
 - **Compact** (400, 0.8125rem): where 14px is a hair too wide: phone tabs, the header summary and its pick tiles from `lg` to `xl`, player names in the table.
 - **Label** (500, 0.75rem): captions, column heads, chip labels, badge text, "Since week 10" subtitles.
-- **Stat** (700, 1.75rem): the biggest type in the app, used for Live final totals (compact rows use the headline size, 1.25rem) and the one big number on each recap card (Records tiles use it too). The losing final score is set in muted ink (`text.secondary`, 4.6:1; it was faint `text.disabled`, 2.7:1, until 2026-10-02).
+- **Stat** (display 600, 1.75rem): the biggest type in the app, used for Live scores (compact rows use 1.25rem), the team page's big values, Admin's roster totals and Records' all-time place and the one big number on each recap card (Records tiles use it too). The losing final score is set in muted ink (`text.secondary`, 4.6:1; it was faint `text.disabled`, 2.7:1, until 2026-10-02).
 - **Small caps label** (600–700, 0.75rem, 0.04–0.07em tracking, uppercase): short labels over a number, such as Records tiles and the Games phone card's Open / Spread / Total / CBS Line. Column heads stay in sentence case (bold 0.75rem).
 
 Nothing goes below 0.75rem (12px), including the Games hourly strip, the leader cards' place discs (a pill for "T12"), the box score's stat brackets and Live's end-zone labels. The one exception is text inside SVG charts (axis ticks, chart labels and values on the game-flow, season and Finishes charts), which is 11px so phone charts don't crowd; charts draw at their measured width, so it stays 11px on every screen.
 
-**One scale, no in-between sizes.** Every text size is one of the roles above: 12, 13, 14, 18, 20 or 28px. Live used to have its own steps (0.72, 0.78, 0.8, 0.82 and 0.85rem); they were snapped onto the scale in October 2026. Don't add a size between two steps to make something fit; pick the step, or change the weight or color instead. Icon sizes (`fontSize` on an `SvgIcon`) aren't type and don't follow this.
+**One scale, no in-between sizes.** Every text size is one of the roles above: 12, 13, 14, 18, 20 (compact Live scores and a few secondary numbers), 24 or 28px. Live used to have its own steps (0.72, 0.78, 0.8, 0.82 and 0.85rem); they were snapped onto the scale in October 2026. Don't add a size between two steps to make something fit; pick the step, or change the weight or color instead. Icon sizes (`fontSize` on an `SvgIcon`) aren't type and don't follow this.
 
-**Weights:** 400 body, 500 labels and links, 600 headings and emphasis, 700 numbers, card titles and team abbreviations. Nothing heavier: 800 was dropped (it was only on a few big numbers and badges), and Google Fonts loads just these four. Write weights as numbers, never `"bold"`. Every bare `<button>` (MUI ButtonBase) inherits the page font from the theme; browsers default buttons to Arial.
+**Weights:** body: 400 body, 500 labels and links, 600 emphasis, 700 numbers, card titles and team abbreviations. Display: 600 for titles, stats and scores (500 for the muted "· Week 4" in tab titles). Nothing heavier, and Google Fonts loads only these. Write weights as numbers, never `"bold"`. Every bare `<button>` (MUI ButtonBase) inherits the page font from the theme; browsers default buttons to Arial.
 
 ### Named Rules
-**The Tabular Numbers Rule.** Any column of numbers (scores, places, spreads, percentages, records) uses tabular figures so digits line up down the table. Games sets it on the whole `.games-card`; Leaders and other score columns set `fontVariantNumeric: "tabular-nums"` locally. Signed numbers use a real minus (−, U+2212), because Inter's tabular hyphen sits in a digit-wide slot and reads as "- 3.5". Win-loss records ("2-1") are short labels, not a column, so they use proportional figures.
+**The Tabular Numbers Rule.** Any column of numbers (scores, places, spreads, percentages, records) uses tabular figures so digits line up down the table. Games sets it on the whole `.games-card`; Leaders and other score columns set `fontVariantNumeric: "tabular-nums"` locally. Signed numbers use a real minus (−, U+2212), because a tabular hyphen sits in a digit-wide slot and reads as "- 3.5". Win-loss records ("2-1") are short labels, not a column, so they use proportional figures.
 
-**The One Big Number Rule.** A stat card gets one big number (1.75rem) plus at most a short line. Nothing is larger than that: no display type, no hero banners.
+**The One Big Number Rule.** A stat card gets one big number (1.75rem) plus at most a short line. Nothing is larger than that: no hero banners. The number sits in the display face; the short words after it ("in final games", "all-time · 6 career pts") go back to the body face.
 
 ## Layout
 
@@ -373,5 +376,5 @@ User Picks shows "Updated 7:19 PM" in the desktop table header only (the user's 
 - **Don't** use gold as a general accent or button color.
 - **Don't** re-sort games or players by how close or dramatic they are.
 - **Don't** set type larger than 1.75rem, or put more than one big number on a stat card.
-- **Don't** bring a second font family or a tab-only palette back to any tab; Games' `--gc-*` names must keep pointing at theme tokens.
+- **Don't** add a third font family, use a family outside its job, or bring a tab-only palette back to any tab; Games' `--gc-*` names must keep pointing at theme tokens.
 - **Don't** use a colored side stripe as decoration on cards, list items or alerts. The Records "you" edge is the only exception.
