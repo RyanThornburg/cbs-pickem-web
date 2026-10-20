@@ -1,7 +1,5 @@
 /* MUI's Checkbox (Checkbox.tsx): a round hit area around the icon, with
-   the native input stretched invisibly over it. MUI drew no focus ring on
-   it here (the theme's ring was on the wrapper, which never takes focus),
-   and this keeps that. */
+   the native input stretched invisibly over it. */
 .checkbox {
   position: relative;
   display: inline-flex;
@@ -26,6 +24,15 @@
   .checkbox:hover {
     background-color: transparent;
   }
+}
+/* The app's focus ring when the (invisible) input is reached by keyboard.
+   MUI drew none here: its ring was on the wrapper, which never takes focus.
+   Square-cornered around the 24px box rather than round like the hover
+   tint, since the box is square. */
+.checkbox:has(.input:focus-visible) {
+  border-radius: 4px;
+  outline: var(--focus-ring);
+  outline-offset: 0;
 }
 .on {
   color: var(--primary);

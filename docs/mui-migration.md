@@ -293,10 +293,12 @@ node scripts/visual/diff.mjs .visual/main .visual/after
    11 → 117 KB raw since styles moved out of Emotion's JS into
    stylesheets. The up-front shared chunk is now Base UI (147 KB, named
    after `CSPContext`) instead of MUI's (189 KB, `TableRow`).
-   **Left:** merging `mui-migration` into `main` is the user's call (a
-   push to `main` deploys). Still open from step 4: a strict `includeAA`
-   mode for `diff.mjs`, the flaky `nfl-standings@1280` baseline, and
-   Admin's checkboxes have no keyboard focus ring (as on `main`).
+   **Merged and live 2026-10-19** (`main` fast-forwarded to `0bb2ac9`,
+   after the user tested it on a Workers preview URL). Admin's checkboxes
+   got the app's keyboard focus ring afterwards (on the wrapper, through
+   `:has(:focus-visible)`; nothing else on Admin changed). Still open: a
+   strict `includeAA` mode for `diff.mjs` and the flaky
+   `nfl-standings@1280` baseline.
 
 ## Remaining MUI by folder (2026-10-18, before step 1; all gone now)
 
