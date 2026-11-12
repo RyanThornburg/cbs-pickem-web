@@ -27,6 +27,14 @@ export interface PayPeriod {
   end_week: number | null;
   paid_places: number;
   pay_last_place: boolean;
+  // Dollars per paid place, 1st first. Only Admin › Payouts reads it (prize
+  // amounts stay off public pages); missing on older keys.
+  payouts?: number[] | null;
+  // Leaderboard key only (not meta:current): true once every week of the
+  // period is final and CBS has graded every pick, so its places and
+  // payouts won't change. Stays true on later weeks' keys. Missing on keys
+  // written before the data side added it (2026-11-12): unknown, not false.
+  final?: boolean;
 }
 
 // One player's standing in one period. `score` is graded points only
@@ -880,7 +888,7 @@ export interface AdminStatus {
 export type PaymentMethod = "venmo" | "paypal" | "cash_app" | "cash" | "other";
 
 export interface RosterPayment {
-  // Whole dollars.
+  // Whole dollars for an entry fee, dollars and cents for a payout.
   paid_amount: number;
   // YYYY-MM-DD.
   paid_at: string | null;
@@ -903,6 +911,8 @@ export interface Roster {
   updated_at: string | null;
   // Active members, by name.
   users: RosterMember[];
+  // Prize money paid out (Admin › Payouts), by PayPeriod key then user id.
+  payouts?: Record<string, Record<string, RosterPayment>>;
 }
 
 // ---- meta:historical (GET /api/historical) -- the Records tab ----

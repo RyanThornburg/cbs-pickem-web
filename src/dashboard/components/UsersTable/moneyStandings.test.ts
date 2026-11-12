@@ -110,6 +110,21 @@ describe("moneyStandings", () => {
     expect(moneyStandings(rows, "a", HALVES, 1)).toEqual([]);
   });
 
+  it("leaves out the 2nd half until someone scores in it", () => {
+    // Week 10 before a pick settles: everyone tied for 1st at 0.
+    const rows = [
+      row("a", 1, 28, 1, 0),
+      row("b", 2, 26, 1, 0),
+      row("c", 3, 25, 1, 0),
+      row("d", 4, 23, 1, 0),
+    ];
+    expect(moneyStandings(rows, "d", HALVES, 10)).toEqual([
+      standing("overall", "Overall", 5, true, 0),
+    ]);
+    rows[0].periods.second_half.score = 1;
+    expect(moneyStandings(rows, "d", HALVES, 10)[0].key).toBe("second_half");
+  });
+
   it("says nothing for a player who isn't in the list", () => {
     expect(moneyStandings(firstHalf, "zz", HALVES, 4)).toEqual([]);
   });

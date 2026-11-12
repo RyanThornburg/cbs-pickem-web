@@ -204,8 +204,9 @@ interface MoneyStandingRow {
 
 // Where one player stands against each prize being played for in this
 // week (the current segment, then overall), on the same displayed scores
-// and ranks as the table and its paid lines. Empty before anyone has
-// scored, when everyone is tied for 1st.
+// and ranks as the table and its paid lines. A prize no one has scored in
+// yet is left out: everyone is tied for 1st at 0, which would read as
+// "in the money" for the whole pool (week 1, and the 2nd half's week 10).
 export const moneyStandings = (
   rows: MoneyStandingRow[],
   userId: string,
@@ -213,15 +214,16 @@ export const moneyStandings = (
   week: number
 ): MoneyStanding[] => {
   const me = rows.find((row) => row.id === userId);
-  const overallScore = (row: MoneyStandingRow) =>
-    row.periods[OVERALL_KEY]?.score ?? 0;
-  if (!me || !rows.some((row) => overallScore(row) > 0)) return [];
+  if (!me) return [];
 
   const standing = (period: PayPeriod): MoneyStanding | null => {
     const prize = periodName(period);
     const cutoff = period.paid_places;
     const mine = me.periods[period.key];
     if (mine?.place == null) return null;
+    if (!rows.some((row) => (row.periods[period.key]?.score ?? 0) > 0)) {
+      return null;
+    }
     if (mine.place <= cutoff) {
       return { key: period.key, prize, cutoff, inMoney: true, ptsOut: 0 };
     }
@@ -318,4 +320,49 @@ export const playerSummaryText = (
     ...money,
     ...(asOfWeek != null ? [`As of week ${asOfWeek}`] : []),
   ].join(". ");
+};
+
+export interface SegmentPrize {
+  key: string;
+  // "1st half"
+  prize: string;
+  place: number;
+  tied: boolean;
+}
+
+// Who was paid in each segment that finished before the browsed week (the
+// 1st half from week 10), keyed by user id, for the medal next to their
+// name for the rest of the season. Overall never finishes inside the
+// season, so it's never here. A finished segment's places are final: the
+// live bonus only counts toward periods that include the browsed week.
+export const finishedSegmentPrizes = (
+  users: Pick<RankedUser, "id" | "periods">[],
+  periods: PayPeriod[],
+  week: number
+): Map<string, SegmentPrize[]> => {
+  const out = new Map<string, SegmentPrize[]>();
+  periods
+    .filter(
+      (p) => p.key !== OVERALL_KEY && p.end_week != null && p.end_week < week
+    )
+    .forEach((period) => {
+      const counts = new Map<number, number>();
+      users.forEach((u) => {
+        const place = u.periods[period.key]?.place;
+        if (place != null) counts.set(place, (counts.get(place) ?? 0) + 1);
+      });
+      users.forEach((u) => {
+        const place = u.periods[period.key]?.place;
+        if (place == null || place > period.paid_places) return;
+        const list = out.get(u.id) ?? [];
+        list.push({
+          key: period.key,
+          prize: periodName(period),
+          place,
+          tied: (counts.get(place) ?? 0) > 1,
+        });
+        out.set(u.id, list);
+      });
+    });
+  return out;
 };

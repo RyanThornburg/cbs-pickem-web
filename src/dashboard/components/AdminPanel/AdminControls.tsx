@@ -4,9 +4,9 @@ import { Icon } from "../../ui/Icon";
 import { SegmentedControl } from "../../ui/SegmentedControl";
 import styles from "./AdminControls.module.css";
 
-export type AdminView = "pipeline" | "roster";
+export type AdminView = "pipeline" | "roster" | "payouts";
 
-// Pipeline or Roster, in ?view= like the other tabs' switches.
+// Pipeline, Roster or Payouts, in ?view= like the other tabs' switches.
 export const AdminViewSwitch = ({
   view,
   onChange,
@@ -21,6 +21,7 @@ export const AdminViewSwitch = ({
     segments={[
       { value: "pipeline", children: "Pipeline" },
       { value: "roster", children: "Roster" },
+      { value: "payouts", children: "Payouts" },
     ]}
   />
 );

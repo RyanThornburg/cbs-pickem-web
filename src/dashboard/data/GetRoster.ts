@@ -54,3 +54,24 @@ export const SavePayment = async (
         : { method: "DELETE" }
     )
   );
+
+// Saves one winner's payout for one prize (a PayPeriod key), or clears it
+// with null. Answers with the whole roster, payouts included.
+export const SavePayout = async (
+  season: number,
+  periodKey: string,
+  userId: number,
+  payout: RosterPayment | null
+): Promise<Roster> =>
+  readRoster(
+    await adminFetch(
+      `${rosterPath(season)}/payouts/${encodeURIComponent(periodKey)}/${userId}`,
+      payout
+        ? {
+            method: "PUT",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payout),
+          }
+        : { method: "DELETE" }
+    )
+  );

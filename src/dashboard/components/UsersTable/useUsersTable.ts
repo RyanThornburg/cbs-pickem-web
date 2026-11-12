@@ -9,7 +9,7 @@ import { RankedUser, UserSeasonTrends, WeekRecap } from "../../types";
 import { moversByUserId, perfectWeekUserIds } from "../Recap/recapBadges";
 import { buildUsersTableColumns, toUsersTableRow } from "./usersTableColumns";
 import { useCurrentWeek } from "../CurrentWeekContext";
-import { paidLines } from "./usersTableUtils";
+import { finishedSegmentPrizes, paidLines } from "./usersTableUtils";
 import { shownSegment } from "../../utils/payPeriods";
 
 interface UseUsersTableArgs {
@@ -42,6 +42,7 @@ export const useUsersTable = ({
   const data = useMemo(() => {
     const movers = moversByUserId(recap);
     const perfect = perfectWeekUserIds(recap);
+    const prizes = finishedSegmentPrizes(userList, periods, week);
     return userList.map((user) =>
       toUsersTableRow(
         user,
@@ -50,6 +51,7 @@ export const useUsersTable = ({
           move: movers.get(user.id),
           perfectWeek: perfect.has(user.id),
           showStreak,
+          prizes: prizes.get(user.id),
         },
         { periods, week }
       )

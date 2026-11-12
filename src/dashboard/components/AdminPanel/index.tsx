@@ -42,6 +42,7 @@ import {
 import { AdminAlert, AlertSeverity } from "./AdminAlert";
 import EventsCard, { LastSeenCell } from "./EventsCard";
 import RosterView from "./RosterView";
+import PayoutsView from "./PayoutsView";
 import TaskCard, { TaskRun } from "./TaskCard";
 import { Button } from "../../ui/Button";
 import { Icon } from "../../ui/Icon";
@@ -383,12 +384,15 @@ const liveSinceOf = (games: Game[]): number | null => {
   return kickoffs.length ? Math.min(...kickoffs) : null;
 };
 
-// Pipeline status (the default) or the Roster, switched in ?view=roster.
-// Each view mounts only while shown, so the pipeline poll stops on Roster.
+// Pipeline status (the default), the Roster or Payouts, switched in
+// ?view=roster / ?view=payouts. Each view mounts only while shown, so the
+// pipeline poll stops on the other two.
+const VIEWS: AdminView[] = ["pipeline", "roster", "payouts"];
+
 export default function AdminPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const view: AdminView =
-    searchParams.get("view") === "roster" ? "roster" : "pipeline";
+  const asked = searchParams.get("view") as AdminView | null;
+  const view: AdminView = asked && VIEWS.includes(asked) ? asked : "pipeline";
   const viewSwitch = (
     <AdminViewSwitch
       view={view}
@@ -404,11 +408,9 @@ export default function AdminPanel() {
       }
     />
   );
-  return view === "roster" ? (
-    <RosterView viewSwitch={viewSwitch} />
-  ) : (
-    <PipelineView viewSwitch={viewSwitch} />
-  );
+  if (view === "roster") return <RosterView viewSwitch={viewSwitch} />;
+  if (view === "payouts") return <PayoutsView viewSwitch={viewSwitch} />;
+  return <PipelineView viewSwitch={viewSwitch} />;
 }
 
 function PipelineView({ viewSwitch }: { viewSwitch: ReactNode }) {

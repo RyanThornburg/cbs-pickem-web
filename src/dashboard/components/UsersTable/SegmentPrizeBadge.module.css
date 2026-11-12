@@ -1,0 +1,33 @@
+/* A round tile behind the medal, tinted by place like the place discs
+   (medals.ts), with a darker icon for contrast on its tint. */
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.icon {
+  font-size: 0.8125rem;
+}
+
+.gold {
+  background-color: rgba(212, 160, 23, 0.18);
+  color: #8a6a0f;
+}
+.silver {
+  background-color: rgba(195, 199, 207, 0.5);
+  color: #3f4655;
+}
+.bronze {
+  background-color: rgba(217, 162, 122, 0.3);
+  color: #7a4420;
+}
+/* A paid place past 3rd, if a segment ever pays that deep. */
+.paid {
+  background-color: var(--hover);
+  color: var(--text-muted);
+}

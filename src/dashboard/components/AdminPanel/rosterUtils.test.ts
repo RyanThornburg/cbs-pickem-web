@@ -1,9 +1,11 @@
 import { RosterMember, RosterPayment } from "../../types";
 import {
   filterMembers,
+  formatDollars,
   gmailComposeUrl,
   paymentDetail,
   paymentStatus,
+  payoutTotals,
   rosterTotals,
   todayIso,
 } from "./rosterUtils";
@@ -109,5 +111,50 @@ describe("gmailComposeUrl", () => {
 describe("todayIso", () => {
   it("formats the local date", () => {
     expect(todayIso(new Date(2026, 9, 7, 23, 30))).toBe("2026-10-07");
+  });
+});
+
+describe("formatDollars", () => {
+  it("shows cents only when there are some", () => {
+    expect(formatDollars(1380)).toBe("$1,380");
+    expect(formatDollars(43.48)).toBe("$43.48");
+    expect(formatDollars(12.5)).toBe("$12.50");
+    expect(formatDollars(0.1 + 0.2)).toBe("$0.30");
+  });
+});
+
+describe("payoutTotals", () => {
+  const winners = [
+    { user_id: 1, owed: 685 },
+    { user_id: 2, owed: 75 },
+    { user_id: 3, owed: 75 },
+    { user_id: 4, owed: null },
+  ];
+
+  it("adds up what's owed, paid and left, per winner", () => {
+    expect(
+      payoutTotals(winners, {
+        "1": pay(685),
+        "2": pay(50),
+        "3": pay(100),
+      })
+    ).toEqual({ owed: 835, paid: 835, left: 25, winners: 4, paidInFull: 2 });
+  });
+
+  it("works in cents", () => {
+    const split = [
+      { user_id: 1, owed: 43.48 },
+      { user_id: 2, owed: 43.48 },
+    ];
+    expect(payoutTotals(split, { "1": pay(43.48) })).toMatchObject({
+      owed: 86.96,
+      paid: 43.48,
+      left: 43.48,
+      paidInFull: 1,
+    });
+    expect(paymentStatus(pay(43.47), 43.48)).toEqual({
+      kind: "partial",
+      owed: 0.01,
+    });
   });
 });

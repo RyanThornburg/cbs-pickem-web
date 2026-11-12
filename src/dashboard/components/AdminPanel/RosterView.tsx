@@ -1,4 +1,4 @@
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { AdminUnauthorizedError } from "../../data/GetAdminStatus";
 import {
   GetRoster,
@@ -7,12 +7,7 @@ import {
 } from "../../data/GetRoster";
 import table from "../../ui/table.module.css";
 import uiStyles from "../../ui/ui.module.css";
-import {
-  PaymentMethod,
-  Roster,
-  RosterMember,
-  RosterPayment,
-} from "../../types";
+import { Roster, RosterPayment } from "../../types";
 import { formatUpdated } from "../../utils/updatedTime";
 import { useCurrentWeek } from "../CurrentWeekContext";
 import LoadError from "../shared/LoadError";
@@ -21,18 +16,15 @@ import TabIntro from "../TabIntro";
 import TabSkeleton from "../TabSkeleton";
 import { AdminActions, LogoutButton } from "./AdminControls";
 import { Checkbox } from "./Checkbox";
-import { SelectField, TextField } from "./FormFields";
+import { PaymentForm } from "./PaymentForm";
 import {
   filterMembers,
   formatDollars,
   gmailComposeUrl,
-  METHOD_LABEL,
-  METHODS,
   paymentDetail,
   paymentStatus,
   RosterFilter,
   rosterTotals,
-  todayIso,
 } from "./rosterUtils";
 import { Button } from "../../ui/Button";
 import { Chip } from "../../ui/Chip";
@@ -116,137 +108,6 @@ const StatusChip = ({
 // MUI's small TableCell classes, for header and body cells.
 const HEAD = [table.cell, table.small, table.head];
 const BODY = [table.cell, table.small];
-
-type Draft = {
-  amount: string;
-  date: string;
-  method: PaymentMethod | "";
-  note: string;
-};
-
-const draftFrom = (
-  payment: RosterPayment | null,
-  fee: number | null
-): Draft => ({
-  amount: String(payment?.paid_amount ?? fee ?? ""),
-  date: payment ? (payment.paid_at ?? "") : todayIso(),
-  method: payment ? (payment.method ?? "") : "venmo",
-  note: payment?.note ?? "",
-});
-
-const PaymentForm = ({
-  member,
-  fee,
-  saving,
-  error,
-  onSave,
-  onClear,
-  onCancel,
-}: {
-  member: RosterMember;
-  fee: number | null;
-  saving: boolean;
-  error: string | null;
-  onSave: (payment: RosterPayment) => void;
-  onClear: () => void;
-  onCancel: () => void;
-}) => {
-  const [draft, setDraft] = useState(() => draftFrom(member.payment, fee));
-  const amount = Number(draft.amount);
-  const amountOk =
-    draft.amount.trim() !== "" && Number.isInteger(amount) && amount >= 0;
-  const set = (field: keyof Draft) => (value: string) =>
-    setDraft((d) => ({ ...d, [field]: value }));
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!amountOk) return;
-    onSave({
-      paid_amount: amount,
-      paid_at: draft.date || null,
-      method: draft.method || null,
-      note: draft.note.trim() || null,
-    });
-  };
-  const idBase = `roster-${member.user_id}`;
-  return (
-    <form
-      onSubmit={submit}
-      aria-label={`Payment for ${member.name}`}
-      className={styles.form}
-    >
-      <TextField
-        id={`${idBase}-amount`}
-        label="Amount ($)"
-        type="number"
-        value={draft.amount}
-        onChange={set("amount")}
-        error={!amountOk}
-        helperText={amountOk ? undefined : "Whole dollars"}
-        inputProps={{ min: 0, step: 1, inputMode: "numeric" }}
-        className={styles.amountField}
-        autoFocus
-      />
-      <TextField
-        id={`${idBase}-date`}
-        label="Date"
-        type="date"
-        value={draft.date}
-        onChange={set("date")}
-        shrink
-        className={styles.dateField}
-      />
-      <SelectField<PaymentMethod | "">
-        id={`${idBase}-method`}
-        label="Method"
-        value={draft.method}
-        onChange={set("method")}
-        options={[
-          { value: "", label: <em>Not set</em> },
-          ...METHODS.map((m) => ({ value: m, label: METHOD_LABEL[m] })),
-        ]}
-        renderValue={(m) => (m === "" ? "" : METHOD_LABEL[m])}
-        className={styles.methodField}
-      />
-      <TextField
-        id={`${idBase}-note`}
-        label="Note"
-        value={draft.note}
-        onChange={set("note")}
-        placeholder="Optional"
-        inputProps={{ maxLength: 200 }}
-        className={styles.noteField}
-      />
-      <div className={styles.formButtons}>
-        <Button
-          type="submit"
-          variant="contained"
-          size="small"
-          disabled={saving || !amountOk}
-        >
-          {saving ? "Saving…" : "Save"}
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onCancel}
-          disabled={saving}
-        >
-          Cancel
-        </Button>
-        {member.payment && (
-          <Button size="small" onClick={onClear} disabled={saving}>
-            Mark unpaid
-          </Button>
-        )}
-      </div>
-      {error && (
-        <p role="alert" className={styles.saveError}>
-          Couldn't save: {error}. Nothing changed; try again.
-        </p>
-      )}
-    </form>
-  );
-};
 
 export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
   const { season } = useCurrentWeek();
@@ -537,8 +398,10 @@ export default function RosterView({ viewSwitch }: { viewSwitch: ReactNode }) {
                             className={cx(...BODY, styles.formCell)}
                           >
                             <PaymentForm
-                              member={m}
-                              fee={fee}
+                              idBase={`roster-${m.user_id}`}
+                              label={`Payment for ${m.name}`}
+                              payment={m.payment}
+                              defaultAmount={fee}
                               saving={saving}
                               error={saveError}
                               onSave={(payment) => save(m.user_id, payment)}

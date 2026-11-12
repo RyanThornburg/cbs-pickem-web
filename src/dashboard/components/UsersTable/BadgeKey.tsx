@@ -5,6 +5,7 @@ import { Popover } from "../../ui/Popover";
 import { GameStatus, UserPick } from "../../types";
 import { MoverBadge, PerfectWeekBadge } from "../Recap/PlayerBadges";
 import { DefendingChampionBadge } from "./DefendingChampionBadge";
+import { SegmentPrizeBadge } from "./SegmentPrizeBadge";
 import { StreakBadge } from "./StreakBadge";
 import { FormTile } from "./WeeklyFormIcon";
 import { PickTile } from "./UserPickStack";
@@ -107,6 +108,21 @@ export function BadgeKey() {
           current week)
         </Row>
         <Row mark={<PerfectWeekBadge plain perfect />}>Went 5-0 this week</Row>
+        <Row
+          mark={
+            <>
+              {[1, 2, 3].map((place) => (
+                <SegmentPrizeBadge
+                  key={place}
+                  plain
+                  prize={{ key: "", prize: "", place, tied: false }}
+                />
+              ))}
+            </>
+          }
+        >
+          Paid in a finished half: 1st, 2nd or 3rd place
+        </Row>
         <Row mark={<DefendingChampionBadge plain season={2025} />}>
           Defending champion
         </Row>

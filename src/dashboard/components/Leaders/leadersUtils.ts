@@ -1,78 +1,124 @@
-import { RankedUser } from "../../types";
+import { PayPeriod, RankedUser } from "../../types";
 import { OVERALL_KEY } from "../../utils/payPeriods";
+import { rowPeriods } from "../UsersTable/usersTableUtils";
 
-// A PayPeriod key: "overall" or the shown segment's.
-export type LeaderBoard = string;
-
-export interface LeaderRow {
+export interface RaceLeader {
   id: string;
   name: string;
-  // Rank on the displayed score (see GetUserByWeek); "T1" when shared.
-  placeLabel: string;
-  place: number;
-  // Graded score without the live bonus, then picks covering right now.
+  // Graded points, then picks covering right now (the table's "28 +1").
   score: number;
   covering: number;
 }
 
-export interface LeaderList {
-  rows: LeaderRow[];
-  // The selected user's row when they're outside `rows`, else null.
-  youRow: LeaderRow | null;
+export interface RaceYou {
+  // Rank on the displayed score (see GetUserByWeek); "T8" when shared.
+  placeLabel: string;
+  place: number;
+  score: number;
+  covering: number;
+  inMoney: boolean;
+  // Points behind the paid line (tying it is enough); 0 when in.
+  ptsOut: number;
+  // Points ahead of the best player outside the money, when in it. Null
+  // when no one is outside it.
+  ptsClear: number | null;
 }
 
-const placeOf = (user: RankedUser, board: LeaderBoard) =>
-  board === OVERALL_KEY ? user.place : (user.periods[board]?.place ?? null);
+export interface RaceSummary {
+  key: string;
+  paid: number;
+  // False until someone has a point in this period (the 2nd half's first
+  // week, before any pick settles or covers): everyone is tied for 1st at
+  // 0, so there's no leader, paid line or gap worth showing.
+  started: boolean;
+  leaders: RaceLeader[];
+  // The displayed score of the last paid place: what it takes to be paid
+  // if the period ended now.
+  paidLine: number;
+  // Players in the paid places, counting everyone tied at the cutoff (can
+  // run past `paid`).
+  inMoney: number;
+  you: RaceYou | null;
+}
 
-const scoreOf = (user: RankedUser, board: LeaderBoard) =>
-  board === OVERALL_KEY
-    ? user.cumulative_score
-    : (user.periods[board]?.score ?? 0);
+const gradedScore = (user: RankedUser, key: string) =>
+  key === OVERALL_KEY ? user.cumulative_score : (user.periods[key]?.score ?? 0);
 
-// The paid places for one board: everyone ranked within `paid`, so a tie at
-// the cutoff shows every tied player (the list can run past `paid`). Users
-// with no rank on that board (a period before it starts) are left out.
-export const leaderList = (
+// One prize's race for the strip at the top of User Picks: who leads, the
+// score the last paid place has, and where the selected player stands
+// against it. Places and scores are the displayed ones (graded plus
+// covering now), the same the table, its paid lines and the header's money
+// lines use, so every number agrees. Users with no place in the period
+// (before it starts) are left out.
+export const raceSummary = (
   users: RankedUser[],
-  board: LeaderBoard,
-  paid: number,
+  period: PayPeriod,
+  periods: PayPeriod[],
+  week: number,
   selectedId?: string
-): LeaderList => {
-  const ranked = users.filter((u) => placeOf(u, board) != null);
-  const placeCounts = new Map<number, number>();
-  ranked.forEach((u) => {
-    const p = placeOf(u, board)!;
-    placeCounts.set(p, (placeCounts.get(p) ?? 0) + 1);
+): RaceSummary => {
+  const ranked = users.flatMap((user) => {
+    const standing = rowPeriods(user, periods, week)[period.key];
+    return standing?.place != null
+      ? [{ user, place: standing.place, total: standing.score }]
+      : [];
   });
+  const counts = new Map<number, number>();
+  ranked.forEach((r) => counts.set(r.place, (counts.get(r.place) ?? 0) + 1));
 
-  const toRow = (u: RankedUser): LeaderRow => {
-    const place = placeOf(u, board)!;
-    const score = scoreOf(u, board);
-    return {
-      id: u.id,
-      name: u.name,
-      place,
-      placeLabel: (placeCounts.get(place) ?? 0) > 1 ? `T${place}` : `${place}`,
-      score,
-      covering: u.trending_score,
-    };
-  };
+  const paid = period.paid_places;
+  const inRows = ranked.filter((r) => r.place <= paid);
+  const outRows = ranked.filter((r) => r.place > paid);
+  const paidLine = inRows.length ? Math.min(...inRows.map((r) => r.total)) : 0;
+  const bestOut = outRows.length
+    ? Math.max(...outRows.map((r) => r.total))
+    : null;
 
-  const rows = ranked
-    .filter((u) => placeOf(u, board)! <= paid)
-    .sort(
-      (a, b) =>
-        placeOf(a, board)! - placeOf(b, board)! || a.name.localeCompare(b.name)
+  const leaders = ranked
+    .filter((r) => r.place === 1)
+    .sort((a, b) =>
+      a.user.name.localeCompare(b.user.name, undefined, {
+        sensitivity: "base",
+      })
     )
-    .map(toRow);
+    .map(({ user }) => ({
+      id: user.id,
+      name: user.name,
+      score: gradedScore(user, period.key),
+      covering: user.trending_score,
+    }));
 
-  const selected = selectedId
-    ? ranked.find((u) => u.id === selectedId)
+  const mine = selectedId
+    ? ranked.find((r) => r.user.id === selectedId)
     : undefined;
-  const youRow =
-    selected && !rows.some((r) => r.id === selected.id)
-      ? toRow(selected)
-      : null;
+  const you: RaceYou | null = mine
+    ? {
+        place: mine.place,
+        placeLabel: `${(counts.get(mine.place) ?? 0) > 1 ? "T" : ""}${mine.place}`,
+        score: gradedScore(mine.user, period.key),
+        covering: mine.user.trending_score,
+        inMoney: mine.place <= paid,
+        ptsOut: mine.place <= paid ? 0 : Math.max(0, paidLine - mine.total),
+        ptsClear:
+          mine.place <= paid && bestOut !== null ? mine.total - bestOut : null,
+      }
+    : null;
 
-  return { rows, youRow };
+  return {
+    key: period.key,
+    paid,
+    started: ranked.some((r) => r.total > 0),
+    leaders,
+    paidLine,
+    inMoney: inRows.length,
+    you,
+  };
+};
+
+// "Patrick Madden" → "P. Madden", for a second name beside the first.
+export const shortName = (name: string): string => {
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1
+    ? `${parts[0][0].toUpperCase()}. ${parts.slice(1).join(" ")}`
+    : name;
 };

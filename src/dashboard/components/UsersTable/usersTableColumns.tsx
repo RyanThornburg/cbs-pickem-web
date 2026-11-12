@@ -14,12 +14,14 @@ import { StreakBadge } from "./StreakBadge";
 import { ScoreWithCovering } from "./ScoreWithCovering";
 import { WeeklyFormIcon } from "./WeeklyFormIcon";
 import { DefendingChampionBadge } from "./DefendingChampionBadge";
+import { SegmentPrizeBadge } from "./SegmentPrizeBadge";
 import { UserGamePicksStack } from "./UserPickStack";
 import {
   getWeeklyForm,
   RowPeriods,
   rowPeriods,
   SEASON_STREAK_MIN_WEEKS,
+  SegmentPrize,
 } from "./usersTableUtils";
 import styles from "./usersTableColumns.module.css";
 
@@ -41,6 +43,8 @@ export interface UsersTableRow {
   streakWeeks: number;
   streakThresholdPct: number | undefined;
   defendingChampionSeason: number | null;
+  // Finished segments this player was paid in (finishedSegmentPrizes).
+  prizes: SegmentPrize[];
   // From this week's recap.
   move: RecapMove | undefined;
   perfectWeek: boolean;
@@ -53,6 +57,7 @@ export const toUsersTableRow = (
     move?: RecapMove;
     perfectWeek?: boolean;
     showStreak?: boolean;
+    prizes?: SegmentPrize[];
   } = {},
   // The season's periods and the browsed week, for the segment columns.
   season: { periods: PayPeriod[]; week: number } = { periods: [], week: 0 }
@@ -81,6 +86,7 @@ export const toUsersTableRow = (
     streakThresholdPct:
       trends[user.id]?.current_season.hot_streak.threshold_pct,
     defendingChampionSeason: lastSeason?.rank === 1 ? lastSeason.season : null,
+    prizes: weekBadges.prizes ?? [],
     move: weekBadges.move,
     perfectWeek: weekBadges.perfectWeek ?? false,
   };
@@ -135,6 +141,7 @@ export const buildUsersTableColumns = (
         const row = info.row.original;
         const hasBadges =
           row.defendingChampionSeason != null ||
+          row.prizes.length > 0 ||
           row.streakWeeks >= SEASON_STREAK_MIN_WEEKS ||
           row.perfectWeek ||
           (row.move?.change ?? 0) !== 0;
@@ -161,6 +168,9 @@ export const buildUsersTableColumns = (
                   thresholdPct={row.streakThresholdPct}
                 />
                 <PerfectWeekBadge perfect={row.perfectWeek} />
+                {row.prizes.map((prize) => (
+                  <SegmentPrizeBadge key={prize.key} prize={prize} />
+                ))}
                 <DefendingChampionBadge season={row.defendingChampionSeason} />
               </div>
             )}

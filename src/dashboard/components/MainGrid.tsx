@@ -152,6 +152,19 @@ export default function MainGrid() {
     weekComplete,
   } = useWeekData(season, selectedWeek);
   const [user, onUserChange] = useSelectedUser(userList);
+  // The header's "2nd half 3rd" waits until someone has a point in the
+  // segment: before that everyone is tied for 1st at 0.
+  const headerSegment = useMemo(
+    () =>
+      selectedSegment &&
+      userList.some(
+        (u) =>
+          (u.periods[selectedSegment.key]?.score ?? 0) + u.trending_score > 0
+      )
+        ? selectedSegment
+        : null,
+    [selectedSegment, userList]
+  );
   const selectedUser = user
     ? userList.find((entry) => entry.id === user)
     : undefined;
@@ -533,7 +546,7 @@ export default function MainGrid() {
                 onMenuClosed={scrollToPendingRow}
                 summary={isDesktop ? "card" : "compact"}
                 standings={moneyStandings}
-                segment={selectedSegment}
+                segment={headerSegment}
                 asOfWeek={isCurrentWeek ? undefined : selectedWeek}
               />
             )}
@@ -686,6 +699,7 @@ export default function MainGrid() {
                           userList={userList}
                           userId={user}
                           week={selectedWeek}
+                          weekComplete={weekComplete}
                           segment={selectedSegment}
                         />
                       )}

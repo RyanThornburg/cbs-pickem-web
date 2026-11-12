@@ -1,110 +1,126 @@
-/* Overall and the shown segment's leader cards (SegmentLeaders.tsx): two
-   outlined cards side by side from sm, one card with tabs on phones. */
-.leaders {
+/* The prize race (SegmentLeaders.tsx): one outlined panel, a table of the
+   two prizes from sm, two-line items on phones. */
+.race {
   margin-bottom: 12px;
-  text-align: left;
-}
-
-.pair {
-  display: none;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-@media (min-width: 600px) {
-  .pair {
-    display: grid;
-  }
-}
-
-/* An outlined card, as MUI's outlined Paper drew it. */
-.card {
-  padding: 12px 14px;
   border: 1px solid var(--divider);
   border-radius: var(--radius);
   background-color: var(--paper);
   color: var(--text);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 
-/* The phone card: the tabs sit flush with its top edge. */
-.tabbed {
+.desktop {
+  display: none;
+}
+.phone {
   display: block;
-  padding: 0 12px 12px;
 }
 @media (min-width: 600px) {
-  .tabbed {
+  .desktop {
+    display: block;
+  }
+  .phone {
     display: none;
   }
 }
 
-/* The phone card's tabs: 40px tall, 8px above the caption. */
-.tabList {
-  min-height: 40px;
-  margin-bottom: 8px;
-}
-.tab {
-  min-height: 40px;
+/* ---- Desktop table ---- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Prize, leader, paid line, you: the leader and you get the room. */
+  table-layout: fixed;
 }
 
 .head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.title {
-  margin: 0;
-  font-size: var(--text-md);
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.caption {
+  padding: 8px 16px 2px;
   font-size: var(--text-xs);
   font-weight: 400;
   line-height: 1.66;
   color: var(--text-muted);
+  text-align: left;
+}
+.head:first-child {
+  width: 22%;
+}
+.head:nth-child(2) {
+  width: 30%;
+}
+.head:nth-child(3) {
+  width: 18%;
 }
 
-/* The phone card's subtitle, under the tabs. */
-.sub {
+.row + .row > * {
+  border-top: 1px solid var(--divider);
+}
+
+.prizeCell,
+.cell {
+  padding: 8px 16px 10px;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: 400;
+}
+
+.prizeName {
   display: block;
-  margin-bottom: 6px;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.2;
 }
 
-.rows {
+.caption {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.leader {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.row {
-  display: grid;
-  /* Wide enough for a "T12" pill. */
-  grid-template-columns: 32px minmax(0, 1fr) auto;
-  gap: 8px;
   align-items: center;
-  padding: 3.2px 4px;
-  border-radius: var(--radius);
-  font-variant-numeric: tabular-nums;
+  gap: 8px;
+  min-width: 0;
 }
 
-/* The selected player, lime as on User Picks (SELECTED_ROW_BG). */
-.selected {
-  background-color: #f0f4c3;
+.leaderName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* A disc for "1" or "12", a pill for "T12": the label holds the 12px floor
-   instead of shrinking to fit a fixed circle. Medal colors come in inline. */
+/* The two numbers each row turns on: the leader's score and the paid
+   line. */
+.big {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1;
+}
+/* The "+N" covering stays in the body face beside it. */
+.big span span {
+  font-family: var(--font-sans);
+}
+
+.line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* A disc for "1", a pill for "T12"; medal colors come in inline. */
 .place {
   display: inline-flex;
-  justify-self: start;
+  flex: none;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 24px;
-  height: 24px;
+  min-width: 22px;
+  height: 22px;
   padding: 0 4px;
   border-radius: 96px;
   background-color: var(--hover);
@@ -113,41 +129,127 @@
   font-weight: 700;
 }
 
-.name {
-  min-width: 0;
+/* The selected player, lime as on User Picks (SELECTED_ROW_BG). */
+.youPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 3px 12px 3px 4px;
+  border-radius: 96px;
+  background-color: #f0f4c3;
 }
-.nameSelected {
+.youScore {
   font-weight: 700;
 }
+.youStatus {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-.score {
-  font-size: var(--text-md);
+.strong {
+  font-weight: 600;
+}
+.strongInk {
   font-weight: 700;
-  line-height: 1.5;
-  text-align: right;
+  color: var(--text);
 }
-
-.covering {
-  margin-left: 4px;
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--success);
+.muted {
+  color: var(--text-muted);
 }
-
-/* Between the paid places and the selected player's own row below them. */
-.gap {
-  margin: 0;
-  font-size: var(--text-sm);
-  line-height: 1;
-  text-align: center;
+.faint {
   color: var(--text-faint);
 }
 
-.legend {
-  margin-top: 4px;
+/* "4 tied": a text button that lists the names. */
+.tieButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline dotted var(--text-faint);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.tieButton:hover {
+  text-decoration-color: var(--text-muted);
+}
+.tieButton:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
-.green {
-  font-weight: 600;
-  color: var(--success);
+.tiePopup {
+  max-width: 280px;
+  max-height: 320px;
+  overflow: auto;
+  padding: 10px 14px;
+}
+.tieTitle {
+  margin: 0 0 4px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.tieList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+/* ---- Phones ---- */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+}
+.item + .item {
+  border-top: 1px solid var(--divider);
+}
+
+.line1 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.line1 .prizeName {
+  display: inline;
+  font-size: 1.0625rem;
+}
+.line1 .caption {
+  display: inline;
+}
+
+.leaderRight {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.line2 {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.youBit {
+  padding: 0 5px;
+  border-radius: 4px;
+  background-color: #f0f4c3;
+  color: var(--text);
+  white-space: nowrap;
 }
