@@ -6,6 +6,12 @@
 // has to live in PICKEM_KV rather than a namespace of our own. Everything
 // here sits behind verifyAdmin: `admin:users` holds every member's email,
 // including the ones hidden on CBS.
+//
+// The same key also records prize money paid out (Admin › Payouts):
+// `payouts.{period_key}.{user_id}`, the same record as an entry fee but in
+// dollars and cents, since a tie splits a prize to the cent. What each
+// winner is owed isn't stored here: it's the data's own `payout` on the
+// period's last week, which the page reads from the public leaderboard.
 
 export const PAYMENT_METHODS = [
   "venmo",
@@ -17,7 +23,8 @@ export const PAYMENT_METHODS = [
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 export interface Payment {
-  // Whole dollars. The only field the pipeline reads.
+  // Whole dollars for an entry fee (the only field the pipeline reads),
+  // dollars and cents for a payout.
   paid_amount: number;
   // YYYY-MM-DD, as entered.
   paid_at: string | null;
@@ -30,6 +37,9 @@ export interface RosterKey {
   updated_at: string;
   // Keyed by user_id as a string, the shape the data repo reads.
   users: Record<string, Payment>;
+  // Prize money paid out, by PayPeriod key then user_id as a string. Absent
+  // until the first payout is recorded.
+  payouts?: Record<string, Record<string, Payment>>;
 }
 
 interface AdminUsersKey {
@@ -56,11 +66,16 @@ export interface RosterResponse {
     email: string | null;
     payment: Payment | null;
   }[];
+  // Payouts recorded so far, as stored (by period key, then user id).
+  payouts: Record<string, Record<string, Payment>>;
 }
 
 const MAX_AMOUNT = 10_000;
 const MAX_NOTE = 200;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+// A PayPeriod key ("first_half"). It only ever names a property inside
+// roster:{season}, never a KV key, but keep it to the data's own shape.
+export const PERIOD_KEY_PATTERN = /^[a-z][a-z0-9_]{0,39}$/;
 
 const rosterKey = (season: number) => `roster:${season}`;
 
@@ -120,21 +135,33 @@ export async function buildRoster(
       .sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
       ),
+    payouts: saved.payouts ?? {},
   };
 }
 
+// Whole cents: 12.5 and 43.48 pass, 43.485 doesn't.
+const isCents = (amount: number) =>
+  Math.abs(Math.round(amount * 100) - amount * 100) < 1e-6;
+
 // Checks a saved payment from the page. Returns the clean value or a reason.
-export function parsePayment(body: unknown): Payment | string {
+// Entry fees are whole dollars; payouts (`cents`) can carry cents.
+export function parsePayment(
+  body: unknown,
+  { cents = false }: { cents?: boolean } = {}
+): Payment | string {
   if (!body || typeof body !== "object") return "body must be an object";
   const b = body as Record<string, unknown>;
   const amount = b.paid_amount;
   if (
     typeof amount !== "number" ||
-    !Number.isInteger(amount) ||
+    !Number.isFinite(amount) ||
+    !(cents ? isCents(amount) : Number.isInteger(amount)) ||
     amount < 0 ||
     amount > MAX_AMOUNT
   ) {
-    return `paid_amount must be whole dollars from 0 to ${MAX_AMOUNT}`;
+    return cents
+      ? `paid_amount must be dollars and cents from 0 to ${MAX_AMOUNT}`
+      : `paid_amount must be whole dollars from 0 to ${MAX_AMOUNT}`;
   }
   const paidAt = b.paid_at ?? null;
   if (
@@ -154,7 +181,7 @@ export function parsePayment(body: unknown): Payment | string {
   const trimmed = note?.trim() ?? "";
   if (trimmed.length > MAX_NOTE) return `note is over ${MAX_NOTE} characters`;
   return {
-    paid_amount: amount,
+    paid_amount: cents ? Math.round(amount * 100) / 100 : amount,
     paid_at: paidAt,
     method: method as PaymentMethod | null,
     note: trimmed || null,
@@ -178,7 +205,46 @@ export async function savePayment(
   const users = { ...roster.users };
   if (payment) users[String(userId)] = payment;
   else delete users[String(userId)];
-  const next: RosterKey = { season, updated_at: now.toISOString(), users };
+  // Spread the key so the payouts (and anything the key gains later) ride
+  // along untouched.
+  const next: RosterKey = {
+    ...roster,
+    season,
+    updated_at: now.toISOString(),
+    users,
+  };
+  await writeRoster(kv, season, next);
+  return buildRoster(kv, season, next);
+}
+
+// Sets (payout) or clears (null) one winner's payout for one prize, the
+// same read-change-write as savePayment. Returns null when the user isn't
+// in admin:users (active or not: a winner may have left since).
+export async function savePayout(
+  kv: KVNamespace,
+  season: number,
+  periodKey: string,
+  userId: number,
+  payout: Payment | null,
+  now: Date = new Date()
+): Promise<RosterResponse | null> {
+  if (!PERIOD_KEY_PATTERN.test(periodKey)) return null;
+  const adminUsers = await kv.get<AdminUsersKey>("admin:users", "json");
+  if (!adminUsers?.users.some((u) => u.user_id === userId)) return null;
+
+  const roster = await readRoster(kv, season);
+  const payouts = { ...(roster.payouts ?? {}) };
+  const forPeriod = { ...(payouts[periodKey] ?? {}) };
+  if (payout) forPeriod[String(userId)] = payout;
+  else delete forPeriod[String(userId)];
+  if (Object.keys(forPeriod).length) payouts[periodKey] = forPeriod;
+  else delete payouts[periodKey];
+  const next: RosterKey = {
+    ...roster,
+    season,
+    updated_at: now.toISOString(),
+    payouts,
+  };
   await writeRoster(kv, season, next);
   return buildRoster(kv, season, next);
 }

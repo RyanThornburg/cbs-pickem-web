@@ -117,6 +117,7 @@ describe("roster routes", () => {
           payment: null,
         },
       ],
+      payouts: {},
     });
   });
 
@@ -242,6 +243,115 @@ describe("roster routes", () => {
   });
 });
 
+describe("payout routes", () => {
+  const PAYOUT = {
+    paid_amount: 43.48,
+    paid_at: "2026-11-12",
+    method: "venmo",
+    note: "1st half, tied 3rd",
+  };
+
+  it("saves a payout by prize and user, with cents, beside the entry fees", async () => {
+    const { put, puts, stored } = setup({
+      "roster:2026": {
+        season: 2026,
+        updated_at: "x",
+        users: {
+          "4": { paid_amount: 200, paid_at: null, method: null, note: null },
+        },
+      },
+    });
+    const response = await put(
+      "/api/admin/roster/2026/payouts/first_half/7",
+      PAYOUT
+    );
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as RosterResponse;
+    assert.deepEqual(body.payouts, { first_half: { "7": PAYOUT } });
+
+    assert.deepEqual(puts, ["roster:2026"]);
+    const saved = stored("roster:2026");
+    assert.deepEqual(saved.payouts.first_half["7"], PAYOUT);
+    // The entry fees are untouched.
+    assert.equal(saved.users["4"].paid_amount, 200);
+  });
+
+  it("keeps the payouts when an entry fee is saved", async () => {
+    const { put, stored } = setup({
+      "roster:2026": {
+        season: 2026,
+        updated_at: "x",
+        users: {},
+        payouts: { first_half: { "4": PAYOUT } },
+      },
+    });
+    await put("/api/admin/roster/2026/7", PAYMENT);
+    assert.deepEqual(stored("roster:2026").payouts, {
+      first_half: { "4": PAYOUT },
+    });
+  });
+
+  it("clears a payout with DELETE, dropping an emptied prize", async () => {
+    const { call, stored } = setup({
+      "roster:2026": {
+        season: 2026,
+        updated_at: "x",
+        users: {},
+        payouts: { first_half: { "4": PAYOUT } },
+      },
+    });
+    const response = await call("/api/admin/roster/2026/payouts/first_half/4", {
+      method: "DELETE",
+      headers: { origin: ORIGIN },
+    });
+    assert.equal(response.status, 200);
+    assert.deepEqual(stored("roster:2026").payouts, {});
+  });
+
+  it("pays a winner who has left the pool", async () => {
+    const { put } = setup();
+    assert.equal(
+      (await put("/api/admin/roster/2026/payouts/first_half/9", PAYOUT)).status,
+      200
+    );
+  });
+
+  it("refuses bad amounts, odd prize keys, strangers and other origins", async () => {
+    const { put, call, puts } = setup();
+    const bad = await put("/api/admin/roster/2026/payouts/first_half/7", {
+      ...PAYOUT,
+      paid_amount: 43.485,
+    });
+    assert.equal(bad.status, 400);
+    assert.match(
+      ((await bad.json()) as { error: string }).error,
+      /dollars and cents/
+    );
+    assert.equal(
+      (await put("/api/admin/roster/2026/payouts/First-Half/7", PAYOUT)).status,
+      404
+    );
+    assert.equal(
+      (await put("/api/admin/roster/2026/payouts/first_half/999", PAYOUT))
+        .status,
+      404
+    );
+    assert.equal(
+      (
+        await put("/api/admin/roster/2026/payouts/first_half/7", PAYOUT, {
+          origin: "https://evil.test",
+        })
+      ).status,
+      403
+    );
+    assert.equal(
+      (await call("/api/admin/roster/2026/payouts/first_half/7")).status,
+      404
+    );
+    assert.deepEqual(puts, []);
+  });
+});
+
 describe("parsePayment", () => {
   it("accepts a full payment and trims the note", () => {
     assert.deepEqual(
@@ -262,6 +372,22 @@ describe("parsePayment", () => {
       method: null,
       note: null,
     });
+  });
+
+  it("takes cents only for a payout", () => {
+    assert.equal(
+      (
+        parsePayment({ paid_amount: 43.48 }, { cents: true }) as {
+          paid_amount: number;
+        }
+      ).paid_amount,
+      43.48
+    );
+    assert.equal(typeof parsePayment({ paid_amount: 43.48 }), "string");
+    assert.equal(
+      typeof parsePayment({ paid_amount: 1.005 }, { cents: true }),
+      "string"
+    );
   });
 
   it("rejects bad fields", () => {

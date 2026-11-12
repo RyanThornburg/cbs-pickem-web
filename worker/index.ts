@@ -1,6 +1,11 @@
 import { verifyAdmin } from "./access.ts";
 import { checkPipeline } from "./pipelineAlert.ts";
-import { buildRoster, parsePayment, savePayment } from "./roster.ts";
+import {
+  buildRoster,
+  parsePayment,
+  savePayment,
+  savePayout,
+} from "./roster.ts";
 
 const WEEK_RESOURCE_PATTERN =
   /^\/api\/weeks\/(\d+)\/(\d+)\/(games|leaderboard|odds|trends|recap)$/;
@@ -10,6 +15,8 @@ const USER_SEASON_PATTERN = /^\/api\/users\/(\d+)\/season\/(\d+)$/;
 const GAME_DETAILS_PATTERN = /^\/api\/games\/(\d+)\/(\d+)\/details$/;
 const ROSTER_PATTERN = /^\/api\/admin\/roster\/(\d{4})$/;
 const ROSTER_USER_PATTERN = /^\/api\/admin\/roster\/(\d{4})\/(\d+)$/;
+const PAYOUT_PATTERN =
+  /^\/api\/admin\/roster\/(\d{4})\/payouts\/([a-z][a-z0-9_]{0,39})\/(\d+)$/;
 // KV caches reads at the edge for 60s by default. The games key carries live
 // scores, so cache it for Cloudflare's 30s minimum instead.
 const GAMES_CACHE_TTL_SECONDS = 30;
@@ -134,25 +141,39 @@ async function handleAdmin(
     rosterUserMatch &&
     (request.method === "PUT" || request.method === "DELETE")
   ) {
-    return await handleRosterWrite(
-      request,
-      env,
-      Number(rosterUserMatch[1]),
-      Number(rosterUserMatch[2])
-    );
+    return await handleRosterWrite(request, env, {
+      season: Number(rosterUserMatch[1]),
+      userId: Number(rosterUserMatch[2]),
+    });
+  }
+
+  const payoutMatch = pathname.match(PAYOUT_PATTERN);
+  if (
+    payoutMatch &&
+    (request.method === "PUT" || request.method === "DELETE")
+  ) {
+    return await handleRosterWrite(request, env, {
+      season: Number(payoutMatch[1]),
+      periodKey: payoutMatch[2],
+      userId: Number(payoutMatch[3]),
+    });
   }
 
   return notFound(NO_STORE);
 }
 
-// Saves (PUT) or clears (DELETE) one member's payment. On top of the Access
+// Saves (PUT) or clears (DELETE) one member's entry fee payment, or, with a
+// `periodKey`, one winner's payout for that prize. On top of the Access
 // check, a write must come from this site's own page (Origin), and a PUT
 // must be JSON, which a plain cross-site form can't send.
 async function handleRosterWrite(
   request: Request,
   env: Env,
-  season: number,
-  userId: number
+  {
+    season,
+    userId,
+    periodKey,
+  }: { season: number; userId: number; periodKey?: string }
 ): Promise<Response> {
   if (request.headers.get("origin") !== new URL(request.url).origin) {
     return jsonResponse({ error: "forbidden" }, 403, NO_STORE);
@@ -169,20 +190,25 @@ async function handleRosterWrite(
     } catch {
       return jsonResponse({ error: "body isn't valid JSON" }, 400, NO_STORE);
     }
-    const parsed = parsePayment(body);
+    const parsed = parsePayment(body, { cents: periodKey !== undefined });
     if (typeof parsed === "string") {
       return jsonResponse({ error: parsed }, 400, NO_STORE);
     }
     payment = parsed;
   }
 
-  const roster = await savePayment(env.PICKEM_KV, season, userId, payment);
+  const roster =
+    periodKey === undefined
+      ? await savePayment(env.PICKEM_KV, season, userId, payment)
+      : await savePayout(env.PICKEM_KV, season, periodKey, userId, payment);
   if (!roster) return notFound(NO_STORE);
+  const what = periodKey === undefined ? "roster payment" : "payout";
   console.log(
     JSON.stringify({
-      message: payment ? "roster payment saved" : "roster payment cleared",
+      message: `${what} ${payment ? "saved" : "cleared"}`,
       season,
       user_id: userId,
+      ...(periodKey !== undefined && { period: periodKey }),
     })
   );
   return jsonResponse(roster, 200, NO_STORE);
