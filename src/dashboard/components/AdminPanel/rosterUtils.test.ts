@@ -1,5 +1,6 @@
 import { RosterMember, RosterPayment } from "../../types";
 import {
+  entryMethodText,
   filterMembers,
   formatDollars,
   gmailComposeUrl,
@@ -156,5 +157,18 @@ describe("payoutTotals", () => {
       kind: "partial",
       owed: 0.01,
     });
+  });
+});
+
+describe("entryMethodText", () => {
+  it("names how the entry fee came in", () => {
+    const entry = { paid_amount: 50, paid_at: null, note: null };
+    expect(entryMethodText({ ...entry, method: "cash_app" })).toBe(
+      "Entry fee via Cash App"
+    );
+    expect(entryMethodText({ ...entry, method: null })).toBe(
+      "Entry fee paid, method not saved"
+    );
+    expect(entryMethodText(null)).toBe("No entry fee recorded");
   });
 });

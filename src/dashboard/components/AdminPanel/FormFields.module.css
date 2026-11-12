@@ -42,11 +42,21 @@
     transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
     max-width 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
 }
-/* On the box's top edge at three quarters size. The theme drew no notch
-   in the hairline, so the label sits over it. */
+/* On the box's top edge at three quarters size, in a notch: the bottom
+   half of its background is the box's own white, so the hairline and the
+   focus ring stop at the label instead of running through it, and the top
+   half stays clear over whatever the field sits on. The 4px of padding
+   (3px once scaled) is taken back from the offset, so the text still
+   starts 14px in. */
 .shrunk {
   max-width: calc(133% - 32px);
-  transform: translate(14px, -9px) scale(0.75);
+  padding: 0 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0 45%,
+    var(--paper) 45% 100%
+  );
+  transform: translate(11px, -9px) scale(0.75);
   pointer-events: auto;
   user-select: none;
 }

@@ -18,11 +18,12 @@ type Draft = {
 
 const draftFrom = (
   payment: RosterPayment | null,
-  defaultAmount: number | null
+  defaultAmount: number | null,
+  defaultMethod: PaymentMethod | null
 ): Draft => ({
   amount: String(payment?.paid_amount ?? defaultAmount ?? ""),
   date: payment ? (payment.paid_at ?? "") : todayIso(),
-  method: payment ? (payment.method ?? "") : "venmo",
+  method: payment ? (payment.method ?? "") : (defaultMethod ?? "venmo"),
   note: payment?.note ?? "",
 });
 
@@ -34,6 +35,7 @@ export function PaymentForm({
   label,
   payment,
   defaultAmount,
+  defaultMethod = null,
   cents = false,
   saving,
   error,
@@ -47,6 +49,9 @@ export function PaymentForm({
   payment: RosterPayment | null;
   // The amount a new record starts at: the fee, or what's owed.
   defaultAmount: number | null;
+  // The method a new record starts at (Payouts: how the winner paid their
+  // entry fee, since prizes usually go back the same way); else Venmo.
+  defaultMethod?: PaymentMethod | null;
   cents?: boolean;
   saving: boolean;
   error: string | null;
@@ -54,7 +59,9 @@ export function PaymentForm({
   onClear: () => void;
   onCancel: () => void;
 }) {
-  const [draft, setDraft] = useState(() => draftFrom(payment, defaultAmount));
+  const [draft, setDraft] = useState(() =>
+    draftFrom(payment, defaultAmount, defaultMethod)
+  );
   const trimmed = draft.amount.trim();
   const amountOk = (cents ? CENTS : WHOLE).test(trimmed);
   const set = (field: keyof Draft) => (value: string) =>

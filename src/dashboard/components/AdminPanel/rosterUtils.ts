@@ -93,6 +93,15 @@ export const paymentDetail = (payment: RosterPayment): string =>
     .filter(Boolean)
     .join(" · ");
 
+// How a prize winner paid their entry fee, under their name on Payouts:
+// prizes usually go back the same way.
+export const entryMethodText = (entry: RosterPayment | null | undefined) =>
+  !entry
+    ? "No entry fee recorded"
+    : entry.method
+      ? `Entry fee via ${METHOD_LABEL[entry.method]}`
+      : "Entry fee paid, method not saved";
+
 // A Gmail draft with everyone in BCC, so no one sees the others' addresses.
 // Opens in the browser's Gmail whatever the computer's mail app is.
 export const gmailComposeUrl = (emails: string[]): string =>

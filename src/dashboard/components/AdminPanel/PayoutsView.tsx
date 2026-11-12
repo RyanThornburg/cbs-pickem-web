@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { ordinal } from "../../helper";
 import { AdminUnauthorizedError } from "../../data/GetAdminStatus";
 import {
@@ -27,6 +27,7 @@ import { AdminActions, LogoutButton } from "./AdminControls";
 import { PaymentForm } from "./PaymentForm";
 import {
   formatDollars,
+  entryMethodText,
   paymentDetail,
   paymentStatus,
   payoutTotals,
@@ -85,6 +86,7 @@ const payoutsText = (prize: FinishedPrize) =>
 function PrizeSection({
   prize,
   paid,
+  entries,
   editing,
   saving,
   saveError,
@@ -93,6 +95,8 @@ function PrizeSection({
 }: {
   prize: FinishedPrize;
   paid: Record<string, RosterPayment> | undefined;
+  // Each winner's entry fee record by user id, for how they paid in.
+  entries: Map<number, RosterPayment | null>;
   editing: string | null;
   saving: boolean;
   saveError: string | null;
@@ -185,6 +189,10 @@ function PrizeSection({
                         Tied for {ordinal(w.place)}, prize split
                       </span>
                     )}
+                    {/* Prizes usually go back the way the entry came in. */}
+                    <span className={styles.note}>
+                      {entryMethodText(entries.get(w.user_id))}
+                    </span>
                     {payout && (
                       <span className={rosterStyles.paymentUnder}>
                         {paymentDetail(payout)}
@@ -241,6 +249,7 @@ function PrizeSection({
                         label={`${name} payout for ${w.name}`}
                         payment={payout}
                         defaultAmount={w.owed}
+                        defaultMethod={entries.get(w.user_id)?.method ?? null}
                         cents
                         saving={saving}
                         error={saveError}
@@ -308,6 +317,10 @@ export default function PayoutsView({ viewSwitch }: { viewSwitch: ReactNode }) {
 
   const unauthorized = error instanceof AdminUnauthorizedError;
   const ready = roster && prizes;
+  const entries = useMemo(
+    () => new Map((roster?.users ?? []).map((m) => [m.user_id, m.payment])),
+    [roster]
+  );
   const all = ready
     ? prizes.map((p) => payoutTotals(p.winners, roster.payouts?.[p.period.key]))
     : [];
@@ -386,6 +399,7 @@ export default function PayoutsView({ viewSwitch }: { viewSwitch: ReactNode }) {
                 key={prize.period.key}
                 prize={prize}
                 paid={roster.payouts?.[prize.period.key]}
+                entries={entries}
                 editing={editing}
                 saving={saving}
                 saveError={saveError}
