@@ -154,3 +154,29 @@
   font-weight: 600;
   line-height: 1.5;
 }
+
+/* Conference view: playoff cutoff line between seeds 7 and 8. */
+.cutoffRow {
+  height: 0;
+}
+.cutoffCell {
+  padding: 0 !important;
+  border-bottom: 2px dashed var(--divider);
+}
+
+/* Teams below the playoff cutoff (seeds 8–16). */
+.outside {
+  opacity: 0.45;
+}
+.outside:hover,
+.outside:focus-within {
+  opacity: 0.75;
+}
+
+/* Short division name after the team for division winners (seeds 1–4). */
+.divLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  margin-left: 6px;
+}

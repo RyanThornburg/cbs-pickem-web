@@ -74,6 +74,52 @@ export const formatDiff = (diff: number): string =>
 export const firstName = (name: string): string =>
   name.trim().split(/\s+/)[0] ?? name;
 
+// Conference standings: teams sorted by seed, grouped by playoff status.
+// Seeds 1-4 are division winners, 5-7 are wild card, 8-16 are out.
+export const PLAYOFF_CUTOFF = 7;
+export const DIVISION_WINNER_CUTOFF = 4;
+
+export interface ConferenceStanding {
+  row: StandingsTeam;
+  division: string;
+}
+
+// All teams in one conference, sorted by seed. Teams without a seed go last,
+// sorted by win_pct descending.
+export const conferenceTeams = (
+  standings: NflStandings,
+  conferenceAbbr: string
+): ConferenceStanding[] => {
+  const conf = standings.conferences.find((c) => c.abbr === conferenceAbbr);
+  if (!conf) return [];
+  const teams: ConferenceStanding[] = conf.divisions.flatMap((d) =>
+    d.teams.map((row) => ({ row, division: d.name }))
+  );
+  return teams.sort((a, b) => {
+    const sa = a.row.seed ?? 99;
+    const sb = b.row.seed ?? 99;
+    if (sa !== sb) return sa - sb;
+    return (b.row.win_pct ?? -1) - (a.row.win_pct ?? -1);
+  });
+};
+
+// True when at least one team in the standings has a seed.
+export const hasSeeds = (standings: NflStandings): boolean =>
+  standings.conferences.some((c) =>
+    c.divisions.some((d) => d.teams.some((t) => t.seed != null))
+  );
+
+// Short division name: "AFC East" → "East".
+export const shortDivision = (name: string): string =>
+  name.split(/\s+/).pop() ?? name;
+
+// Format games behind: 0 → "–", 2.5 → "2.5", 3 → "3".
+export const formatGB = (gb: number | null): string => {
+  if (gb == null) return "–";
+  if (gb === 0) return "–";
+  return Number.isInteger(gb) ? String(gb) : gb.toFixed(1);
+};
+
 export type StandingsSortKey = "record" | "diff" | "ats" | "pool" | "player";
 
 const pctOf = (wins: number, losses: number): number | null =>

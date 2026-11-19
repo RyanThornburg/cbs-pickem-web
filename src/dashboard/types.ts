@@ -685,6 +685,12 @@ export interface StandingsTeam extends WinLoss {
   // 1-4 within the division; the array is already in this order.
   rank: number;
   team: TeamRef;
+  // ESPN's conference rank (1-16). Division winners 1-4, wild card 5-7,
+  // out 8-16. Full NFL tiebreakers applied. null until ESPN data loads.
+  seed: number | null;
+  // Games behind the #1 seed in the team's conference. 0.0 for the leader.
+  // null until ESPN data loads.
+  games_behind: number | null;
   // A tie counts as half a win; null before a team's first game.
   win_pct: number | null;
   points_for: number;
@@ -715,7 +721,7 @@ export interface StandingsConference {
   divisions: StandingsDivision[];
 }
 
-// AFC then NFC, each East/North/South/West. No playoff seeding.
+// AFC then NFC, each East/North/South/West.
 export interface NflStandings {
   season: number;
   updated_at: string;
